@@ -9,7 +9,7 @@
 	
 	<title>
 	
-		06_服务器/01_Tomcat/02-自写Tomcat服务器 | 
+		06_服务器/01_Tomcat/03-图片服务器搭建与验证 | 
 	 
 	Jerry&#39;s Notes
 	</title>
@@ -1611,15 +1611,6 @@
 								<div class="article-toc" style="display: none;"></div>
 							</ul>
 			
-							<ul>
-								<li class="file">
-									<a href="/2018/05/05/04_%E7%BD%91%E9%A1%B5%E6%8A%80%E6%9C%AF/05_JSP/11-JSP%20%E5%9B%BE%E7%89%87%E6%9C%8D%E5%8A%A1%E5%99%A8&%E4%B8%8A%E4%BC%A0/">
-										11-JSP 图片服务器&上传
-									</a>
-								</li>
-								<div class="article-toc" style="display: none;"></div>
-							</ul>
-			
 								</li>
 								
 							</ul>
@@ -1923,9 +1914,18 @@
 							</ul>
 			
 							<ul>
-								<li class="file active">
-									<a href="/2020/05/07/06_%E6%9C%8D%E5%8A%A1%E5%99%A8/01_Tomcat/02-%E8%87%AA%E5%86%99Tomcat%E6%9C%8D%E5%8A%A1%E5%99%A8/">
+								<li class="file">
+									<a href="/2020/05/02/06_%E6%9C%8D%E5%8A%A1%E5%99%A8/01_Tomcat/02-%E8%87%AA%E5%86%99Tomcat%E6%9C%8D%E5%8A%A1%E5%99%A8/">
 										02-自写Tomcat服务器
+									</a>
+								</li>
+								<div class="article-toc" style="display: none;"></div>
+							</ul>
+			
+							<ul>
+								<li class="file active">
+									<a href="/2020/05/03/06_%E6%9C%8D%E5%8A%A1%E5%99%A8/01_Tomcat/03-%E5%9B%BE%E7%89%87%E6%9C%8D%E5%8A%A1%E5%99%A8%E6%90%AD%E5%BB%BA%E4%B8%8E%E9%AA%8C%E8%AF%81/">
+										03-图片服务器搭建与验证
 									</a>
 								</li>
 								<div class="article-toc" style="display: none;"></div>
@@ -2389,7 +2389,7 @@
 	<div id="content">
 		<h1 id="article-title">
 
-	02-自写Tomcat服务器
+	03-图片服务器搭建与验证
 </h1>
 <div class="article-meta">
     
@@ -2416,93 +2416,75 @@
 		</div>
     
 	<span>作者:Jerry</span>
-	<span>时间:2020-05-07 18:58:17</span>
+	<span>时间:2020-05-03 18:58:17</span>
 	
 		<span>
-			访问:<span id="/2020/05/07/06_%E6%9C%8D%E5%8A%A1%E5%99%A8/01_Tomcat/02-%E8%87%AA%E5%86%99Tomcat%E6%9C%8D%E5%8A%A1%E5%99%A8/" class="leancloud_visitors" data-flag-title="06_服务器/01_Tomcat/02-自写Tomcat服务器"></span>
+			访问:<span id="/2020/05/03/06_%E6%9C%8D%E5%8A%A1%E5%99%A8/01_Tomcat/03-%E5%9B%BE%E7%89%87%E6%9C%8D%E5%8A%A1%E5%99%A8%E6%90%AD%E5%BB%BA%E4%B8%8E%E9%AA%8C%E8%AF%81/" class="leancloud_visitors" data-flag-title="06_服务器/01_Tomcat/03-图片服务器搭建与验证"></span>
 		</span>
 	
 </div>
 
 <div id="article-content">
-	<p><strong>核心操作：</strong></p>
-<p>① socket解除阻塞时为新请求进入，使用<code>线程</code>解决多请求并发问题</p>
-<p>② IO流的处理：客户端路径获取使用<code>字符流</code>，服务端响应给浏览器使用<code>字节流</code></p>
-<p>③ <code>响应行、响应头、响应正文</code>的处理(遵循HTTP协议)，使自写服务器可以正确被浏览器解析响应的内容</p>
-<p><strong>源码示例：</strong></p>
-<pre><code class="java">public class MyTomcatServer {
-    public static void main(String[] args) {
-        try {
-            ServerSocket serverSocket = new ServerSocket(8080);
-            while (true) {
-                // 没有请求时，阻塞这个代码，不会创建线程
-                Socket socket = serverSocket.accept();
-                // 每连接1个客户端创建1个线程，此处最好是用线程池合理分配资源
-                new Thread(() -&gt; service(socket)).start();
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
+	<h3 id="1-搭建"><a href="#1-搭建" class="headerlink" title="1. 搭建"></a>1. 搭建</h3><p>首先将tomcat复制一份解压并且改名 </p>
+<p>此时 apache-tomcat-8.5.43-windows-x64-file 为图片服务器 </p>
+<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/image-20200602101042387.png" alt="image-20200602101042387"></p>
+<p>复制后的服务器 apache-tomcat-8.5.43-windows-x64-file 使用 在安装目录conf文件夹 server.xml文件内 修改三个端口号 分别是 <code>8005</code> <code>8080</code> <code>8009</code> 上述三个端口分别都修改为 +1 即可 即 <code>8006</code> <code>8081</code> <code>8010</code> 修改以后在tomcat安装目录 bin目录 双击 startup.bat 文件启动，且在访问期间必须一直保持开启状态。 </p>
+<blockquote>
+<p>如果出现双击闪退的情况在环境变量中 新建 JAVA_HOME 选择jdk安装目录;新建 JRE_HOME 选择jre安装目录。</p>
+</blockquote>
+<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/image-20200602231004856.png" alt="image-20200602231004856"></p>
+<h3 id="2-创建目录"><a href="#2-创建目录" class="headerlink" title="2. 创建目录"></a>2. 创建目录</h3><p>依次打开图片服务器文件夹 </p>
+<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/image-20200602101124946.png" alt="image-20200602101124946"></p>
+<p>后两个文件夹为手动创建 </p>
+<p>此时将此路径复制，作为图片上传路径，表示以后图片都将上传在此服务器的此目录 </p>
+<pre><code>D:\tomcat\apache-tomcat-8.5.43-windows-x64-file\apache-tomcat-8.5.43\webapps\uploadfile\images 
 
-    public static void service(Socket socket) {
-        try {
-            //处理请求行,获取访问资源的路径、转换流、封装成了高效字符流
-            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+该路径为本地测试使用路径，实际图片服务器为公网完整地址，如：
+https://图片服务器域名/img/image-20200602101124946.png</code></pre><h3 id="3-上传"><a href="#3-上传" class="headerlink" title="3. 上传"></a>3. 上传</h3><p>编写java web项目 创建jsp文件 添加<code>form</code>表单 表单提交方式为<code>post</code> 数据格式为<code>multipart/form-data</code> </p>
+<p>action为servlet路径 根据自己编写的控制器路径修改。</p>
+<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/image-20200602101327251.png" alt="image-20200602101327251"></p>
+<h3 id="4-接收"><a href="#4-接收" class="headerlink" title="4. 接收"></a>4. 接收</h3><p>编写servlet，用于接收图片，并上传到图片服务器，也就是第2部中的最终位置 绿色字体write方法为将图片上传至服务器，也就是绿色字体最终的路径，上传完成以后注意打开文件夹查看 </p>
+<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/image-20200602102440518.png" alt="image-20200602102440518"></p>
+<h3 id="5-显示"><a href="#5-显示" class="headerlink" title="5. 显示"></a>5. 显示</h3><p>最后在页面显示，图片路径前缀为<code>http://ip:port/+路径</code>，此时必须保证服务器开启 </p>
+<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/image-20200602102826195.png" alt="image-20200602102826195"></p>
+<h3 id="6-demo"><a href="#6-demo" class="headerlink" title="6. demo"></a>6. demo</h3><p>Servlet java 代码：</p>
+<pre><code class="java">@WebServlet(... ...)
+@MultipartConfig // 用于接收上传文件对象的获取
+public class AddOrUpdateServlet extends HttpServlet {
+    private static final long serialVersionUID = 1L;
 
-            //&quot;GET /demo/index.html HTTP/1.1&quot;
-            //请求方式、请求路径、协议；其中，只有请求路径有用!
-            String line = bufferedReader.readLine();
-            String[] requestInfos = line.split(&quot; &quot;);
-            String requestURL = requestInfos[1];
-            System.out.println(requestURL);
-
-            // 浏览器访问地址：http://localhost:8080/demo/index.html
-            int length = &quot;/demo/&quot;.length();
-            // 获取请求资源的相对路径
-            requestURL = requestURL.substring(length);
-
-            //通过服务器将index.html响应给浏览器 ,  通过socket.getOutputStream();
-            BufferedInputStream bis = new BufferedInputStream(new FileInputStream(requestURL));
-            BufferedOutputStream bos = new BufferedOutputStream(socket.getOutputStream());
-
-            //操作响应行 （协议、响应状态码）
-            bos.write(&quot;HTTP/1.1 200 OK\r\n&quot;.getBytes());
-
-            //操作响应头(Content-Type)
-            bos.write(&quot;Content-Type:text/html\r\n&quot;.getBytes());
-            bos.write(&quot;\r\n&quot;.getBytes());
-
-            //操作响应正文
-            int len = -1;
-            byte[] bys = new byte[8192];
-            while ((len = bis.read(bys)) != -1) {
-                bos.write(bys, 0, len);
-            }
-            bis.close();
-            bos.close();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+    @Override
+    protected void doGet( ... ... ) {
+        // 接收并存储图片
+        Part part = req.getPart(&quot;imgPath&quot;);
+         // UUID 拼接防止图片名字重复
+        String imgPath = UUID.randomUUID().toString().replace(&quot;-&quot;, &quot;&quot;) + part.getSubmittedFileName();
+         // 写入到图片服务器
+        part.write(&quot;D:\\tomcat\\apache-tomcat-9.0.35-fileServer\\webapps\\uploadfile\\images\\&quot; + imgPath);
+        ...
     }
 }</code></pre>
-<p>页面测试：</p>
-<pre><code class="html">&lt;!DOCTYPE html&gt;
-&lt;html lang=&quot;en&quot;&gt;
-&lt;head&gt;
-    &lt;meta charset=&quot;UTF-8&quot;&gt;
-    &lt;title&gt;主页&lt;/title&gt;
-&lt;/head&gt;
-&lt;body&gt;
-
-&lt;h2&gt;首页&lt;/h2&gt;
-
-&lt;img src=&quot;001.jpg&quot; alt=&quot;图片1&quot; width=&quot;300px&quot;&gt;
-&lt;img src=&quot;002.jpg&quot; alt=&quot;图片2&quot; width=&quot;300px&quot;&gt;
-
-&lt;/body&gt;
-&lt;/html&gt;</code></pre>
-<p><img src="https://img-blog.csdnimg.cn/20200507191929163.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3NpbmF0XzM2MTg0MDc1,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
+<p>页面代码：</p>
+<pre><code class="html">&lt;form action=&quot;&lt;%=request.getContextPath()%&gt;/AddOrUpdate&quot; method=&quot;post&quot; enctype=&quot;multipart/form-data&quot;&gt;
+    ...
+头像：
+&lt;c:choose&gt;
+    &lt;c:when test=&quot;${not empty XXX.imgPath}&quot;&gt;
+        &lt;img id=&quot;img&quot; src=&quot;http://图片服务器ip:图片服务器port/uploadfile/images/${XXX.imgPath}&quot; width=&quot;50px&quot; height=&quot;50px&quot;&gt;
+    &lt;/c:when&gt;
+    &lt;c:otherwise&gt;
+        &lt;img id=&quot;img&quot; src=&quot;http://图片服务器ip:图片服务器port/uploadfile/images/default.png&quot; width=&quot;50px&quot; height=&quot;50px&quot;&gt;
+    &lt;/c:otherwise&gt;
+&lt;/c:choose&gt;
+&lt;input type=&quot;file&quot; name=&quot;imgPath&quot; onchange=&quot;show(this)&quot; /&gt;
+&lt;br&gt;&lt;br&gt;
+&lt;input type=&quot;submit&quot; value=&quot;提交&quot;&gt;
+&lt;/form&gt;</code></pre>
+<ul>
+<li>数据库表的列增加 imgPath 存储图片名称</li>
+<li>Dao 层对增删改查的 sql 语句进行修改，数据封装进行新增 imgPath 即可。</li>
+</ul>
+<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/image-20200602234505601.png" alt="image-20200602234505601"></p>
 
 </div>
 
@@ -2510,11 +2492,16 @@
     <div class="post-guide">
         <div class="item left">
             
+              <a href="/2020/05/07/02_%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/04_%E6%AD%A3%E5%88%99%E8%A1%A8%E8%BE%BE%E5%BC%8F/01-%E6%AD%A3%E5%88%99%E8%A1%A8%E8%BE%BE%E5%BC%8F%E8%AF%AD%E6%B3%95/">
+                  <i class="fa fa-angle-left" aria-hidden="true"></i>
+                  01-正则表达式语法
+              </a>
+            
         </div>
         <div class="item right">
             
-              <a href="/2020/05/07/02_%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/04_%E6%AD%A3%E5%88%99%E8%A1%A8%E8%BE%BE%E5%BC%8F/01-%E6%AD%A3%E5%88%99%E8%A1%A8%E8%BE%BE%E5%BC%8F%E8%AF%AD%E6%B3%95/">
-                01-正则表达式语法
+              <a href="/2020/05/02/06_%E6%9C%8D%E5%8A%A1%E5%99%A8/01_Tomcat/02-%E8%87%AA%E5%86%99Tomcat%E6%9C%8D%E5%8A%A1%E5%99%A8/">
+                02-自写Tomcat服务器
                 <i class="fa fa-angle-right" aria-hidden="true"></i>
               </a>
             
