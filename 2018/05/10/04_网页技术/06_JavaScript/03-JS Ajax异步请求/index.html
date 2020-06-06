@@ -2630,6 +2630,321 @@ public class TestAjaxServlet extends HttpServlet {
 <li>发送包含未知字符的用户输入时，POST 比 GET 更稳定也更可靠</li>
 </ul>
 </blockquote>
+<h3 id="4-异步请求无法正确获取返回值"><a href="#4-异步请求无法正确获取返回值" class="headerlink" title="4. 异步请求无法正确获取返回值"></a>4. 异步请求无法正确获取返回值</h3><h4 id="4-1-问题现象"><a href="#4-1-问题现象" class="headerlink" title="4.1 问题现象"></a>4.1 问题现象</h4><p><img src="https://img-blog.csdnimg.cn/20200606142921842.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3NpbmF0XzM2MTg0MDc1,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"><br>普通的 ajax 校验会出现的问题：<code>无法正确返回 boolean 值 false，因此无法正确拦截表单提交！！！</code></p>
+<pre><code class="js">    // 普通的 ajax 异步请求（校验用户名是否与数据库中重复）
+    $.ajax({
+        type : &quot;post&quot;,
+        async : true,
+        url : &quot;&lt;%=request.getContextPath()%&gt;/validateLogin&quot;, // 查重 Servlet
+        data : {
+            &quot;username&quot; : name
+        },
+        success : function(data) {
+            console.log(&quot;data:&quot; + data + &quot;, type:&quot; + (typeof data));
+            // 与 登陆逻辑正好相反，false 用户不存在, true 用户存在（不能注册） 
+            if (data == false) {
+                nameSpan.innerHTML = &quot;√&quot;.fontcolor(&quot;green&quot;);
+                result = true;
+            } else {
+                nameSpan.innerHTML = &quot;用户名已存在&quot;.fontcolor(&quot;red&quot;);
+                result = false;
+            }
+        },
+        dataType: &quot;json&quot;,
+    });</code></pre>
+<p>因此，当下的需求非常明确：<br>如何在 ajax 异步请求回调函数 function(data) 中正确获取一个返回值，用于表单的提交 / 拦截。</p>
+<p>进一步研究验证，解决方案有 两种：</p>
+<ul>
+<li>方式1：<code>将 ajax 作为临时同步的校验事件，可正确赋值需要的返回值</code></li>
+<li>方式2：<code>使用自定义 get/set 方法确保操作的是永远是同一个 变量</code> (即需要正确赋值的返回值)</li>
+</ul>
+<h4 id="4-2-解决方案-1：改变-async-为临时同步-变量赋值"><a href="#4-2-解决方案-1：改变-async-为临时同步-变量赋值" class="headerlink" title="4.2 解决方案 1：改变 async 为临时同步 + 变量赋值"></a>4.2 解决方案 1：改变 async 为临时同步 + 变量赋值</h4><p>jQuery.ajax() 参数：<code>async</code></p>
+<ul>
+<li>类型：Boolean</li>
+<li>默认值: true。默认不带 async 参数时，所有请求均为异步请求。显式设置为 false 则为同步请求。</li>
+<li>注意，同步请求将锁住浏览器，用户其它操作必须等待请求完成才可以执行。</li>
+</ul>
+<pre><code class="js">// 方式1：将 ajax 作为临时同步的校验事件，可正确赋值需要的返回值 result
+function checkStuName1() {
+    // 如果 id 标签不存在，id === undefined，且不能直接操作 .value
+    var id = document.getElementsByName(&quot;stuId&quot;)[0];
+    var name = document.getElementsByName(&quot;username&quot;)[0].value;
+    var nameSpan = document.getElementById(&quot;nameSpan&quot;);
+
+    console.log(&quot;id:&quot; + id + &quot;, &quot; + &quot;name:&quot; + name);
+    if (null === name || &quot;&quot; === name) {
+        nameSpan.innerHTML = &quot;* 用户名不能为空&quot;.fontcolor(&quot;red&quot;);
+        return false;
+    }
+
+    var result;
+    if (undefined === id || null === id || &quot;&quot; === id) {
+        // 注册
+        $.ajax({
+            type : &quot;post&quot;,
+            async : false, // 转为同步请求 + result变量
+            url : &quot;&lt;%=request.getContextPath()%&gt;/validateLogin&quot;,
+            data : {
+                &quot;username&quot; : name
+            },
+            success : function(data) {
+                console.log(&quot;data:&quot; + data + &quot;, type:&quot; + (typeof data));
+                // 与 登陆逻辑正好相反，false 用户不存在, true 用户存在（不能注册） 
+                if (data == false) {
+                    nameSpan.innerHTML = &quot;√&quot;.fontcolor(&quot;green&quot;);
+                    result = true;
+                } else {
+                    nameSpan.innerHTML = &quot;用户名已存在&quot;.fontcolor(&quot;red&quot;);
+                    result = false;
+                }
+            },
+            dataType: &quot;json&quot;,
+        });
+    } else {
+        // id 不为空：修改操作
+        console.log(&quot;修改操作&quot;);
+        result = false;
+    }
+    return result;
+}</code></pre>
+<h4 id="4-3-解决方案-2：使用全局变量-写-get-set-方法"><a href="#4-3-解决方案-2：使用全局变量-写-get-set-方法" class="headerlink" title="4.3 解决方案 2：使用全局变量 + 写 get/set 方法"></a>4.3 解决方案 2：使用全局变量 + 写 get/set 方法</h4><pre><code class="js">// 方式2：使用自定义 get/set 方法确保操作的是永远是同一个 flag (即需要正确赋值的返回值)
+var flag = false;
+function getFlag() {
+    return flag;
+}
+function setFlag(b) {
+    flag = b;
+}
+function checkStuName2() {
+    // 如果 id 标签不存在，id === undefined，且不能直接操作 .value
+    var id = document.getElementsByName(&quot;stuId&quot;)[0];
+    var name = document.getElementsByName(&quot;username&quot;)[0].value;
+    var nameSpan = document.getElementById(&quot;nameSpan&quot;);
+
+    console.log(&quot;id:&quot; + id + &quot;, &quot; + &quot;name:&quot; + name);
+    if (null === name || &quot;&quot; === name) {
+        nameSpan.innerHTML = &quot;* 用户名不能为空&quot;.fontcolor(&quot;red&quot;);
+        return false;
+    }
+
+    if (undefined === id || null === id || &quot;&quot; === id) {
+        // 注册
+        $.post(&quot;&lt;%=request.getContextPath()%&gt;/validateLogin&quot;, {
+            &quot;username&quot;: name
+        }, function(data) {
+            console.log(&quot;data:&quot; + data + &quot;, type:&quot; + (typeof data));
+            // 与 登陆逻辑正好相反，true 用户存在 false 用户不存在
+            if (data == true) {
+                nameSpan.innerHTML = &quot;用户名已存在&quot;.fontcolor(&quot;red&quot;);
+                setFlag(false);
+            } else {
+                nameSpan.innerHTML = &quot;√&quot;.fontcolor(&quot;green&quot;);
+                setFlag(true);
+            }
+        }, &quot;json&quot;);
+    } else {
+        // 修改
+        console.log(&quot;修改操作&quot;);
+    }
+    console.log(&quot;最终flag=&quot; + getFlag());
+    return getFlag();
+}</code></pre>
+<h4 id="4-4-demo-源码"><a href="#4-4-demo-源码" class="headerlink" title="4.4 demo 源码"></a>4.4 demo 源码</h4><pre><code class="html">&lt;%@ page language=&quot;java&quot; contentType=&quot;text/html; charset=UTF-8&quot;
+    pageEncoding=&quot;UTF-8&quot;%&gt;
+&lt;%@ taglib uri=&quot;http://java.sun.com/jsp/jstl/core&quot;  prefix=&quot;c&quot;%&gt;
+&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+    &lt;head&gt;
+        &lt;meta charset=&quot;UTF-8&quot;&gt;
+        &lt;title&gt;注册/修改页&lt;/title&gt;
+        &lt;script src=&quot;${pageContext.request.contextPath}/js/jquery-3.5.1.min.js&quot;&gt;&lt;/script&gt;
+        &lt;script type=&quot;text/javascript&quot;&gt;
+            function show(file) {
+                var reader = new FileReader(); // 实例化一个FileReader对象，用于读取文件
+                var img = document.getElementById(&#39;img&#39;); // 获取要显示图片的标签
+                //读取File对象的数据
+                reader.onload = function(evt) {
+                    img.width = &quot;50&quot;;
+                    img.height = &quot;50&quot;;
+                    img.src = evt.target.result;
+                }
+                reader.readAsDataURL(file.files[0]);
+            }
+
+            // 方式1：将 ajax 作为临时同步的校验事件，可正确赋值需要的返回值 result
+            function checkStuName1() {
+                // 如果 id 标签不存在，id === undefined，且不能直接操作 .value
+                var id = document.getElementsByName(&quot;stuId&quot;)[0];
+                var name = document.getElementsByName(&quot;username&quot;)[0].value;
+                var nameSpan = document.getElementById(&quot;nameSpan&quot;);
+
+                console.log(&quot;id:&quot; + id + &quot;, &quot; + &quot;name:&quot; + name);
+                if (null === name || &quot;&quot; === name) {
+                    nameSpan.innerHTML = &quot;* 用户名不能为空&quot;.fontcolor(&quot;red&quot;);
+                    return false;
+                }
+
+                var result;
+                if (undefined === id || null === id || &quot;&quot; === id) {
+                    // 注册
+                    $.ajax({
+                        type : &quot;post&quot;,
+                        async : false, // 转为同步请求 + result变量
+                        url : &quot;&lt;%=request.getContextPath()%&gt;/validateLogin&quot;,
+                        data : {
+                            &quot;username&quot; : name
+                        },
+                        success : function(data) {
+                            console.log(&quot;data:&quot; + data + &quot;, type:&quot; + (typeof data));
+                            // 与 登陆逻辑正好相反，false 用户不存在, true 用户存在（不能注册） 
+                            if (data == false) {
+                                nameSpan.innerHTML = &quot;√&quot;.fontcolor(&quot;green&quot;);
+                                result = true;
+                            } else {
+                                nameSpan.innerHTML = &quot;用户名已存在&quot;.fontcolor(&quot;red&quot;);
+                                result = false;
+                            }
+                        },
+                        dataType: &quot;json&quot;,
+                    });
+                } else {
+                    // id 不为空：修改操作
+                    console.log(&quot;修改操作&quot;);
+                    result = false;
+                }
+                return result;
+            }
+
+            // 方式2：使用自定义 get/set 方法确保操作的是永远是同一个 flag (即需要正确赋值的返回值)
+            var flag = false;
+            function getFlag() {
+                return flag;
+            }
+            function setFlag(b) {
+                flag = b;
+            }
+            function checkStuName2() {
+                // 如果 id 标签不存在，id === undefined，且不能直接操作 .value
+                var id = document.getElementsByName(&quot;stuId&quot;)[0];
+                var name = document.getElementsByName(&quot;username&quot;)[0].value;
+                var nameSpan = document.getElementById(&quot;nameSpan&quot;);
+
+                console.log(&quot;id:&quot; + id + &quot;, &quot; + &quot;name:&quot; + name);
+                if (null === name || &quot;&quot; === name) {
+                    nameSpan.innerHTML = &quot;* 用户名不能为空&quot;.fontcolor(&quot;red&quot;);
+                    return false;
+                }
+
+                if (undefined === id || null === id || &quot;&quot; === id) {
+                    // 注册
+                    $.post(&quot;&lt;%=request.getContextPath()%&gt;/validateLogin&quot;, {
+                        &quot;username&quot;: name
+                    }, function(data) {
+                        console.log(&quot;data:&quot; + data + &quot;, type:&quot; + (typeof data));
+                        // 与 登陆逻辑正好相反，true 用户存在 false 用户不存在
+                        if (data == true) {
+                            nameSpan.innerHTML = &quot;用户名已存在&quot;.fontcolor(&quot;red&quot;);
+                            setFlag(false);
+                        } else {
+                            nameSpan.innerHTML = &quot;√&quot;.fontcolor(&quot;green&quot;);
+                            setFlag(true);
+                        }
+                    }, &quot;json&quot;);
+                } else {
+                    // 修改
+                    console.log(&quot;修改操作&quot;);
+                }
+                console.log(&quot;最终flag=&quot; + getFlag());
+                return getFlag();
+            }
+
+            // 校验返回
+            function checkAll() {
+                //return checkStuName1();
+                return checkStuName2();
+            }
+        &lt;/script&gt;
+    &lt;/head&gt;
+    &lt;body&gt;
+        &lt;form action=&quot;&lt;%=request.getContextPath()%&gt;/addOrUpdate&quot; method=&quot;post&quot; enctype=&quot;multipart/form-data&quot; onsubmit=&quot;return checkAll()&quot;&gt;
+            &lt;table&gt;
+                &lt;c:if test=&quot;${null != stuData.stuId}&quot;&gt;
+                    &lt;tr&gt;
+                        &lt;td&gt;编号&lt;/td&gt;
+                        &lt;td&gt;
+                            &lt;input type=&quot;text&quot; name=&quot;stuId&quot; readonly=&quot;readonly&quot; value=&quot;${stuData.stuId}&quot;&gt;
+                        &lt;/td&gt;
+                        &lt;td&gt;&lt;/td&gt;
+                    &lt;/tr&gt;
+                &lt;/c:if&gt;
+
+                &lt;tr&gt;
+                    &lt;td&gt;姓名&lt;/td&gt;
+                    &lt;td&gt;
+                        &lt;input type=&quot;text&quot; name=&quot;username&quot; value=&quot;${stuData.stuName}&quot; onblur=&quot;checkStuName2()&quot;&gt;
+                    &lt;/td&gt;
+                    &lt;td&gt;&lt;span id=&quot;nameSpan&quot;&gt;&lt;/span&gt;&lt;/td&gt;
+                &lt;/tr&gt;
+                &lt;tr&gt;
+                    &lt;td&gt;年龄&lt;/td&gt;
+                    &lt;td&gt;
+                        &lt;input type=&quot;text&quot; name=&quot;age&quot; value=&quot;${stuData.stuAge}&quot;&gt;
+                    &lt;/td&gt;
+                    &lt;td&gt;&lt;/td&gt;
+                &lt;/tr&gt;
+                &lt;tr&gt;
+                    &lt;td&gt;爱好&lt;/td&gt;
+                    &lt;td&gt;
+                        &lt;input type=&quot;text&quot; name=&quot;hobby&quot; value=&quot;${stuData.stuHobby}&quot;&gt;
+                    &lt;/td&gt;
+                    &lt;td&gt;&lt;/td&gt;
+                &lt;/tr&gt;
+                &lt;tr&gt;
+                    &lt;td&gt;班级&lt;/td&gt;
+                    &lt;td&gt;
+                        &lt;select name=&quot;grade&quot;&gt;
+                            &lt;option value=&quot;1&quot; &lt;c:if test=&quot;${stuData.gId==1}&quot;&gt;selected&lt;/c:if&gt;&gt;zz2001&lt;/option&gt;
+                            &lt;option value=&quot;2&quot; &lt;c:if test=&quot;${stuData.gId==2}&quot;&gt;selected&lt;/c:if&gt;&gt;zz2002&lt;/option&gt;
+                            &lt;option value=&quot;3&quot; &lt;c:if test=&quot;${stuData.gId==3}&quot;&gt;selected&lt;/c:if&gt;&gt;zz2003&lt;/option&gt;
+                            &lt;option value=&quot;4&quot; &lt;c:if test=&quot;${stuData.gId==4}&quot;&gt;selected&lt;/c:if&gt;&gt;zz2004&lt;/option&gt;
+                            &lt;option value=&quot;5&quot; &lt;c:if test=&quot;${stuData.gId==5}&quot;&gt;selected&lt;/c:if&gt;&gt;zz2005&lt;/option&gt;
+                        &lt;/select&gt;
+                    &lt;/td&gt;
+                    &lt;td&gt;&lt;/td&gt;
+                &lt;/tr&gt;
+                &lt;tr&gt;
+                    &lt;td&gt;密码&lt;/td&gt;
+                    &lt;td&gt;&lt;input type=&quot;password&quot; name=&quot;password&quot; value=&quot;${stuData.pwd}&quot;&gt;&lt;/td&gt;
+                    &lt;td&gt;&lt;/td&gt;
+                &lt;/tr&gt;
+                &lt;tr&gt;
+                    &lt;td&gt;生日&lt;/td&gt;
+                    &lt;td&gt;&lt;input type=&quot;date&quot; name=&quot;birthday&quot; value=&quot;${stuData.stuBirthday}&quot;&gt;&lt;/td&gt;
+                    &lt;td&gt;&lt;/td&gt;
+                &lt;/tr&gt;
+                &lt;tr&gt;
+                    &lt;td&gt;头像&lt;/td&gt;
+                    &lt;td&gt;
+                        &lt;c:choose&gt;
+                            &lt;c:when test=&quot;${not empty stuData.imgPath}&quot;&gt;
+                                &lt;img id=&quot;img&quot; height=&quot;50px&quot; width=&quot;50px&quot; alt=&quot;有头像&quot; src=&quot;http://localhost:8081/uploadfile/images/${stuData.imgPath}&quot;&gt;
+                            &lt;/c:when&gt;
+                            &lt;c:otherwise&gt;
+                                &lt;img id=&quot;img&quot; height=&quot;50px&quot; width=&quot;50px&quot; alt=&quot;有头像&quot; src=&quot;&lt;%=request.getContextPath()%&gt;/img/default.png&quot;&gt;
+                            &lt;/c:otherwise&gt;
+                        &lt;/c:choose&gt;
+                    &lt;/td&gt;
+                    &lt;td&gt;
+                        &lt;input type=&quot;file&quot; name=&quot;imgPath&quot; onchange=&quot;show(this)&quot;&gt;
+                    &lt;/td&gt;
+                &lt;/tr&gt;
+            &lt;/table&gt;
+            &lt;input type=&quot;submit&quot; value=&quot;注册&quot;&gt;
+            &lt;input type=&quot;reset&quot; value=&quot;重置&quot;&gt;
+        &lt;/form&gt;
+
+    &lt;/body&gt;
+&lt;/html&gt;</code></pre>
 
 </div>
 
