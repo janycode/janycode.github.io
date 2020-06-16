@@ -9,7 +9,7 @@
 	
 	<title>
 	
-		05_数据库/02_MyBatis/05-MyBatis 注解操作和级联查询 | 
+		05_数据库/02_MyBatis/04-MyBatis 动态SQL+缓存 | 
 	 
 	Jerry&#39;s Notes
 	</title>
@@ -1975,8 +1975,8 @@
 							</ul>
 			
 							<ul>
-								<li class="file">
-									<a href="/2020/06/15/05_%E6%95%B0%E6%8D%AE%E5%BA%93/02_MyBatis/04-MyBatis%20%E5%8A%A8%E6%80%81SQL+%E7%BC%93%E5%AD%98/">
+								<li class="file active">
+									<a href="/2017/06/18/05_%E6%95%B0%E6%8D%AE%E5%BA%93/02_MyBatis/04-MyBatis%20%E5%8A%A8%E6%80%81SQL+%E7%BC%93%E5%AD%98/">
 										04-MyBatis 动态SQL+缓存
 									</a>
 								</li>
@@ -1984,8 +1984,8 @@
 							</ul>
 			
 							<ul>
-								<li class="file active">
-									<a href="/2020/06/15/05_%E6%95%B0%E6%8D%AE%E5%BA%93/02_MyBatis/05-MyBatis%20%E6%B3%A8%E8%A7%A3%E6%93%8D%E4%BD%9C%E5%92%8C%E7%BA%A7%E8%81%94%E6%9F%A5%E8%AF%A2/">
+								<li class="file">
+									<a href="/2017/06/18/05_%E6%95%B0%E6%8D%AE%E5%BA%93/02_MyBatis/05-MyBatis%20%E6%B3%A8%E8%A7%A3%E6%93%8D%E4%BD%9C%E5%92%8C%E7%BA%A7%E8%81%94%E6%9F%A5%E8%AF%A2/">
 										05-MyBatis 注解操作和级联查询
 									</a>
 								</li>
@@ -1994,7 +1994,7 @@
 			
 							<ul>
 								<li class="file">
-									<a href="/2020/06/15/05_%E6%95%B0%E6%8D%AE%E5%BA%93/02_MyBatis/06-MyBatis%20Druid%E9%98%BF%E9%87%8C%E8%BF%9E%E6%8E%A5%E6%B1%A0/">
+									<a href="/2017/06/18/05_%E6%95%B0%E6%8D%AE%E5%BA%93/02_MyBatis/06-MyBatis%20Druid%E9%98%BF%E9%87%8C%E8%BF%9E%E6%8E%A5%E6%B1%A0/">
 										06-MyBatis Druid阿里连接池
 									</a>
 								</li>
@@ -2003,7 +2003,7 @@
 			
 							<ul>
 								<li class="file">
-									<a href="/2020/06/15/05_%E6%95%B0%E6%8D%AE%E5%BA%93/02_MyBatis/07-MyBatis%20PageHelper%E5%88%86%E9%A1%B5%E6%8F%92%E4%BB%B6/">
+									<a href="/2017/06/18/05_%E6%95%B0%E6%8D%AE%E5%BA%93/02_MyBatis/07-MyBatis%20PageHelper%E5%88%86%E9%A1%B5%E6%8F%92%E4%BB%B6/">
 										07-MyBatis PageHelper分页插件
 									</a>
 								</li>
@@ -2593,132 +2593,319 @@
 	<div id="content">
 		<h1 id="article-title">
 
-	05-MyBatis 注解操作和级联查询
+	04-MyBatis 动态SQL+缓存
 </h1>
 <div class="article-meta">
     
 		<div id="article-categories">
             
+                
+                    <span>
+                        <i class="fa fa-folder" aria-hidden="true"></i>
+                        <a href="/categories/05-数据库/">05_数据库</a>
+						
+							>
+						
+                    </span>
+                
+            
+                
+                    <span>
+                        <i class="fa fa-folder" aria-hidden="true"></i>
+                        <a href="/categories/05-数据库/02-MyBatis/">02_MyBatis</a>
+						
+                    </span>
+                
+            
 		</div>
     
 	<span>作者:Jerry</span>
-	<span>时间:2020-06-15 17:48:32</span>
+	<span>时间:2017-06-18 08:26:24</span>
 	
 		<span>
-			访问:<span id="/2020/06/15/05_%E6%95%B0%E6%8D%AE%E5%BA%93/02_MyBatis/05-MyBatis%20%E6%B3%A8%E8%A7%A3%E6%93%8D%E4%BD%9C%E5%92%8C%E7%BA%A7%E8%81%94%E6%9F%A5%E8%AF%A2/" class="leancloud_visitors" data-flag-title="05_数据库/02_MyBatis/05-MyBatis 注解操作和级联查询"></span>
+			访问:<span id="/2017/06/18/05_%E6%95%B0%E6%8D%AE%E5%BA%93/02_MyBatis/04-MyBatis%20%E5%8A%A8%E6%80%81SQL+%E7%BC%93%E5%AD%98/" class="leancloud_visitors" data-flag-title="05_数据库/02_MyBatis/04-MyBatis 动态SQL+缓存"></span>
 		</span>
 	
 </div>
 
 <div id="article-content">
 	<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/001.png" alt="001"></p>
-<h3 id="1-注解操作"><a href="#1-注解操作" class="headerlink" title="1. 注解操作"></a>1. 注解操作</h3><p>通过在接口中直接添加 MyBatis 注解（只需要注解即可），完成CRUD。</p>
-<ul>
-<li>注意：接口注解定义完毕后，需将接口全限定名注册到 mybatis-config.xml 的<code>&lt;mappers&gt;</code>中。</li>
-<li>经验：注解模式属于硬编码到 .java 文件中，失去了使用配置文件外部修改的优势，可结合需求选用。</li>
+<h3 id="1-动态SQL【★】"><a href="#1-动态SQL【★】" class="headerlink" title="1. 动态SQL【★】"></a>1. 动态SQL【★】</h3><p>MyBatis的映射文件中支持在基础SQL上添加一些逻辑操作，并动态拼接成完整的SQL之后再执行，以达到SQL复用、简化编程的效果。</p>
+<h4 id="1-1-lt-sql-gt"><a href="#1-1-lt-sql-gt" class="headerlink" title="1.1 &lt; sql &gt;"></a>1.1 &lt; sql &gt;</h4><ul>
+<li>定义公共的 sql 片段</li>
 </ul>
-<pre><code class="xml">&lt;mappers&gt;
-    &lt;mapper class=&quot;com.mybatis.part1.annotations.UserMapper&quot; /&gt; &lt;!-- class=&quot;接口全限定名&quot;--&gt;
-&lt;/mappers&gt;</code></pre>
-<h4 id="1-1-查询"><a href="#1-1-查询" class="headerlink" title="1.1 查询"></a>1.1 查询</h4><pre><code class="java">public interface UserMapper {
-    @Select(&quot;SELECT * FROM t_users WHERE id = #{id}&quot;)
-    public User selectUserById(Integer id);
+<pre><code class="xml">&lt;mapper namespace=&quot;com.mybatis.part2.dynamic.BookDao&quot;&gt;
+    &lt;sql id=&quot;BOOKS_FIELD&quot;&gt; &lt;!-- 定义公共的 SQL 片段 --&gt;
+        SELECT id,name,author,publish,sort
+    &lt;/sql&gt;
 
-    @Select(&quot;SELECT * FROM t_users WHERE id = #{id} AND password = #{pwd}&quot;)
-    public User selectUserByIdAndPwd_annotation(@Param(&quot;id&quot;) Integer id, @Param(&quot;pwd&quot;) String password);
-}</code></pre>
-<h4 id="1-2-删除"><a href="#1-2-删除" class="headerlink" title="1.2 删除"></a>1.2 删除</h4><pre><code class="java">@Delete(value = &quot;DELETE FROM t_users WHERE id = #{id}&quot;)
-public int deleteUser(Integer id);</code></pre>
-<h4 id="1-3-修改"><a href="#1-3-修改" class="headerlink" title="1.3 修改"></a>1.3 修改</h4><pre><code class="java">@Update(&quot;UPDATE t_users SET name = #{name} , password = #{password} , salary = #{salary} , birthday = #{birthday} WHERE id = #{id}&quot;)
-public int updateUser(User user);</code></pre>
-<h4 id="1-4-插入"><a href="#1-4-插入" class="headerlink" title="1.4 插入"></a>1.4 插入</h4><pre><code class="java">@Insert(&quot;INSERT INTO t_users VALUES(#{id},#{name},#{password},#{salary},#{birthday},null)&quot;)
-public int insertUser(User user);
-
-@Options(useGeneratedKeys = true , keyProperty = &quot;id&quot;) // 自增key，主键为id
-@Insert(&quot;INSERT INTO t_users VALUES(#{id},#{name},#{password},#{salary},#{birthday},null)&quot;)
-public int insertUserGeneratedKeys(User user);</code></pre>
-<h3 id="2-符号的应用场景"><a href="#2-符号的应用场景" class="headerlink" title="2. $符号的应用场景"></a>2. $符号的应用场景</h3><p><code>${attribute}</code> 属于字符串拼接SQL，而非预编译占位符，会有注入攻击问题，不建议在常规SQL中使用，常用于可解决动态生降序问题。</p>
-<h4 id="2-1-符号参数绑定"><a href="#2-1-符号参数绑定" class="headerlink" title="2.1 $符号参数绑定"></a>2.1 $符号参数绑定</h4><pre><code class="java">public List&lt;User&gt; selectAllUsers1(User user); // ${name} ${id} 可获取user中的属性值
-public List&lt;User&gt; selectAllUsers2(@Param(&quot;rule&quot;) String rule); //必须使用@Param否则会作为属性解析</code></pre>
-<pre><code class="xml">&lt;select id=&quot;selectAllUsers1&quot; resultType=&quot;user&quot;&gt;
-    SELECT * FROM t_users 
-    WHERE name = &#39;${name}&#39; or id = ${id} &lt;!-- 拼接name和id，如果是字符类型需要用单引号：&#39;${name}&#39; --&gt;
-&lt;/select&gt;
-&lt;select id=&quot;selectAllUsers2&quot; resultType=&quot;user&quot;&gt;
-    SELECT * FROM t_users 
-      ORDER BY id ${rule} &lt;!-- 拼接 asc | desc --&gt;
+    &lt;select id=&quot;selectBookByCondition&quot; resultType=&quot;com.mybatis.part2.dynamic.Book&quot;&gt;
+        &lt;include refid=&quot;BOOKS_FIELD&quot; /&gt; &lt;!-- 通过ID引用SQL片段 --&gt;
+        FROM t_books
+    &lt;/select&gt;
+&lt;/mapper&gt;</code></pre>
+<h4 id="1-2-lt-where-gt"><a href="#1-2-lt-where-gt" class="headerlink" title="1.2 &lt; where &gt;"></a>1.2 &lt; where &gt;</h4><pre><code class="xml">&lt;select id=&quot;selectBookByCondition&quot; resultType=&quot;com.mybatis.part2.dynamic.Book&quot;&gt;
+    SELECT id , name , author , publish , sort
+    FROM t_books
+    &lt;where&gt; 
+        &lt;if test=&quot;id != null&quot;&gt; &lt;!-- WHERE，会自动忽略前后缀（如：and | or） --&gt;
+            id = #{id}
+        &lt;/if&gt;
+        &lt;if test=&quot;name != null&quot;&gt;
+            and name = #{name}
+        &lt;/if&gt;
+        &lt;if test=&quot;author != null&quot;&gt;
+            and author = #{author}
+        &lt;/if&gt;
+        &lt;if test=&quot;publish != null&quot;&gt;
+            and publish = #{publish}
+        &lt;/if&gt;
+        &lt;if test=&quot;sort != null&quot;&gt;
+            and sort = #{sort}
+        &lt;/if&gt;
+    &lt;/where&gt;
 &lt;/select&gt;</code></pre>
-<pre><code class="java">User user = new User(....);
-List&lt;User&gt; ulist1 = userDAO.selectAllUsers1(user); //调用时传入user对象
-List&lt;User&gt; ulist2 = userDao.selectAllUsers2(&quot;desc&quot;); //调用时传入asc | desc</code></pre>
-<h4 id="2-2-符号注入攻击"><a href="#2-2-符号注入攻击" class="headerlink" title="2.2 $符号注入攻击"></a>2.2 $符号注入攻击</h4><pre><code class="xml">&lt;select id=&quot;selectUsersByKeyword&quot; resultType=&quot;user&quot;&gt;
-    SELECT * FROM t_user
-      WHERE name = &#39;${name}&#39; &lt;!-- 会存在注入攻击  比如传入参数是 【String name = &quot;tom&#39; or &#39;1&#39;=&#39;1&quot;;】--&gt;
+<h4 id="1-3-lt-set-gt"><a href="#1-3-lt-set-gt" class="headerlink" title="1.3 &lt; set &gt;"></a>1.3 &lt; set &gt;</h4><pre><code class="xml">&lt;update id=&quot;updateBookByCondition&quot;&gt;
+    UPDATE t_books
+    &lt;set&gt;
+        &lt;if test=&quot;name != null&quot;&gt;
+            name = #{name} ,
+        &lt;/if&gt;
+        &lt;if test=&quot;author != null&quot;&gt;
+            author = #{author} ,
+        &lt;/if&gt;
+        &lt;if test=&quot;publish != null&quot;&gt;
+            publish = #{publish} ,
+        &lt;/if&gt;
+        &lt;if test=&quot;sort != null&quot;&gt; &lt;!-- 最后一个逗号需要省略 --&gt;
+            sort = #{sort}
+        &lt;/if&gt;
+    &lt;/set&gt;
+    WHERE id = #{id}
+&lt;/update&gt;</code></pre>
+<h4 id="1-4-lt-trim-gt"><a href="#1-4-lt-trim-gt" class="headerlink" title="1.4 &lt; trim &gt;"></a>1.4 &lt; trim &gt;</h4><p><code>&lt;trim prefix=&quot;&quot; suffix=&quot;&quot; prefixOverrides=&quot;&quot; suffixOverrides=&quot;&quot;&gt;</code> 代替 <code>&lt;where&gt;</code> 、<code>&lt;set&gt;</code></p>
+<ul>
+<li><strong>prefix</strong> 在trim标签内sql语句加上前缀，如 where、set</li>
+<li><strong>suffix</strong> 在trim标签内sql语句加上后缀，如插入时的 )</li>
+<li><strong>prefixOverrides</strong>，忽略前缀，需手动写前缀，如 and、or</li>
+<li><strong>suffixOverrides</strong>，忽略后缀，需手动写后缀，如 ,</li>
+</ul>
+<pre><code class="xml">&lt;select id=&quot;selectBookByCondition&quot; resultType=&quot;com.mybatis.day2.dynamic.Book&quot;&gt;
+    SELECT id,name,author,publish,sort FROM t_books
+    &lt;trim prefix=&quot;WHERE&quot; prefixOverrides=&quot;AND|OR&quot;&gt; &lt;!-- 增加WHERE前缀，自动忽略前缀 --&gt;
+        &lt;if test=&quot;id != null&quot;&gt;
+            and id = #{id}
+        &lt;/if&gt;
+        &lt;if test=&quot;name != null&quot;&gt;
+            and name = #{name}
+        &lt;/if&gt;
+        &lt;if test=&quot;author != null&quot;&gt;
+            and author = #{author}
+        &lt;/if&gt;
+        &lt;if test=&quot;publish != null&quot;&gt;
+            and publish = #{publish}
+        &lt;/if&gt;
+        &lt;if test=&quot;sort != null&quot;&gt;
+            and sort = #{sort}
+        &lt;/if&gt;
+    &lt;/trim&gt;
 &lt;/select&gt;</code></pre>
+<pre><code class="xml">&lt;update id=&quot;updateBookByCondition&quot;&gt;
+    UPDATE t_books
+    &lt;trim prefix=&quot;SET&quot; suffixOverrides=&quot;,&quot;&gt; &lt;!-- 增加SET前缀，自动忽略后缀 --&gt;
+        &lt;if test=&quot;name != null&quot;&gt;
+            name = #{name},
+        &lt;/if&gt;
+        &lt;if test=&quot;author != null&quot;&gt;
+            author = #{author},
+        &lt;/if&gt;
+        &lt;if test=&quot;publish != null&quot;&gt;
+            publish = #{publish},
+        &lt;/if&gt;
+        &lt;if test=&quot;sort != null&quot;&gt;
+            sort = #{sort},
+        &lt;/if&gt;
+    &lt;/trim&gt;
+    WHERE id = #{id}
+&lt;/update&gt;</code></pre>
+<pre><code class="xml">&lt;insert id=&quot;insertSelective&quot; parameterType=&quot;com.hph.entity.TeaEval&quot;&gt;
+    insert into tb_teaeval
+    &lt;trim prefix=&quot;(&quot; suffix=&quot;)&quot; suffixOverrides=&quot;,&quot;&gt;
+      &lt;if test=&quot;id != null&quot;&gt;
+        Id,
+      &lt;/if&gt;
+      &lt;if test=&quot;classname != null&quot;&gt;
+        className,
+      &lt;/if&gt;
+      &lt;if test=&quot;coursename != null&quot;&gt;
+        courseName,
+      &lt;/if&gt;
+      &lt;if test=&quot;teachername != null&quot;&gt;
+        teacherName,
+      &lt;/if&gt;
+      &lt;if test=&quot;teacherscore != null&quot;&gt;
+        teacherScore,
+      &lt;/if&gt;
+    &lt;/trim&gt;
+    &lt;trim prefix=&quot;values (&quot; suffix=&quot;)&quot; suffixOverrides=&quot;,&quot;&gt;
+      &lt;if test=&quot;id != null&quot;&gt;
+        #{id},
+      &lt;/if&gt;
+      &lt;if test=&quot;classname != null&quot;&gt;
+        #{classname},
+      &lt;/if&gt;
+      &lt;if test=&quot;coursename != null&quot;&gt;
+        #{coursename},
+      &lt;/if&gt;
+      &lt;if test=&quot;teachername != null&quot;&gt;
+        #{teachername},
+      &lt;/if&gt;
+      &lt;if test=&quot;teacherscore != null&quot;&gt;
+        #{teacherscore},
+      &lt;/if&gt;
+    &lt;/trim&gt;
+  &lt;/insert&gt;</code></pre>
+<h4 id="1-5-lt-foreach-gt"><a href="#1-5-lt-foreach-gt" class="headerlink" title="1.5 &lt; foreach &gt;"></a>1.5 &lt; foreach &gt;</h4><pre><code class="xml">&lt;delete id=&quot;deleteBookByIds&quot;&gt;
+    DELETE FROM t_books
+    WHERE id IN
+    &lt;foreach collection=&quot;list&quot; open=&quot;(&quot; separator=&quot;,&quot; close=&quot;)&quot;  item=&quot;id&quot; index=&quot;i&quot;&gt;
+        #{id}
+    &lt;/foreach&gt;
+&lt;/delete&gt;</code></pre>
 <table>
 <thead>
 <tr>
-<th align="center">注入攻击，拼接的内容，改变了原sql语义，被攻击！</th>
+<th align="center">参数</th>
+<th align="center">描述</th>
+<th align="center">取值</th>
 </tr>
 </thead>
 <tbody><tr>
-<td align="center"><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/012.png" alt="注入"></td>
+<td align="center">collection</td>
+<td align="center">容器类型</td>
+<td align="center">list、array、map</td>
+</tr>
+<tr>
+<td align="center">open</td>
+<td align="center">起始符</td>
+<td align="center">(</td>
+</tr>
+<tr>
+<td align="center">close</td>
+<td align="center">结束符</td>
+<td align="center">)</td>
+</tr>
+<tr>
+<td align="center">separator</td>
+<td align="center">分隔符</td>
+<td align="center">,</td>
+</tr>
+<tr>
+<td align="center">index</td>
+<td align="center">下标号</td>
+<td align="center">从0开始，依次递增</td>
+</tr>
+<tr>
+<td align="center">item</td>
+<td align="center">当前项</td>
+<td align="center">任意名称（循环中通过 #{任意名称} 表达式访问）</td>
 </tr>
 </tbody></table>
-<h3 id="3-处理关联关系-嵌套查询"><a href="#3-处理关联关系-嵌套查询" class="headerlink" title="3. 处理关联关系-嵌套查询"></a>3. 处理关联关系-嵌套查询</h3><p>思路：查询部门信息时，及联查询所属的员工信息。</p>
+<h3 id="2-缓存（Cache）【★】"><a href="#2-缓存（Cache）【★】" class="headerlink" title="2. 缓存（Cache）【★】"></a>2. 缓存（Cache）【★】</h3><p>内存中的一块存储空间，服务于某个应用程序，旨在将频繁读取的数据临时保存在内存中，便于二次快速访问。</p>
+<p>如 redis 缓存服务器，每秒读写 10w 数据，效率比较高。</p>
+<table>
+<thead>
+<tr>
+<th align="left"><code>无缓存</code><br />用户在访问相同数据时，需要发起多次对数据库的直接访问，产生大量IO、读写硬盘操作，效率低下</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left"><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/image-20200116145234073.png" alt="012"></td>
+</tr>
+</tbody></table>
+<table>
+<thead>
+<tr>
+<th align="left"><code>有缓存</code><br />首次访问时，查询数据库，将数据存储到缓存中；<br />再次访问时，直接访问缓存，减少IO、硬盘读写次数、提高效率</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left"><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/013.png" alt="013"></td>
+</tr>
+</tbody></table>
+<h4 id="2-1-一级缓存"><a href="#2-1-一级缓存" class="headerlink" title="2.1 一级缓存"></a>2.1 一级缓存</h4><p><code>SqlSession级别的缓存</code>，同一个SqlSession的发起多次同构查询，会将数据保存在一级缓存中。</p>
 <ul>
-<li>DepartmentDao接口中定义selectDepartmentById，并实现Mapper。</li>
-<li>EmployeeDao接口中定义selectEmployeesByDeptId，并实现Mapper。</li>
-<li>当selectDepartmentById被执行时，通过<code>&lt;collection&gt;</code>调用selectEmployeesByDeptId方法，并传入条件参数。</li>
+<li>一旦执行了 commit(), close(), clearCache()等方法，一级缓存将清空。</li>
 </ul>
-<h4 id="3-1-主表查询"><a href="#3-1-主表查询" class="headerlink" title="3.1 主表查询"></a>3.1 主表查询</h4><p>定义selectEmployeesByDeptId，并书写Mapper，实现根据部门ID查询员工信息。</p>
-<pre><code class="java">public interface EmployeeDao {
-    /**
-     * 根据部门编号查询员工信息
-     * @param did 部门编号
-     * @return 该部门中的所有员工
-     */
-    public List&lt;Employee&gt; selectEmployeeByDeptId(@Param(&quot;did&quot;) String did);
-}</code></pre>
-<pre><code class="xml">&lt;mapper namespace=&quot;com.mybatis.part2.one2many.EmployeeDao&quot;&gt;
-    &lt;!-- 根据部门编号查询所有员工 --&gt;
-    &lt;select id=&quot;selectEmployeeById&quot; resultType=&quot;employee&quot; &gt;
-        SELECT id,name,salary,dept_id 
-          FROM t_employees 
-          WHERE dept_id = #{did}
-    &lt;/select&gt;
-&lt;/mapper&gt;</code></pre>
-<h4 id="3-2-及联调用"><a href="#3-2-及联调用" class="headerlink" title="3.2 及联调用"></a>3.2 及联调用</h4><p>定义selectDepartmentById，并书写Mapper，实现根据部门ID查询部门信息，并及联查询该部门员工信息。</p>
-<pre><code class="java">public interface DepartmentDao {
-    /**
-     * 查询部门信息
-     * @param id
-     * @return
-     */
-    public Department selectDepartmentById(@Param(&quot;id&quot;) String id);
-}</code></pre>
-<pre><code class="xml">&lt;mapper namespace=&quot;com.mybatis.part2.one2many.DepartmentDao&quot;&gt;
-    &lt;resultMap id=&quot;departmentResultMap&quot; type=&quot;department&quot;&gt;
-        &lt;id property=&quot;id&quot; column=&quot;id&quot; /&gt;
-        &lt;result property=&quot;name&quot; column=&quot;name&quot; /&gt;
-        &lt;result property=&quot;location&quot; column=&quot;location&quot; /&gt;
-         &lt;!-- column=&quot;传入目标方法的条件参数&quot;  select=&quot;及联调用的查询目标&quot;--&gt;
-        &lt;collection property=&quot;emps&quot; ofType=&quot;Employee&quot; column=&quot;id&quot; 
-                    select=&quot;com.mybatis.part2.one2many.EmployeeDao.selectEmployeeByDeptId&quot; /&gt;
-    &lt;/resultMap&gt;
-    &lt;select id=&quot;selectAllDepartments&quot; resultMap=&quot;departmentResultMap&quot;&gt;
-        SELECT id , name , location
-        FROM t_departments
-        WHERE id = #{id}
-    &lt;/select&gt;
-&lt;/mapper&gt;</code></pre>
-<h4 id="3-3-延迟加载-懒加载"><a href="#3-3-延迟加载-懒加载" class="headerlink" title="3.3 延迟加载-懒加载"></a>3.3 延迟加载-懒加载</h4><p>mybatis-config.xml 中开启延迟加载。</p>
-<pre><code class="xml">&lt;settings&gt;
-    &lt;setting name=&quot;lazyLoadingEnabled&quot; value=&quot;true&quot;/&gt; &lt;!-- 开启延迟加载（默认false） --&gt;
-&lt;/settings&gt;</code></pre>
 <blockquote>
-<p>注意：</p>
-<p>开启延迟加载后，如果不使用及联数据，则不会触发及联查询操作，有利于加快查询速度、节省内存资源。</p>
+<p>注意：无需任何配置，默认开启一级缓存。</p>
+</blockquote>
+<h4 id="2-2-二级缓存"><a href="#2-2-二级缓存" class="headerlink" title="2.2 二级缓存"></a>2.2 二级缓存</h4><p><code>SqlSessionFactory级别的缓存</code>，同一个 SqlSessionFactory 构建的 SqlSession 发起的多次同构查询，会将数据保存在二级缓存中。</p>
+<blockquote>
+<p>注意：在 sqlSession.commit() 或者 sqlSession.close() 之后生效。</p>
+</blockquote>
+<h5 id="2-2-1-开启全局缓存-二级缓存"><a href="#2-2-1-开启全局缓存-二级缓存" class="headerlink" title="2.2.1 开启全局缓存(二级缓存)"></a>2.2.1 开启全局缓存(二级缓存)</h5><blockquote>
+<p><code>&lt;settings&gt;</code>是MyBatis中极为重要的调整设置，他们会改变MyBatis的运行行为，其他详细配置可参考官方文档。</p>
+</blockquote>
+<pre><code class="xml">&lt;configuration&gt;
+    &lt;properties .../&gt;
+
+      &lt;!-- 注意书写位置 --&gt;
+    &lt;settings&gt;
+        &lt;setting name=&quot;cacheEnabled&quot; value=&quot;true&quot;/&gt; &lt;!-- mybaits-config.xml中开启全局缓存（默认开启） --&gt;
+    &lt;/settings&gt;
+
+      &lt;typeAliases&gt;&lt;/typeAliases&gt;
+&lt;/configuration&gt;</code></pre>
+<h5 id="2-2-2-指定Mapper缓存"><a href="#2-2-2-指定Mapper缓存" class="headerlink" title="2.2.2 指定Mapper缓存"></a>2.2.2 指定Mapper缓存</h5><pre><code class="xml">&lt;mapper namespace=&quot;com.mybatis.part2.cache.BookDao&quot;&gt;
+    &lt;cache /&gt; &lt;!-- 指定全局缓存 --&gt;
+
+    &lt;select id=&quot;selectBookByCondition&quot; resultType=&quot;com.mybatis.part2.cache.Book&quot;&gt;
+        SELECT * FROM t_books
+    &lt;/select&gt;
+&lt;/mapper&gt;</code></pre>
+<pre><code class="java">@Test
+public void testMapperCache(){
+      SqlSession sqlSession1 = MyBatisUtils.getSession();
+      BookDao bookDao1 = sqlSession1.getMapper(BookDao.class);
+      bookDao1.selectBookByCondition(new Book());
+      sqlSession1.close(); //必须关闭SqlSession才可缓存数据
+
+      /* -------------------- */
+
+      SqlSession sqlSession2 = MyBatisUtils.getSession();
+      BookDao bookDao2 = sqlSession2.getMapper(BookDao.class);
+      bookDao2.selectBookByCondition(new Book());
+      sqlSession2.close(); //缓存击中
+}</code></pre>
+<h5 id="2-2-3-缓存清空并重新缓存"><a href="#2-2-3-缓存清空并重新缓存" class="headerlink" title="2.2.3 缓存清空并重新缓存"></a>2.2.3 缓存清空并重新缓存</h5><pre><code class="java">@Test
+public void testMapperCache(){
+      SqlSession sqlSession1 = MyBatisUtils.getSession();
+      BookDao bookDao1 = sqlSession1.getMapper(BookDao.class);
+      bookDao1.selectBookByCondition(new Book());
+      sqlSession1.close(); //必须关闭SqlSession才可缓存数据
+
+      //--------------------
+
+    SqlSession sqlSession3 = MyBatisUtils.getSession();
+    BookDao bookDao3 = sqlSession3.getMapper(BookDao.class);
+    bookDao3.deleteBookById(102);
+    sqlSession3.commit(); //DML成功，数据发生变化，缓存清空
+    sqlSession3.close();
+
+      //--------------------
+
+      SqlSession sqlSession2 = MyBatisUtils.getSession();
+      BookDao bookDao2 = sqlSession2.getMapper(BookDao.class);
+      bookDao2.selectBookByCondition(new Book());
+      sqlSession2.close(); //缓存未击中，重新查询数据库、重新缓存
+}</code></pre>
+<blockquote>
+<p>Cache Hit Ratio [xxx.xxx.xxx]: <strong>X.X</strong>  缓存击中比例：</p>
+<p><code>0.0</code> ： 0/1，0次缓存击中（调用1次sql语句，没有使用到缓存）；</p>
+<p><code>0.5</code> ： 1/2，1次缓存击中（调用1次sql语句，使用1次缓存数据）；</p>
+<p><code>0.666...</code> ： 2/3，2次缓存击中（调用1次sql语句，使用到缓存2次）；</p>
+<p>以此类推…</p>
 </blockquote>
 
 </div>
@@ -2727,16 +2914,16 @@ List&lt;User&gt; ulist2 = userDao.selectAllUsers2(&quot;desc&quot;); //调用时
     <div class="post-guide">
         <div class="item left">
             
-              <a href="/2020/06/15/05_%E6%95%B0%E6%8D%AE%E5%BA%93/02_MyBatis/07-MyBatis%20PageHelper%E5%88%86%E9%A1%B5%E6%8F%92%E4%BB%B6/">
+              <a href="/2017/06/18/05_%E6%95%B0%E6%8D%AE%E5%BA%93/02_MyBatis/06-MyBatis%20Druid%E9%98%BF%E9%87%8C%E8%BF%9E%E6%8E%A5%E6%B1%A0/">
                   <i class="fa fa-angle-left" aria-hidden="true"></i>
-                  07-MyBatis PageHelper分页插件
+                  06-MyBatis Druid阿里连接池
               </a>
             
         </div>
         <div class="item right">
             
-              <a href="/2020/06/15/05_%E6%95%B0%E6%8D%AE%E5%BA%93/02_MyBatis/06-MyBatis%20Druid%E9%98%BF%E9%87%8C%E8%BF%9E%E6%8E%A5%E6%B1%A0/">
-                06-MyBatis Druid阿里连接池
+              <a href="/2017/06/18/05_%E6%95%B0%E6%8D%AE%E5%BA%93/02_MyBatis/05-MyBatis%20%E6%B3%A8%E8%A7%A3%E6%93%8D%E4%BD%9C%E5%92%8C%E7%BA%A7%E8%81%94%E6%9F%A5%E8%AF%A2/">
+                05-MyBatis 注解操作和级联查询
                 <i class="fa fa-angle-right" aria-hidden="true"></i>
               </a>
             
@@ -2799,7 +2986,6 @@ List&lt;User&gt; ulist2 = userDao.selectAllUsers2(&quot;desc&quot;); //调用时
 	
 </script>
 
-<script src="https://cdn.jsdelivr.net/gh/Sanarous/files@1.151/js/clicklove.js"></script>
 
 <!-- live2d 动画 -->
 <script src="https://eqcn.ajz.miesnfu.com/wp-content/plugins/wp-3d-pony/live2dw/lib/L2Dwidget.min.js"></script>
