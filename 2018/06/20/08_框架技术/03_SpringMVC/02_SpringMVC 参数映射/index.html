@@ -2331,6 +2331,33 @@
 								<div class="article-toc" style="display: none;"></div>
 							</ul>
 			
+							<ul>
+								<li class="file">
+									<a href="/2018/06/20/08_%E6%A1%86%E6%9E%B6%E6%8A%80%E6%9C%AF/03_SpringMVC/03-SpringMVC%20%E6%96%87%E4%BB%B6%E4%B8%8A%E4%BC%A0%E4%B8%8B%E8%BD%BD/">
+										03-SpringMVC 文件上传下载
+									</a>
+								</li>
+								<div class="article-toc" style="display: none;"></div>
+							</ul>
+			
+							<ul>
+								<li class="file">
+									<a href="/2018/06/20/08_%E6%A1%86%E6%9E%B6%E6%8A%80%E6%9C%AF/03_SpringMVC/04-SpringMVC%20%E5%85%A8%E5%B1%80%E5%BC%82%E5%B8%B8%E5%A4%84%E7%90%86%E5%99%A8/">
+										04-SpringMVC 全局异常处理器
+									</a>
+								</li>
+								<div class="article-toc" style="display: none;"></div>
+							</ul>
+			
+							<ul>
+								<li class="file">
+									<a href="/2018/06/20/08_%E6%A1%86%E6%9E%B6%E6%8A%80%E6%9C%AF/03_SpringMVC/05-SpringMVC%20%E6%8B%A6%E6%88%AA%E5%99%A8/">
+										05-SpringMVC 拦截器
+									</a>
+								</li>
+								<div class="article-toc" style="display: none;"></div>
+							</ul>
+			
 								</li>
 								
 							</ul>
@@ -2824,7 +2851,7 @@
 <p>注意：/ 表示应用的根目录开始，路径上不能只写一个 /</p>
 </blockquote>
 <h4 id="1-1-RequestMapping"><a href="#1-1-RequestMapping" class="headerlink" title="1.1 RequestMapping"></a>1.1 RequestMapping</h4><p>属性：</p>
-<p><strong>path</strong>：  指定请求路径的 url<br><strong>value</strong>： value 属性和 path 属性是一样的<br><strong>mthod</strong>： 指定该方法的请求方式<br><strong>params</strong>： 指定限制请求参数的条件<br><strong>headers</strong>： 发送的请求中必须包含的请求头</p>
+<p><strong>path</strong>：  指定请求路径的 url<br><strong>value</strong>： value 属性和 path 属性是一样的<br><strong>method</strong>： 指定该方法的请求方式<br><strong>params</strong>： 指定限制请求参数的条件<br><strong>headers</strong>： 发送的请求中必须包含的请求头</p>
 <h4 id="1-2-请求参数的映射"><a href="#1-2-请求参数的映射" class="headerlink" title="1.2 请求参数的映射"></a>1.2 请求参数的映射</h4><p><strong>映射机制</strong>:<br>表单提交的数据都是 k=v 格式的，如 username=jack&amp;password=123<br>SpringMVC 的参数映射过程是把表单提交的请求参数，作为控制器中方法的参数进行映射的</p>
 <p><strong>映射要求</strong>：</p>
 <p>提交表单的 <code>name属性 和 形参的名称 必须相同</code>，否则获取到的为 null。</p>
@@ -3138,10 +3165,20 @@ public class UserController {
     &lt;mvc:annotation-driven /&gt;</code></pre>
 <h4 id="2-2-配置不拦截静态资源"><a href="#2-2-配置不拦截静态资源" class="headerlink" title="2.2 配置不拦截静态资源"></a>2.2 配置不拦截静态资源</h4><p>DispatcherServlet 会拦截到所有的资源，导致一个问题就是静态资源 img、css、js 也会被拦截到，从而不能被使用。</p>
 <p>解决方案就是需要配置静态资源不进行拦截，在 springmvc.xml 配置文件添加如下配置：</p>
-<pre><code class="xml">&lt;!--前端控制器，哪些静态资源不拦截--&gt;
+<p>方式一：<code>&lt;mvc:resources&gt;</code> + <code>&lt;servlet-mapping&gt;</code> </p>
+<pre><code class="xml">&lt;!-- springmvc.xml 前端控制器，哪些静态资源不拦截--&gt;
 &lt;mvc:resources location=&quot;/css/&quot; mapping=&quot;/css/**&quot;/&gt;
 &lt;mvc:resources location=&quot;/images/&quot; mapping=&quot;/images/**&quot;/&gt;
-&lt;mvc:resources location=&quot;/js/&quot; mapping=&quot;/js/**&quot;/&gt;</code></pre>
+&lt;mvc:resources location=&quot;/js/&quot; mapping=&quot;/js/**&quot;/&gt;
+
+&lt;!-- web.xml 配置 servlet 映射，html资源不被拦截 --&gt;
+&lt;servlet-mapping&gt;
+    &lt;serlvet-name&gt;default&lt;/serlvet-name&gt;
+    &lt;url-pattern&gt;*.html&lt;/url-pattern&gt;
+&lt;/servlet-mapping&gt;</code></pre>
+<p>方式二：<code>所有静态资源不被拦截</code></p>
+<pre><code class="xml">&lt;!-- springmvc.xml 所有静态资源不拦截--&gt;
+&lt;mvc:default-servlet-handler /&gt;</code></pre>
 <h3 id="3-JSON-注解获取-响应"><a href="#3-JSON-注解获取-响应" class="headerlink" title="3. JSON 注解获取/响应"></a>3. JSON 注解获取/响应</h3><h4 id="3-1-RequestBody-ResponseBody"><a href="#3-1-RequestBody-ResponseBody" class="headerlink" title="3.1 @RequestBody+@ResponseBody"></a>3.1 @RequestBody+@ResponseBody</h4><p>一般用于 ajax 中获取请求 json 类型的数据和返回响应 json 类型的数据。</p>
 <ul>
 <li><strong>@RequestBody</strong> ：用于获取请求体 json 的数据（写在形参类型前）<br>  ajax 中设置请求参数为 json 类型：<code>contentType:application/json</code></li>
@@ -3153,73 +3190,112 @@ public class UserController {
 <li><strong>@ResponseBody</strong>：用于响应 json 数据（写在返回值类型前）<br>  ajax 中设置响应参数为 json 类型：<code>dataType: &quot;json&quot;</code></li>
 </ul>
 <blockquote>
-<p>注意：前提是需要提前导入json的jar包依赖。</p>
+<p>注意：</p>
+<ol>
+<li>前提是需要提前导入 json 的 jar 包依赖。</li>
+<li><strong><code>@RestController</code> = @Controller + @ResponseBody</strong> 使用一个 @RestController 有双重效果。</li>
+</ol>
 </blockquote>
 <ol>
-<li>在 pom.xml 中导入依赖</li>
+<li>在 pom.xml 中导入依赖 <code>jackson-databind</code></li>
 </ol>
 <pre><code class="xml">    &lt;dependency&gt;
       &lt;groupId&gt;com.fasterxml.jackson.core&lt;/groupId&gt;
       &lt;artifactId&gt;jackson-databind&lt;/artifactId&gt;
       &lt;version&gt;2.9.0&lt;/version&gt;
-    &lt;/dependency&gt;
-    &lt;dependency&gt;
-      &lt;groupId&gt;com.fasterxml.jackson.core&lt;/groupId&gt;
-      &lt;artifactId&gt;jackson-core&lt;/artifactId&gt;
-      &lt;version&gt;2.9.0&lt;/version&gt;
-    &lt;/dependency&gt;
-    &lt;dependency&gt;
-      &lt;groupId&gt;com.fasterxml.jackson.core&lt;/groupId&gt;
-      &lt;artifactId&gt;jackson-annotations&lt;/artifactId&gt;
-      &lt;version&gt;2.9.0&lt;/version&gt;
     &lt;/dependency&gt;</code></pre>
 <ol start="2">
 <li>编写 html/jsp 页面</li>
 </ol>
-<pre><code class="html">    &lt;script src=&quot;js/jquery-1.8.3.min.js&quot;&gt;&lt;/script&gt;
-    &lt;body&gt;
-        &lt;button id=&quot;btn&quot;&gt;发送ajax的请求&lt;/button&gt;
-    &lt;/body&gt;
+<pre><code class="html">&lt;%@ page contentType=&quot;text/html;charset=UTF-8&quot; language=&quot;java&quot; %&gt;
+&lt;html&gt;
+&lt;head&gt;
+    &lt;title&gt;登陆&lt;/title&gt;
+    &lt;script src=&quot;js/jquery-3.2.1.min.js&quot;&gt;&lt;/script&gt;
+&lt;/head&gt;
+&lt;body&gt;
 
-    &lt;script&gt;
-        // 页面加载，映射单击事件
-        $(function () {
-            $(&quot;#btn&quot;).click(function () {
-                alert(&quot;----&quot;);
-                // 发送ajax请求
-                $.ajax({
-                    // 编写json格式，设置属性和值
-                    url: &quot;/testAjax&quot;,
-                    contentType: &quot;application/json;charset=UTF-8&quot;,
-                    data: &#39;{&quot;username&quot;:&quot;jack&quot;,&quot;password&quot;:&quot;123&quot;}&#39;,
-                    dataType: &quot;json&quot;,
-                    type: &quot;post&quot;,
-                    success: function (data) {
-                        // data服务器端响应的json的数据，进行解析
-                        alert(data);
-                        alert(data.username);
-                        alert(data.password);
-                    }
-                });
-            });
+&lt;form&gt;
+    id: &lt;input type=&quot;text&quot; name=&quot;id&quot; id=&quot;id&quot;&gt; &lt;br&gt;
+    username:&lt;input type=&quot;text&quot; name=&quot;username&quot; id=&quot;username&quot;&gt; &lt;br&gt;
+    password:&lt;input type=&quot;text&quot; name=&quot;password&quot; id=&quot;password&quot;&gt; &lt;br&gt;
+
+    &lt;input type=&quot;button&quot; value=&quot;登陆1&quot; onclick=&quot;login1()&quot;&gt;
+    &lt;input type=&quot;button&quot; value=&quot;登陆2&quot; onclick=&quot;login2()&quot;&gt;
+&lt;/form&gt;
+
+&lt;script&gt;
+    // 测试响应数据
+    function login1() {
+        $.ajax({
+            type: &quot;POST&quot;,
+            url: &quot;user/testAjax1&quot;,
+            dataType: &quot;json&quot;,
+            data: $(&quot;form&quot;).serialize(),
+            success: function (data, status, xmlHttpRequest) {
+                console.log(data);
+                console.log(data.id + &quot;,&quot; + data.username + &quot;,&quot; + data.password);
+                console.log(status);
+                console.log(xmlHttpRequest.responseText);
+            },
+            error: function () {
+                console.log(&quot;ajax error...&quot;);
+            }
         });
-    &lt;/script&gt;
-</code></pre>
+    }
+    // 测试 JSON 响应数据
+    function login2() {
+        let id = $(&quot;#id&quot;).val();
+        let username = $(&quot;#username&quot;).val();
+        let password = $(&quot;#password&quot;).val();
+        $.ajax({
+            type: &quot;POST&quot;,
+            url: &quot;user/testAjax2&quot;,
+            dataType: &quot;json&quot;,
+            // 注意 JSON 字符串的格式：
+            data: &#39;{&quot;id&quot;:&#39; + id + &#39;, &quot;username&quot;:&quot;&#39; + username + &#39;&quot;, &quot;password&quot;:&quot;&#39; + password + &#39;&quot;}&#39;,
+            contentType: &quot;application/json;charset=UTF-8&quot;, // 声明请求参数为 json 字符串，对应 @RequestBody 注解。
+            success: function (data) {
+                console.log(data);
+            },
+            error: function () {
+                console.log(&quot;ajax error...&quot;);
+            }
+        });
+    }
+
+&lt;/script&gt;
+
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
 <ol start="3">
 <li>在 Controller 中添加方法</li>
 </ol>
-<pre><code class="java">    //模拟异步请求响应
-    @RequestMapping(&quot;/testAjax&quot;)
-    public @ResponseBody User testAjax(@RequestBody User user){
-        System.out.println(&quot;testAjax方法执行了...&quot;);
+<pre><code class="java">@RestController // @RestController = @Controller + @ResponseBody
+@RequestMapping(&quot;/user&quot;)
+public class UserController {
+    //模拟异步请求响应1
+    @RequestMapping(&quot;/testAjax1&quot;)
+    public @ResponseBody User testAjax1(User user) {
         // 客户端发送ajax的请求，传的是json字符串，后端把json字符串封装到user对象中
         System.out.println(user);
         // 做响应，模拟查询数据库
-        user.setUsername(&quot;tom&quot;);
-        user.setPassword(&quot;789&quot;);
+        user.setId(111);
+        user.setUsername(&quot;李四111&quot;);
+        user.setPassword(&quot;12345678&quot;);
         // 做响应
         return user;
-    }</code></pre>
+    }
+    //模拟异步请求响应2
+    @RequestMapping(&quot;/testAjax2&quot;)
+    public @ResponseBody User testAjax2(@RequestBody User user) {
+        System.out.println(user);
+        user.setId(222);
+        user.setUsername(&quot;李四222&quot;);
+        user.setPassword(&quot;12345678&quot;);
+        return user;
+    }
+}</code></pre>
 <h4 id="3-2-Jackson-FastJson-Gson"><a href="#3-2-Jackson-FastJson-Gson" class="headerlink" title="3.2 Jackson/FastJson/Gson"></a>3.2 Jackson/FastJson/Gson</h4><ol>
 <li><p>常用的Json框架：<code>Jackson</code>  <code>FastJson</code>  <code>Gson</code><br> JavaBean序列化转换为Json格式，性能：Jackson &gt; FastJson &gt; Gson &gt; Json-lib</p>
 </li>
@@ -3231,12 +3307,48 @@ public class UserController {
 <li><strong>@JsonFormat</strong>(pattern = “yyyy-MM-dd hh:mm:ss”,locale = “zh”,timezone = “GMT+8”) : 格式指定日期属性</li>
 <li><strong>@JsonProperty</strong>(“别名”) : 给属性指定别名</li>
 </ul>
+<p>测试 Jackson 注解：</p>
+<pre><code class="java">// 实体类
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+public class Mytime {
+    @JsonIgnore
+    private Integer id;
+    @JsonProperty(&quot;username&quot;)
+    private String name;
+    @JsonProperty(&quot;pwd&quot;)
+    private String password;
+    @JsonFormat(pattern = &quot;yyyy-MM-dd HH:mm:ss,SSS E&quot;, locale = &quot;zh&quot;, timezone = &quot;GMT+8&quot;)
+    private Date date;
+}</code></pre>
+<pre><code class="java">// 控制器
+@RestController
+@RequestMapping(&quot;/user&quot;)
+public class UserController {
+    @RequestMapping(&quot;testJson&quot;)
+    public @ResponseBody
+    List&lt;Mytime&gt; testMytime() {
+        List&lt;Mytime&gt; list = new ArrayList&lt;&gt;();
+        list.add(new Mytime(1, &quot;aaa&quot;, &quot;111&quot;, new Date()));
+        list.add(new Mytime(1, &quot;aaa&quot;, &quot;111&quot;, new Date()));
+        list.add(new Mytime(1, &quot;aaa&quot;, &quot;111&quot;, new Date()));
+        return list;
+    }
+}</code></pre>
+<p>直接测试：</p>
+<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20200622153313.png" alt="image-20200622153311989"></p>
 
 </div>
 
 
     <div class="post-guide">
         <div class="item left">
+            
+              <a href="/2018/06/20/08_%E6%A1%86%E6%9E%B6%E6%8A%80%E6%9C%AF/03_SpringMVC/04-SpringMVC%20%E5%85%A8%E5%B1%80%E5%BC%82%E5%B8%B8%E5%A4%84%E7%90%86%E5%99%A8/">
+                  <i class="fa fa-angle-left" aria-hidden="true"></i>
+                  04-SpringMVC 全局异常处理器
+              </a>
             
         </div>
         <div class="item right">
