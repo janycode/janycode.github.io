@@ -2945,12 +2945,6 @@
             &lt;version&gt;3.8.1&lt;/version&gt;
             &lt;scope&gt;test&lt;/scope&gt;
         &lt;/dependency&gt;
-        &lt;dependency&gt;
-            &lt;groupId&gt;junit&lt;/groupId&gt;
-            &lt;artifactId&gt;junit&lt;/artifactId&gt;
-            &lt;version&gt;RELEASE&lt;/version&gt;
-            &lt;scope&gt;test&lt;/scope&gt;
-        &lt;/dependency&gt;
     &lt;/dependencies&gt;</code></pre>
 <blockquote>
 <ul>
@@ -3028,7 +3022,7 @@ jdbc.password=123456</code></pre>
     &lt;context:component-scan base-demo=&quot;com.demo&quot;/&gt;
 
     &lt;!-- 配置 读取properties文件 jdbc.properties --&gt;
-    &lt;context:property-placeholder location=&quot;classpath:jdbc.properties&quot;&gt;&lt;/context:property-placeholder&gt;
+    &lt;context:property-placeholder location=&quot;classpath:jdbc.properties&quot;/&gt;
 
     &lt;!-- 配置 数据源 --&gt;
     &lt;bean id=&quot;dataSource&quot; class=&quot;com.alibaba.druid.pool.DruidDataSource&quot;&gt;
@@ -3262,11 +3256,31 @@ public class MusicController {
 <li>还可能是因为 pom 依赖没有导入，刷新检查依赖</li>
 </ul>
 <h4 id="5-2-500-服务器内部错误"><a href="#5-2-500-服务器内部错误" class="headerlink" title="5.2 500 服务器内部错误"></a>5.2 500 服务器内部错误</h4><ul>
-<li>检查 pojo 实体类属性名 与 数据库列名 是否完全一致，Mybatis ORM 映射需要保持一致</li>
-<li>检查前端携带的参数 或 取值后.访问出来的属性名 是否与 pojo实体类属性名 或 Mapper.xml 中 resultMap 是否一致（result 中 column 与数据库列一致，property 与实体类一致）</li>
-<li>检查 xxxMapper.xml 的 xxx 是否与 接口名完全一致，如 UserDao 接口与 UserDaoMapper.xml</li>
-<li>检查 mvn install 后的 target/ 目录下配置文件是否没有遗漏</li>
+<li><p>检查 pojo 实体类属性名 与 数据库列名 是否完全一致，Mybatis ORM 映射需要保持一致</p>
+</li>
+<li><p>检查前端携带的参数 或 取值后.访问出来的属性名 是否与 pojo实体类属性名 或 Mapper.xml 中 resultMap 是否一致（result 中 column 与数据库列一致，property 与实体类一致）</p>
+</li>
+<li><p>检查 xxxMapper.xml 的 xxx 是否与 接口名完全一致，如 UserDao 接口与 UserDaoMapper.xml</p>
+</li>
+<li><p>检查 mvn install 后的 target/ 目录下配置文件是否没有遗漏</p>
+</li>
+<li><p>错误：<strong>No qualifying bean of type ‘com.demo.service.VideoService’ available: expected at least 1 bean which qualifies as autowire candidate.</strong>（dao service controller 的三层架构注解未装配成功）</p>
+<p>  原因：applicationContext.xml 在使用监听器监听 ServletContext 初始化时加载时，没有成功加载，所以@Autowired注解没有正常生效，无法装配bean对象，没有成功注入。切记！！！<code>classpath的写法</code>！</p>
+</li>
 </ul>
+<pre><code class="xml">&lt;!-- web.xml --&gt;
+&lt;context-param&gt;
+    &lt;param-name&gt;contextConfigLocation&lt;/param-name&gt;
+    &lt;param-value&gt;classpath*:applicationContext-*.xml&lt;/param-value&gt;
+&lt;/context-param&gt;
+
+&lt;listener&gt;
+    &lt;listener-class&gt;org.springframework.web.context.ContextLoaderListener&lt;/listener-class&gt;
+&lt;/listener&gt;
+
+&lt;!-- 以下这两种写法OK：用*号通配时冒号前声明*号，精确匹配时可不用*号 --&gt;
+classpath*:applicationContext-*.xml
+classpath:applicationContext-dao.xml</code></pre>
 
 </div>
 
