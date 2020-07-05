@@ -3685,15 +3685,15 @@ jdbc.password=123456</code></pre>
                     }
                 }, &#39;data&#39;);
 
-                // 以下逻辑用于：重新渲染 select 的 option
+                // 重新渲染 select 的 option
                 var array = new Array();
                 var ids = new Array();
+                var defaultOpt = &#39;全部&#39;;
                 $(&quot;#cls option&quot;).each(function () {
                     // 遍历保存 option 的 val 和 text
                     var txt = $(this).text();
                     var id = $(this).val();
-                    // 排除 &quot;全部&quot; 和 当前选中项，不保存在数组中
-                    if(txt !== &quot;全部&quot; &amp;&amp; txt !== option.text()){
+                    if (txt !== &quot;全部&quot; &amp;&amp; txt !== option.text()) {
                         array.push(txt);
                         ids.push(id);
                     }
@@ -3706,12 +3706,16 @@ jdbc.password=123456</code></pre>
                 jQuery(&quot;#cls option:selected&quot;).text(option.text());
                 // 回显包含 全部 和其他 option 到选项框
                 var str = &quot;&quot;;
-                for(var i=0; i&lt;array.length; i++){
+                // 追加到 select 标签内，如果当前是&#39;全部&#39;就不追加
+                if (option.text() !== defaultOpt) {
+                    // value 必须为空格，否则重新查询 全部 时，该选项不会生效
+                    str += &quot;&lt;option value=&#39; &#39;&gt;&quot; + defaultOpt + &quot;&lt;/option&gt;&quot;;
+                }
+                // 追加其他 option
+                for (var i = 0; i &lt; array.length; i++) {
                     str += &quot;&lt;option value=&#39;&quot; + ids[i] + &quot;&#39;&gt;&quot; + array[i] + &quot;&lt;/option&gt;&quot;;
                 }
-                //layer.msg(str);
-                // 追加到 select 标签内，该&quot;全部&quot;选项始终置顶
-                $(&quot;#cls&quot;).append(&quot;&lt;option value=\&quot;\&quot;&gt;全部&lt;/option&gt;&quot; + str);
+                $(&quot;#cls&quot;).append(str);
             }
         };
 
@@ -4186,11 +4190,12 @@ public class TbDocumentController {
                 // 重新渲染 select 的 option
                 var array = new Array();
                 var ids = new Array();
+                var defaultOpt = &#39;全部&#39;;
                 $(&quot;#cls option&quot;).each(function () {
                     // 遍历保存 option 的 val 和 text
                     var txt = $(this).text();
                     var id = $(this).val();
-                    if(txt !== &quot;全部&quot; &amp;&amp; txt !== option.text()){
+                    if (txt !== &quot;全部&quot; &amp;&amp; txt !== option.text()) {
                         array.push(txt);
                         ids.push(id);
                     }
@@ -4203,12 +4208,16 @@ public class TbDocumentController {
                 jQuery(&quot;#cls option:selected&quot;).text(option.text());
                 // 回显包含 全部 和其他 option 到选项框
                 var str = &quot;&quot;;
-                for(var i=0; i&lt;array.length; i++){
-                    str += &quot;&lt;option value=&#39;&quot;+ids[i]+&quot;&#39;&gt;&quot;+array[i]+&quot;&lt;/option&gt;&quot;
+                // 追加到 select 标签内，如果当前是&#39;全部&#39;就不追加
+                if (option.text() !== defaultOpt) {
+                    // value 必须为空格，否则重新查询 全部 时，该选项不会生效
+                    str += &quot;&lt;option value=&#39; &#39;&gt;&quot; + defaultOpt + &quot;&lt;/option&gt;&quot;;
                 }
-                //layer.msg(str);
-                // 追加到 select 标签内
-                $(&quot;#cls&quot;).append(&quot;&lt;option value=\&quot;\&quot;&gt;全部&lt;/option&gt;&quot; + str);
+                // 追加其他 option
+                for (var i = 0; i &lt; array.length; i++) {
+                    str += &quot;&lt;option value=&#39;&quot; + ids[i] + &quot;&#39;&gt;&quot; + array[i] + &quot;&lt;/option&gt;&quot;;
+                }
+                $(&quot;#cls&quot;).append(str);
             }
         };
 
