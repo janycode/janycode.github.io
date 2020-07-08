@@ -2162,6 +2162,24 @@
 								<div class="article-toc" style="display: none;"></div>
 							</ul>
 			
+							<ul>
+								<li class="file">
+									<a href="/2017/06/20/05_%E6%95%B0%E6%8D%AE%E5%BA%93/03_Redis/05-Redis%20%E9%9B%86%E7%BE%A4%E6%90%AD%E5%BB%BA/">
+										05-Redis 集群搭建
+									</a>
+								</li>
+								<div class="article-toc" style="display: none;"></div>
+							</ul>
+			
+							<ul>
+								<li class="file">
+									<a href="/2017/06/20/05_%E6%95%B0%E6%8D%AE%E5%BA%93/03_Redis/06-Redis%20%E5%B8%B8%E8%A7%81%E9%97%AE%E9%A2%98/">
+										06-Redis 常见问题
+									</a>
+								</li>
+								<div class="article-toc" style="display: none;"></div>
+							</ul>
+			
 								</li>
 								
 							</ul>
@@ -3070,7 +3088,7 @@
 <p>XShell 同时开启三台虚拟机的 3 个 SSH 窗口：</p>
 <p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20200707205851.png" alt="image-20200707205849119"></p>
 <ol>
-<li>查看当前库的信息：<br> (ip后缀128) 127.0.0.1:6379&gt; <code>info replication</code>  (当前为主机，且连接的从机数为 0)</li>
+<li>查看当前库的信息：<br> (ip后缀128)[ /usr/local/redis-5.0.4/bin]# <code>./redis-server</code><br> (ip后缀128 新 SSH)[ /usr/local/redis-5.0.4/bin]# <code>./redis-cli</code><br> (ip后缀128) 127.0.0.1:6379&gt; <code>info replication</code>  (默认 server 启动为单线程主机角色)</li>
 </ol>
 <p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20200707201907.png" alt="img"></p>
 <ol start="2">
@@ -3087,10 +3105,10 @@
 <li><p>启动服务器：<br> (3台)[ /usr/local/redis-5.0.4/bin]# <code>./redis-server redis.conf</code></p>
 <p> (3台)[ /usr/local/redis-5.0.4/bin]# <code>./redis-cli</code> （本地连接开启的 redis-server 查看主从信息）<br> <strong>128主机</strong>：127.0.0.1:6379&gt; <code>info replication</code></p>
 <pre><code class="sh"> # Replication
- role:master
+ role:master  # 角色：主机
  connected_slaves:2
- slave0:ip=192.168.247.129,port=6379,state=online,offset=56,lag=0
- slave1:ip=192.168.247.130,port=6379,state=online,offset=56,lag=1
+ slave0:ip=192.168.247.129,port=6379,state=online,offset=56,lag=0  # 从机0
+ slave1:ip=192.168.247.130,port=6379,state=online,offset=56,lag=1  # 从机1
  master_replid:647d2d5e7e065a2be71fb0181a78aa74cdbbc438
  master_replid2:0000000000000000000000000000000000000000
  master_repl_offset:56
@@ -3101,10 +3119,10 @@
  repl_backlog_histlen:56</code></pre>
 <p> <strong>129和130从机</strong>：127.0.0.1:6379&gt; <code>info replication</code></p>
 <pre><code class="sh"> # Replication
- role:slave
- master_host:192.168.247.128
+ role:slave  # 角色：从机
+ master_host:192.168.247.128  # 主机地址信息
  master_port:6379
- master_link_status:up
+ master_link_status:up  # 主机连接状态 up(开启)
  master_last_io_seconds_ago:7
  master_sync_in_progress:0
  slave_repl_offset:196
@@ -3150,10 +3168,20 @@
  sentinel down-after-milliseconds mymaster 5000
  sentinel failover-timeout mymaster 900000
  sentinel parallel-syncs mymaster 2</code></pre>
+<blockquote>
+<p>sentinel monitor mymaster 192.168.247.128 6379 1</p>
+<p>：哨兵监视器(名为 mymaster,ip,port,1表示主机挂了 slave 会投票选举成为主机)</p>
+<p>sentinel down-after-milliseconds mymaster 5000</p>
+<p>：主机 down 掉后经过 5s 后哨兵开始投票选举谁成为主机</p>
+<p>sentinel failover-timeout mymaster 900000</p>
+<p>：当一个slave从一个错误的master那里同步数据的计算时间为 900s</p>
+<p>sentinel parallel-syncs mymaster 2</p>
+<p>：指定在发生failover主备切换时最多可以有多少个slave同时对新的master进行数据同步</p>
+<p>Redis 的哨兵配置参数详解：<a href="https://simple.blog.csdn.net/article/details/107208175" target="_blank" rel="noopener">https://simple.blog.csdn.net/article/details/107208175</a></p>
+</blockquote>
 </li>
-</ol>
-<ol start="3">
-<li>从机启动哨兵监控程序<br> (ip后缀129和130)[ /usr/local/redis-5.0.4/bin]# <code>./redis-server sentinel.conf --sentinel &amp;</code><br> (ip后缀129 SSH)[ /usr/local/redis-5.0.4/bin]# <code>./redis-cli -h 192.168.247.129 -p 26379 info sentinel</code> (此命令用于查看哨兵相关信息)<br> (ip后缀130 SSH)[ /usr/local/redis-5.0.4/bin]# <code>./redis-cli -h 192.168.247.130 -p 26379 info sentinel</code> (此命令用于查看哨兵相关信息)</li>
+<li><p>从机启动哨兵监控程序<br> (ip后缀129和130)[ /usr/local/redis-5.0.4/bin]# <code>./redis-server sentinel.conf --sentinel &amp;</code><br> (ip后缀129 SSH)[ /usr/local/redis-5.0.4/bin]# <code>./redis-cli -h 192.168.247.129 -p 26379 info sentinel</code> (此命令用于查看哨兵相关信息)<br> (ip后缀130 SSH)[ /usr/local/redis-5.0.4/bin]# <code>./redis-cli -h 192.168.247.130 -p 26379 info sentinel</code> (此命令用于查看哨兵相关信息)</p>
+</li>
 </ol>
 <p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20200707212356.png" alt="image-20200707212354803"></p>
 <p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20200707212600.png" alt="image-20200707212559944"></p>
@@ -3193,16 +3221,16 @@
     <div class="post-guide">
         <div class="item left">
             
-              <a href="/2017/06/20/05_%E6%95%B0%E6%8D%AE%E5%BA%93/03_Redis/03-Redis%20%E4%BA%8B%E5%8A%A1+%E6%8C%81%E4%B9%85%E5%8C%96+%E8%AE%A2%E9%98%85/">
+              <a href="/2017/06/20/05_%E6%95%B0%E6%8D%AE%E5%BA%93/03_Redis/01-Redis%20%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA/">
                   <i class="fa fa-angle-left" aria-hidden="true"></i>
-                  03-Redis 事务+持久化+订阅
+                  01-Redis 环境搭建
               </a>
             
         </div>
         <div class="item right">
             
-              <a href="/2017/06/20/05_%E6%95%B0%E6%8D%AE%E5%BA%93/03_Redis/02-Redis%20Java%E9%9B%86%E6%88%90/">
-                02-Redis Java集成
+              <a href="/2017/06/20/05_%E6%95%B0%E6%8D%AE%E5%BA%93/03_Redis/05-Redis%20%E9%9B%86%E7%BE%A4%E6%90%AD%E5%BB%BA/">
+                05-Redis 集群搭建
                 <i class="fa fa-angle-right" aria-hidden="true"></i>
               </a>
             
