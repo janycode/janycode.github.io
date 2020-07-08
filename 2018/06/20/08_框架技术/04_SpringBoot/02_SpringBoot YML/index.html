@@ -2567,6 +2567,24 @@
 								<div class="article-toc" style="display: none;"></div>
 							</ul>
 			
+							<ul>
+								<li class="file">
+									<a href="/2018/06/20/08_%E6%A1%86%E6%9E%B6%E6%8A%80%E6%9C%AF/04_SpringBoot/03_SpringBoot%20%E5%BC%82%E5%B8%B8/">
+										03_SpringBoot 异常
+									</a>
+								</li>
+								<div class="article-toc" style="display: none;"></div>
+							</ul>
+			
+							<ul>
+								<li class="file">
+									<a href="/2018/06/20/08_%E6%A1%86%E6%9E%B6%E6%8A%80%E6%9C%AF/04_SpringBoot/04_SpringBoot%20%E8%BF%87%E6%BB%A4%E5%99%A8+%E7%9B%91%E5%90%AC%E5%99%A8/">
+										04_SpringBoot 过滤器+监听器
+									</a>
+								</li>
+								<div class="article-toc" style="display: none;"></div>
+							</ul>
+			
 								</li>
 								
 							</ul>
@@ -3101,8 +3119,125 @@
 <p>参考资料：<a href="https://www.springcloud.cc/spring-boot.html" target="_blank" rel="noopener">https://www.springcloud.cc/spring-boot.html</a></p>
 <h3 id="1-SpringBoot-默认配置"><a href="#1-SpringBoot-默认配置" class="headerlink" title="1. SpringBoot 默认配置"></a>1. SpringBoot 默认配置</h3><p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20200708165445.png" alt="img"></p>
 <p>可以从 jar 包中找到 SpringBoot 的默认配置文件位置。</p>
-<p>SpringBoot 是基于约定的，所以很多配置都有默认值，但如果想使用自己的配置替换默认配置的话，就可以使用<code>application.properties</code> 或者 <code>application.yml</code>（application.yaml）进行配置，SpringBoot 默认会从 Resources目录下加载 application.properties 或 application.yml（application.yaml）文件。</p>
-<p>其中，application.properties文件是键值对类型的文件，除此之外，SpringBoot还可以使用yml文件进行配置，YML文件格式是YAML (YAML Aint Markup Language)编写的文件格式，YAML是一种直观的能够被电脑识别的的数据数据序列化格式，并且容易被人类阅读，容易和脚本语言交互的，可以被支持YAML库的不同的编程语言程序导入，比如： C/C++, Ruby, Python, Java, Perl, C#, PHP等。YML文件是以数据为核心的，比传统的xml方式更加简洁，YML文件的扩展名可以使用.yml或者.yaml。</p>
+<p>SpringBoot 是基于约定的，所以很多配置都有默认值，但如果想使用自己的配置替换默认配置的话，就可以使用<code>application.properties</code> 或者 <code>application.yml</code>（application.yaml）进行配置，SpringBoot 默认会从 Resources 目录下加载 application.properties 或 application.yml（application.yaml）文件。</p>
+<p>其中，application.properties 文件是键值对类型的文件，除此之外，SpringBoot 还可以使用 yml 文件进行配置，YML 文件格式是 YAML (YAML Aint Markup Language) 编写的文件格式，YAML 是一种直观的能够被电脑识别的的数据数据序列化格式，并且容易被人类阅读，容易和脚本语言交互的，可以被支持 YAML 库的不同的编程语言程序导入，比如： C/C++, Ruby, Python, Java, Perl, C#, PHP 等。</p>
+<p>YML 文件是以数据为核心的，比传统的 xml 方式更加简洁，YML 文件的扩展名可以使用 .yml 或者 .yaml。</p>
+<p>application.properties 方式修改默认配置：</p>
+<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20200708213828.png" alt="image-20200708213826823"></p>
+<p>application.yml 方式修改默认配置：（注意：yml 文件中空格表示层级关系）</p>
+<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20200708214209.png" alt="image-20200708214208076"></p>
+<h3 id="2-yml-配置格式"><a href="#2-yml-配置格式" class="headerlink" title="2. yml 配置格式"></a>2. yml 配置格式</h3><pre><code class="yml">#普通数据的配置
+name: jack
+
+#对象的配置
+user:
+  username: rose
+  password: 123
+
+#配置数组
+array:
+  beijing,
+  tianjin,
+  shanghai
+
+#配置集合
+demo:
+  test:
+    name: tom
+    arr: 1,jack,2,tom  #这种对象形式的，只能单独写一个对象去接收，所以无法使用 @value 注解获取
+    list1:
+      - zhangsan
+      - lisi
+    list2:
+      - driver: mysql
+        port: 3306
+      - driver: oracle
+        port: 1521
+    map:
+      key1: value1
+      key2: value2
+
+#端口配置
+server:
+  port: 8081</code></pre>
+<h3 id="3-获取配置文件值"><a href="#3-获取配置文件值" class="headerlink" title="3. 获取配置文件值"></a>3. 获取配置文件值</h3><p>把 yml 文件中配置的内容注入到成员变量中。</p>
+<ul>
+<li>第一种方式，使用 @Value 注解方式注入</li>
+</ul>
+<pre><code class="java">import lombok.Data;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+@RestController
+@RequestMapping(&quot;/yml&quot;)
+@Data
+public class YmlController {
+
+    @Value(&quot;${name}&quot;)
+    private String name;
+    @Value(&quot;${user.username}&quot;)
+    private String username;
+    @Value(&quot;${user.password}&quot;)
+    private String password;
+    @Value((&quot;${array}&quot;))
+    private String[] array;
+
+    @RequestMapping(&quot;/test&quot;)
+    public String[] test() {
+        System.out.println(&quot;name = &quot; + name);
+        System.out.println(&quot;username = &quot; + username);
+        System.out.println(&quot;password = &quot; + password);
+        return array;
+    }
+}</code></pre>
+<p>访问：<a href="http://localhost:8081/yml/test" target="_blank" rel="noopener">http://localhost:8081/yml/test</a></p>
+<p>输出：</p>
+<p>name = jack<br>username = rose<br>password = 123</p>
+<ul>
+<li>第二种方式，使用 @ConfigurationProperties 注解方式，提供 GET/SET 方法</li>
+</ul>
+<pre><code class="java">import lombok.Data;
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+
+@RestController
+@ConfigurationProperties(prefix = &quot;demo.test&quot;)
+@RequestMapping(&quot;/yml&quot;)
+@Data
+public class YmlController {
+
+    private String name;
+    private String[] arr;
+    private List&lt;String&gt; list1;
+    private List&lt;Map&lt;String, String&gt;&gt; list2;
+    private Map&lt;String, String&gt; map;
+
+    @RequestMapping(&quot;/test2&quot;)
+    public List&lt;Map&lt;String, String&gt;&gt; test2() {
+        System.out.println(&quot;name = &quot; + name);
+        System.out.println(&quot;Arrays.toString(arr) = &quot; + Arrays.toString(arr));
+        System.out.println(&quot;list1 = &quot; + list1);
+        System.out.println(&quot;map = &quot; + map);
+        return list2;
+    }
+}</code></pre>
+<p>访问：<a href="http://localhost:8081/yml/test2" target="_blank" rel="noopener">http://localhost:8081/yml/test2</a></p>
+<p>输出：</p>
+<p>name = tom<br>Arrays.toString(arr) = [1, jack, 2, tom]<br>list1 = [zhangsan, lisi]<br>map = {key1=value1, key2=value2}</p>
+<p>如果使用 @ConfigurationProperties 注解时提示以下信息：</p>
+<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20200708220033.png" alt="img"></p>
+<p>导入依赖即可（也可以不导入）</p>
+<pre><code class="xml">&lt;dependency&gt;
+    &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
+    &lt;artifactId&gt;spring-boot-configuration-processor&lt;/artifactId&gt;
+    &lt;optional&gt;true&lt;/optional&gt;
+&lt;/dependency&gt;</code></pre>
 
 </div>
 
@@ -3110,16 +3245,16 @@
     <div class="post-guide">
         <div class="item left">
             
-              <a href="/2018/06/20/08_%E6%A1%86%E6%9E%B6%E6%8A%80%E6%9C%AF/03_SpringMVC/01_SpringMVC%20%E5%85%A5%E9%97%A8/">
+              <a href="/2018/06/20/08_%E6%A1%86%E6%9E%B6%E6%8A%80%E6%9C%AF/04_SpringBoot/03_SpringBoot%20%E5%BC%82%E5%B8%B8/">
                   <i class="fa fa-angle-left" aria-hidden="true"></i>
-                  01_SpringMVC 入门
+                  03_SpringBoot 异常
               </a>
             
         </div>
         <div class="item right">
             
-              <a href="/2018/06/20/08_%E6%A1%86%E6%9E%B6%E6%8A%80%E6%9C%AF/04_SpringBoot/01_SpringBoot%20%E5%85%A5%E9%97%A8/">
-                01_SpringBoot 入门
+              <a href="/2018/06/20/08_%E6%A1%86%E6%9E%B6%E6%8A%80%E6%9C%AF/03_SpringMVC/01_SpringMVC%20%E5%85%A5%E9%97%A8/">
+                01_SpringMVC 入门
                 <i class="fa fa-angle-right" aria-hidden="true"></i>
               </a>
             
