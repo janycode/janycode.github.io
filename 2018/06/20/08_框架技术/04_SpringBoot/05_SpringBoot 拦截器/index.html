@@ -9,6 +9,8 @@
 	<!-- title -->
 	
 	<title>
+	
+		05_SpringBoot 拦截器 | 
 	 
 	姜源の云笔记
 	</title>
@@ -2584,7 +2586,7 @@
 							</ul>
 			
 							<ul>
-								<li class="file">
+								<li class="file active">
 									<a href="/2018/06/20/08_%E6%A1%86%E6%9E%B6%E6%8A%80%E6%9C%AF/04_SpringBoot/05_SpringBoot%20%E6%8B%A6%E6%88%AA%E5%99%A8/index.html">
 										05_SpringBoot 拦截器
 									</a>
@@ -3084,60 +3086,217 @@
 
 	<!-- 引入正文 -->
 	<div id="content">
-		 <div id="index">
+		<h1 id="article-title">
+
+	05_SpringBoot 拦截器
+</h1>
+<div class="article-meta">
+    
+		<div id="article-categories">
+            
+                
+                    <span>
+                        <i class="fa fa-folder" aria-hidden="true"></i>
+                        <a href="/categories/08-框架技术/">08_框架技术</a>
+						
+							>
+						
+                    </span>
+                
+            
+                
+                    <span>
+                        <i class="fa fa-folder" aria-hidden="true"></i>
+                        <a href="/categories/08-框架技术/04-SpringBoot/">04_SpringBoot</a>
+						
+                    </span>
+                
+            
+		</div>
+    
+	<span>作者:Jerry</span>
+	<span>时间:2018-06-20 17:59:44</span>
 	
-		<div class="index-li">
-			<a href="/2017/04/28/02_%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/02_Python/01-Python%E5%9F%BA%E7%A1%80%E8%AF%AD%E6%B3%95%E5%A4%A7%E5%85%A8/index.html">
-				<h2 class="index-title">
-					01-Python基础语法大全
-				</h2>
-				<div class="index-brief">
-					python学习笔记：小甲鱼python全套视频  +  python基础教程 第2版修订版（书附10个大型案例）python学习环境：python3, win10下python3.5.4的IDLE  +  ubuntu下python3辅助python分享范围：适合有C/C++/JAVA任意语言之一
-					...
-				</div>
-			</a>
-                <div class="article-meta">
-                    
-                            
-                                
-                                    <span>
-                                        <i class="fa fa-folder" aria-hidden="true"></i>
-                                        <a href="/categories/02-编程语言/index.html">02_编程语言</a>
-										
-											>
-										
-                                    </span>
-                                
-                            
-                                
-                                    <span>
-                                        <i class="fa fa-folder" aria-hidden="true"></i>
-                                        <a href="/categories/02-编程语言/01-Java/index.html">01_Java</a>
-										
-											>
-										
-                                    </span>
-                                
-                            
-                                
-                                    <span>
-                                        <i class="fa fa-folder" aria-hidden="true"></i>
-                                        <a href="/categories/02-编程语言/01-Java/02-Python/index.html">02_Python</a>
-										
-                                    </span>
-                                
-                            
-                    
-					<span>作者:Jerry</span>
-				    <span>时间:2017-04-28</span>
-                </div>
-		</div>	
+		<span>
+			访问:<span id="/2018/06/20/08_%E6%A1%86%E6%9E%B6%E6%8A%80%E6%9C%AF/04_SpringBoot/05_SpringBoot%20%E6%8B%A6%E6%88%AA%E5%99%A8/" class="leancloud_visitors" data-flag-title="08_框架技术/04_SpringBoot/05_SpringBoot 拦截器"></span>
+		</span>
 	
-	
-	<div id="index-paginator">
-		
-	</div>
 </div>
+
+<div id="article-content">
+	<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20200708160946.png" alt="image-20200708160944615"></p>
+<p>参考资料：<a href="https://www.springcloud.cc/spring-boot.html" target="_blank" rel="noopener">https://www.springcloud.cc/spring-boot.html</a></p>
+<p>中文文档2：<a href="https://felord.cn/_doc/_springboot/2.1.5.RELEASE/_book/index.html" target="_blank" rel="noopener">https://felord.cn/_doc/_springboot/2.1.5.RELEASE/_book/index.html</a></p>
+<h3 id="1-自定义拦截器类"><a href="#1-自定义拦截器类" class="headerlink" title="1. 自定义拦截器类"></a>1. 自定义拦截器类</h3><pre><code class="java">import org.omg.PortableInterceptor.Interceptor;
+import org.springframework.web.servlet.HandlerInterceptor;
+import org.springframework.web.servlet.ModelAndView;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+public class MyInterceptor implements HandlerInterceptor {
+    //进入controller方法之前调用
+    @Override
+    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
+        System.out.println(&quot;preHandle&quot;);
+        return true;//true表示放行，false表示不放行
+    }
+
+    //调用完controller之后，视图渲染之前
+    @Override
+    public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler, ModelAndView modelAndView) throws Exception {
+        System.out.println(&quot;postHandle&quot;);
+    }
+
+    //页面跳转之后，整个流程执行之后，一般用于资源清理操作
+    @Override
+    public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) throws Exception {
+        System.out.println(&quot;afterCompletion&quot;);
+    }
+}</code></pre>
+<h3 id="2-拦截器配置类"><a href="#2-拦截器配置类" class="headerlink" title="2. 拦截器配置类"></a>2. 拦截器配置类</h3><p>实现 <code>WebMvcConfigurer</code> 接口。</p>
+<pre><code class="java">import org.springframework.context.annotation.Configuration;
+import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+
+@Configuration
+public class MyInterceptorConfig implements WebMvcConfigurer {
+    @Override
+    public void addInterceptors(InterceptorRegistry registry) {
+        //设置拦截器并指定拦截路径
+        registry.addInterceptor(new MyInterceptor()).addPathPatterns(&quot;/interceptor/*&quot;);
+        //registry.addInterceptor(new MyInterceptor()).addPathPatterns(&quot;/**&quot;);//拦截所有
+        //registry.addInterceptor(new MyInterceptor()).addPathPatterns(&quot;/**&quot;).excludePathPatterns(&quot;/test&quot;);//指定不拦截
+        //添加自定义拦截器
+        WebMvcConfigurer.super.addInterceptors(registry);
+    }
+}</code></pre>
+<h3 id="3-测试类"><a href="#3-测试类" class="headerlink" title="3. 测试类"></a>3. 测试类</h3><p>在 static 目录下创建 index.html 以及 controller 测试类。</p>
+<pre><code class="java">package com.demo.controller;
+
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+
+@Controller
+public class InterceptorController {
+    @RequestMapping(&quot;/interceptor/myinterceptor&quot;)
+    public String myinterceptor(){
+        System.out.println(&quot;myinterceptor&quot;);
+        return &quot;/index.html&quot;;
+    }
+}</code></pre>
+<blockquote>
+<p>访问 controller 测试即可</p>
+</blockquote>
+<h3 id="4-跨域拦截器配置"><a href="#4-跨域拦截器配置" class="headerlink" title="4. 跨域拦截器配置"></a>4. 跨域拦截器配置</h3><ul>
+<li>解决跨域请求：控制器类添加 <code>@CrossOrigin</code> 注解</li>
+</ul>
+<pre><code class="java">@CrossOrigin(origins = &quot;*&quot;)//解决跨域请求</code></pre>
+<ul>
+<li>跨域拦截器类：</li>
+</ul>
+<pre><code class="java">import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.springframework.stereotype.Component;
+import org.springframework.web.servlet.HandlerInterceptor;
+
+@Component
+public class CorsInterceptor implements HandlerInterceptor{
+    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object arg2) throws Exception {
+         // 此处配置的是允许任意域名跨域请求，可根据需求指定
+        response.setHeader(&quot;Access-Control-Allow-Origin&quot;, request.getHeader(&quot;origin&quot;));
+        response.setHeader(&quot;Access-Control-Allow-Credentials&quot;, &quot;true&quot;);
+        response.setHeader(&quot;Access-Control-Allow-Methods&quot;, &quot;GET, HEAD, POST, PUT, PATCH, DELETE, OPTIONS&quot;);
+        response.setHeader(&quot;Access-Control-Max-Age&quot;, &quot;86400&quot;);
+        response.setHeader(&quot;Access-Control-Allow-Headers&quot;, &quot;Origin, X-Requested-With, Content-Type, Accept,Authorization&quot;);
+        return true;
+    }
+}</code></pre>
+
+</div>
+
+
+    <div class="post-guide">
+        <div class="item left">
+            
+              <a href="/2018/06/20/08_%E6%A1%86%E6%9E%B6%E6%8A%80%E6%9C%AF/03_SpringMVC/01_SpringMVC%20%E5%85%A5%E9%97%A8/">
+                  <i class="fa fa-angle-left" aria-hidden="true"></i>
+                  01_SpringMVC 入门
+              </a>
+            
+        </div>
+        <div class="item right">
+            
+              <a href="/2018/06/02/08_%E6%A1%86%E6%9E%B6%E6%8A%80%E6%9C%AF/02_Spring/04_Data/02-Spring%20Transaction%20%E4%BA%8B%E5%8A%A1/">
+                04_Data
+                <i class="fa fa-angle-right" aria-hidden="true"></i>
+              </a>
+            
+        </div>
+    </div>
+
+
+
+	<div id="vcomments"></div>
+
+
+<script>
+	
+		// 评论
+		new Valine({
+			av: AV,
+			el: '#vcomments',
+			notify: false,
+			verify: false,
+			path: window.location.pathname,
+			appId: '0exEH4ytmTqKOdHo2LkWbfYX-gzGzoHsz',
+			appKey: 'Um4XtDTHES5OC2iu96qf1oSX',
+			placeholder: '妙语连珠，岂不快哉？',
+			avatar: 'retro',
+			recordIP: false
+		})
+	
+	
+    // 显示次数
+		function showTime(Counter) {
+			var query = new AV.Query("Counter");
+			if($(".leancloud_visitors").length > 0){
+				var url = $(".leancloud_visitors").attr('id').trim();
+				// where field
+				query.equalTo("words", url);
+				// count
+				query.count().then(function (number) {
+					// There are number instances of MyClass where words equals url.
+					$(document.getElementById(url)).text(number?  number : '--');
+				}, function (error) {
+					// error is an instance of AVError.
+				});
+			}
+		}
+		// 追加pv
+		function addCount(Counter) {
+			var url = $(".leancloud_visitors").length > 0 ? $(".leancloud_visitors").attr('id').trim() : 'janycode.github.io';
+			var Counter = AV.Object.extend("Counter");
+			var query = new Counter;
+			query.save({
+				words: url
+			}).then(function (object) {
+			})
+		}
+		$(function () {
+			var Counter = AV.Object.extend("Counter");
+			addCount(Counter);
+			showTime(Counter);
+
+			// 页面加载完成，设置所有的图片鼠标移入和移出属性，移入放大/移出还原
+			$("img").each(function(index){
+				$(this).attr("onmouseover", "this.style.zoom='2'");
+				$(this).attr("onmouseout", "this.style.zoom='1'");
+			});
+		});
+	
+</script>
 
 <!-- live2d 动画 -->
 <script src="https://eqcn.ajz.miesnfu.com/wp-content/plugins/wp-3d-pony/live2dw/lib/L2Dwidget.min.js"></script>
