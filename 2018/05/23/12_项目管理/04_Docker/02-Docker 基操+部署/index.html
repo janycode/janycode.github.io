@@ -3403,23 +3403,34 @@ docker rm $(docker ps -qa)</code></pre>
 # daocloud.io/library/tomcat   9.0.0-jre8          273c6a7e33d5        2 years ago         566MB
 # daocloud.io/library/mysql    5.7.4               aa5364eb3d85        5 years ago         252MB</code></pre>
 <p>① 运行 tomcat 容器</p>
-<pre><code class="sh">docker run -d -p 8080:8080 --name newTomcat 273c6a7e33d5</code></pre>
+<pre><code class="sh">docker run -d -p 8080:8080 --name tomcat 273c6a7e33d5</code></pre>
 <p>② 运行 mysql 容器</p>
 <pre><code class="sh">docker run -d -p 3306:3306 --name mysql -e MYSQL_ROOT_PASSWORD=123456 aa5364eb3d85</code></pre>
 <p>③ 部署 SSM 工程</p>
 <ul>
 <li><p>修改 ssm 工程环境，设置为 Linux 中的 Docker 容器的信息</p>
-<pre><code class="sh">  # 修改位置</code></pre>
+<pre><code class="sh">  # 注意1：修改位置，JDBC 配置中的虚拟机IP
+  jdbc.url=jdbc:mysql://192.168.247.130:3306/数据库名
+  # 注意2：在 tomcat 的 webapps 目录部署工程后，所有的资源路径都要带上&quot;项目名称&quot;，如 ajax 的 url
+  url: &quot;/项目名称/music/findByPage&quot;,</code></pre>
 </li>
-</ul>
-<ul>
 <li><p>通过 Maven 的 package 重新打成 war 包</p>
 </li>
 <li><p>将 windows 下的 war 包复制到 linux 中</p>
 </li>
 <li><p>通过 docker 命令将宿主机的 war 包复制到容器内部</p>
+<pre><code class="sh">  # 注意：如果重新导入新的 war 包时，需要将容器停止后，再启动，否则 war 包修改不生效
+  docker exec -it 容器id bash
+  # 删除上一个已被 tomcat 解压的工程和 war 包
+  rm webapps/项目名*
+  # 停掉 tomcat 容器（本质是将 tomcat 进程杀掉）
+  docker stop tomcat
+  # 复制 war 包到 tomcat 的对应路径
+  docker cp LayUIDemo.war 容器ID:/usr/local/tomcat/webapps/
+  # 启动 tomcat 容器（启动 tomcat 进程）
+  docker start tomcat</code></pre>
 </li>
-<li><p>测试访问 ssm 工程</p>
+<li><p>宿主机 windows 测试访问 ssm 工程</p>
 </li>
 </ul>
 
@@ -3429,9 +3440,9 @@ docker rm $(docker ps -qa)</code></pre>
     <div class="post-guide">
         <div class="item left">
             
-              <a href="/2018/05/23/12_%E9%A1%B9%E7%9B%AE%E7%AE%A1%E7%90%86/04_Docker/01-Docker%20%E5%AE%89%E8%A3%85/">
+              <a href="/2018/05/23/12_%E9%A1%B9%E7%9B%AE%E7%AE%A1%E7%90%86/03_Maven/03-Maven%E7%A7%81%E6%9C%8DNexus/">
                   <i class="fa fa-angle-left" aria-hidden="true"></i>
-                  01-Docker 安装
+                  03-Maven私服Nexus
               </a>
             
         </div>
