@@ -3272,6 +3272,24 @@
 			
 							<ul>
 								<li class="file">
+									<a href="/2016/05/03/20_%E6%94%B6%E8%97%8F%E6%95%B4%E7%90%86/03_%E5%B7%A5%E5%85%B7%E7%B1%BB/05-EncryptUtil/index.html" title="05-EncryptUtil">
+										05-EncryptUtil
+									</a>
+								</li>
+								<div class="article-toc" style="display: none;"></div>
+							</ul>
+			
+							<ul>
+								<li class="file">
+									<a href="/2016/05/03/20_%E6%94%B6%E8%97%8F%E6%95%B4%E7%90%86/03_%E5%B7%A5%E5%85%B7%E7%B1%BB/06-JedisCore/index.html" title="06-JedisCore">
+										06-JedisCore
+									</a>
+								</li>
+								<div class="article-toc" style="display: none;"></div>
+							</ul>
+			
+							<ul>
+								<li class="file">
 									<a href="/2016/05/01/20_%E6%94%B6%E8%97%8F%E6%95%B4%E7%90%86/03_%E5%B7%A5%E5%85%B7%E7%B1%BB/99-apache%E5%8C%85%E5%B8%B8%E7%94%A8%E5%B7%A5%E5%85%B7%E7%B1%BB/index.html" title="99-apache包常用工具类">
 										99-apache包常用工具类
 									</a>
@@ -3393,12 +3411,12 @@ public class InterceptorController {
     }
 }</code></pre>
 <p>访问 controller 测试，拦截器生效。</p>
-<h3 id="4-跨域拦截器配置"><a href="#4-跨域拦截器配置" class="headerlink" title="4. 跨域拦截器配置"></a>4. 跨域拦截器配置</h3><ul>
+<h3 id="4-跨域配置"><a href="#4-跨域配置" class="headerlink" title="4. 跨域配置"></a>4. 跨域配置</h3><ul>
 <li>解决跨域请求：控制器类添加 <code>@CrossOrigin</code> 注解</li>
 </ul>
-<pre><code class="java">@CrossOrigin(origins = &quot;*&quot;)//解决跨域请求</code></pre>
+<pre><code class="java">@CrossOrigin(origins = &quot;*&quot;)//解决跨域请求                                                             </code></pre>
 <ul>
-<li>跨域拦截器类：</li>
+<li>跨域拦截器：<code>实现 HandlerInterceptor 重写 preHandle() 方法。</code></li>
 </ul>
 <pre><code class="java">import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -3409,15 +3427,55 @@ import org.springframework.web.servlet.HandlerInterceptor;
 @Component
 public class CorsInterceptor implements HandlerInterceptor{
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object arg2) throws Exception {
-         // 此处配置的是允许任意域名跨域请求，可根据需求指定
+
+        // 此处配置的是允许任意域名跨域请求，可根据需求指定
+        //response.setHeader(&quot;Access-Control-Allow-Origin&quot;, &quot;*&quot;); // 允许所有跨域
         response.setHeader(&quot;Access-Control-Allow-Origin&quot;, request.getHeader(&quot;origin&quot;));
+        // 允许跨域凭证
         response.setHeader(&quot;Access-Control-Allow-Credentials&quot;, &quot;true&quot;);
+        // 允许跨域的方法
         response.setHeader(&quot;Access-Control-Allow-Methods&quot;, &quot;GET, HEAD, POST, PUT, PATCH, DELETE, OPTIONS&quot;);
+        // 允许跨域的有效期
         response.setHeader(&quot;Access-Control-Max-Age&quot;, &quot;86400&quot;);
+        // 允许跨域的请求消息头
         response.setHeader(&quot;Access-Control-Allow-Headers&quot;, &quot;Origin, X-Requested-With, Content-Type, Accept,Authorization&quot;);
+
         return true;
     }
 }</code></pre>
+<ul>
+<li>跨域过滤器：<code>实现 Filter 重写 doFilter 方法。</code></li>
+</ul>
+<pre><code class="java">import org.springframework.stereotype.Component;
+
+import javax.servlet.*;
+import javax.servlet.annotation.WebFilter;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+
+@Component
+@WebFilter(&quot;/*&quot;)
+public class CROSFilter implements Filter {
+    @Override
+    public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
+        HttpServletResponse response=(HttpServletResponse)servletResponse;
+
+        // 此处配置的是允许任意域名跨域请求，可根据需求指定
+        //response.setHeader(&quot;Access-Control-Allow-Origin&quot;, &quot;*&quot;); // 允许所有跨域
+        response.setHeader(&quot;Access-Control-Allow-Origin&quot;, request.getHeader(&quot;origin&quot;));
+        // 允许跨域凭证
+        response.setHeader(&quot;Access-Control-Allow-Credentials&quot;, &quot;true&quot;);
+        // 允许跨域的方法
+        response.setHeader(&quot;Access-Control-Allow-Methods&quot;, &quot;GET, HEAD, POST, PUT, PATCH, DELETE, OPTIONS&quot;);
+        // 允许跨域的有效期
+        response.setHeader(&quot;Access-Control-Max-Age&quot;, &quot;86400&quot;);
+        // 允许跨域的请求消息头
+        response.setHeader(&quot;Access-Control-Allow-Headers&quot;, &quot;Origin, X-Requested-With, Content-Type, Accept,Authorization&quot;);
+
+        filterChain.doFilter(servletRequest,response);
+    }
+}
+</code></pre>
 
 </div>
 
@@ -3425,16 +3483,16 @@ public class CorsInterceptor implements HandlerInterceptor{
     <div class="post-guide">
         <div class="item left">
             
-              <a href="/2018/06/20/08_%E6%A1%86%E6%9E%B6%E6%8A%80%E6%9C%AF/04_SpringBoot/03_SpringBoot%20%E5%BC%82%E5%B8%B8+%E6%97%A5%E5%BF%97/">
+              <a href="/2018/06/20/08_%E6%A1%86%E6%9E%B6%E6%8A%80%E6%9C%AF/04_SpringBoot/07_SpringBoot%20+%20Redis/">
                   <i class="fa fa-angle-left" aria-hidden="true"></i>
-                  03_SpringBoot 异常+日志
+                  07_SpringBoot + Redis
               </a>
             
         </div>
         <div class="item right">
             
-              <a href="/2018/06/20/08_%E6%A1%86%E6%9E%B6%E6%8A%80%E6%9C%AF/04_SpringBoot/04_SpringBoot%20%E8%BF%87%E6%BB%A4%E5%99%A8+%E7%9B%91%E5%90%AC%E5%99%A8/">
-                04_SpringBoot 过滤器+监听器
+              <a href="/2018/06/20/08_%E6%A1%86%E6%9E%B6%E6%8A%80%E6%9C%AF/04_SpringBoot/09_SpringBoot%20+%20Thymeleaf/">
+                09_SpringBoot + Thymeleaf
                 <i class="fa fa-angle-right" aria-hidden="true"></i>
               </a>
             
