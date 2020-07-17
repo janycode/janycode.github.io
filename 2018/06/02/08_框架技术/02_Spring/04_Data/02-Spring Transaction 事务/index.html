@@ -3369,15 +3369,46 @@
 <li><strong>持久性</strong> : 一旦结束，数据就永久的保存到数据库</li>
 </ul>
 <blockquote>
-<p>如果不考虑隔离性:<br><strong>脏读</strong> : 一个事务读到另一个事务未提交数据<br><strong>不可重复读</strong> : 一个事务读到另一个事务已经提交数据（update）导致一个事务多次查询结果不一致<br><strong>虚读</strong> : 一个事务读到另一个事务已经提交数据（insert）导致一个事务多次查询结果不一致</p>
+<p>如果不考虑隔离性:<br><strong>脏读</strong> : 一个事务读到另一个事务未提交数据<br><strong>不可重复读</strong> : 一个事务读到另一个事务已经提交数据（update）导致一个事务多次查询结果不一致<br><strong>虚读/幻读</strong> : select 某记录是否存在，结果是不存在，准备插入此记录，但执行 insert 时发现此记录已存在（因刚好被另一个事务 insert），无法插入，此时 select 过程发生幻读。</p>
 </blockquote>
-<p>事务的隔离级别:</p>
-<ul>
-<li>未提交读 : 以上情况都有可能发生。</li>
-<li><strong>已提交读</strong> : 避免脏读，但不可重复读，虚读是有可能发生。</li>
-<li><strong>可重复读</strong> : 避免脏读，不可重复读，但是虚读有可能发生。</li>
-<li>串行的 : 避免以上所有情况。</li>
-</ul>
+<table style="margin: auto;"">
+<tbody>
+<tr>
+<th>事务隔离级别</th>
+<th>脏读</th>
+<th>不可重复读</th>
+<th>幻读</th>
+</tr>
+<tr>
+<td>读未提交（read-uncommitted）</td>
+<td>是</td>
+<td>是</td>
+<td>是</td>
+</tr>
+<tr>
+<td>不可重复读（read-committed）</td>
+<td>否</td>
+<td>是</td>
+<td>是</td>
+</tr>
+<tr>
+<td>可重复读（repeatable-read）</td>
+<td>否</td>
+<td>否</td>
+<td>是</td>
+</tr>
+<tr>
+<td>串行化/序列化（serializable）</td>
+<td>否</td>
+<td>否</td>
+<td>否</td>
+</tr>
+</tbody>
+</table>
+
+
+
+
 <blockquote>
 <p>mySQL 数据库存储引擎：innoDB(支持事务)、MyISAM(不支持事务)</p>
 </blockquote>

@@ -3349,14 +3349,14 @@
 </div>
 
 <div id="article-content">
-	<h3 id="1-Trigger-简介"><a href="#1-Trigger-简介" class="headerlink" title="1. Trigger 简介"></a>1. Trigger 简介</h3><p>  <strong>【概念】</strong><br>  它是与表有关的数据库对象，在满足定义条件时触发，并执行触发器中定义的语句集合。<br>  这种特性可以协助应用在数据库端确保数据的完整性。</p>
+	<h3 id="1-Trigger-简介"><a href="#1-Trigger-简介" class="headerlink" title="1. Trigger 简介"></a>1. Trigger 简介</h3><p>  <strong>【概念】</strong><br>  它是与表有关的数据库对象，在满足定义条件时触发，并执行触发器中定义的语句集合。<br>  这种特性可以协助应用在数据库端<code>确保数据的完整性</code>。</p>
 <p> <strong>【基本语法】</strong></p>
-<pre><code class="mysql">CREATE TRIGGER trigger_name trigger_time trigger_event ON name FOR EACH ROW trigger_stmt
+<pre><code class="mysql">CREATE TRIGGER trigger_name trigger_time trigger_event ON tb_name FOR EACH ROW trigger_stmt
 
-# @trigger_name：触发器名称
+# @trigger_name：触发器名称，自定义
 # @tirgger_time：触发时机，取值 BEFORE、AFTER
 # @trigger_event：触发事件，取值 INSERT、DELETE、UPDATE
-# @name：表示建立触发器的表名，就是在哪张表上建立触发器
+# @tb_name：表示建立触发器的表名，就是在哪张表上建立触发器
 # @trigger_stmt：触发器的程序体，可以是一条SQL语句或者是用 BEGIN 和 END 包含的多条语句</code></pre>
 <p>  所以 MySQL 可以创建以下 6 种触发器：<br>  BEFORE INSERT,  BEFORE DELETE,  BEFORE UPDATE<br>  AFTER INSERT,  AFTER DELETE,  AFTER UPDATE</p>
 <p> <strong>【包含多个执行语句语法】</strong></p>
@@ -3371,21 +3371,26 @@ DELIMITER ;</code></pre>
 <p> SQL 语句分隔符问题：<br> 一般情况下，mysql默认是以 ; 作为结束执行语句，与触发器中需要的分行有冲突。<br> 为解决此问题可用 <code>DELIMITER</code> 关键字，如：DELIMITER #，可以将结束符号变成 #<br> 当触发器创建完成后，可以用 DELIMITER ; 来将结束符号变成 ;</p>
 </blockquote>
 <p> <strong>【Trigger CRUD】</strong></p>
-<pre><code class="sql">CREATE TRIGGER 触发器名 触发时机 触发事件 ON 表名 FOR EACH ROW 触发器程序体
+<pre><code class="Mysql"># 增 Create
+CREATE TRIGGER 触发器名 触发时机 触发事件 ON 表名 FOR EACH ROW 触发器程序体
+# 查 Retrieve
 SHOW TRIGGERS
+# 改 Update
 ALTER TRIGGER 触发器名 触发时机 触发事件 ON 表名 FOR EACH ROW 触发器程序体
+# 删 Delete
 DROP TRIGGER trigger_name</code></pre>
 <p><strong>【NEW 和 OLD】</strong></p>
 <ul>
-<li>NEW 对象：SQL语句执行之前的记录对象</li>
-<li>OLD 对象：SQL语句执行之后的记录对象</li>
+<li><code>NEW</code> 对象：SQL语句执行之前的记录对象</li>
+<li><code>OLD</code> 对象：SQL语句执行之后的记录对象</li>
 </ul>
 <p><strong>【基本使用】</strong></p>
 <ul>
-<li>当需要在操作 user 表的时候做<code>记录</code>，并备份 user 表的数据 —— Demo1</li>
-<li>当 user 表中发生了修改行为，那么就会修改 class 中的<code>数量</code> —— Demo2</li>
+<li>当需要在操作 user 表的时候做独立的<code>数据库操作记录</code>，并备份 user 表的数据 —— Demo1</li>
+<li>当 user 表中发生了 DML 行为，那么就会<code>修改关联表中的某个字段</code>，比如数量 —— Demo2</li>
+<li>…</li>
 </ul>
-<h3 id="2-Trigger-Demo1"><a href="#2-Trigger-Demo1" class="headerlink" title="2. Trigger Demo1"></a>2. Trigger Demo1</h3><pre><code class="mysql"># 创建 user 表：id 主键,自增；name 不允许空
+<h3 id="2-Trigger-Demo1-For-Log"><a href="#2-Trigger-Demo1-For-Log" class="headerlink" title="2. Trigger Demo1 For Log"></a>2. Trigger Demo1 For Log</h3><pre><code class="mysql"># 创建 user 表：id 主键,自增；name 不允许空
 DROP TABLE IF EXISTS `user`;
 CREATE TABLE `user`(
   `id` INT PRIMARY KEY AUTO_INCREMENT,
@@ -3473,7 +3478,7 @@ SHOW TRIGGERS;
 UPDATE `user` SET NAME=&#39;jay&#39; WHERE id=1;
 SELECT * FROM `user`;
 SELECT * FROM `user_log`;</code></pre>
-<h3 id="3-Trigger-Demo2"><a href="#3-Trigger-Demo2" class="headerlink" title="3. Trigger Demo2"></a>3. Trigger Demo2</h3><pre><code class="mysql"># 创建班级表
+<h3 id="3-Trigger-Demo2-For-Data"><a href="#3-Trigger-Demo2-For-Data" class="headerlink" title="3. Trigger Demo2 For Data"></a>3. Trigger Demo2 For Data</h3><pre><code class="mysql"># 创建班级表
 DROP TABLE IF EXISTS `class`;
 CREATE TABLE `class`(
     `cid` INT PRIMARY KEY AUTO_INCREMENT,
@@ -3568,16 +3573,16 @@ SELECT * FROM student;</code></pre>
     <div class="post-guide">
         <div class="item left">
             
-              <a href="/2017/06/18/05_%E6%95%B0%E6%8D%AE%E5%BA%93/01_MySQL/12-%E6%95%B0%E6%8D%AE%E5%BA%93%E5%AD%98%E5%82%A8%E5%BC%95%E6%93%8E/">
+              <a href="/2017/06/18/05_%E6%95%B0%E6%8D%AE%E5%BA%93/01_MySQL/09-%E6%95%B0%E6%8D%AE%E5%BA%93%E7%B4%A2%E5%BC%95/">
                   <i class="fa fa-angle-left" aria-hidden="true"></i>
-                  12-数据库存储引擎
+                  09-数据库索引
               </a>
             
         </div>
         <div class="item right">
             
-              <a href="/2017/06/18/05_%E6%95%B0%E6%8D%AE%E5%BA%93/02_MyBatis/03-MyBatis%20ORM%E5%85%B3%E7%B3%BB%E6%98%A0%E5%B0%84/">
-                03-MyBatis ORM关系映射
+              <a href="/2017/06/18/05_%E6%95%B0%E6%8D%AE%E5%BA%93/01_MySQL/11-%E6%95%B0%E6%8D%AE%E5%BA%93%E4%B8%89%E5%A4%A7%E8%8C%83%E5%BC%8F/">
+                11-数据库三大范式
                 <i class="fa fa-angle-right" aria-hidden="true"></i>
               </a>
             
