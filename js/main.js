@@ -95,7 +95,7 @@ function showArticleIndex() {
 		}
 		if(level != 0){
 			$(labelList[i]).before('<span class="anchor" id="_label'+ i +'"></span>');
-			content += '<li class="level_'+level+'"><i class="fa fa-circle" aria-hidden="true"></i><a href="#_label'+ i +'"> '+ $(labelList[i]).text() +'</a></li>';
+			content += '<li class="level_'+level+'"><i class="fa fa-map-marker" aria-hidden="true"></i><a href="#_label'+ i +'"> '+ $(labelList[i]).text() +'</a></li>';
 		}
 	}
 	content += "</ul>"
