@@ -2805,8 +2805,8 @@
 			
 							<ul>
 								<li class="file">
-									<a href="/2020/03/02/08_%E6%A1%86%E6%9E%B6%E6%8A%80%E6%9C%AF/05_SpringCloud/02-Nacos%20%E6%9C%8D%E5%8A%A1&%E9%85%8D%E7%BD%AE%E4%B8%AD%E5%BF%83/index.html" title="02-Nacos 服务&配置中心">
-										02-Nacos 服务&配置中心
+									<a href="/2020/03/02/08_%E6%A1%86%E6%9E%B6%E6%8A%80%E6%9C%AF/05_SpringCloud/02-Nacos%20%E6%B3%A8%E5%86%8C%E4%B8%AD%E5%BF%83&%E9%85%8D%E7%BD%AE%E4%B8%AD%E5%BF%83/index.html" title="02-Nacos 注册中心&配置中心">
+										02-Nacos 注册中心&配置中心
 									</a>
 								</li>
 								<div class="article-toc" style="display: none;"></div>
@@ -2814,8 +2814,8 @@
 			
 							<ul>
 								<li class="file">
-									<a href="/2020/03/02/08_%E6%A1%86%E6%9E%B6%E6%8A%80%E6%9C%AF/05_SpringCloud/03-Feign%20%E6%9C%8D%E5%8A%A1%E5%8F%91%E7%8E%B0%E5%AE%A2%E6%88%B7%E7%AB%AF/index.html" title="03-Feign 服务发现客户端">
-										03-Feign 服务发现客户端
+									<a href="/2020/03/02/08_%E6%A1%86%E6%9E%B6%E6%8A%80%E6%9C%AF/05_SpringCloud/03-Feign%20%E5%A3%B0%E6%98%8E%E5%BC%8FHTTP%E5%AE%A2%E6%88%B7%E7%AB%AF/index.html" title="03-Feign 声明式HTTP客户端">
+										03-Feign 声明式HTTP客户端
 									</a>
 								</li>
 								<div class="article-toc" style="display: none;"></div>
@@ -2832,8 +2832,8 @@
 			
 							<ul>
 								<li class="file">
-									<a href="/2020/03/02/08_%E6%A1%86%E6%9E%B6%E6%8A%80%E6%9C%AF/05_SpringCloud/05-Gateway%20API%E8%B7%AF%E7%94%B1%E5%8C%B9%E9%85%8D%E7%BD%91%E5%85%B3/index.html" title="05-Gateway API路由匹配网关">
-										05-Gateway API路由匹配网关
+									<a href="/2020/03/02/08_%E6%A1%86%E6%9E%B6%E6%8A%80%E6%9C%AF/05_SpringCloud/05-Gateway%20API%E8%B7%AF%E7%94%B1%E7%BD%91%E5%85%B3%E4%B8%AD%E5%BF%83/index.html" title="05-Gateway API路由网关中心">
+										05-Gateway API路由网关中心
 									</a>
 								</li>
 								<div class="article-toc" style="display: none;"></div>
@@ -3572,17 +3572,20 @@
 <li><p>下载<br> 下载地址：<a href="https://github.com/alibaba/Sentinel/releases" target="_blank" rel="noopener">https://github.com/alibaba/Sentinel/releases</a></p>
 </li>
 <li><p>启动</p>
-<pre><code class="sh"> #依赖 jdk 环境，win或linux均可直接运行
- java -jar sentinel-dashboard-1.7.2.jar</code></pre>
+<pre><code class="sh"> #依赖 jdk 环境，win或linux均可直接运行，默认 8080 端口启动
+ java -jar sentinel-dashboard-1.7.2.jar
+
+ # 指定端口启动
+ java -jar sentinel-dashboard-1.7.2.jar --server.port=8088</code></pre>
 </li>
-<li><p>访问控制台<br> <a href="http://localhost:8080" target="_blank" rel="noopener">http://localhost:8080</a><br> 默认账号：sentinel<br> 默认密码：sentinel</p>
+<li><p>访问控制台<br> <a href="http://localhost:8080" target="_blank" rel="noopener">http://localhost:8080</a>  或  <a href="http://localhost:8088" target="_blank" rel="noopener">http://localhost:8088</a><br> 默认账号：sentinel<br> 默认密码：sentinel</p>
 </li>
 </ol>
 <blockquote>
 <p>ps：默认没有任何监控，需要访问对应的服务接口才会有监控（如从网关访问或消费者接口访问）  </p>
 </blockquote>
 <p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20200731141525.png" alt="image-20200731141523302"></p>
-<h3 id="3-Sentinel-应用"><a href="#3-Sentinel-应用" class="headerlink" title="3. Sentinel 应用"></a>3. Sentinel 应用</h3><p>Sentinel 作用在消费者上可以实现核心方法的高可用性：</p>
+<h3 id="3-Sentinel-应用"><a href="#3-Sentinel-应用" class="headerlink" title="3. Sentinel 应用"></a>3. Sentinel 应用</h3><p>Sentinel 作用在<code>消费者服务</code>上可以实现核心方法的高可用性：</p>
 <ol>
 <li>依赖 jar</li>
 </ol>
@@ -3633,8 +3636,10 @@ spring:
         server-addr: 47.94.193.104:8848  #注册中心地址
     sentinel:  #哨兵配置
       transport:
+        #在消费者 8090 端口启动服务后，sentinel 还会在 8719 这个端口起一个服务和 sentinel-dashboard 通信（发心跳）
         port: 8719
-        dashboard: localhost:8080
+        # sentinel-dashboard 的地址，即默认 sentinel 监控台的地址和端口，如指定了 8088 端口
+        dashboard: localhost:8088
 feign:
   sentinel:
     enabled: true  #Feign启用Sentinel哨兵监控流量熔断-服务降级
@@ -3646,7 +3651,7 @@ feign:
 <ol start="4">
 <li>测试<br> 必须请求一次才能看到对应请求被监控的效果。</li>
 </ol>
-<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20200731142236.png" alt="image-20200731142235467"></p>
+<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20200801094725.png" alt="image-20200801094723956"></p>
 
 </div>
 
@@ -3654,16 +3659,16 @@ feign:
     <div class="post-guide">
         <div class="item left">
             
-              <a href="/2020/03/02/08_%E6%A1%86%E6%9E%B6%E6%8A%80%E6%9C%AF/05_SpringCloud/05-Gateway%20API%E8%B7%AF%E7%94%B1%E5%8C%B9%E9%85%8D%E7%BD%91%E5%85%B3/">
+              <a href="/2020/03/02/08_%E6%A1%86%E6%9E%B6%E6%8A%80%E6%9C%AF/05_SpringCloud/03-Feign%20%E5%A3%B0%E6%98%8E%E5%BC%8FHTTP%E5%AE%A2%E6%88%B7%E7%AB%AF/">
                   <i class="fa fa-angle-left" aria-hidden="true"></i>
-                  05-Gateway API路由匹配网关
+                  03-Feign 声明式HTTP客户端
               </a>
             
         </div>
         <div class="item right">
             
-              <a href="/2020/03/02/08_%E6%A1%86%E6%9E%B6%E6%8A%80%E6%9C%AF/05_SpringCloud/07-Sleuth%20%E9%93%BE%E8%B7%AF%E8%BF%BD%E8%B8%AA%E5%99%A8/">
-                07-Sleuth 链路追踪器
+              <a href="/2020/03/02/08_%E6%A1%86%E6%9E%B6%E6%8A%80%E6%9C%AF/05_SpringCloud/02-Nacos%20%E6%B3%A8%E5%86%8C%E4%B8%AD%E5%BF%83&%E9%85%8D%E7%BD%AE%E4%B8%AD%E5%BF%83/">
+                02-Nacos 注册中心&配置中心
                 <i class="fa fa-angle-right" aria-hidden="true"></i>
               </a>
             
