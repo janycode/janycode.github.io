@@ -2814,8 +2814,8 @@
 									
 							<ul>
 								<li class="file">
-									<a href="/2020/03/02/08_%E6%A1%86%E6%9E%B6%E6%8A%80%E6%9C%AF/05_SpringCloud/01_SpringCloudAlibaba%E5%85%A5%E9%97%A8/index.html" title="01_SpringCloudAlibaba入门">
-										01_SpringCloudAlibaba入门
+									<a href="/2020/03/02/08_%E6%A1%86%E6%9E%B6%E6%8A%80%E6%9C%AF/05_SpringCloud/01-SpringCloudAlibaba%E5%85%A5%E9%97%A8/index.html" title="01-SpringCloudAlibaba入门">
+										01-SpringCloudAlibaba入门
 									</a>
 								</li>
 								<div class="article-toc" style="display: none;"></div>
@@ -3770,15 +3770,15 @@ http://IP地址:8848/nacos/index.html
 </li>
 <li><p>spring.profile.active 即为当前环境对应的 profile，详情可以参考 <a href="https://docs.spring.io/spring-boot/docs/current/reference/html/spring-boot-features.html#boot-features-profiles" target="_blank" rel="noopener">Spring Boot文档</a>。 <strong>注意：当</strong>spring.profile.active <strong>为空时，对应的连接符</strong> - <strong>也将不存在，</strong>dataId <strong>的拼接格式变成</strong>${prefix}.${fileextension}</p>
 </li>
-<li><p>file-exetension 为配置内容的数据格式，可以通过配置项 spring.cloud.nacos.config.fileextension 来配置。目前只支持 properties 和 yaml 类型。<br>  比如demo：<br>  <strong>jerryProvider.properties</strong>  </p>
+<li><p>file-exetension 为配置内容的数据格式，可以通过配置项 spring.cloud.nacos.config.fileextension 来配置。目前只支持 properties 和 yaml 类型。<br>  比如demo：<br>  <strong>jerryProvider.properties</strong> </p>
 </li>
 </ul>
 <p>注意事项：</p>
 <ol>
 <li><code>实测目前只能读取 properties 格式数据</code></li>
-<li><code>实测目前只能让 Nacos 在 localhost 本机启动才能测试</code></li>
+<li><code>使用 application.yml 配置只能使用 Nacos 在 localhost 本机启动才能测试</code></li>
+<li><code>使用 bootstrap.yml 配置可以使用 Nacos 在 云服务器 地址启动测试</code> ——参考 5.Nacos配置远程服务器</li>
 </ol>
-<p>均暂未深究，properties + Nacos localhost 可正常读取。</p>
 </blockquote>
 <ol start="3">
 <li>服务提供者中添加配置</li>
@@ -3821,6 +3821,120 @@ public class ServerConfig {
 }</code></pre>
 <p>访问测试：<a href="http://localhost:8081/api/config/version" target="_blank" rel="noopener">http://localhost:8081/api/config/version</a></p>
 <p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20200801110136.png" alt="image-20200801110135250"></p>
+<h3 id="5-Nacos-配置远程服务器"><a href="#5-Nacos-配置远程服务器" class="headerlink" title="5. Nacos 配置远程服务器"></a>5. Nacos 配置远程服务器</h3><p>以 Jedis 工具类中对 Redis 配置信息统一管理为例：</p>
+<blockquote>
+<p>注意：</p>
+<ol>
+<li>@Value 注解 IOC 的属性注入是发生在对象创建实例之后，如果在构造中直接使用@Value的值进行构造对象，则无法获取到对应的值来创建对象；</li>
+<li>云服务器中使用 Nacos 作为统一配置中心时，需要使用加载更早的 bootstrap.yml 来配置，否则Spring默认会使用 localhost:8848 来寻找 Nacos服务器，导致无法访问云服务器的统一配置信息。</li>
+</ol>
+</blockquote>
+<ul>
+<li>Jedis 工具类 [XXX_Common]</li>
+</ul>
+<pre><code class="java">public class JedisCore {
+    private Jedis jedis;
+    // 三参构造方法
+    public JedisCore(String host, int port, String pass) {
+        JedisPool pool = new JedisPool(host, port);
+        jedis = pool.getResource();
+        jedis.auth(pass);
+    }
+    // 懒汉式 - 单例模式的 JedisCore
+    private static JedisCore jedisCore;
+    public static JedisCore getInstance(String host, int port, String pass) {
+        Lock lock = null;
+        try {
+            lock = new ReentrantLock(); //加锁使单例模式 线程安全
+            lock.lock();
+            if (jedisCore == null) {
+                jedisCore = new JedisCore(host, port, pass);
+            }
+        } finally {
+            if (lock != null) {
+                lock.unlock();
+            }
+        }
+        return jedisCore;
+    }
+
+    /**
+     * 获取指定key的值,如果key不存在返回null，如果该Key存储的不是字符串，会抛出一个错误
+     *
+     * @param key
+     * @return
+     */
+    public String get(String key) {
+        String value = null;
+        value = jedis.get(key);
+        return value;
+    }
+
+    //... 其他工具类内方法
+}</code></pre>
+<ul>
+<li>消费者 [XXX_Api]</li>
+</ul>
+<pre><code class="java">@Service
+public class UserServiceImpl implements UserService {
+    /**
+     * RestTemplate提供了多种便捷访问远程Http服务的方法
+     */
+    @Autowired
+    private RestTemplate restTemplate;
+
+    @Value(&quot;${spring.redis.host}&quot;) // @Value 注解 IOC 的属性注入是发生在对象实例之后
+    private String host;
+    @Value(&quot;${spring.redis.port}&quot;)
+    private int port;
+    @Value(&quot;${spring.redis.password}&quot;)
+    private String pass;
+
+    private JedisCore jedisCore;
+    @PostConstruct // 指定在Spring对象创建后立即调用的初始化方法
+    public void init() {
+        System.err.println(&quot;host = &quot; + host); // 获取到了统一配置的IP
+        System.err.println(&quot;port = &quot; + port); // 获取到了统一配置的端口
+        System.err.println(&quot;pass = &quot; + pass); // 获取到了统一配置的密码
+        jedisCore = JedisCore.getInstance(host, port, pass);
+    }
+
+    @Override
+    public R checkN(String name) {
+        jedisCore.set(&quot;testKey001&quot;, &quot;testValue2020-8-6-16:25:40&quot;); // 写入了 Redis 缓存
+        return restTemplate.getForObject(&quot;http://jerryProvider/provider/user/checkname.do?name=&quot; + name, R.class);
+    }
+}</code></pre>
+<blockquote>
+<p>测试时启动打印信息：</p>
+<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20200806170449.png" alt="image-20200806170448116"></p>
+</blockquote>
+<ul>
+<li>消费者使用配置文件 bootstrap.yml <code>优先比 application.yml 加载</code></li>
+</ul>
+<pre><code class="yaml">server:
+  port: 8090
+spring:
+  application:
+    name: jerryConsumer  #服务名称
+  cloud:
+    nacos:
+      discovery:
+        server-addr: 47.94.193.104:8848  #注册中心地址
+      config:
+        server-addr: 47.94.193.104:8848  #配置中心地址</code></pre>
+<blockquote>
+<p>bootstrap.yml（bootstrap.properties）用来在程序引导时执行，应用于更加早期配置信息读取，如可以使用来配置application.yml中使用到参数等</p>
+<p>application.yml（application.properties) 应用程序特有配置信息，可以用来配置后续各个模块中需使用的公共参数等。</p>
+<p>bootstrap.yml 先于 application.yml 加载。</p>
+</blockquote>
+<ul>
+<li>Nacos配置中心中配置 jerryConsumer.properties</li>
+</ul>
+<pre><code class="properties">spring.redis.host=47.94.193.104
+spring.redis.port=6379
+spring.redis.password=Redis密码</code></pre>
+<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20200806170406.png" alt="image-20200806170405473"></p>
 
 </div>
 
@@ -3828,9 +3942,9 @@ public class ServerConfig {
     <div class="post-guide">
         <div class="item left">
             
-              <a href="/2020/03/02/08_%E6%A1%86%E6%9E%B6%E6%8A%80%E6%9C%AF/05_SpringCloud/01_SpringCloudAlibaba%E5%85%A5%E9%97%A8/">
+              <a href="/2020/03/02/08_%E6%A1%86%E6%9E%B6%E6%8A%80%E6%9C%AF/05_SpringCloud/01-SpringCloudAlibaba%E5%85%A5%E9%97%A8/">
                   <i class="fa fa-angle-left" aria-hidden="true"></i>
-                  01_SpringCloudAlibaba入门
+                  01-SpringCloudAlibaba入门
               </a>
             
         </div>
