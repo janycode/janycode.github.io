@@ -3749,7 +3749,7 @@ http://IP地址:8848/nacos/index.html
 
 
 
-<h3 id="4-Nacos-配置中心"><a href="#4-Nacos-配置中心" class="headerlink" title="4. Nacos 配置中心"></a>4. Nacos 配置中心</h3><p>基于Nacos实现微服务的统一配置管理：可以用在<code>消费者</code> 或 <code>提供者</code>。</p>
+<h3 id="4-Nacos-配置中心-本地"><a href="#4-Nacos-配置中心-本地" class="headerlink" title="4. Nacos 配置中心-本地"></a>4. Nacos 配置中心-本地</h3><p>基于Nacos实现微服务的统一配置管理：可以用在<code>消费者</code> 或 <code>提供者</code>。</p>
 <ol>
 <li>依赖 jar</li>
 </ol>
@@ -3796,7 +3796,7 @@ spring:
         server-addr: localhost:8848  #配置中心地址
         file-extension: yaml  #配置文件的格式（但暂未生效）</code></pre>
 <ol start="4">
-<li>demo程序中添加配置类测试</li>
+<li>demo程序中添加配置类测试<br> <strong><code>@RefreshScope</code></strong>  注解开启实时刷新，实时获取配置中心的数据，实现动态配置。</li>
 </ol>
 <pre><code class="java">import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
@@ -3821,7 +3821,7 @@ public class ServerConfig {
 }</code></pre>
 <p>访问测试：<a href="http://localhost:8081/api/config/version" target="_blank" rel="noopener">http://localhost:8081/api/config/version</a></p>
 <p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20200801110136.png" alt="image-20200801110135250"></p>
-<h3 id="5-Nacos-配置远程服务器"><a href="#5-Nacos-配置远程服务器" class="headerlink" title="5. Nacos 配置远程服务器"></a>5. Nacos 配置远程服务器</h3><p>以 Jedis 工具类中对 Redis 配置信息统一管理为例：</p>
+<h3 id="5-Nacos-配置中心-远程"><a href="#5-Nacos-配置中心-远程" class="headerlink" title="5. Nacos 配置中心-远程"></a>5. Nacos 配置中心-远程</h3><p>以 Jedis 工具类中对 Redis 配置信息统一管理为例：</p>
 <blockquote>
 <p>注意：</p>
 <ol>
@@ -3840,29 +3840,13 @@ public class ServerConfig {
         jedis = pool.getResource();
         jedis.auth(pass);
     }
-    // 懒汉式 - 单例模式的 JedisCore
-    private static JedisCore jedisCore;
+    // 传递参数获取一个实例
     public static JedisCore getInstance(String host, int port, String pass) {
-        Lock lock = null;
-        try {
-            lock = new ReentrantLock(); //加锁使单例模式 线程安全
-            lock.lock();
-            if (jedisCore == null) {
-                jedisCore = new JedisCore(host, port, pass);
-            }
-        } finally {
-            if (lock != null) {
-                lock.unlock();
-            }
-        }
-        return jedisCore;
+        return new JedisCore(host, port, pass);
     }
 
     /**
      * 获取指定key的值,如果key不存在返回null，如果该Key存储的不是字符串，会抛出一个错误
-     *
-     * @param key
-     * @return
      */
     public String get(String key) {
         String value = null;
