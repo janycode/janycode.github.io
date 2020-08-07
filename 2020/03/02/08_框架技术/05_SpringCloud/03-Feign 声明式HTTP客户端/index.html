@@ -3850,6 +3850,35 @@ spring:
     nacos:
       discovery:
         server-addr: 47.94.193.104:8848  #注册中心地址</code></pre>
+<h3 id="3-415-Unsupported-Media-Type"><a href="#3-415-Unsupported-Media-Type" class="headerlink" title="3. 415 Unsupported Media Type"></a>3. 415 Unsupported Media Type</h3><p>HTTP Status 415 – Unsupported Media Type</p>
+<p><strong>问题现象</strong>：</p>
+<p>当<strong>消费者</strong>的控制层接口封装了 实体类 后，通过 RestTemplate 发送HTTP请求到 提供者 时报错 <code>415</code>，报错的核心信息为 HTTP Status 415 – Unsupported Media Type；</p>
+<p><strong>提供者</strong>警告信息为 WARN 27148 — [io-8081-exec-10] .w.s.m.s.DefaultHandlerExceptionResolver : Resolved [org.springframework.web.<strong>HttpMediaTypeNotSupportedException</strong>: Content type ‘<code>application/xml;charset=UTF-8</code>‘ not supported]</p>
+<p><strong>根本原因</strong>：推测是 spring cloud sentinel 的版本本身问题</p>
+<pre><code class="java">//控制器
+@PostMapping(value = &quot;/upd&quot;)
+public R updateLevel(@RequestBody MainLevel mainLevel) {
+    return service.updateLevel(mainLevel);
+}
+
+//业务层
+@Override
+public R updateLevel(MainLevel mainLevel) {
+    log.info(mainLevel.toString());
+
+    // 去掉 sentinel 流量哨兵的pom依赖 or 【推荐】加入HTTP头打包消息体发送到服务提供者
+    HttpHeaders requestHeaders = new HttpHeaders();
+    requestHeaders.setContentType(MediaType.APPLICATION_JSON);
+    HttpEntity&lt;MainLevel&gt; requestEntity = new HttpEntity&lt;MainLevel&gt;(mainLevel, requestHeaders);
+
+    return restTemplate.postForObject(&quot;http://server/server/carlevel/update.do&quot;, mainLevel, R.class);
+}
+
+//服务提供者 - 控制器
+@PostMapping(&quot;/update.do&quot;)
+public R updateLevel(@RequestBody MainLevel mainLevel) { // json接收，映射实体类
+    return service.updateLevel(mainLevel);
+}</code></pre>
 
 </div>
 
@@ -3857,9 +3886,9 @@ spring:
     <div class="post-guide">
         <div class="item left">
             
-              <a href="/2020/03/02/08_%E6%A1%86%E6%9E%B6%E6%8A%80%E6%9C%AF/05_SpringCloud/05-Gateway%20API%E8%B7%AF%E7%94%B1%E7%BD%91%E5%85%B3%E4%B8%AD%E5%BF%83/">
+              <a href="/2020/03/02/08_%E6%A1%86%E6%9E%B6%E6%8A%80%E6%9C%AF/05_SpringCloud/02-Nacos%20%E6%B3%A8%E5%86%8C%E4%B8%AD%E5%BF%83&%E9%85%8D%E7%BD%AE%E4%B8%AD%E5%BF%83/">
                   <i class="fa fa-angle-left" aria-hidden="true"></i>
-                  05-Gateway API路由网关中心
+                  02-Nacos 注册中心&配置中心
               </a>
             
         </div>
