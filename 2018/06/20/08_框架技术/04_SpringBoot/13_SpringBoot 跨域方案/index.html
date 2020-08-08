@@ -11,7 +11,7 @@
 	
 	<title>
 	
-		05_SpringBoot 拦截器+跨域 | 
+		13_SpringBoot 跨域方案 | 
 	 
 	姜源の云笔记
 	</title>
@@ -2739,9 +2739,9 @@
 							</ul>
 			
 							<ul>
-								<li class="file active">
-									<a href="/2018/06/20/08_%E6%A1%86%E6%9E%B6%E6%8A%80%E6%9C%AF/04_SpringBoot/05_SpringBoot%20%E6%8B%A6%E6%88%AA%E5%99%A8+%E8%B7%A8%E5%9F%9F/index.html" title="05_SpringBoot 拦截器+跨域">
-										05_SpringBoot 拦截器+跨域
+								<li class="file">
+									<a href="/2018/06/20/08_%E6%A1%86%E6%9E%B6%E6%8A%80%E6%9C%AF/04_SpringBoot/05_SpringBoot%20%E6%8B%A6%E6%88%AA%E5%99%A8/index.html" title="05_SpringBoot 拦截器">
+										05_SpringBoot 拦截器
 									</a>
 								</li>
 								<div class="article-toc" style="display: none;"></div>
@@ -2805,6 +2805,15 @@
 								<li class="file">
 									<a href="/2018/06/20/08_%E6%A1%86%E6%9E%B6%E6%8A%80%E6%9C%AF/04_SpringBoot/12_SpringBoot+Swagger/index.html" title="12_SpringBoot+Swagger">
 										12_SpringBoot+Swagger
+									</a>
+								</li>
+								<div class="article-toc" style="display: none;"></div>
+							</ul>
+			
+							<ul>
+								<li class="file active">
+									<a href="/2018/06/20/08_%E6%A1%86%E6%9E%B6%E6%8A%80%E6%9C%AF/04_SpringBoot/13_SpringBoot%20%E8%B7%A8%E5%9F%9F%E6%96%B9%E6%A1%88/index.html" title="13_SpringBoot 跨域方案">
+										13_SpringBoot 跨域方案
 									</a>
 								</li>
 								<div class="article-toc" style="display: none;"></div>
@@ -3675,7 +3684,7 @@
 	<div id="content">
 		<h1 id="article-title">
 
-	05_SpringBoot 拦截器+跨域
+	13_SpringBoot 跨域方案
 </h1>
 <div class="article-meta">
     
@@ -3705,122 +3714,16 @@
 	<span>时间:2018-06-20 17:59:44</span>
 	
 		<span>
-			访问:<span id="/2018/06/20/08_%E6%A1%86%E6%9E%B6%E6%8A%80%E6%9C%AF/04_SpringBoot/05_SpringBoot%20%E6%8B%A6%E6%88%AA%E5%99%A8+%E8%B7%A8%E5%9F%9F/" class="leancloud_visitors" data-flag-title="08_框架技术/04_SpringBoot/05_SpringBoot 拦截器+跨域"></span>
+			访问:<span id="/2018/06/20/08_%E6%A1%86%E6%9E%B6%E6%8A%80%E6%9C%AF/04_SpringBoot/13_SpringBoot%20%E8%B7%A8%E5%9F%9F%E6%96%B9%E6%A1%88/" class="leancloud_visitors" data-flag-title="08_框架技术/04_SpringBoot/13_SpringBoot 跨域方案"></span>
 		</span>
 	
 </div>
 
 <div id="article-content">
 	<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20200708160946.png" alt="image-20200708160944615"></p>
-<p>参考资料：<a href="https://www.springcloud.cc/spring-boot.html" target="_blank" rel="noopener">https://www.springcloud.cc/spring-boot.html</a></p>
-<p>中文文档2：<a href="https://felord.cn/_doc/_springboot/2.1.5.RELEASE/_book/index.html" target="_blank" rel="noopener">https://felord.cn/_doc/_springboot/2.1.5.RELEASE/_book/index.html</a></p>
-<h3 id="1-自定义拦截器类"><a href="#1-自定义拦截器类" class="headerlink" title="1. 自定义拦截器类"></a>1. 自定义拦截器类</h3><pre><code class="java">import org.omg.PortableInterceptor.Interceptor;
-import org.springframework.web.servlet.HandlerInterceptor;
-import org.springframework.web.servlet.ModelAndView;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-public class MyInterceptor implements HandlerInterceptor {
-    //进入controller方法之前调用
-    @Override
-    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
-        System.out.println(&quot;preHandle&quot;);
-        return true;//true表示放行，false表示不放行
-    }
-
-    //调用完controller之后，视图渲染之前
-    @Override
-    public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler, ModelAndView modelAndView) throws Exception {
-        System.out.println(&quot;postHandle&quot;);
-    }
-
-    //页面跳转之后，整个流程执行之后，一般用于资源清理操作
-    @Override
-    public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) throws Exception {
-        System.out.println(&quot;afterCompletion&quot;);
-    }
-}</code></pre>
-<h3 id="2-拦截器配置类"><a href="#2-拦截器配置类" class="headerlink" title="2. 拦截器配置类"></a>2. 拦截器配置类</h3><p>实现 <code>WebMvcConfigurer</code> 接口。</p>
-<pre><code class="java">import org.springframework.context.annotation.Configuration;
-import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
-
-@Configuration
-public class MyInterceptorConfig implements WebMvcConfigurer {
-    @Override
-    public void addInterceptors(InterceptorRegistry registry) {
-        //设置拦截器并指定拦截路径
-        registry.addInterceptor(new MyInterceptor()).addPathPatterns(&quot;/interceptor/*&quot;);
-        //registry.addInterceptor(new MyInterceptor()).addPathPatterns(&quot;/**&quot;);//拦截所有
-        //registry.addInterceptor(new MyInterceptor()).addPathPatterns(&quot;/**&quot;).excludePathPatterns(&quot;/test&quot;);//指定不拦截
-        //添加自定义拦截器
-        WebMvcConfigurer.super.addInterceptors(registry);
-    }
-}</code></pre>
-<blockquote>
-<p>匹配规则：</p>
-<ul>
-<li><p>addPathPatterns(“/<em>/*</em>“) 可以拦截所有请求</p>
-</li>
-<li><p>一个<em>：只匹配字符，不匹配路径（ / ）<br>  两个*</em>：匹配字符，和路径（ / ）</p>
-</li>
-<li><pre><code class="yaml">  - /**： 匹配所有路径
-  - /admin/**：匹配 /admin/ 下的所有路径
-  - /secure/*：只匹配 /secure/user，不匹配 /secure/user/info</code></pre>
-</li>
-</ul>
-<p>addPathPatterns(“<code>/**</code>“) 表示拦截所有的请求<br>addPathPatterns(“<code>/**</code>“) 表示拦截所有的请求<br>addPathPatterns(“<code>/test/**</code>“) 表示拦截/test/ 下的所有路径请求<br>addPathPatterns(“<code>/test/*</code>“) 表示拦截/test/abc，拦截/test/aaa , 不拦截 /test/abc/def<br>addPathPatterns(“<code>/test/</code>“).excludePathPatterns(“<code>/test/login</code>“, “<code>/test/register</code>”) 表示拦截/test/ 下的所有路径请求，但不拦截 /test/login 和 /test/register</p>
-</blockquote>
-<h3 id="3-测试类"><a href="#3-测试类" class="headerlink" title="3. 测试类"></a>3. 测试类</h3><p>在 static 目录下创建 index.html 以及 controller 测试类。</p>
-<pre><code class="java">package com.demo.controller;
-
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestMapping;
-
-@Controller
-public class InterceptorController {
-    @RequestMapping(&quot;/interceptor/myinterceptor&quot;)
-    public String myinterceptor(){
-        System.out.println(&quot;myinterceptor&quot;);
-        return &quot;/index.html&quot;;
-    }
-}</code></pre>
-<p>访问 controller 测试，拦截器生效。</p>
-<h3 id="4-跨域配置"><a href="#4-跨域配置" class="headerlink" title="4. 跨域配置"></a>4. 跨域配置</h3><ul>
-<li>解决跨域请求：控制器类添加 <code>@CrossOrigin</code> 注解</li>
-</ul>
-<pre><code class="java">@CrossOrigin(origins = &quot;*&quot;)//解决跨域请求                                                             </code></pre>
-<ul>
-<li>跨域拦截器：<code>实现 HandlerInterceptor 重写 preHandle() 方法。</code></li>
-</ul>
-<pre><code class="java">import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import org.springframework.stereotype.Component;
-import org.springframework.web.servlet.HandlerInterceptor;
-
-@Component
-public class CorsInterceptor implements HandlerInterceptor{
-    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object arg2) throws Exception {
-
-        // 此处配置的是允许任意域名跨域请求，可根据需求指定
-        //response.setHeader(&quot;Access-Control-Allow-Origin&quot;, &quot;*&quot;); // 允许所有跨域
-        response.setHeader(&quot;Access-Control-Allow-Origin&quot;, request.getHeader(&quot;origin&quot;));
-        // 允许跨域凭证
-        response.setHeader(&quot;Access-Control-Allow-Credentials&quot;, &quot;true&quot;);
-        // 允许跨域的方法
-        response.setHeader(&quot;Access-Control-Allow-Methods&quot;, &quot;GET, HEAD, POST, PUT, PATCH, DELETE, OPTIONS&quot;);
-        // 允许跨域的有效期
-        response.setHeader(&quot;Access-Control-Max-Age&quot;, &quot;86400&quot;);
-        // 允许跨域的请求消息头
-        response.setHeader(&quot;Access-Control-Allow-Headers&quot;, &quot;Origin, X-Requested-With, Content-Type, Accept,Authorization&quot;);
-
-        return true;
-    }
-}</code></pre>
-<ul>
-<li>跨域过滤器：<code>实现 Filter 重写 doFilter 方法。</code></li>
+<p>三种解决方案，任一即可。</p>
+<h3 id="1-跨域过滤器"><a href="#1-跨域过滤器" class="headerlink" title="1. 跨域过滤器"></a>1. 跨域过滤器</h3><ul>
+<li>跨域过滤器：<code>实现 Filter 接口 重写 doFilter() 方法</code></li>
 </ul>
 <pre><code class="java">import org.springframework.stereotype.Component;
 
@@ -3834,10 +3737,31 @@ import java.io.IOException;
 public class CROSFilter implements Filter {
     @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
-        HttpServletResponse response=(HttpServletResponse)servletResponse;
+        HttpServletResponse response = (HttpServletResponse) servletResponse;
+        response.setHeader(&quot;Access-Control-Allow-Origin&quot;, &quot;*&quot;); //允许跨域
+        response.setHeader(&quot;Access-Control-Allow-Credentials&quot;, &quot;true&quot;); //允许跨域
+        response.setHeader(&quot;Access-Control-Allow-Methods&quot;, &quot;GET,POST,PUT,DELETE,OPTIONS&quot;);//支持跨域的请求方式
+        response.setHeader(&quot;Access-Control-Allow-Headers&quot;, &quot;content-type,votertoken&quot;);// 允许跨域的请求消息头
+        response.setHeader(&quot;Access-Control-Max-Age&quot;, &quot;3600&quot;);
+        response.setHeader(&quot;content-type&quot;, &quot;application/json;charset=UTF-8&quot;);
+        filterChain.doFilter(servletRequest, response);
+    }
+}</code></pre>
+<h3 id="2-跨域拦截器"><a href="#2-跨域拦截器" class="headerlink" title="2. 跨域拦截器"></a>2. 跨域拦截器</h3><ul>
+<li>跨域拦截器：<code>实现 HandlerInterceptor 重写 preHandle() 方法</code></li>
+</ul>
+<pre><code class="java">import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
+import org.springframework.stereotype.Component;
+import org.springframework.web.servlet.HandlerInterceptor;
+
+@Component
+public class CorsInterceptor implements HandlerInterceptor{
+    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object arg2) throws Exception {
         // 此处配置的是允许任意域名跨域请求，可根据需求指定
-        //response.setHeader(&quot;Access-Control-Allow-Origin&quot;, &quot;*&quot;); // 允许所有跨域
+        // 允许所有跨域
+        response.setHeader(&quot;Access-Control-Allow-Origin&quot;, &quot;*&quot;); 
         response.setHeader(&quot;Access-Control-Allow-Origin&quot;, request.getHeader(&quot;origin&quot;));
         // 允许跨域凭证
         response.setHeader(&quot;Access-Control-Allow-Credentials&quot;, &quot;true&quot;);
@@ -3848,10 +3772,13 @@ public class CROSFilter implements Filter {
         // 允许跨域的请求消息头
         response.setHeader(&quot;Access-Control-Allow-Headers&quot;, &quot;Origin, X-Requested-With, Content-Type, Accept,Authorization&quot;);
 
-        filterChain.doFilter(servletRequest,response);
+        return true;
     }
-}
-</code></pre>
+}</code></pre>
+<h3 id="3-跨域注解"><a href="#3-跨域注解" class="headerlink" title="3. 跨域注解"></a>3. 跨域注解</h3><ul>
+<li>解决跨域请求：<strong>控制器类</strong>上添加 <code>@CrossOrigin</code> 注解</li>
+</ul>
+<pre><code class="java">@CrossOrigin(origins = &quot;*&quot;)//解决跨域请求                                                             </code></pre>
 
 </div>
 
@@ -3859,16 +3786,16 @@ public class CROSFilter implements Filter {
     <div class="post-guide">
         <div class="item left">
             
-              <a href="/2018/06/20/08_%E6%A1%86%E6%9E%B6%E6%8A%80%E6%9C%AF/04_SpringBoot/02_SpringBoot%20YML/">
+              <a href="/2018/06/20/08_%E6%A1%86%E6%9E%B6%E6%8A%80%E6%9C%AF/04_SpringBoot/08_SpringBoot+FreeMarker/">
                   <i class="fa fa-angle-left" aria-hidden="true"></i>
-                  02_SpringBoot YML
+                  08_SpringBoot+FreeMarker
               </a>
             
         </div>
         <div class="item right">
             
-              <a href="/2018/06/20/08_%E6%A1%86%E6%9E%B6%E6%8A%80%E6%9C%AF/04_SpringBoot/04_SpringBoot%20%E8%BF%87%E6%BB%A4%E5%99%A8+%E7%9B%91%E5%90%AC%E5%99%A8/">
-                04_SpringBoot 过滤器+监听器
+              <a href="/2018/06/20/08_%E6%A1%86%E6%9E%B6%E6%8A%80%E6%9C%AF/04_SpringBoot/11_SpringBoot+EasyExcel/">
+                11_SpringBoot+EasyExcel
                 <i class="fa fa-angle-right" aria-hidden="true"></i>
               </a>
             
