@@ -2352,6 +2352,15 @@
 								<div class="article-toc" style="display: none;"></div>
 							</ul>
 			
+							<ul>
+								<li class="file">
+									<a href="/2017/06/20/05_%E6%95%B0%E6%8D%AE%E5%BA%93/04_Redis/08-Redis%20SortedSet%E5%AE%9E%E7%8E%B0%E6%8E%92%E8%A1%8C%E6%A6%9C/index.html" title="08-Redis SortedSet实现排行榜">
+										08-Redis SortedSet实现排行榜
+									</a>
+								</li>
+								<div class="article-toc" style="display: none;"></div>
+							</ul>
+			
 								</li>
 								
 							</ul>
@@ -4182,14 +4191,28 @@
 <li><p><strong>一个线程两次调用start() 方法会出现什么情况? 谈谈线程的生命周期和状态转移。</strong><br> Java线程不允许启动两次，第二次抛出 IllegalThreadStateException 非法的线程状态异常。-运行时异常。<br> jdk1.5以后，线程状态：NEW创建 -&gt; RUNNABLE就绪 -&gt; BLOCKED阻塞 -&gt; WAITING等待 -&gt; TIMED_WAIT超时等待 -&gt; TERMINATED终止<br> <img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20200813232210.png" alt="image-20200813232208798"></p>
 </li>
 <li><p><strong>什么情况下Java程序会产生死锁?如何定位、修复、预防?</strong></p>
-<p> 两个或多个线程，由于互相持有对方需要的锁，而一直等待对方释放锁的永久阻塞状态。<br> 定位死锁：① 使用ps命令或任务管理器获取进程id，使用 jstack 命令工具(win&gt;<code>jstack PID</code>)获取线程栈，找到 BLOCKED(on object monitor)，进而找到死锁位置进行修复。<br> ② Java提供的API ThreadMXBean，直接提供了 findDeadlockedThreads() 方法用于定位。<br> 预防：① 避免使用多个锁，确保需要时才持有锁；② 多个锁时设计好锁的获取顺序(如银行家算法)；③ 使用带超时的方法更有可控性。</p>
+<p> 两个或多个线程，由于互相持有对方需要的锁，而一直等待对方释放锁的永久阻塞状态。<br> 定位死锁：<br> ① 使用ps命令或任务管理器获取进程id，使用 jstack 命令工具(win&gt;<code>jstack PID</code>)获取线程栈，找到 BLOCKED(on object monitor)，进而找到死锁位置进行修复。<br> ② Java提供的API ThreadMXBean，直接提供了 findDeadlockedThreads() 方法用于定位。<br> 预防：<br> ① 避免使用多个锁，确保需要时才持有锁；<br> ② 多个锁时设计好锁的获取顺序(如银行家算法)；<br> ③ 使用带超时的方法更有可控性。</p>
 </li>
 </ol>
 <h3 id="Mark19"><a href="#Mark19" class="headerlink" title="Mark19"></a>Mark19</h3><ol>
-<li><p><strong>接口超时的排查和解决方案？</strong><br> <a href="https://blog.csdn.net/mingyundezuoan/article/details/95020326" target="_blank" rel="noopener">https://blog.csdn.net/mingyundezuoan/article/details/95020326</a></p>
+<li><p><strong>接口超时的原因、排查步骤和解决方案？</strong><br> 参考资料：<a href="https://blog.csdn.net/mingyundezuoan/article/details/95020326" target="_blank" rel="noopener">https://blog.csdn.net/mingyundezuoan/article/details/95020326</a></p>
+<ul>
+<li>可能原因：<pre><code>  ①网络延迟或丢包；
+  ②接口的服务调用延迟；
+  ③多线程代码执行延迟；
+  ④代码本身问题,如RestTemplate没有设置超时时间、tcp连接超时、nginx读取后端服务默认60s等</code></pre></li>
+<li>排查步骤：<pre><code>  ①网络问题排查：查看tomcat中请求超时的日志；
+  ②依赖应用排查：查看是否依赖其他应用导致的超时；
+  ③线程栈信息获取：jstack PID 查看线程是否有死锁或睡眠或其他阻塞等；
+  ④其他方向：服务器配置、服务器软件、DNS解析时间、网络最小带宽、网页大小、数据库操作、页面大量特效JS/大图片等元素</code></pre></li>
+<li>解决方案：<pre><code>  ① 网络或依赖应用的问题，需要第三方解决；
+  ② 线程问题，需要解决死锁或其他阻塞问题；
+  ③ RestTemplate设置超时时间，如 setConnectTimeout 和 setReadTimeout 均为 1s或3s
+  ④ 如果设置了请求超时时间，可再多调用一次；
+  ⑤ 异步机制，使用线程单独调用需要的远程接口，不影响主流程逻辑执行；
+  ⑥ 缓存机制，专门配置缓存服务器，如redis，优先调用缓存服务器里的数据，快速调用解决超时</code></pre></li>
+</ul>
 </li>
-<li></li>
-<li></li>
 </ol>
 
 </div>
