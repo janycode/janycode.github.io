@@ -2233,8 +2233,8 @@
 			
 							<ul>
 								<li class="file">
-									<a href="/2017/06/18/05_%E6%95%B0%E6%8D%AE%E5%BA%93/02_MyBatis/06-MyBatis%20Druid%E9%98%BF%E9%87%8C%E8%BF%9E%E6%8E%A5%E6%B1%A0/index.html" title="06-MyBatis Druid阿里连接池">
-										06-MyBatis Druid阿里连接池
+									<a href="/2017/06/18/05_%E6%95%B0%E6%8D%AE%E5%BA%93/02_MyBatis/06-MyBatis%20Druid/index.html" title="06-MyBatis Druid">
+										06-MyBatis Druid
 									</a>
 								</li>
 								<div class="article-toc" style="display: none;"></div>
@@ -3996,7 +3996,8 @@
 </div>
 
 <div id="article-content">
-	<h3 id="1-服务-demo"><a href="#1-服务-demo" class="headerlink" title="1. 服务 demo"></a>1. 服务 demo</h3><ul>
+	<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20200816135655.png" alt="image-20200816135654108"></p>
+<h3 id="1-服务-demo"><a href="#1-服务-demo" class="headerlink" title="1. 服务 demo"></a>1. 服务 demo</h3><ul>
 <li>controller</li>
 </ul>
 <pre><code class="java">@RestController
@@ -4167,6 +4168,56 @@ public class MailServiceImpl implements MailService {
         return restTemplate.getForObject(&quot;http://mailserver/mail/sendCodeMail.do?to=&quot; + to + &quot;&amp;str=&quot; + str, R.class);
     }
 }</code></pre>
+<h3 id="4-Spring-Boot-Mail"><a href="#4-Spring-Boot-Mail" class="headerlink" title="4. Spring Boot Mail"></a>4. Spring Boot Mail</h3><ul>
+<li>依赖</li>
+</ul>
+<pre><code class="xml">&lt;dependency&gt;
+    &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
+    &lt;artifactId&gt;spring-boot-starter-mail&lt;/artifactId&gt;
+&lt;/dependency&gt;</code></pre>
+<ul>
+<li>邮件发送 - 核心逻辑</li>
+</ul>
+<pre><code class="java">// entity
+@Data
+public class EmailDto {
+    private String title;
+    private String content;
+    private String recemail;
+}
+
+// serverImpl
+@Service
+public class EmailServiceImpl implements EmailService {
+    @Autowired
+    private EmailLogDao logDao;
+    @Autowired
+    private JavaMailSender mailSender;
+
+    @Value(&quot;${spring.mail.username}&quot;)
+    private String mail;
+
+    @Override
+    public R sendEmail(EmailDto dto) {
+        SimpleMailMessage message = new SimpleMailMessage();
+        // message.setBcc(); //密送
+        // message.setCc();//抄送
+        // message.setTo(); //收件人
+        // message.setFrom(); //发件人
+        message.setTo(dto.getRecemail()); // 收件人
+        message.setSentDate(new Date()); // 发送日期
+        message.setSubject(dto.getTitle()); // 邮箱主题
+        message.setText(dto.getContent()); // 邮箱内容
+        message.setFrom(mail); // 发件人
+        mailSender.send(message); // 调用发送
+        JsonArray ja = new JsonArray();
+        ja.add(dto.getRecemail());
+        EmailLog log = new EmailLog(dto.getTitle(), dto.getContent(), ja,
+                null);
+        logDao.insert(log);
+        return R.ok();
+    }
+}</code></pre>
 
 </div>
 
@@ -4174,16 +4225,16 @@ public class MailServiceImpl implements MailService {
     <div class="post-guide">
         <div class="item left">
             
-              <a href="/2020/03/02/14_%E5%BE%AE%E6%9C%8D%E5%8A%A1/09_%E5%95%86%E5%93%81%E6%9C%8D%E5%8A%A1/02-%E8%AE%A2%E5%8D%95%E6%9C%8D%E5%8A%A1/">
+              <a href="/2020/03/02/14_%E5%BE%AE%E6%9C%8D%E5%8A%A1/04_API%E7%BD%91%E5%85%B3/02-%E7%BB%9F%E4%B8%80%E7%BD%91%E5%85%B3%E6%9C%8D%E5%8A%A1/">
                   <i class="fa fa-angle-left" aria-hidden="true"></i>
-                  02-订单服务
+                  02-统一网关服务
               </a>
             
         </div>
         <div class="item right">
             
-              <a href="/2020/03/02/14_%E5%BE%AE%E6%9C%8D%E5%8A%A1/11_%E7%BC%93%E5%AD%98%E6%9C%8D%E5%8A%A1/Spring%20Data%20Redis+Redisson/">
-                Spring Data Redis+Redisson
+              <a href="/2020/03/02/14_%E5%BE%AE%E6%9C%8D%E5%8A%A1/05_%E6%B5%81%E9%87%8F%E5%93%A8%E5%85%B5/Sentinel/">
+                Sentinel
                 <i class="fa fa-angle-right" aria-hidden="true"></i>
               </a>
             
