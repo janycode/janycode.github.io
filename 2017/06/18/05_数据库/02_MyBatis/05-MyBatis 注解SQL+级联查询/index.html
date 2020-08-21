@@ -2745,6 +2745,15 @@
 								<div class="article-toc" style="display: none;"></div>
 							</ul>
 			
+							<ul>
+								<li class="file">
+									<a href="/2018/06/21/08_%E6%A1%86%E6%9E%B6%E6%8A%80%E6%9C%AF/03_SpringMVC/10-SpringMVC%20+Swagger2/index.html" title="10-SpringMVC +Swagger2">
+										10-SpringMVC +Swagger2
+									</a>
+								</li>
+								<div class="article-toc" style="display: none;"></div>
+							</ul>
+			
 								</li>
 								
 							</ul>
@@ -4091,6 +4100,27 @@ public int insertUser(User user);
 @Options(useGeneratedKeys = true , keyProperty = &quot;id&quot;) // 自增key，主键为id
 @Insert(&quot;INSERT INTO t_users VALUES(#{id},#{name},#{password},#{salary},#{birthday},null)&quot;)
 public int insertUserGeneratedKeys(User user);</code></pre>
+<pre><code class="java">    /**
+     * keyProperty: 表示将select返回值设置到该属性中
+     * resultType: 返回类型
+     * before: 是否在insert之前执行
+     * statement: 自定义子查询
+     * @param userBase
+     */
+    @SelectKey(keyProperty = &quot;userBase.id&quot;,resultType = String.class, before = true,
+            statement = &quot;select replace(uuid(), &#39;-&#39;, &#39;&#39;)&quot;)
+    @Options(keyProperty = &quot;userBase.id&quot;, useGeneratedKeys = true)
+    @Insert(&quot;insert into user_base(id, &quot; +
+            &quot;name, &quot; +
+            &quot;passwd, &quot; +
+            &quot;phone &quot; +
+            &quot;) values (#{userBase.id}, &quot; +
+            &quot;#{userBase.name}, &quot; +
+            &quot;#{userBase.password}, &quot; +
+            &quot;#{userBase.phone}&quot; +
+            &quot;) &quot;
+    )
+    public void insertForReg(@Param(&quot;userBase&quot;)UserBase userBase);</code></pre>
 <h3 id="2-符号的应用场景"><a href="#2-符号的应用场景" class="headerlink" title="2. $符号的应用场景"></a>2. $符号的应用场景</h3><p><code>${attribute}</code> 属于字符串拼接SQL，而非预编译占位符，会有注入攻击问题，不建议在常规SQL中使用，常用于可解决动态生降序问题。</p>
 <h4 id="2-1-符号参数绑定"><a href="#2-1-符号参数绑定" class="headerlink" title="2.1 $符号参数绑定"></a>2.1 $符号参数绑定</h4><pre><code class="java">public List&lt;User&gt; selectAllUsers1(User user); // ${name} ${id} 可获取user中的属性值
 public List&lt;User&gt; selectAllUsers2(@Param(&quot;rule&quot;) String rule); //必须使用@Param否则会作为属性解析</code></pre>

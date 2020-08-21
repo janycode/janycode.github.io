@@ -2745,6 +2745,15 @@
 								<div class="article-toc" style="display: none;"></div>
 							</ul>
 			
+							<ul>
+								<li class="file">
+									<a href="/2018/06/21/08_%E6%A1%86%E6%9E%B6%E6%8A%80%E6%9C%AF/03_SpringMVC/10-SpringMVC%20+Swagger2/index.html" title="10-SpringMVC +Swagger2">
+										10-SpringMVC +Swagger2
+									</a>
+								</li>
+								<div class="article-toc" style="display: none;"></div>
+							</ul>
+			
 								</li>
 								
 							</ul>
@@ -4090,10 +4099,19 @@
 </li>
 </ol>
 <h3 id="Mark02"><a href="#Mark02" class="headerlink" title="Mark02"></a>Mark02</h3><ol>
-<li><strong>并发事务带来的问题</strong><br> 脏读、丢失修改、不可重复读、幻读</li>
-<li><strong>大表如何优化？</strong><br> 限定查询数据范围、读写分离、垂直分区</li>
-<li><strong>数据库并发策略</strong><br> 乐观锁、悲观锁、时间戳</li>
-<li><strong>过滤器和拦截器的区别</strong><br> 范围、规范、资源、深度</li>
+<li><p><strong>并发事务带来的问题</strong><br> 脏读、丢失修改、不可重复读、幻读</p>
+</li>
+<li><p><strong>大表如何优化？</strong><br> 限定查询数据范围、读写分离、垂直分区</p>
+</li>
+<li><p><strong>数据库并发策略</strong><br> 乐观锁、悲观锁、时间戳</p>
+</li>
+<li><p><strong>过滤器和拦截器的区别</strong></p>
+<p> ①拦截器是基于java的反射机制的，而过滤器是基于函数回调。<br> ②拦截器不依赖与servlet容器，过滤器依赖与servlet容器。<br> ③拦截器只能对action请求起作用，而过滤器则可以对几乎所有的请求起作用。<br> ④拦截器可以访问action上下文、值栈里的对象，而过滤器不能访问。<br> ⑤在action的生命周期中，拦截器可以多次被调用，而过滤器只能在容器初始化时被调用一次。</p>
+<p> ⑥拦截器可以获取IOC容器中的各个bean，而过滤器就不行，这点很重要，在拦截器里注入一个service，可以调用业务逻辑。</p>
+<p> ⑦过滤器和拦截器触发时机不一样:过滤器是在请求进入容器后，但请求进入servlet之前进行预处理的。请求结束返回也是，是在servlet处理完后，返回给前端之前。</p>
+<p> ⑧拦截器是spring容器的，是spring支持的。</p>
+<p> <img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20200722090737.png" alt="image-20200722090735621"></p>
+</li>
 </ol>
 <h3 id="Mark03"><a href="#Mark03" class="headerlink" title="Mark03"></a>Mark03</h3><ol>
 <li><strong>乐观锁、悲观锁的理解</strong><br> 乐观每次拿数据判断再上锁-CAS-高吞吐量，悲观每次拿数据直接上锁</li>
@@ -4348,6 +4366,23 @@
 </li>
 <li><p><strong>Java常见的垃圾收集器？</strong><br> Oracle JDK中  ① Serial GC 单线程老年代垃圾收集器；② ParNew GC 新生代垃圾收集器，多线程版本；③ CMS GC 标记-清除算法；④ Parrallel GC 吞吐量优先的GC</p>
 </li>
+</ol>
+<h3 id="Mark24"><a href="#Mark24" class="headerlink" title="Mark24"></a>Mark24</h3><p>Java核心36讲：28-32</p>
+<ol>
+<li><p><strong>GC调优思路？</strong><br> 确定调优目标：内存占用、延时、吞吐量<br> 掌握JVM和GC的状态，定位问题，jstat查看GC状态，开启GC日志<br> 分析确定具体调整的参数或软硬件配置<br> 验证是否达到调优目标，否则重复上述步骤</p>
+</li>
+<li><p><strong>Java内存模型中的happen-before是什么？</strong><br> happen-before关系，是Java内存模型中保证多线程操作可见性的机制。</p>
+</li>
+<li><p><strong>Java程序运行在Docker等容器环境有哪些新问题？</strong><br> 如果未配置合适的 JVM 堆和元数据区、直接内存等参数，Java 就有可能试图使用超过容器限制的内存，最终被容器 OOM kill，或者自身发生 OOM。<br> 错误判断了可获取的 CPU 资源，例如，Docker 限制了 CPU 的核数，JVM 就可能设置不合适的 GC 并行线程数等。</p>
+</li>
+<li><p><strong>Java应用开发中的注入攻击？</strong><br> ① SQL 注入攻击，常见于登陆功能，where条件后加 or 1=1; 就可以添加其他sql语句进行攻击<br> ② 操作系统命令注入，如Java的 Runtime.exec(…) 的API，可以执行命令，拼接 ;rm -rf /* 就玩玩了<br> ③ XML 注入攻击，XML本身是可以包含动态内容的，例如XPATH，可能会被恶意访问内容</p>
+</li>
+</ol>
+<h3 id="Mark25"><a href="#Mark25" class="headerlink" title="Mark25"></a>Mark25</h3><p>Java核心36讲：33-35</p>
+<ol>
+<li><strong>后台服务明显变慢，谈谈诊断思路？</strong><br> 区分：突然变慢、长时间运行变慢<br> 频率：是否重复出现<br> 慢的定义：请求的延时时间变长，还是其他？<br> 诊断工具：<br> ① JMC+JFR 监控应用是否出现大量某种类型的异常<br> ② jstat 查看GC日志<br> ③ 任务管理器/top命令，找到对应的Java进程id，通过 jstack 获取进程的线程栈<br> ④ JVM层面的性能分析：JMC、JConsole进行运行时监控，GC日志等</li>
+<li><strong>有人说Lambda表达式让Java程序慢30倍，你怎么看？</strong><br> 基准测试、自动装箱拆箱、启动过程变慢</li>
+<li><strong>JVM优化Java代码时都做了什么？</strong></li>
 </ol>
 
 </div>
