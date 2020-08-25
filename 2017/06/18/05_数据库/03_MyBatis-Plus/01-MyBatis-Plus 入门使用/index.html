@@ -4381,6 +4381,76 @@ public class WebmagicApplication {
     }
 }</code></pre>
 <p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20200722213245.png" alt="image-20200722213243836"></p>
+<h3 id="3-查询字段为null"><a href="#3-查询字段为null" class="headerlink" title="3. 查询字段为null"></a>3. 查询字段为null</h3><ul>
+<li><strong>mybatisPlus 查询返回结果为null</strong><br>  在通过mybatisPlus 进行数据查询的时候，返回的查询结果为null。<br>  解决方案：检查实体类中的字段是否存在下划线，将所有所有存在的下划线的字段，修改为标准的驼峰命名字段。<ul>
+<li>数据库表</li>
+</ul>
+</li>
+</ul>
+<pre><code class="mysql">drop table if exists t_interview;
+
+/*==============================================================*/
+/* Table: t_interview                                           */
+/*==============================================================*/
+create table t_interview
+(
+   id                   int not null auto_increment comment &#39;编号&#39;,
+   name                 char(10) comment &#39;姓名&#39;,
+   post                 char(20) comment &#39;岗位&#39;,
+   city                 char(10) comment &#39;城市&#39;,
+   company              char(50) comment &#39;公司&#39;,
+   company_about        char(200) comment &#39;公司简介&#39;,
+   interview_content    text comment &#39;面试内容&#39;,
+   interview_time       date comment &#39;面试时间&#39;,
+   ctime                date comment &#39;创建时间&#39;,
+   primary key (id)
+);
+
+alter table t_interview comment &#39;面试记录表&#39;;</code></pre>
+<ul>
+<li>实体类</li>
+</ul>
+<pre><code class="java">@ApiModel(value = &quot;com-jerry-interview-entity-Interview&quot;)
+@TableName(&quot;t_interview&quot;) // Mybatis-Plus 注解指定映射的 mysql 表名
+@Data
+public class Interview implements Serializable {
+    /**
+     * 编号
+     */
+    @ApiModelProperty(value = &quot;编号&quot;)
+    @TableId(value = &quot;id&quot;, type = IdType.AUTO)
+    private Integer id;
+
+    ...
+
+    /**
+     * 公司简介
+     */
+    @ApiModelProperty(value = &quot;公司简介&quot;)
+    @TableField(&quot;company_about&quot;)
+    private String companyAbout;
+
+    ...
+
+    /**
+     * 面试时间
+     */
+    @ApiModelProperty(value = &quot;面试时间&quot;)
+    @JsonFormat(pattern = &quot;yyyy-MM-dd HH:mm:ss&quot;, locale = &quot;zh&quot;, timezone = &quot;GMT+8&quot;)
+    @DateTimeFormat(pattern = &quot;yyyy-MM-dd HH:mm:ss&quot;)
+    @TableField(&quot;interview_time&quot;)
+    private Date interviewTime;
+
+    /**
+     * 创建时间
+     */
+    @ApiModelProperty(value = &quot;创建时间&quot;)
+    @JsonFormat(pattern = &quot;yyyy-MM-dd HH:mm:ss&quot;, locale = &quot;zh&quot;, timezone = &quot;GMT+8&quot;)
+    @DateTimeFormat(pattern = &quot;yyyy-MM-dd HH:mm:ss&quot;)
+    private Date ctime;
+
+    private static final long serialVersionUID = 1L;
+}</code></pre>
 
 </div>
 
@@ -4388,9 +4458,9 @@ public class WebmagicApplication {
     <div class="post-guide">
         <div class="item left">
             
-              <a href="/2017/06/18/05_%E6%95%B0%E6%8D%AE%E5%BA%93/01_MySQL/13-%E5%A4%8D%E6%9D%82%E6%9F%A5%E8%AF%A2%E5%90%88%E9%9B%86/">
+              <a href="/2017/06/18/05_%E6%95%B0%E6%8D%AE%E5%BA%93/02_MyBatis/01-MyBatis%20%E7%8E%AF%E5%A2%83%E4%B8%8E%E4%BD%BF%E7%94%A8/">
                   <i class="fa fa-angle-left" aria-hidden="true"></i>
-                  13-复杂查询合集
+                  01-MyBatis 环境与使用
               </a>
             
         </div>

@@ -4434,15 +4434,16 @@
 <li><strong>Spring、Spring MVC、Spring Boot、Spring Cloud关系？</strong><br> <strong>Spring</strong> 已经成为了一个庞大的生态系统，内部包含了依赖注入、事件机制<br> 等核心模块，也包括事务、O/R Mapping 等功能组成的数据访问模块，以及 <strong>Spring MVC</strong> 等<br> Web 框架和其他基础组件。<br> <strong>Spring Boot</strong>，通过整合通用实践，更加自动、智能的依赖管理等，Spring Boot 提供了各种<br> 典型应用领域的快速开发基础，所以它是以应用为中心的一个框架集合。<br> <strong>Spring Cloud</strong>，可以看作是在 Spring Boot 基础上发展出的更加高层次的框架，它提供了构<br> 建分布式系统的通用模式，包含服务发现和服务注册、分布式配置管理、负载均衡、分布式<br> 诊断等各种子系统，可以简化微服务系统的构建。<br> 当然，还有针对特定领域的 Spring Security、Spring Data 等。</li>
 <li><strong>Netty如何实现高性能的吗？</strong><br> 灵活的线程模型，高效管理Channel<br> 充分利用 java 的 Zero-copy 机制，降低内存分配和回收的开销，大大提高性能<br> 使用更多本地代码<br> 通信协议、序列化等其他角度的优化</li>
 <li><strong>常用的分布式 ID 的设计方案？Snowflake 是否受冬令时切换影响？</strong><br> 基于 Twitter 早期开源的Snowflake雪花算法（以及微信的 seqsvr、美团Leaf分布式id生成系统）：<br> <img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20200821233032.png" alt="image-20200821233030907"><br> 整体 64 位，适合使用 long 类型来存储。算法本身大多依赖 System.currentTimeMills()的时间毫秒值</li>
+<li><strong>Java 多线程在什么情况下使用？</strong><br> 数据同步比较慢的时候；<br> 异步调用第三方接口的时候；<br> 服务器需要同时接受多个客户端连接，有无需实时等待的服务处理的时候；<br> 单线程处理很慢的时候，需要多线程并行执行的时候。</li>
 </ol>
-<p>【近期收集】</p>
-<p><strong>1 问springboot自动配置和运行流程</strong></p>
-<p>答：spring和springMVC需要配置大量的参数，springboot提供了应用程序和框架所需的基本配置，这个就是自动配置，而且约定大于配置。<br>SpringBoot主配置类只要标注上<code>@SpringBootApplication</code>的注解，Spring就会帮我们自动配置各个组件和实例化Bean。</p>
+<h3 id="【近期收集】"><a href="#【近期收集】" class="headerlink" title="【近期收集】"></a>【近期收集】</h3><p><strong>1 问springboot自动配置和运行流程</strong></p>
+<p>答：</p>
+<p><code>自动配置</code>：spring和springMVC需要配置大量的参数，springboot提供了应用程序和框架所需的基本配置，这个就是自动配置，而且约定大于配置。<br>SpringBoot主配置类只要标注上<code>@SpringBootApplication</code>的注解，Spring就会帮我们自动配置各个组件和实例化Bean。</p>
 <blockquote>
 <p>核心：启动类注解 → 自动配置注解 → 自动配置包注解(扫描包) → @Import注解导入组件 → 完成自动配置</p>
 </blockquote>
-<ol>
-<li><p><code>@SpringBootApplication</code><br> 这个类是 SpringBoot 的主配置类，而且也是一个组合注解。<br> SpringBoot 就应该运行这个类的 main 方法来启动 SpringBoot 应用。</p>
+<ul>
+<li><p><code>@SpringBootApplication</code><br>  这个类是 SpringBoot 的主配置类，而且也是一个组合注解。<br>  SpringBoot 就应该运行这个类的 main 方法来启动 SpringBoot 应用。</p>
 <ul>
 <li><p><code>@EnableAutoConfiguration</code><br>  包含一个 <code>@AutoConfigurationPackage</code> 注解就是将主配置类（@SpringBootConfiguration标注的类）的所在包及下面所有子包里面的所有组件扫描到Spring容器中。</p>
 <ul>
@@ -4464,17 +4465,33 @@
 </li>
 </ul>
 </li>
-</ol>
-<p>SpringBoot 就应该运行这个类的 main 方法来启动 SpringBoot 应用。</p>
-<p>2 MySQL行级/表级锁的使用和单例模式，es的底层实现，分布式锁和分布式事物的实际运用。</p>
+</ul>
+<p><code>运行流程</code>：</p>
+<p>首先进入SpringAplication类run方法。<br>run方法新建SpringApplication对象。 创建并启动计时监控类。<br>通过configureHeadlessProperty设置java.awt.headless的值<br>prepareEnvironment根据运行监听器和参数准备spring环境<br>调用createApplicationContext方法创建应用上下文<br>refreshContext方法刷新上下文<br>调用started发布应用上下文启动完成事件<br>callRunners方法执行所有runner运行器<br>调用running发布应用上下文就绪事件<br>最后返回应用上下文</p>
+<p>2 MySQL行级/表级锁的使用和单例模式，分布式锁和分布式失误的实际运用。</p>
+<ul>
+<li>表级锁：开销小，加锁快；不会出现死锁；锁定粒度大，发生锁冲突的概率最高，并发度最低。</li>
+<li>行级锁：开销大，加锁慢；会出现死锁；锁定粒度最小，发生锁冲突的概率最低，并发度也最高。</li>
+<li>页面锁：开销和加锁时间界于表锁和行锁之间；会出现死锁；锁定粒度界于表锁和行锁之间，并发度一般</li>
+</ul>
+<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20200825001254.png" alt="image-20200825001253519"></p>
 <p>3 springboot的自动配置和运行流程了</p>
+<ul>
+<li>同1</li>
+</ul>
 <p>4 还问，给随便一个api接口，问传一个map集合类型，能不能传，为什么不能传？</p>
-<p>5 Linux反向代理你们知道吗？</p>
+<p>5 Linux反向代理知道吗？</p>
 <p>6 Redis的用户名和密码怎么设置？</p>
-<p>7 昨晚电面，问redis中String底层怎么实现？</p>
+<p>7 问redis中String底层怎么实现？</p>
+<ul>
+<li>SDS simple dynamic string<br>  len：记录buf数组中已使用的字节的长度。<br>  alloc：已分配的空间，不包含头和空终止符。<br>  flags：前三位表示不同的sds结构体的类型，后五位预留。<br>  buf：字节数组，用于保存字符串。</li>
+<li>1、获取字符串长度的复杂度降低<br>  2、避免内存溢出<br>  3、空间预分配<br>  4、惰性删除</li>
+</ul>
 <p>8 hashmap跟redis的区别</p>
+<p>hashmap是集合数据结构</p>
+<p>redis是key-value的数据结构存储，每一个命令都是原子操作</p>
 <p>9 hash的性能优化。hashmap性能优化</p>
-<p>10 工厂模式里面的普通工厂，和抽象工厂的区别。</p>
+<p>10 工厂模式里面的普通工厂，和抽象工厂的区别</p>
 <p>11 基本上都是问多线程</p>
 <p>12 都是场景问题，都是情景问题。</p>
 <p>13 问redis安装流程。</p>

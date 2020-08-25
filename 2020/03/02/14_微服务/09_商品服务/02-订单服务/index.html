@@ -4096,12 +4096,12 @@
 <h3 id="1-订单状态与超时"><a href="#1-订单状态与超时" class="headerlink" title="1. 订单状态与超时"></a>1. 订单状态与超时</h3><ul>
 <li><p>订单的状态<br>  <code>待支付</code> → <code>待发货</code> → <code>待确认</code> → <code>待评价</code> → <code>已评价</code><br>  <strong>超时订单</strong>、<strong>取消订单</strong>（未支付）、<strong>退款</strong>（已支付、待发货）、<strong>退货</strong>（待评价、待确认）、<strong>换货</strong>、<strong>售后</strong>（维修）</p>
 </li>
-<li><p>订单的超时<br>  1.支付超时：如点餐15分钟需要支付而未支付<br>  2.确认超时：超过7天还未确认收货，系统自动确认收货<br>  3.评价超时：超过7天未评价的，系统自动评价<br>  4.订单的超卖：不能超过库存限制</p>
+<li><p>订单的超时<br>  1.支付超时：如点餐 15 分钟需要支付而未支付<br>  2.确认超时：超过 7 天还未确认收货，系统自动确认收货<br>  3.评价超时：超过 7 天未评价的，系统自动评价<br>  4.订单的超卖：不能超过库存限制</p>
 </li>
 </ul>
 <h3 id="2-订单超时处理"><a href="#2-订单超时处理" class="headerlink" title="2. 订单超时处理"></a>2. 订单超时处理</h3><h4 id="2-1-定时任务"><a href="#2-1-定时任务" class="headerlink" title="2.1 定时任务"></a>2.1 定时任务</h4><p><code>间隔1分钟</code><br>每隔1分钟，定时任务触发，查询订单（1.待支付 2.下单时间 超过30分钟），满足的订单，更改订单的状态为超时状态，同时释放：库存、优惠卷、积分（京豆、淘金币）、满减优惠、成长值等等。</p>
 <h4 id="2-2-Redis"><a href="#2-2-Redis" class="headerlink" title="2.2 Redis"></a>2.2 Redis</h4><p><code>设置有效期30分钟，失效监听</code></p>
-<p>下单的时候，同时在Redis中存储订单（String类型 有效期30分钟，key: 订单编号 value 时间戳），在Redis的配置文件中，开启失效监听,在 redis.conf 中 开启：notify-keyspace-events Ex.同时在程序中，实现 KeyExpirationEventMessageListener 。完成Key的失效监听。只能获取到失效的key，但是此时不能根据key获取value值，因为该事件是在数据失效后才触发。获取订单号查询数据库，是否为待支付，如果hi待支付，订单需要更改为超时订单，同时释放资源。</p>
+<p>下单的时候，同时在Redis中存储订单（String类型 有效期30分钟，key: 订单编号 value 时间戳），在Redis的配置文件中，开启失效监听,在 redis.conf 中 开启：<strong><code>notify-keyspace-events Ex</code></strong>同时在程序中，实现 KeyExpirationEventMessageListener 。完成Key的失效监听。只能获取到失效的key，但是此时不能根据key获取value值，因为该事件是在数据失效后才触发。获取订单号查询数据库，是否为待支付，如果hi待支付，订单需要更改为超时订单，同时释放资源。</p>
 <p>Redis 开启键空间通知功能需要消耗一些 CPU，所以在<code>默认该功能处于关闭状态</code>。</p>
 <p>开启该功能需要修改 <a href="">redis.conf</a> 中的  <code>notify-keyspace-events</code>  参数，参数可以是以下字符的任意组合， 它指定了服务器该发送哪些类型的通知。</p>
 <p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20200815211238.png" alt="image-20200815211236749"></p>
@@ -4120,23 +4120,59 @@ setex name 10 txl
 # 10 秒过后，订阅端就会接收到消息。</code></pre>
 <h4 id="2-3-RabbitMQ"><a href="#2-3-RabbitMQ" class="headerlink" title="2.3 RabbitMQ"></a>2.3 RabbitMQ</h4><p><code>死信消息和死信队列</code></p>
 <p>下单的时候，将订单信息发送到-延迟队列(设置消息超时时间为30分钟，不需要消费者)，然后为延迟队列设置死信交换器和路由匹配，如果消息超过30分钟，就会变成死信消息，就会通过死信交换器转发到对应的死信队列(需要有消费者)，消息消费者监听死信队列，获取的消息（超时消息30分钟后）。查询数据库，订单是否支付，如果订单状态为待支付，那么就需要把订单状态更改为超时状态，同时释放资源。</p>
-<h3 id="3-超时处理实现"><a href="#3-超时处理实现" class="headerlink" title="3. 超时处理实现"></a>3. 超时处理实现</h3>
+<h3 id="3-超时处理实现"><a href="#3-超时处理实现" class="headerlink" title="3. 超时处理实现"></a>3. 超时处理实现</h3><pre><code class="mysql">CREATE DATABASE db_orderapi;
+
+USE db_orderapi;
+
+-- 订单和支付服务
+-- 订单表
+ CREATE TABLE t_order (
+  id BIGINT PRIMARY KEY,
+  aid INT COMMENT &#39;收货地址&#39;,
+  money INT,
+  discountmoney INT,
+  uid INT,
+  paymoney INT,
+  flag INT COMMENT &#39;订单状态： 1待支付 2待发货 3待收货 4待评价 5已评价 6超时订单 7取消订单&#39;,
+  ctime DATETIME
+);
+
+-- 订单详情表
+ CREATE TABLE t_orderitem (
+  id BIGINT PRIMARY KEY AUTO_INCREMENT,
+  oid BIGINT,
+  gid INT,
+  gskuid INT,
+  num INT,
+  price INT,
+  ctime DATETIME
+);
+
+-- 订单流水表
+ CREATE TABLE t_orderlog (
+  id BIGINT PRIMARY KEY AUTO_INCREMENT,
+  oid BIGINT,
+  STATUS INT COMMENT &#39;订单状态&#39;,
+  info VARCHAR (50),
+  ctime DATETIME
+);</code></pre>
+
 </div>
 
 
     <div class="post-guide">
         <div class="item left">
             
-              <a href="/2020/03/02/14_%E5%BE%AE%E6%9C%8D%E5%8A%A1/03_%E8%BF%9C%E7%A8%8B%E6%9C%8D%E5%8A%A1%E8%B0%83%E7%94%A8/02-Spring%20Cloud%20Ribbon/">
+              <a href="/2020/03/02/14_%E5%BE%AE%E6%9C%8D%E5%8A%A1/09_%E5%95%86%E5%93%81%E6%9C%8D%E5%8A%A1/01-%E5%95%86%E5%93%81%20SPU+SKU/">
                   <i class="fa fa-angle-left" aria-hidden="true"></i>
-                  02-Spring Cloud Ribbon
+                  01-商品 SPU+SKU
               </a>
             
         </div>
         <div class="item right">
             
-              <a href="/2020/03/02/14_%E5%BE%AE%E6%9C%8D%E5%8A%A1/09_%E5%95%86%E5%93%81%E6%9C%8D%E5%8A%A1/01-%E5%95%86%E5%93%81%20SPU+SKU/">
-                01-商品 SPU+SKU
+              <a href="/2020/03/02/14_%E5%BE%AE%E6%9C%8D%E5%8A%A1/08_%E9%82%AE%E7%AE%B1%E6%9C%8D%E5%8A%A1/Mail%20%E6%9C%8D%E5%8A%A1%20Demo/">
+                Mail 服务 Demo
                 <i class="fa fa-angle-right" aria-hidden="true"></i>
               </a>
             
