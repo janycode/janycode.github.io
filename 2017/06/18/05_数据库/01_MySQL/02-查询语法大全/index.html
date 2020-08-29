@@ -4374,7 +4374,7 @@ FROM t_employees ORDER BY 薪资级别; # 顺便排个序</code></pre>
 </tr>
 </tbody></table>
 <h4 id="4-1-获取各种日期和时间"><a href="#4-1-获取各种日期和时间" class="headerlink" title="4.1 获取各种日期和时间"></a>4.1 获取各种日期和时间</h4><pre><code class="mysql"># 1.当前系统时间 2020-03-26 10:55:56
-SELECT NOW();
+SELECT NOW(); # 默认linux会少8h，在 tomcat-&gt;catalina.sh 文件中的 JAVA_OPTS 配置加上 -Duser.timezone=GMT+08
 SELECT SYSDATE();
 # 2.获得当前日期 2020-03-26
 SELECT CURDATE();
@@ -4439,8 +4439,10 @@ DATE_FORMAT(date,format)
 %%  一个字母 “%”
 */
 
-# 生日计算转换年龄
-SELECT TIMESTAMPDIFF(YEAR, &#39;2000/01/01&#39;, CURDATE());</code></pre>
+-- 生日计算转换年龄 - 21
+select timestampdiff(year, &#39;1999/09/09&#39;, curdate()) as age
+-- 生日计算转换年龄 - 21
+select date_format(from_days(to_days(now())-to_days(&#39;1999-09-09&#39;)), &#39;%Y&#39;) + 0 AS age</code></pre>
 <h3 id="5-字符串查询"><a href="#5-字符串查询" class="headerlink" title="5. 字符串查询"></a>5. 字符串查询</h3><blockquote>
 <p>语法： <code>SELECT 字符串函数([参数列表])</code>;</p>
 </blockquote>
@@ -4516,6 +4518,24 @@ SELECT SUBSTRING(&#39;这是sql数据库&#39;, 3, 5); # MySQL</code></pre>
 <td>最小值</td>
 </tr>
 </tbody></table>
+<ul>
+<li>高级函数</li>
+</ul>
+<pre><code class="mysql">-- MySQL 自带函数
+-- 算术
+select abs(-22); -- 绝对值
+select floor(3.14); -- 向下取整
+select ceil(3.14); -- 向上取整
+select rand(); -- 随机 0~1 之间
+select 10 + floor(rand() * 90); -- 2位随机数
+
+-- 字符串
+select concat(&#39;my&#39;, &#39;sql&#39;); -- mysql
+select length(&#39;mysql&#39;); -- 5
+select substr(&#39;mysql&#39;, 3, 2); -- sq
+select reverse(&#39;mysql&#39;); -- lqsym
+
+</code></pre>
 <h4 id="6-1-总行数"><a href="#6-1-总行数" class="headerlink" title="6.1 总行数"></a>6.1 总行数</h4><pre><code class="sql">#统计员工总数
 SELECT COUNT(EMPLOYEE_ID) AS &#39;员工总数&#39; FROM t_employees; #107
 SELECT COUNT(MANAGER_ID) AS &#39;经理总数&#39; FROM t_employees; #106
@@ -4820,16 +4840,16 @@ ON e.`DEPARTMENT_ID` = d.`DEPARTMENT_ID`; # 匹配项,右表为主</code></pre>
     <div class="post-guide">
         <div class="item left">
             
-              <a href="/2017/06/18/05_%E6%95%B0%E6%8D%AE%E5%BA%93/01_MySQL/01-%E5%AE%89%E8%A3%85&%E9%85%8D%E7%BD%AE&%E5%8D%B8%E8%BD%BD/">
+              <a href="/2017/06/18/05_%E6%95%B0%E6%8D%AE%E5%BA%93/01_MySQL/03-DML%E5%A2%9E%E5%88%A0%E6%94%B9/">
                   <i class="fa fa-angle-left" aria-hidden="true"></i>
-                  01-安装&配置&卸载
+                  03-DML增删改
               </a>
             
         </div>
         <div class="item right">
             
-              <a href="/2017/06/18/05_%E6%95%B0%E6%8D%AE%E5%BA%93/01_MySQL/03-DML%E5%A2%9E%E5%88%A0%E6%94%B9/">
-                03-DML增删改
+              <a href="/2017/06/18/05_%E6%95%B0%E6%8D%AE%E5%BA%93/01_MySQL/04-%E5%BA%93%E8%A1%A8%E5%88%9B%E5%88%A0%E6%94%B9/">
+                04-库表创删改
                 <i class="fa fa-angle-right" aria-hidden="true"></i>
               </a>
             
