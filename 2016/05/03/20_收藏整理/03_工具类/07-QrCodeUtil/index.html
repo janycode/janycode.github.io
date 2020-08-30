@@ -4412,6 +4412,79 @@ public class QRCodeUtils {
         }
     }
 }</code></pre>
+<h3 id="Controller"><a href="#Controller" class="headerlink" title="Controller"></a>Controller</h3><pre><code class="java">import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+
+import javax.servlet.http.HttpServletResponse;
+
+@Controller
+@RequestMapping(&quot;/api/qrcode&quot;)
+public class QrCodeController {
+
+    @Autowired
+    private QrCodeService service;
+
+    @GetMapping(&quot;/showqrcode/{msg}&quot;)
+    public void showQrCode(@PathVariable String msg, HttpServletResponse response) {
+        service.createQrcode(msg, response);
+    }
+
+    @GetMapping(&quot;/payqrcode/{msg}&quot;)
+    public void payQrCode(@PathVariable String msg, HttpServletResponse response) {
+        service.createQrcodePass(msg, response);
+    }
+}</code></pre>
+<h3 id="Service"><a href="#Service" class="headerlink" title="Service"></a>Service</h3><pre><code class="java">import javax.servlet.http.HttpServletResponse;
+
+public interface QrCodeService {
+    /**
+     * 明文生成
+     */
+    void createQrcode(String msg, HttpServletResponse response);
+
+    /**
+     * 密文
+     */
+    void createQrcodePass(String msg, HttpServletResponse response);
+}</code></pre>
+<h3 id="ServiceImpl"><a href="#ServiceImpl" class="headerlink" title="ServiceImpl"></a>ServiceImpl</h3><pre><code class="java">import org.springframework.stereotype.Service;
+import javax.imageio.ImageIO;
+import javax.servlet.http.HttpServletResponse;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
+import java.util.Base64;
+
+@Service
+public class QrCodeServiceImpl implements QrCodeService {
+    @Override
+    public void createQrcode(String msg, HttpServletResponse response) {
+        // 创建大小 400 的二维码对象
+        BufferedImage image = QrCodeUtil.createQrCode(msg, 400);
+        try {
+            // 将二维码以 png 格式的流响应到浏览器
+            ImageIO.write(image, &quot;png&quot;, response.getOutputStream());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void createQrcodePass(String msg, HttpServletResponse response) {
+        // 解密出 msg 消息内容
+        String m = new String(Base64.getUrlDecoder().decode(msg));
+        // 创建大小 400 的二维码对象
+        BufferedImage image = QrCodeUtil.createQrCode(m, 400);
+        try {
+            // 将二维码以 png 格式的流响应到浏览器
+            ImageIO.write(image, &quot;png&quot;, response.getOutputStream());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+}</code></pre>
 
 </div>
 
@@ -4419,16 +4492,16 @@ public class QRCodeUtils {
     <div class="post-guide">
         <div class="item left">
             
-              <a href="/2016/05/03/20_%E6%94%B6%E8%97%8F%E6%95%B4%E7%90%86/03_%E5%B7%A5%E5%85%B7%E7%B1%BB/08-XMLUtil/">
+              <a href="/2016/05/03/20_%E6%94%B6%E8%97%8F%E6%95%B4%E7%90%86/03_%E5%B7%A5%E5%85%B7%E7%B1%BB/05-EncryptUtil/">
                   <i class="fa fa-angle-left" aria-hidden="true"></i>
-                  08-XMLUtil
+                  05-EncryptUtil
               </a>
             
         </div>
         <div class="item right">
             
-              <a href="/2016/05/03/20_%E6%94%B6%E8%97%8F%E6%95%B4%E7%90%86/03_%E5%B7%A5%E5%85%B7%E7%B1%BB/05-EncryptUtil/">
-                05-EncryptUtil
+              <a href="/2016/05/03/20_%E6%94%B6%E8%97%8F%E6%95%B4%E7%90%86/03_%E5%B7%A5%E5%85%B7%E7%B1%BB/08-XMLUtil/">
+                08-XMLUtil
                 <i class="fa fa-angle-right" aria-hidden="true"></i>
               </a>
             

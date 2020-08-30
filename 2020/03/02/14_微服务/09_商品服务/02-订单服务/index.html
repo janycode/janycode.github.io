@@ -4113,7 +4113,7 @@
                 
                     <span>
                         <i class="fa fa-folder" aria-hidden="true"></i>
-                        <a href="/categories/14-微服务/01-SpringCloudAlibaba/">01_SpringCloudAlibaba</a>
+                        <a href="/categories/14-微服务/09-商品服务/">09_商品服务</a>
 						
                     </span>
                 
@@ -4198,7 +4198,7 @@ USE db_orderapi;
   info VARCHAR (50),
   ctime DATETIME
 );</code></pre>
-<h4 id="3-2-死信队列超时配置"><a href="#3-2-死信队列超时配置" class="headerlink" title="3.2 死信队列超时配置"></a>3.2 死信队列超时配置</h4><p>基于 RabbitMQ 的死信队列超时订单 配置类：</p>
+<h4 id="3-2-配置死信队列"><a href="#3-2-配置死信队列" class="headerlink" title="3.2 配置死信队列"></a>3.2 配置死信队列</h4><p>基于 RabbitMQ 的死信队列超时订单 配置类：</p>
 <pre><code class="java">import org.springframework.amqp.core.*;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -4262,6 +4262,72 @@ public class RabbitConfig {
     @Bean
     public Binding createBD(DirectExchange exchange) {
         return BindingBuilder.bind(createQ2()).to(exchange).with(routkey1);
+    }
+}</code></pre>
+<h4 id="3-3-监听死信队列"><a href="#3-3-监听死信队列" class="headerlink" title="3.3 监听死信队列"></a>3.3 监听死信队列</h4><ul>
+<li>枚举</li>
+</ul>
+<pre><code class="java">public enum OrderFlag {
+    待支付(1), 待发货(2), 待确认(3), 待评价(4), 已评价(5), 超时订单(6), 取消订单(7);
+    private int val;
+    public int getVal() {
+        return val;
+    }
+    private OrderFlag(int v) {
+        val = v;
+    }
+}</code></pre>
+<ul>
+<li>监听器</li>
+</ul>
+<pre><code class="java">// dto
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+public class MqMsgDto&lt;T&gt; implements Serializable {
+    private long id;
+    private int type;//类型
+    private  T obj;
+}
+
+// Listener
+import com.laoxing.open.common.dto.MqMsgDto;
+import com.laoxing.open.server.dao.OrderDao;
+import com.laoxing.open.server.entity.Order;
+import com.laoxing.open.server.myenum.OrderFlag;
+import org.springframework.amqp.rabbit.annotation.RabbitHandler;
+import org.springframework.amqp.rabbit.annotation.RabbitListener;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
+
+@Component
+@RabbitListener(queues = &quot;open:order:dlxtimeorder&quot;)
+public class TimeOutOrderListener {
+    @Autowired
+    private OrderDao dao;
+
+    @RabbitHandler
+    @Transactional //开启本地事务
+    public void handler(MqMsgDto&lt;Long&gt; dto) {
+        //1,获取订单号
+        long oid = dto.getObj();
+        //2.查询订单对象
+        Order order = dao.selectById(oid);
+        if (order != null) {
+            //3.校验订单的状态
+            if (order.getFlag().equals(OrderFlag.待支付.getVal())) {
+                //超时 未支付
+
+                //更改订单状态
+                if (dao.updateFlag(oid, OrderFlag.超时订单.getVal()) &gt; 0) {
+                    //释放库存
+                    //释放各种优惠
+                    //生成订单流水
+                    //消息
+                }
+            }
+        }
     }
 }</code></pre>
 <h4 id="3-3-生成订单逻辑"><a href="#3-3-生成订单逻辑" class="headerlink" title="3.3 生成订单逻辑"></a>3.3 生成订单逻辑</h4><p>生成订单逻辑流程：</p>
@@ -4343,51 +4409,7 @@ public class OrderServiceImpl implements OrderService {
         return R.error();
     }
 }</code></pre>
-<h4 id="3-4-依赖注入Bean"><a href="#3-4-依赖注入Bean" class="headerlink" title="3.4 依赖注入Bean"></a>3.4 依赖注入Bean</h4><p>以配置类方式做Bean注入：</p>
-<pre><code class="java">// RibbonConfig
-@Configuration
-public class RibbonConfig {
-    @Bean
-    @LoadBalanced
-    public RestTemplate createRT(){
-        return new RestTemplate();
-    }
-}
-
-// IdGeneratorConfig
-@Configuration
-public class IdGeneratorConfig {
-    @Bean
-    public IdGenerator createID(){
-        return new IdGenerator();
-    }
-}
-
-// RedissonConfig
-@Configuration
-public class RedissonConfig {
-    @Value(&quot;...&quot;)
-    private String host;
-    @Value(&quot;...&quot;)
-    private int port;
-    @Value(&quot;...&quot;)
-    private String pass;
-    @Bean
-    public RedissonUtil createRU(){
-        return RedissonUtil.getInstance(host,port,pass);
-    }
-}
-
-// RibbonConfig
-@Configuration
-public class RibbonConfig {
-    @Bean
-    @LoadBalanced
-    public RestTemplate createRT(){
-        return new RestTemplate();
-    }
-}</code></pre>
-<h4 id="3-5-ID生成-雪花算法"><a href="#3-5-ID生成-雪花算法" class="headerlink" title="3.5 ID生成-雪花算法"></a>3.5 ID生成-雪花算法</h4><p>ID生成器 工具类<code>完善可CV</code>：</p>
+<h4 id="3-4-ID生成-雪花算法"><a href="#3-4-ID生成-雪花算法" class="headerlink" title="3.4 ID生成-雪花算法"></a>3.4 ID生成-雪花算法</h4><p>ID生成器 工具类<code>完善可CV</code>：</p>
 <pre><code class="java">/**
  * twitter的一个id生成算法  雪花算法
  * &lt;p&gt;
@@ -4570,7 +4592,7 @@ public class IdGenerator {
         return System.currentTimeMillis();
     }
 }</code></pre>
-<h4 id="3-6-分布式锁"><a href="#3-6-分布式锁" class="headerlink" title="3.6 分布式锁"></a>3.6 分布式锁</h4><p>分布式锁<code>根据情况可修改</code>：</p>
+<h4 id="3-5-分布式锁"><a href="#3-5-分布式锁" class="headerlink" title="3.5 分布式锁"></a>3.5 分布式锁</h4><p>分布式锁<code>根据情况可修改</code>：</p>
 <pre><code class="java">import org.redisson.Redisson;
 import org.redisson.api.RedissonClient;
 import org.redisson.config.Config;
@@ -4633,6 +4655,50 @@ public class RedissonUtil {
         return client.getLock(key).isLocked();
     }
 }</code></pre>
+<h4 id="3-6-依赖注入Bean"><a href="#3-6-依赖注入Bean" class="headerlink" title="3.6 依赖注入Bean"></a>3.6 依赖注入Bean</h4><p>以配置类方式将 工具类 注入：</p>
+<pre><code class="java">// RibbonConfig
+@Configuration
+public class RibbonConfig {
+    @Bean
+    @LoadBalanced
+    public RestTemplate createRT(){
+        return new RestTemplate();
+    }
+}
+
+// IdGeneratorConfig
+@Configuration
+public class IdGeneratorConfig {
+    @Bean
+    public IdGenerator createID(){
+        return new IdGenerator();
+    }
+}
+
+// RedissonConfig
+@Configuration
+public class RedissonConfig {
+    @Value(&quot;...&quot;) // 在 application.yml 中配置即可
+    private String host;
+    @Value(&quot;...&quot;)
+    private int port;
+    @Value(&quot;...&quot;)
+    private String pass;
+    @Bean
+    public RedissonUtil createRU(){
+        return RedissonUtil.getInstance(host,port,pass);
+    }
+}
+
+// RibbonConfig
+@Configuration
+public class RibbonConfig {
+    @Bean
+    @LoadBalanced
+    public RestTemplate createRT(){
+        return new RestTemplate();
+    }
+}</code></pre>
 
 </div>
 
@@ -4640,16 +4706,16 @@ public class RedissonUtil {
     <div class="post-guide">
         <div class="item left">
             
-              <a href="/2020/03/02/14_%E5%BE%AE%E6%9C%8D%E5%8A%A1/10_%E6%94%AF%E4%BB%98%E6%9C%8D%E5%8A%A1/01-%E6%94%AF%E4%BB%98%E5%AE%9D%E6%94%AF%E4%BB%98/">
+              <a href="/2020/03/02/14_%E5%BE%AE%E6%9C%8D%E5%8A%A1/08_%E9%82%AE%E7%AE%B1%E6%9C%8D%E5%8A%A1/Mail%20%E6%9C%8D%E5%8A%A1%20Demo/">
                   <i class="fa fa-angle-left" aria-hidden="true"></i>
-                  01-支付宝支付
+                  Mail 服务 Demo
               </a>
             
         </div>
         <div class="item right">
             
-              <a href="/2020/03/02/14_%E5%BE%AE%E6%9C%8D%E5%8A%A1/07_%E6%96%87%E4%BB%B6%E4%B8%8A%E4%BC%A0/%E5%BE%AE%E6%9C%8D%E5%8A%A1%20MultipartFile%20%E6%96%87%E4%BB%B6%E4%B8%8A%E4%BC%A0/">
-                微服务 MultipartFile 文件上传
+              <a href="/2020/03/02/14_%E5%BE%AE%E6%9C%8D%E5%8A%A1/06_%E9%93%BE%E8%B7%AF%E8%BF%BD%E8%B8%AA/Spring%20Cloud%20Sleuth/">
+                Spring Cloud Sleuth
                 <i class="fa fa-angle-right" aria-hidden="true"></i>
               </a>
             
