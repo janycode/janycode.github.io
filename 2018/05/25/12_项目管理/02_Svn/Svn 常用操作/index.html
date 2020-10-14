@@ -4216,7 +4216,55 @@
 
 <div id="article-content">
 	<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20200711092153.jpg" alt="svn"></p>
-<h3 id="1-SVN-Server-Aliyun"><a href="#1-SVN-Server-Aliyun" class="headerlink" title="1. SVN Server @Aliyun"></a>1. SVN Server @Aliyun</h3><p> 阿里云服务器 CentOS 安装 SVN 服务器【汇总】：</p>
+<h3 id="1-SVN-in-IDEA"><a href="#1-SVN-in-IDEA" class="headerlink" title="1. SVN in IDEA"></a>1. SVN in IDEA</h3><h4 id="1-1-往SVN推项目"><a href="#1-1-往SVN推项目" class="headerlink" title="1.1 往SVN推项目"></a>1.1 往SVN推项目</h4><blockquote>
+<ul>
+<li><code>仓库名与项目名必须保持一致</code>，否则会导致 pom.xml 中无法找到父目录而报错！</li>
+<li><code>删除 .idea 目录</code>，为了不影响 maven 仓库的路径设置。</li>
+</ul>
+</blockquote>
+<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20200819133340.png" alt="image-20200819133339197"></p>
+<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20200819133326.png" alt="image-20200819133325245"></p>
+<h4 id="1-2-IDEA日常推拉"><a href="#1-2-IDEA日常推拉" class="headerlink" title="1.2 IDEA日常推拉"></a>1.2 IDEA日常推拉</h4><ul>
+<li>设置</li>
+</ul>
+<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20200818135800.png" alt="image-20200818135759375"></p>
+<ul>
+<li>通过 SVN 版本库中的项目代码 → 创建项目</li>
+</ul>
+<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20200818133916.png" alt="image-20200818133915712"></p>
+<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20200818135148.png" alt="image-20200818135147660"></p>
+<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20200818134116.png" alt="image-20200818134115659"></p>
+<ul>
+<li>IDEA设置SVN自动忽略的文件</li>
+</ul>
+<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20200820201057.png" alt="image-20200820201056298"></p>
+<h3 id="2-SVN-常用命令"><a href="#2-SVN-常用命令" class="headerlink" title="2. SVN 常用命令"></a>2. SVN 常用命令</h3><ol>
+<li>从代码库中拉下代码，即 checkout<br> 将代码checkout到当前目录：<code>svn co url</code><br> 将代码checkout到指定目录：<code>svn co url directory</code></li>
+<li>把新建的文件提交的svn代码库，这需要两个步骤<br> 首先把文加加入svn管理：<code>svn add filename</code><br> 其次提交文件: <code>svn ci filename</code></li>
+<li>把修改后的文件提交道svn代码库<br> <code>svn ci filename -m &quot;comments&quot;</code></li>
+<li>更新代码到最新的版本：<br> <code>svn up</code></li>
+<li>解决冲突<br> 如果更新的代码有冲突，<br> 首先手动解决冲突：即编辑冲突文件为正常文件，然后使用：<code>svn resolved filename</code></li>
+<li>代码库合并<br> 两个代码库 address1 和 address2<br> 把address1合并到address2中：<br> 先把address2代码checkout到本地：<code>svn co address2</code><br> 然后进入address2的目录中执行：<code>svn merge address1</code><br> 合并后可能需要解决冲突，然后提交代码到 address2</li>
+</ol>
+<h3 id="3-SVN-常见问题"><a href="#3-SVN-常见问题" class="headerlink" title="3. SVN 常见问题"></a>3. SVN 常见问题</h3><p><strong>1. svn报错 refers to a file, not a directory</strong>svn co <a href="http://server.com/svn/trunk/test.file" target="_blank" rel="noopener">http://server.com/svn/trunk/test.file</a> test.filesvn: URL ‘<a href="http://server.com/svn/trunk/test.file" target="_blank" rel="noopener">http://server.com/svn/trunk/test.file</a> test.file’ refers to a file, not a directory</p>
+<p><strong>问题根本原因</strong>： </p>
+<p>svn co 即svn checkout 下拉一份代码副本到本地，但是checkout仅支持目录，如果checkout单个文件的话会报此错误。</p>
+<p><strong>解决方法</strong>：</p>
+<p>A. 下拉代码副本的时候，将目录下载下来，此操作并不会覆盖掉target_directory/目录下的原有文件；</p>
+<pre><code class="sh">svn co .../directory/ target_directory/ --username XXX --password XXX</code></pre>
+<p>B. 强制出文件，此操作仅为单向下拉文件，不能上传到svn库，根据需求来决定使用哪种方式；</p>
+<pre><code class="sh">svn export --force .../directory/svn_filename target_directory --useranme XXX --password XXX</code></pre>
+<p><strong>2. svn报错 commit fail： \</strong>File out of date<strong>svn: Commit failed (details follow):svn: Item ‘/banksystem/Mmoney/trunk/src/tpme/MEBS/timebargain/tradeweb/dao’ is out of date<br>**问题根本原因</strong>：  </p>
+<p>svn需要在其下拉的工作目录下操作才可以，一般脚本使用到svn时没有留意到当前脚本的执行环境是当前目录，还是svn对应的工作目录。</p>
+<p><strong>解决方法</strong>：</p>
+<p>A. 比如判断文件存在就up更新，不存在时就co一份副本下来，up前一定要进入该目录，否则后面的up和ci提交都会出错；  </p>
+<pre><code class="sh">if [ -e svn_filename ]; then
+    cd target_directory/     # 注意点，svn需要在其下拉的目录中操作才可以
+    svn up
+else
+    svn co .../directory/ target_directory --username XXX --password XXX
+fi</code></pre>
+<h3 id="4-SVN-Server-Aliyun"><a href="#4-SVN-Server-Aliyun" class="headerlink" title="4. SVN Server @Aliyun"></a>4. SVN Server @Aliyun</h3><p> 阿里云服务器 CentOS 安装 SVN 服务器【汇总】：</p>
 <pre><code class="sh"> #安装SVN
  yum -y install subversion
  #确认安装成功
@@ -4266,54 +4314,6 @@
  #So Easy！</code></pre>
 <p>【安装注意事项】<code>一定一定一定要勾选，否则IDEA无法关联使用SVN！</code></p>
 <p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20200818134347.png" alt="image-20200818134345888"></p>
-<h3 id="2-SVN-in-IDEA"><a href="#2-SVN-in-IDEA" class="headerlink" title="2. SVN in IDEA"></a>2. SVN in IDEA</h3><h4 id="2-1-往SVN推项目"><a href="#2-1-往SVN推项目" class="headerlink" title="2.1 往SVN推项目"></a>2.1 往SVN推项目</h4><blockquote>
-<ul>
-<li><code>仓库名与项目名必须保持一致</code>，否则会导致 pom.xml 中无法找到父目录而报错！</li>
-<li><code>删除 .idea 目录</code>，为了不影响 maven 仓库的路径设置。</li>
-</ul>
-</blockquote>
-<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20200819133340.png" alt="image-20200819133339197"></p>
-<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20200819133326.png" alt="image-20200819133325245"></p>
-<h4 id="2-2-IDEA日常推拉"><a href="#2-2-IDEA日常推拉" class="headerlink" title="2.2 IDEA日常推拉"></a>2.2 IDEA日常推拉</h4><ul>
-<li>设置</li>
-</ul>
-<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20200818135800.png" alt="image-20200818135759375"></p>
-<ul>
-<li>通过 SVN 版本库中的项目代码 → 创建项目</li>
-</ul>
-<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20200818133916.png" alt="image-20200818133915712"></p>
-<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20200818135148.png" alt="image-20200818135147660"></p>
-<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20200818134116.png" alt="image-20200818134115659"></p>
-<ul>
-<li>IDEA设置SVN自动忽略的文件</li>
-</ul>
-<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20200820201057.png" alt="image-20200820201056298"></p>
-<h3 id="3-SVN-常用命令"><a href="#3-SVN-常用命令" class="headerlink" title="3. SVN 常用命令"></a>3. SVN 常用命令</h3><ol>
-<li>从代码库中拉下代码，即 checkout<br> 将代码checkout到当前目录：<code>svn co url</code><br> 将代码checkout到指定目录：<code>svn co url directory</code></li>
-<li>把新建的文件提交的svn代码库，这需要两个步骤<br> 首先把文加加入svn管理：<code>svn add filename</code><br> 其次提交文件: <code>svn ci filename</code></li>
-<li>把修改后的文件提交道svn代码库<br> <code>svn ci filename -m &quot;comments&quot;</code></li>
-<li>更新代码到最新的版本：<br> <code>svn up</code></li>
-<li>解决冲突<br> 如果更新的代码有冲突，<br> 首先手动解决冲突：即编辑冲突文件为正常文件，然后使用：<code>svn resolved filename</code></li>
-<li>代码库合并<br> 两个代码库 address1 和 address2<br> 把address1合并到address2中：<br> 先把address2代码checkout到本地：<code>svn co address2</code><br> 然后进入address2的目录中执行：<code>svn merge address1</code><br> 合并后可能需要解决冲突，然后提交代码到 address2</li>
-</ol>
-<h3 id="4-SVN-常见问题"><a href="#4-SVN-常见问题" class="headerlink" title="4. SVN 常见问题"></a>4. SVN 常见问题</h3><p><strong>1. svn报错 refers to a file, not a directory</strong>svn co <a href="http://server.com/svn/trunk/test.file" target="_blank" rel="noopener">http://server.com/svn/trunk/test.file</a> test.filesvn: URL ‘<a href="http://server.com/svn/trunk/test.file" target="_blank" rel="noopener">http://server.com/svn/trunk/test.file</a> test.file’ refers to a file, not a directory</p>
-<p><strong>问题根本原因</strong>： </p>
-<p>svn co 即svn checkout 下拉一份代码副本到本地，但是checkout仅支持目录，如果checkout单个文件的话会报此错误。</p>
-<p><strong>解决方法</strong>：</p>
-<p>A. 下拉代码副本的时候，将目录下载下来，此操作并不会覆盖掉target_directory/目录下的原有文件；</p>
-<pre><code class="sh">svn co .../directory/ target_directory/ --username XXX --password XXX</code></pre>
-<p>B. 强制出文件，此操作仅为单向下拉文件，不能上传到svn库，根据需求来决定使用哪种方式；</p>
-<pre><code class="sh">svn export --force .../directory/svn_filename target_directory --useranme XXX --password XXX</code></pre>
-<p><strong>2. svn报错 commit fail： \</strong>File out of date<strong>svn: Commit failed (details follow):svn: Item ‘/banksystem/Mmoney/trunk/src/tpme/MEBS/timebargain/tradeweb/dao’ is out of date<br>**问题根本原因</strong>：  </p>
-<p>svn需要在其下拉的工作目录下操作才可以，一般脚本使用到svn时没有留意到当前脚本的执行环境是当前目录，还是svn对应的工作目录。</p>
-<p><strong>解决方法</strong>：</p>
-<p>A. 比如判断文件存在就up更新，不存在时就co一份副本下来，up前一定要进入该目录，否则后面的up和ci提交都会出错；  </p>
-<pre><code class="sh">if [ -e svn_filename ]; then
-    cd target_directory/     # 注意点，svn需要在其下拉的目录中操作才可以
-    svn up
-else
-    svn co .../directory/ target_directory --username XXX --password XXX
-fi</code></pre>
 
 </div>
 
@@ -4321,16 +4321,16 @@ fi</code></pre>
     <div class="post-guide">
         <div class="item left">
             
-              <a href="/2018/05/25/12_%E9%A1%B9%E7%9B%AE%E7%AE%A1%E7%90%86/01_Git/03-Git%20%E5%8D%8F%E4%BD%9C%E5%BC%80%E5%8F%91/">
+              <a href="/2018/05/25/12_%E9%A1%B9%E7%9B%AE%E7%AE%A1%E7%90%86/01_Git/04-Git%20%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4/">
                   <i class="fa fa-angle-left" aria-hidden="true"></i>
-                  03-Git 协作开发
+                  04-Git 常用命令
               </a>
             
         </div>
         <div class="item right">
             
-              <a href="/2018/05/25/12_%E9%A1%B9%E7%9B%AE%E7%AE%A1%E7%90%86/01_Git/04-Git%20%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4/">
-                04-Git 常用命令
+              <a href="/2018/05/25/14_%E5%BE%AE%E6%9C%8D%E5%8A%A1/00_%E6%8A%80%E6%9C%AF%E6%9E%B6%E6%9E%84/01-Web%E6%8A%80%E6%9C%AF%E6%9E%B6%E6%9E%84%E6%BC%94%E8%BF%9B/">
+                01-Web技术架构演进
                 <i class="fa fa-angle-right" aria-hidden="true"></i>
               </a>
             
