@@ -249,6 +249,15 @@
 								<div class="article-toc" style="display: none;"></div>
 							</ul>
 			
+							<ul>
+								<li class="file">
+									<a href="/2020/12/03/00_%E5%85%88%E5%88%A9%E5%85%B6%E5%99%A8/01_Intellij%20IDEA/09-IDEA-LeetCode%E7%AE%97%E6%B3%95%E7%BB%83%E4%B9%A0%E6%8F%92%E4%BB%B6/index.html" title="09-IDEA-LeetCode算法练习插件">
+										09-IDEA-LeetCode算法练习插件
+									</a>
+								</li>
+								<div class="article-toc" style="display: none;"></div>
+							</ul>
+			
 								</li>
 								
 							</ul>
@@ -4265,7 +4274,362 @@
 <h3 id="1-砍价核心数据流程"><a href="#1-砍价核心数据流程" class="headerlink" title="1. 砍价核心数据流程"></a>1. 砍价核心数据流程</h3><p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20201129155741.png" alt="image-20201129155739877"></p>
 <h3 id="2-砍价规则生成流程"><a href="#2-砍价规则生成流程" class="headerlink" title="2. 砍价规则生成流程"></a>2. 砍价规则生成流程</h3><p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20201129155915.png" alt="image-20201129155914282"></p>
 <p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20201129155947.png" alt="image-20201129155946630"></p>
-<pre><code class="java">//code...</code></pre>
+<pre><code class="java">//算法工具类
+import java.math.BigDecimal;
+import java.math.BigInteger;
+import java.util.*;
+
+@SuppressWarnings(&quot;all&quot;)
+public class BargainUtil {
+    /**
+     * 随机金额倍数指数范围
+     */
+    private static final BigDecimal HIGH_INDEX = new BigDecimal(&quot;1.5&quot;);
+    private static final BigDecimal LOW_INDEX = new BigDecimal(&quot;0.5&quot;);
+
+    public BargainUtil() {
+
+    }
+
+    /**
+     * 返回砍价列表
+     * @param role 砍价规则
+     * @return
+     */
+    public static List&lt;BigInteger&gt; getbargainList(BargainRole role) throws Exception {
+        if (role.getLowPrice() == null) {
+            role.setLowPrice(BigInteger.ZERO);
+        }
+        return calculation(role);
+    }
+
+    /**
+     * 计算砍价明细，并模拟砍价
+     * @param role 砍价规则
+     */
+    private static List&lt;BigInteger&gt; calculation(BargainRole role) throws Exception {
+        /*
+         * 砍价例子：
+         * 规则：前10%的人可帮砍掉帮砍金额的80%
+         * 商品：随机模式，默认10人帮砍，则发起人砍价成功
+         */
+
+        if (role.getPercentagePerson() == null || role.getPercentagePrice() == null) {
+            throw new Exception(&quot;砍价策略必须设置&quot;);
+        }
+        /* 不能设为0|单方面设置100 */
+        boolean b1 = role.getPercentagePrice().compareTo(0) &lt;= 0 || role.getPercentagePerson().compareTo(0) &lt;= 0;
+        boolean b2 = role.getPercentagePrice().equals(100) &amp;&amp; !role.getPercentagePerson().equals(100);
+        boolean b3 = !role.getPercentagePrice().equals(100) &amp;&amp; role.getPercentagePerson().equals(100);
+        if (b1 || b2 || b3) {
+            throw new Exception(&quot;砍价策略设置有误&quot;);
+        }
+        if (role.getTotalPrice() == null || role.getTotalPrice().compareTo(BigInteger.ZERO) &lt;= 0) {
+            throw new Exception(&quot;商品价格数据异常&quot;);
+        }
+        if (role.getTotalTimes() == null || role.getTotalTimes().compareTo(0) &lt;= 0) {
+            throw new Exception(&quot;砍价次数数据异常&quot;);
+        }
+        /* 砍价人次不能高于商品价格 */
+        //砍价人次（默认N人帮砍发起人砍价成功） 10 &lt;= 19.9
+        if (new BigInteger(role.getTotalTimes().toString()).compareTo(role.getTotalPrice().subtract(role.getLowPrice())) &gt; 0) {
+            throw new Exception(&quot;砍价人次不能高于商品价格&quot;);
+        }
+        //待砍金额(即帮砍金额) = 原价 - 底价(活动价)
+        //如商品原价 200 底价 19.9，待砍金额 = 200 - 19.9 = 180.1 (四舍五入) = 180
+        BigInteger difference = role.getTotalPrice().subtract(role.getLowPrice());
+        BigInteger index = BigInteger.ONE;
+        //在待砍金额 &gt;100w 时，将待砍金额缩小 100 倍，即相当于按单位 元 来处理，其他不变
+        if (difference.compareTo(new BigInteger(&quot;100000000&quot;)) &gt; 0) {
+            index = new BigInteger(&quot;10000&quot;);
+            difference = difference.divide(index);
+        }
+
+        //第1批人数：默认进行帮砍发起人可砍价成功的人数 × 前 N% 的人砍掉帮砍金额一定比例
+        //如前10%的人可帮砍掉帮砍金额80%，默认10人帮砍，发起人砍价成功
+        //此第1批人数 = 10 × 10% = 1人
+        Integer part1 = BigDecimal.valueOf(role.getTotalTimes() * role.getPercentagePerson())
+                .divide(BigDecimal.valueOf(100), BigDecimal.ROUND_DOWN).intValue();
+        if (part1 == 0) {
+            part1 = 1;
+        }
+        //第1批人可砍金额：待砍金额 × 前一定比例的人砍掉帮砍金额的 N%
+        //如前10%的人可帮砍掉帮砍金额80%，默认10人帮砍，发起人砍价成功
+        //此第1批人可砍金额 = 18010(180.1) × 80(80%) / 100 = 144.08 = 144 元(舍弃小数点)
+        BigInteger price1 = new BigDecimal(difference.multiply(BigInteger.valueOf(role.getPercentagePrice())))
+                .divide(BigDecimal.valueOf(100), BigDecimal.ROUND_DOWN).toBigInteger();
+
+        //第2批人数：默认进行帮砍发起人可砍价成功的人数 - 第1批人
+        //10 - 1 = 9 人
+        Integer part2 = role.getTotalTimes() - part1;
+        //第2批人可砍金额：帮砍价格 - 第1批砍掉的价格
+        //180 - 144 = 36 元
+        BigInteger price2 = difference.subtract(price1);
+
+        List&lt;BigInteger&gt; firstlist;
+        //当默认帮砍可成功的人数=1 或 第1批人数&gt;第1批可砍价格 或 第二批人数&gt;第2批可砍价格
+        //(10 == 1) || (1 &gt; 144) || (9 &gt; 36)
+        if (role.getTotalTimes() == 1 || part1 &gt; price1.intValue() || part2 &gt; price2.intValue()) {
+            firstlist = random(difference, role.getTotalTimes());
+        } else {
+            //使用第1批人和第1批可砍价格进行随机分配金额
+            //part1: 传参(144, 1)
+            firstlist = random(price1, part1);
+            if (part2.compareTo(0) &gt; 0) {
+                //part2: 传参(36, 9)
+                List&lt;BigInteger&gt; secondlist = random(price2, part2);
+                firstlist.addAll(secondlist);
+            }
+        }
+        //firstlist = {109, 46, 30, 50, 46, 30, 50, 51, 19, 51}
+
+        //处理 index &gt; 1 的情况，即 帮砍金额 &gt; 100w 时
+        if (index.compareTo(BigInteger.ONE) &gt; 0) {
+            for (int i = 0; i &lt; firstlist.size(); i++) {
+                firstlist.set(i, firstlist.get(i).multiply(index));
+                role.setTotalPrice(role.getTotalPrice().subtract(firstlist.get(i)));
+            }
+            if (role.getTotalPrice().subtract(role.getLowPrice()).compareTo(BigInteger.ZERO) &gt; 0) {
+                firstlist.set(firstlist.size() - 1, firstlist.get(firstlist.size() - 1).add(role.getTotalPrice().subtract(role.getLowPrice())));
+            }
+        }
+
+        return firstlist;
+    }
+
+    /**
+     * 随机分配金额
+     * @param price   阶段可砍金额
+     * @param persons 阶段助力次数
+     * @return
+     */
+    private static List&lt;BigInteger&gt; random(BigInteger price, Integer persons) throws Exception {
+        //阶段平均可砍金额
+        //144 / 1 = 144, 36 / 9 = 4
+        BigInteger average = price.divide(BigInteger.valueOf(persons));
+
+        //随机数上限
+        //144 * 1.5 = 216, 36 * 1.5 = 54
+        BigInteger high = new BigDecimal(average).multiply(HIGH_INDEX).toBigInteger();
+        if (high.compareTo(price) &gt; 0) {
+            high = price;
+        }
+        //随机数下限
+        //144 * 0.5 = 72, 36 * 0.5 = 18
+        BigInteger low = new BigDecimal(average).multiply(LOW_INDEX).toBigInteger();
+        if (low.compareTo(BigInteger.ONE) &lt; 0) {
+            low = BigInteger.ONE;
+        }
+
+        int[] ints;
+        try {
+            //random.ints(a, b, c) 第1个参数为生成随机数数组的元素个数，第2和第3个参数为随机数的范围
+            //part1: 1人，72~256之间的随机数数组, 如 [109]
+            //part2: 9人，18~54之间的随机数数组，如 [46, 30, 50, 46, 30, 50, 51, 19, 51]
+            ints = new Random().ints(persons, low.intValue(), high.intValue() + 1).toArray();
+        } catch (Exception e) {
+            throw new Exception(&quot;砍价规则不合规，请调整&quot;);
+        }
+
+        //将生成的随机数放入 list 中，sum 为随机金额数的累加值
+        List&lt;BigInteger&gt; list = new ArrayList&lt;&gt;();
+        BigInteger sum = BigInteger.ZERO;
+        for (int x : ints) {
+            sum = sum.add(BigInteger.valueOf(x));
+            list.add(BigInteger.valueOf(x));
+        }
+
+        //模拟砍价：生成的随机砍价金额数组的累积和 sum 默认砍1次，如果没砍到 0 及 &lt;0 则继续使用 list 中的金额挨个往下砍
+        //part1: sum = 随机出的 [109] 的和为 109 &lt; price(144), 进 else if
+        //part2: sum = 随机出的 [46, 30, 50, 46, 30, 50, 51, 19, 51] 的和为 373 &lt; price(36)，进 if
+        if (sum.compareTo(price) &gt; 0) {
+            //part2: 373-36=337
+            int val = sum.subtract(price).intValue();
+            //val=337, 遍历 list(长度9), 每遍历一个 list 的元素，判断该元素 &gt; 1，将该元素-1，将 val-1
+            //直到 val = 0，list 中每个元素逐个-1，总共减掉了 val 的大小
+            while (val &gt; 0) {
+                for (int i = 0; i &lt; list.size(); i++) {
+                    if (val &gt; 0) {
+                        if (list.get(i).compareTo(BigInteger.ONE) &gt; 0) {
+                            list.set(i, list.get(i).subtract(BigInteger.ONE));
+                            val--;
+                        }
+                    } else {
+                        break;
+                    }
+                }
+            }
+        } else if (sum.compareTo(price) &lt; 0) {
+            //part1: 144-109=35
+            int val = price.subtract(sum).intValue();
+            //val=35, 遍历 list(长度1), 每遍历一个 list 的元素，将该元素+1，将 val-1
+            //直到 val = 0，list 中每个元素逐个+1，总共加上了 val 大小的值
+            while (val &gt; 0) {
+                for (int i = 0; i &lt; list.size(); i++) {
+                    if (val &gt; 0) {
+                        list.set(i, list.get(i).add(BigInteger.ONE));
+                        val--;
+                    } else {
+                        break;
+                    }
+                }
+            }
+        }
+
+        return list;
+    }
+
+    /**
+     * 生成不重复随机数
+     */
+    public static List&lt;Integer&gt; getRandomnum(Integer count, Integer min, Integer max) {
+        if (count == null || min == null || max == null) {
+            return null;
+        }
+        if (max - min &lt; count) {
+            throw new RuntimeException(&quot;illegal parameter&quot;);
+        }
+        HashSet&lt;Integer&gt; set = new HashSet&lt;&gt;();
+        while (set.size() &lt; count) {
+            set.add(new Random().ints(1, min, max).findFirst().getAsInt());
+        }
+        return new ArrayList&lt;&gt;(set);
+    }
+
+    /**
+     * 生成砍价附加规则随机数
+     */
+    public static Map getExtraRoleDetails(Integer looptimes, Integer roleSectiontimes, List&lt;Map&gt; roleExtra) {
+        int[] sections = new int[looptimes + 1];
+        sections[0] = 1;
+        //sections = {1, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50}
+        for (int i = 1; i &lt; looptimes + 1; i++) {
+            sections[i] = roleSectiontimes * i;
+        }
+        //list : {3, 3}
+        List&lt;Integer&gt; list = new ArrayList&lt;&gt;();
+        roleExtra.forEach((map) -&gt; {
+            Map&lt;String, Integer&gt; extra = (Map&lt;String, Integer&gt;) map;
+            int tag = extra.get(&quot;num&quot;) == null ? 0 : Integer.parseInt(extra.get(&quot;num&quot;).toString());
+            while (tag &gt; 0) {
+                list.add(extra.get(&quot;person&quot;));
+                tag--;
+            }
+        });
+        //砍价金额明细，长度是 sections长度 * 随机出现的次数
+        //details(size=10*2=20): {&quot;22&quot;:&quot;3&quot;,&quot;44&quot;:&quot;3&quot;,&quot;34&quot;:&quot;3&quot;,&quot;13&quot;:&quot;3&quot;,&quot;46&quot;:&quot;3&quot;,&quot;14&quot;:&quot;3&quot;,&quot;36&quot;:&quot;3&quot;,&quot;37&quot;:&quot;3&quot;,&quot;16&quot;:&quot;3&quot;,&quot;49&quot;:&quot;3&quot;,&quot;28&quot;:&quot;3&quot;,&quot;18&quot;:&quot;3&quot;,&quot;29&quot;:&quot;3&quot;,&quot;1&quot;:&quot;3&quot;,&quot;3&quot;:&quot;3&quot;,&quot;7&quot;:&quot;3&quot;,&quot;8&quot;:&quot;3&quot;,&quot;41&quot;:&quot;3&quot;,&quot;31&quot;:&quot;3&quot;,&quot;21&quot;:&quot;3&quot;}
+        Map&lt;String, Integer&gt; details = new HashMap&lt;&gt;();
+        for (int i = 0; i &lt; sections.length - 1; i++) {
+            //randomnums: 在 sections 中相邻两个数之间生成 list.size() 个随机数
+            List&lt;Integer&gt; randomnums = getRandomnum(list.size(), sections[i], sections[i + 1]);
+            for (int j = 0; j &lt; list.size(); j++) {
+                details.put(String.valueOf(randomnums.get(j)), list.get(j));
+            }
+        }
+        return details;
+    }
+
+    public static void main(String[] args) throws Exception {
+        int[] ints = new Random().ints(1, 72, 256 + 1).toArray();
+        System.out.println(&quot;Arrays.toString(ints) = &quot; + Arrays.toString(ints));
+
+        int[] ints2 = new Random().ints(9, 18, 54 + 1).toArray();
+        System.out.println(&quot;Arrays.toString(ints2) = &quot; + Arrays.toString(ints2));
+
+        BargainRole role = new BargainRole();
+        role.setTotalPrice(new BigInteger(&quot;100000000010&quot;));
+        role.setLowPrice(new BigInteger(&quot;1000001&quot;));
+        role.setTotalTimes(100);
+        role.setPercentagePerson(99);
+        role.setPercentagePrice(99);
+
+        List&lt;BigInteger&gt; list = BargainUtil.getbargainList(role);
+        System.out.println(&quot;随机金额列表(单位:分)：&quot; + list);
+        BigInteger sum = BigInteger.ZERO;
+        for (int i = 0; i &lt; list.size(); i++) {
+            sum = sum.add(list.get(i));
+        }
+        System.out.println(&quot;确认总额：&quot; + sum);
+        System.out.println(&quot;列表size：&quot; + list.size());
+    }
+}
+
+
+//Bean类
+class BargainRole {
+    /**
+     * 商品金额
+     */
+    private BigInteger totalPrice;
+    /**
+     * 最低砍至金额
+     */
+    private BigInteger lowPrice;
+    /**
+     * 砍价总数量
+     */
+    private Integer totalTimes;
+    /**
+     * 前 N %位帮砍者(可砍掉一定的百分比金额)
+     */
+    private Integer percentagePerson;
+    /**
+     * 可砍掉商品帮砍金额的 N %
+     */
+    private Integer percentagePrice;
+
+
+    public BigInteger getTotalPrice() {
+        return totalPrice;
+    }
+
+    public void setTotalPrice(BigInteger totalPrice) {
+        this.totalPrice = totalPrice;
+    }
+
+    public Integer getTotalTimes() {
+        return totalTimes;
+    }
+
+    public void setTotalTimes(Integer totalTimes) {
+        this.totalTimes = totalTimes;
+    }
+
+    public Integer getPercentagePerson() {
+        return percentagePerson;
+    }
+
+    public void setPercentagePerson(Integer percentagePerson) {
+        this.percentagePerson = percentagePerson;
+    }
+
+    public Integer getPercentagePrice() {
+        return percentagePrice;
+    }
+
+    public void setPercentagePrice(Integer percentagePrice) {
+        this.percentagePrice = percentagePrice;
+    }
+
+    public BigInteger getLowPrice() {
+        return lowPrice;
+    }
+
+    public void setLowPrice(BigInteger lowPrice) {
+        this.lowPrice = lowPrice;
+    }
+
+    @Override
+    public String toString() {
+        return &quot;BargainRole{&quot; +
+                &quot;totalPrice=&quot; + totalPrice +
+                &quot;, lowPrice=&quot; + lowPrice +
+                &quot;, totalTimes=&quot; + totalTimes +
+                &quot;, percentagePerson=&quot; + percentagePerson +
+                &quot;, percentagePrice=&quot; + percentagePrice +
+                &#39;}&#39;;
+    }
+}</code></pre>
 <blockquote>
 <p><strong>砍价活动示例</strong>：</p>
 <p>每人最多砍 1 个商品（发起人）</p>
@@ -4463,6 +4827,11 @@ public class ReducePriceUtils {
 
     <div class="post-guide">
         <div class="item left">
+            
+              <a href="/2020/12/03/00_%E5%85%88%E5%88%A9%E5%85%B6%E5%99%A8/01_Intellij%20IDEA/09-IDEA-LeetCode%E7%AE%97%E6%B3%95%E7%BB%83%E4%B9%A0%E6%8F%92%E4%BB%B6/">
+                  <i class="fa fa-angle-left" aria-hidden="true"></i>
+                  09-IDEA-LeetCode算法练习插件
+              </a>
             
         </div>
         <div class="item right">
