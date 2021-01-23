@@ -11,7 +11,7 @@
 	
 	<title>
 	
-		03-Spring 事务嵌套与异常处理 | 
+		03-Spring 事务+异常+传播行为分析 | 
 	 
 	姜源の云笔记
 	</title>
@@ -2723,8 +2723,8 @@
 			
 							<ul>
 								<li class="file active">
-									<a href="/2021/01/22/08_%E6%A1%86%E6%9E%B6%E6%8A%80%E6%9C%AF/02_Spring/04_Data/03-Spring%20%E4%BA%8B%E5%8A%A1%E5%B5%8C%E5%A5%97%E4%B8%8E%E5%BC%82%E5%B8%B8%E5%A4%84%E7%90%86/index.html" title="03-Spring 事务嵌套与异常处理">
-										03-Spring 事务嵌套与异常处理
+									<a href="/2021/01/22/08_%E6%A1%86%E6%9E%B6%E6%8A%80%E6%9C%AF/02_Spring/04_Data/03-Spring%20%E4%BA%8B%E5%8A%A1+%E5%BC%82%E5%B8%B8+%E4%BC%A0%E6%92%AD%E8%A1%8C%E4%B8%BA%E5%88%86%E6%9E%90/index.html" title="03-Spring 事务+异常+传播行为分析">
+										03-Spring 事务+异常+传播行为分析
 									</a>
 								</li>
 								<div class="article-toc" style="display: none;"></div>
@@ -4305,7 +4305,7 @@
 	<div id="content">
 		<h1 id="article-title">
 
-	03-Spring 事务嵌套与异常处理
+	03-Spring 事务+异常+传播行为分析
 </h1>
 <div class="article-meta">
     
@@ -4345,7 +4345,7 @@
 	<span>时间:2021-01-22 23:46:57</span>
 	
 		<span>
-			访问:<span id="/2021/01/22/08_%E6%A1%86%E6%9E%B6%E6%8A%80%E6%9C%AF/02_Spring/04_Data/03-Spring%20%E4%BA%8B%E5%8A%A1%E5%B5%8C%E5%A5%97%E4%B8%8E%E5%BC%82%E5%B8%B8%E5%A4%84%E7%90%86/" class="leancloud_visitors" data-flag-title="08_框架技术/02_Spring/04_Data/03-Spring 事务嵌套与异常处理"></span>
+			访问:<span id="/2021/01/22/08_%E6%A1%86%E6%9E%B6%E6%8A%80%E6%9C%AF/02_Spring/04_Data/03-Spring%20%E4%BA%8B%E5%8A%A1+%E5%BC%82%E5%B8%B8+%E4%BC%A0%E6%92%AD%E8%A1%8C%E4%B8%BA%E5%88%86%E6%9E%90/" class="leancloud_visitors" data-flag-title="08_框架技术/02_Spring/04_Data/03-Spring 事务+异常+传播行为分析"></span>
 		</span>
 	
 </div>
@@ -4453,16 +4453,60 @@ public class C1{
 </ol>
 </blockquote>
 <h3 id="4-事务回滚的注意事项"><a href="#4-事务回滚的注意事项" class="headerlink" title="4. 事务回滚的注意事项"></a>4. 事务回滚的注意事项</h3><ol>
-<li><p>要想事务起作用，必须是主方法名上有 @Transactional 注解，方法体内不能用 try catch；如果用 try catch，则 catch 中必须用 throw new RuntimeException();</p>
-</li>
-<li><p>@Transactional 注解应该只被应用到 public 方法上，不要用在 protected、private 等方法上，即使用了也将被忽略，不起作用，这是由 Spring AOP 决定的。</p>
-</li>
-<li><p>只有来自外部的方法调用才会被 AOP 代理捕捉，类内部方法调用类内部的其他方法，子方法并会不引起事务行为，即使被调用的方法上使用有 @Transactional 注解。</p>
-</li>
-<li><p>类内部方法调用内部的其他方法，被调用的方法体中如果有 try catch，则 catch 中必须用 throw new RuntimeException()，否则即使主方法上加上 @Transactional 注解，如果被调用的子方法出错也不会抛出异常，不会引起事务起作用。</p>
-</li>
+<li>要想事务起作用，必须是主方法名上有 @Transactional 注解，方法体内不能用 try catch；如果用 try catch，则 catch 中必须用 throw new RuntimeException();</li>
+<li>@Transactional 注解应该只被应用到 public 方法上，不要用在 protected、private 等方法上，即使用了也将被忽略，不起作用，这是由 Spring AOP 决定的。</li>
+<li>只有来自外部的方法调用才会被 AOP 代理捕捉，类内部方法调用类内部的其他方法，子方法并会不引起事务行为，即使被调用的方法上使用有 @Transactional 注解。</li>
+<li>类内部方法调用内部的其他方法，被调用的方法体中如果有 try catch，则 catch 中必须用 throw new RuntimeException()，否则即使主方法上加上 @Transactional 注解，如果被调用的子方法出错也不会抛出异常，不会引起事务起作用。</li>
 </ol>
-
+<h3 id="5-事务传播行为分析"><a href="#5-事务传播行为分析" class="headerlink" title="5. 事务传播行为分析"></a>5. 事务传播行为分析</h3><p>七大事务传播行为：</p>
+<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20210123152510.png" alt="image-20210123152507103"></p>
+<p>事务传播行为用法：</p>
+<pre><code class="java">public class C{
+    //1.REQUIRED 没有事务则创建一个事务执行(默认的事务传播行为)
+    //@Transactional 等价于 @Transactional(propagation = Propagation.REQUIRED)
+    @Transactional(propagation = Propagation.REQUIRED)
+    //2.REQUIRES_NEW 不管事务是否存在，都会另起一个事务
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    //3.SUPPORTS 存在事务就加入该事务运行，不存在事务则在非事务中运行
+    @Transactional(propagation = Propagation.SUPPORTS)
+    //4.NOT_SUPPORTED 不在事务中运行，如果当前存在事务则将事务挂起
+    @Transactional(propagation = Propagation.NOT_SUPPORTED)
+    //5.MANDATORY 必须在事务中运行，否则就会抛出异常
+    @Transactional(propagation = Propagation.MANDATORY)
+    //6.NEVER 不能在事务中运行，否则就会抛出异常(与 MANDATORY 相反)
+    @Transactional(propagation = Propagation.NEVER)
+    //7.NESTED 嵌套事务，外围如果没有事务则自己另起一个事务，可独立与外围事务进行单独提交或者回滚
+    @Transactional(propagation = Propagation.NESTED)
+    public void a() {
+        //TODO
+    }
+}</code></pre>
+<h4 id="5-0-无事务"><a href="#5-0-无事务" class="headerlink" title="5.0 无事务"></a>5.0 无事务</h4><p>无事务运行，保留出错前的数据，不涉及回滚。</p>
+<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20210123155642.png" alt="image-20210123155641606"></p>
+<h4 id="5-1-REQUIRED-示例解析"><a href="#5-1-REQUIRED-示例解析" class="headerlink" title="5.1 REQUIRED 示例解析"></a>5.1 REQUIRED 示例解析</h4><p>没有事务则创建一个事务执行(默认的事务传播行为)。<br>@Transactional 等价于 @Transactional(propagation = Propagation.REQUIRED)</p>
+<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20210123160400.png" alt="image-20210123160359814"></p>
+<h4 id="5-2-REQUIRES-NEW-示例解析"><a href="#5-2-REQUIRES-NEW-示例解析" class="headerlink" title="5.2 REQUIRES_NEW 示例解析"></a>5.2 REQUIRES_NEW 示例解析</h4><p>场景①：新起的事务抛出异常会不会让外围事务回滚？会！</p>
+<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20210123162328.png" alt="image-20210123162327528"></p>
+<p>场景②：外围事务失败会不会导致新起的事务中已提交的数据进行回滚？会！</p>
+<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20210123163648.png" alt="image-20210123163647037"></p>
+<h4 id="5-3-SUPPORTS-示例解析"><a href="#5-3-SUPPORTS-示例解析" class="headerlink" title="5.3 SUPPORTS 示例解析"></a>5.3 SUPPORTS 示例解析</h4><p>场景①：调用者不存在事务，则不会回滚。</p>
+<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20210123165658.png" alt="image-20210123165656469"></p>
+<p>场景②：调用者存在事务，则会回滚。</p>
+<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20210123170732.png" alt="image-20210123170731266"></p>
+<h4 id="5-4-NOT-SUPPORTED-示例解析"><a href="#5-4-NOT-SUPPORTED-示例解析" class="headerlink" title="5.4 NOT_SUPPORTED 示例解析"></a>5.4 NOT_SUPPORTED 示例解析</h4><p>当前不支持事务。比如 ServiceA.methodA 的事务级别是 PROPAGATION_REQUIRED ，而 ServiceB.methodB 的事务级别是 PROPAGATION_NOT_SUPPORTED ，那么当执行到 ServiceB.methodB 时，ServiceA.methodA 的事务挂起，而他以非事务的状态运行完，再继续 ServiceA.methodA 的事务。</p>
+<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20210123174903.png" alt="image-20210123174901885"></p>
+<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20210123175354.png" alt="image-20210123175353583"></p>
+<p><code>如果是同一个类内，该事务级别不会生效。</code></p>
+<p>即 A 类的 a 方法使用事务 REQUIRED，调用 A 类内部的 b 方法使用事务 NOT_SUPPORTED 时，不论 a或b 谁出现异常，则都会回滚。（已验证） </p>
+<h4 id="5-5-MANDATORY-示例解析"><a href="#5-5-MANDATORY-示例解析" class="headerlink" title="5.5 MANDATORY 示例解析"></a>5.5 MANDATORY 示例解析</h4><p>必须在事务中运行，否则就会抛出异常。</p>
+<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20210123180147.png" alt="image-20210123180146349"></p>
+<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20210123180508.png" alt="image-20210123180507280"></p>
+<h4 id="5-6-NEVER-示例解析"><a href="#5-6-NEVER-示例解析" class="headerlink" title="5.6 NEVER 示例解析"></a>5.6 NEVER 示例解析</h4><p>不能在事务中使用，否则抛出异常。<code>而且在非事务中使用时，一旦出现异常也不会进行回滚。</code></p>
+<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20210123180727.png" alt="image-20210123180725848"></p>
+<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20210123180912.png" alt="image-20210123180910853"></p>
+<h4 id="5-7-NESTED-示例解析"><a href="#5-7-NESTED-示例解析" class="headerlink" title="5.7 NESTED 示例解析"></a>5.7 NESTED 示例解析</h4><p>嵌套事务，外围如果没有事务则自己另起一个事务，可<code>独立与外围事务进行自身事务的单独提交或者回滚</code>。</p>
+<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20210123181819.png" alt="image-20210123181818192"></p>
+<h4 id=""><a href="#" class="headerlink" title=""></a></h4>
 </div>
 
 <hr>
