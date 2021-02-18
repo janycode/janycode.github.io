@@ -4624,13 +4624,40 @@
 </tr>
 </tbody>
 </table>
+> mySQL 数据库存储引擎：innoDB(支持事务)、MyISAM(不支持事务)
 
-
-
-
-<blockquote>
-<p>mySQL 数据库存储引擎：innoDB(支持事务)、MyISAM(不支持事务)</p>
-</blockquote>
+<p>一般，存在两种类型的丢失更新，对于一个事务回滚另外一个事务提交而引发的数据不一致的情况称为第一类丢失更新。如：</p>
+<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20210218092219.png" alt="image-20210218092218568"></p>
+<p>目前大部分数据库已经克服了第一类丢失更新的问题。如果多个事务并发提交，就会导致第二类丢失更新的情况：</p>
+<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20210218092235.png" alt="image-20210218092234416"></p>
+<p>为了克服这类问题，数据库提出了事务之间的隔离级别。共有4类隔离级别：</p>
+<p>（1）未提交读（最低隔离级别）</p>
+<p>允许一个事务读取另外一个事务没有提交的数据，可能发生脏读场景。</p>
+<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20210218092251.png" alt="image-20210218092250147"></p>
+<p>（2）读写提交</p>
+<p>指一个事务只能读取另外一个事务已经提交的数据，不能读取未提交的数据。</p>
+<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20210218092306.png" alt="image-20210218092305424"></p>
+<p>但是读写提交也会产生下面问题（不可重复读）：</p>
+<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20210218092326.png" alt="image-20210218092324953"></p>
+<p>为了克服这个不足，数据库的隔离级别还提出了可重复度的隔离级别，能够消除不可重复度问题。</p>
+<p>（3）可重复读</p>
+<p>目标是克服读写提交中出现的不可重复读现象：</p>
+<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20210218092340.png" alt="image-20210218092339271"></p>
+<p>（4）串行化</p>
+<p>数据库最高的隔离级别，它会要求所有的SQL都会按照顺序执行，这样可以克服上述隔离级别中出现的所有问题，能够完全保证数据的完整性。但追求更高的隔离性，也要付出锁的代价。有了锁，意味着性能的丢失，而且隔离级别越高，性能越是直线下降。</p>
+<p>配置默认的隔离级别（在application.properties属性文件中）：</p>
+<pre><code class="properties">#隔离级别数字配置的含义
+#-1 数据库默认隔离级别
+#1 未提交读
+#2 读写提交
+#4 可重复读
+#8 串行化
+#tomca数据默认隔离级别
+spring.datasource.tomcat.default-transaction-isolation=2</code></pre>
+<p>代码配置事务的隔离级别和传播行为：</p>
+<pre><code class="java">//isolation 隔离级别，propagation 传播行为，readOnly 只读。
+@Transactional(isolation= Isolation.REPEATABLE_READ, propagation= Propagation.REQUIRED, readOnly=false)
+public void transfer(Integer from, Integer to, Double money) {...}</code></pre>
 <h3 id="2-Spring-事务API"><a href="#2-Spring-事务API" class="headerlink" title="2. Spring 事务API"></a>2. Spring 事务API</h3><ul>
 <li><strong>PlatformTransactionManager</strong> : 平台事务管理器<ul>
 <li>getTransaction(TransactionDefinition definition) </li>
@@ -5109,13 +5136,13 @@ public class AccountServiceImpl implements AccountService {
 </ul>
 <p>修改 AccountServiceImpl : </p>
 <pre><code class="java">//  注解添加声明式事务
-@Transactional(isolation=Isolation.REPEATABLE_READ,propagation=Propagation.REQUIRED,readOnly=true)
+@Transactional(isolation=Isolation.REPEATABLE_READ, propagation=Propagation.REQUIRED, readOnly=true)
 public class AccountServiceImpl implements AccountService {
     private AccountDao accountDao;
 
     @Override
     //如果该方法与类名上的配置不同，可以单独在这个方法上配置注解，单独生效自己的
-    @Transactional(isolation= Isolation.REPEATABLE_READ,propagation= Propagation.REQUIRED,readOnly=false)
+    @Transactional(isolation= Isolation.REPEATABLE_READ, propagation= Propagation.REQUIRED, readOnly=false)
     public void transfer(Integer from, Integer to, Double money) {
         // 减钱
         accountDao.decreaseMoney(from, money);
@@ -5168,7 +5195,7 @@ public class AccountServiceImpl implements AccountService {
     <div class="post-guide">
         <div class="item left">
             
-              <a href="/2018/06/20/08_%E6%A1%86%E6%9E%B6%E6%8A%80%E6%9C%AF/04_SpringBoot/14_SpringBoot%20%E8%B7%A8%E5%9F%9F%E6%96%B9%E6%A1%88/">
+              <a href="/2018/06/20/08_%E6%A1%86%E6%9E%B6%E6%8A%80%E6%9C%AF/04_SpringBoot/13_SpringBoot+Swagger2/">
                   <i class="fa fa-angle-left" aria-hidden="true"></i>
                   
               </a>
