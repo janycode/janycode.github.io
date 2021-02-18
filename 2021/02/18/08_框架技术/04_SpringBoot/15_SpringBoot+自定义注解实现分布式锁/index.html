@@ -4569,53 +4569,10 @@
 
 <div id="article-content">
 	<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20200708160946.png" alt="image-20200708160944615"></p>
-<h3 id="1-自定义注解-动态代理：日志"><a href="#1-自定义注解-动态代理：日志" class="headerlink" title="1. 自定义注解+动态代理：日志"></a>1. 自定义注解+动态代理：日志</h3><pre><code class="java">@Target(ElementType.METHOD)  //该注解只能作用在方法上
-@Retention(RetentionPolicy.RUNTIME)  //运行时可被反射捕获该注解
-public @interface MyLog { }</code></pre>
-<pre><code class="java">public interface MyService {
-    void add();
-    @MyLog
-    void upd();
-}</code></pre>
-<pre><code class="java">public class MyServiceImpl implements MyService {
-    @Override
-    public void add() {
-        System.out.println(&quot;添加业务逻辑...&quot;);
-    }
-
-    @Override
-    public void upd() {
-        System.out.println(&quot;更新业务逻辑...&quot;);
-    }
-}</code></pre>
-<pre><code class="java">public class TestMyLogByProxy {
-    public static void main(String[] args) {
-        MyService myService = new MyServiceImpl();
-        MyService myServiceProxy = (MyService) Proxy.newProxyInstance(
-                myService.getClass().getClassLoader(),
-                myService.getClass().getInterfaces(),
-                new InvocationHandler() {
-                    @Override
-                    public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-                        //检查方法上是否有注解存在
-                        if (method.isAnnotationPresent(MyLog.class)) {
-                            String className = MyService.class.getName();
-                            String methodName = method.getName();
-                            String timeString = new SimpleDateFormat(&quot;yyyy-MM-dd hh:mm:ss&quot;).format(new Date());
-                            System.out.print(&quot;[&quot; + timeString + &quot;][&quot; + className + &quot;]&quot; + methodName + &quot;():&quot;);
-                        }
-                        return method.invoke(myService);
-                    }
-                });
-        myServiceProxy.add();
-        myServiceProxy.upd();
-    }
-}</code></pre>
-<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20210110163304.png" alt="image-20210110163301953"></p>
-<h3 id="2-自定义注解-AOP：分布式锁"><a href="#2-自定义注解-AOP：分布式锁" class="headerlink" title="2. 自定义注解+AOP：分布式锁"></a>2. 自定义注解+AOP：分布式锁</h3><blockquote>
+<blockquote>
 <p>验证代码已放在 git：<a href="https://github.com/janycode/eelock.git" target="_blank" rel="noopener">https://github.com/janycode/eelock.git</a></p>
 </blockquote>
-<h4 id="2-1-Redis分布式锁理论"><a href="#2-1-Redis分布式锁理论" class="headerlink" title="2.1 Redis分布式锁理论"></a>2.1 Redis分布式锁理论</h4><p>Redis有一系列的命令，特点是以NX结尾，NX是Not eXists的缩写，如SETNX命令就应该理解为：SET if Not eXists。<br>设置成功，返回 1 。 设置失败，返回 0<br>由于Redis为单进程单线程模式，采用队列模式将并发访问变成串行访问，命令是一条一条执行的所以可以利用setNx可以实现分布式锁。<br>方法执行前请求redis 进行setnx命令。如果返回1，则表示此时该线程获得锁，执行方法，如果返回0，表示锁已经被占用了，等待重新获取或者超时处理。<br>项目依赖：spring-boot 版本2.3.0</p>
+<h3 id="1-Redis分布式锁理论"><a href="#1-Redis分布式锁理论" class="headerlink" title="1. Redis分布式锁理论"></a>1. Redis分布式锁理论</h3><p>Redis有一系列的命令，特点是以NX结尾，NX是Not eXists的缩写，如SETNX命令就应该理解为：SET if Not eXists。<br>设置成功，返回 1 。 设置失败，返回 0<br>由于Redis为单进程单线程模式，采用队列模式将并发访问变成串行访问，命令是一条一条执行的所以可以利用setNx可以实现分布式锁。<br>方法执行前请求redis 进行setnx命令。如果返回1，则表示此时该线程获得锁，执行方法，如果返回0，表示锁已经被占用了，等待重新获取或者超时处理。<br>项目依赖：spring-boot 版本2.3.0</p>
 <pre><code class="xml">&lt;!--Redis--&gt;
 &lt;dependency&gt;
     &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
@@ -4636,7 +4593,7 @@ public @interface MyLog { }</code></pre>
     &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
     &lt;artifactId&gt;spring-boot-starter-web&lt;/artifactId&gt;
 &lt;/dependency&gt;</code></pre>
-<h4 id="2-2-Redis整合-封装服务类"><a href="#2-2-Redis整合-封装服务类" class="headerlink" title="2.2 Redis整合 封装服务类"></a>2.2 Redis整合 封装服务类</h4><p>基于spring boot 封装的 RedisTemplate 实现redis 服务。</p>
+<h3 id="2-Redis整合-封装服务类"><a href="#2-Redis整合-封装服务类" class="headerlink" title="2. Redis整合 封装服务类"></a>2. Redis整合 封装服务类</h3><p>基于spring boot 封装的 RedisTemplate 实现redis 服务。</p>
 <ol>
 <li>Redis 配置：主要设置了redis 序列化的一些配置</li>
 </ol>
@@ -4806,7 +4763,7 @@ public Object eval(String script, List&lt;String&gt; keys, List&lt;String&gt; ar
 public &lt;T&gt; T execute(RedisScript&lt;T&gt; script, List&lt;K&gt; keys, Object... args) {
    return scriptExecutor.execute(script, keys, args);
 }</code></pre>
-<h4 id="2-3-自定义注解"><a href="#2-3-自定义注解" class="headerlink" title="2.3 自定义注解"></a>2.3 自定义注解</h4><p>自定义注解：需要几个参数 锁的key,获取锁的间隔、失效时间、超时时间</p>
+<h3 id="3-自定义注解"><a href="#3-自定义注解" class="headerlink" title="3. 自定义注解"></a>3. 自定义注解</h3><p>自定义注解：需要几个参数 锁的key,获取锁的间隔、失效时间、超时时间</p>
 <pre><code class="java">import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -4844,7 +4801,7 @@ public @interface RedisLock {
      */
     long timeout() default 5 * 1000L;
 }</code></pre>
-<h4 id="2-4-Aop实现注解环绕通知、获取注解参数、加锁解锁"><a href="#2-4-Aop实现注解环绕通知、获取注解参数、加锁解锁" class="headerlink" title="2.4 Aop实现注解环绕通知、获取注解参数、加锁解锁"></a>2.4 Aop实现注解环绕通知、获取注解参数、加锁解锁</h4><p>Aop里需要做的事情：在方法执行前，获取锁的注解值，进行加锁，如果加锁成功进行方法执行，如果加锁失败 抛出异常，可以自定义异常使用统一异常处理。</p>
+<h3 id="4-Aop实现注解环绕通知、获取注解参数、加锁解锁"><a href="#4-Aop实现注解环绕通知、获取注解参数、加锁解锁" class="headerlink" title="4. Aop实现注解环绕通知、获取注解参数、加锁解锁"></a>4. Aop实现注解环绕通知、获取注解参数、加锁解锁</h3><p>Aop里需要做的事情：在方法执行前，获取锁的注解值，进行加锁，如果加锁成功进行方法执行，如果加锁失败 抛出异常，可以自定义异常使用统一异常处理。</p>
 <p>大概是：切入注解 RedisLock ，获得注解的参数，使用uuid作为redis value，解锁的时候传入认证 封装获取key的方法，反射根据注解 执行方法 获得参数里的key值，默认为类名+方法名</p>
 <pre><code class="java">import com.example.eelock.anno.RedisLock;
 import com.example.eelock.service.RedisService;
@@ -4939,7 +4896,7 @@ public class LockAspect {
         }
     }
 }</code></pre>
-<h4 id="2-5-ThreadLocal实现可重入锁"><a href="#2-5-ThreadLocal实现可重入锁" class="headerlink" title="2.5 ThreadLocal实现可重入锁"></a>2.5 ThreadLocal实现可重入锁</h4><p>可重入性：假设a方法需要 testlock锁，b方法也需要testlock锁，a方法调用了b方法，此时锁被a方法获取，b方法获取不到锁永远等待，所以 如果线程有一个方法获取到了锁，则其他方法不需要获取锁就可以执行了。</p>
+<h3 id="5-ThreadLocal实现可重入锁"><a href="#5-ThreadLocal实现可重入锁" class="headerlink" title="5. ThreadLocal实现可重入锁"></a>5. ThreadLocal实现可重入锁</h3><p>可重入性：假设a方法需要 testlock锁，b方法也需要testlock锁，a方法调用了b方法，此时锁被a方法获取，b方法获取不到锁永远等待，所以 如果线程有一个方法获取到了锁，则其他方法不需要获取锁就可以执行了。</p>
 <blockquote>
 <p>ThreadLocal是解决线程安全问题一个很好的思路，它通过为每个线程提供一个独立的变量副本解决了变量并发访问的冲突问题</p>
 </blockquote>
