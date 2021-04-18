@@ -4789,6 +4789,7 @@
 <li>SQLyog中右键数据库名 导入 &gt;&gt; 执行SQL脚本文件…</li>
 </ol>
 <blockquote>
+<p>核心步骤：（Name+Code+Comment+default）<br>创建表 -&gt; 添加字段 -&gt; 设置类型 -&gt; 设置默认值 -&gt; 设置索引 -&gt; 设置Physical Options物理选项 -&gt; Ctrl+G生成 -&gt; Option索引Drop index去勾选 -&gt; Selection部分生成 -&gt; Preview预览 -&gt; 确定</p>
 <p>注意事项：</p>
 <ol>
 <li>建表过程 以及 生成SQL脚本的存放路径 均不要有任何空格和中文字符；</li>
@@ -4805,8 +4806,177 @@
 <blockquote>
 <p>注意事项：<br>从生成的 物理数据模型，也可再生成 概念数据模型：Tools &gt;&gt; Generate Conceptual Data Model…  (Ctrl+Shift+C)</p>
 </blockquote>
-<h3 id="5-SQLyog-中执行SQL脚本"><a href="#5-SQLyog-中执行SQL脚本" class="headerlink" title="5. SQLyog 中执行SQL脚本"></a>5. SQLyog 中执行SQL脚本</h3><p>第一步：创建一个数据库，取个数据库名<br><img src="https://img-blog.csdnimg.cn/20200520001325470.png" alt="在这里插入图片描述"><br>第二步：右键数据库名 &gt;&gt; 导入 &gt;&gt; 执行SQL脚本… &gt;&gt; 选择SQL脚本文件的目录 &gt;&gt; [执行]，即可生成数据库中的表。<br><img src="https://img-blog.csdnimg.cn/20200520001359986.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3NpbmF0XzM2MTg0MDc1,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
+<h3 id="5-导入SQL脚本"><a href="#5-导入SQL脚本" class="headerlink" title="5. 导入SQL脚本"></a>5. 导入SQL脚本</h3><p>如SQLyog中：</p>
+<p>第一步：创建一个数据库，取个数据库名<br><img src="https://img-blog.csdnimg.cn/20200520001325470.png" alt="在这里插入图片描述"><br>第二步：右键数据库名 &gt;&gt; 导入 &gt;&gt; 执行SQL脚本… &gt;&gt; 选择SQL脚本文件的目录 &gt;&gt; [执行]，即可生成数据库中的表。<br><img src="https://img-blog.csdnimg.cn/20200520001359986.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3NpbmF0XzM2MTg0MDc1,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
 <h3 id="6-生成测试数据-假数据"><a href="#6-生成测试数据-假数据" class="headerlink" title="6. 生成测试数据-假数据"></a>6. 生成测试数据-假数据</h3><p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20200810145421.png" alt="2020-8-10-生成测试数据"></p>
+<h3 id="7-pdm2excel-导出"><a href="#7-pdm2excel-导出" class="headerlink" title="7. pdm2excel 导出"></a>7. pdm2excel 导出</h3><p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20210418171354.png" alt="image-20210418171352731"></p>
+<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20210418171837.png" alt="image-20210418171836014"></p>
+<pre><code class="vbscript">&#39;******************************************************************************
+Option Explicit
+   Dim rowsNum
+   rowsNum = 0
+&#39;-----------------------------------------------------------------------------
+&#39; Main function
+&#39;-----------------------------------------------------------------------------
+&#39; Get the current active model
+    Dim Model
+    Set Model = ActiveModel
+    If (Model Is Nothing) Or (Not Model.IsKindOf(PdPDM.cls_Model)) Then
+       MsgBox &quot;The current model is not an PDM model.&quot;
+    Else
+      &#39; Get the tables collection
+      &#39;创建EXCEL APP
+      dim beginrow
+      DIM EXCEL, SHEET, SHEETLIST
+      set EXCEL = CREATEOBJECT(&quot;Excel.Application&quot;)
+      EXCEL.workbooks.add(-4167)&#39;添加工作表
+      EXCEL.workbooks(1).sheets(1).name =&quot;表结构&quot;
+      set SHEET = EXCEL.workbooks(1).sheets(&quot;表结构&quot;)
+
+      EXCEL.workbooks(1).sheets.add
+      EXCEL.workbooks(1).sheets(1).name =&quot;目录&quot;
+      set SHEETLIST = EXCEL.workbooks(1).sheets(&quot;目录&quot;)
+      ShowTableList Model,SHEETLIST
+
+      ShowProperties Model, SHEET,SHEETLIST
+
+
+      EXCEL.workbooks(1).Sheets(2).Select
+      EXCEL.visible = true
+      &#39;设置列宽和自动换行
+      sheet.Columns(1).ColumnWidth = 20 
+      sheet.Columns(2).ColumnWidth = 20 
+      sheet.Columns(3).ColumnWidth = 20 
+      sheet.Columns(4).ColumnWidth = 40 
+      sheet.Columns(5).ColumnWidth = 10 
+      sheet.Columns(6).ColumnWidth = 10 
+      sheet.Columns(1).WrapText =true
+      sheet.Columns(2).WrapText =true
+      sheet.Columns(4).WrapText =true
+      &#39;不显示网格线
+      EXCEL.ActiveWindow.DisplayGridlines = False
+
+
+ End If
+&#39;-----------------------------------------------------------------------------
+&#39; Show properties of tables
+&#39;-----------------------------------------------------------------------------
+Sub ShowProperties(mdl, sheet,SheetList)
+   &#39; Show tables of the current model/package
+   rowsNum=0
+   beginrow = rowsNum+1
+   Dim rowIndex 
+   rowIndex=3
+   &#39; For each table
+   output &quot;begin&quot;
+   Dim tab
+   For Each tab In mdl.tables
+      ShowTable tab,sheet,rowIndex,sheetList
+      rowIndex = rowIndex +1
+   Next
+   if mdl.tables.count &gt; 0 then
+        sheet.Range(&quot;A&quot; &amp; beginrow + 1 &amp; &quot;:A&quot; &amp; rowsNum).Rows.Group
+   end if
+   output &quot;end&quot;
+End Sub
+&#39;-----------------------------------------------------------------------------
+&#39; Show table properties
+&#39;-----------------------------------------------------------------------------
+Sub ShowTable(tab, sheet,rowIndex,sheetList)
+   If IsObject(tab) Then
+     Dim rangFlag
+     rowsNum = rowsNum + 1
+      &#39; Show properties
+      Output &quot;================================&quot;
+      sheet.cells(rowsNum, 1) =tab.name
+      sheet.cells(rowsNum, 1).HorizontalAlignment=3
+      sheet.cells(rowsNum, 2) = tab.code
+      &#39;sheet.cells(rowsNum, 5).HorizontalAlignment=3
+      &#39;sheet.cells(rowsNum, 6) = &quot;&quot;
+      &#39;sheet.cells(rowsNum, 7) = &quot;表说明&quot;
+      sheet.cells(rowsNum, 3) = tab.comment
+      &#39;sheet.cells(rowsNum, 8).HorizontalAlignment=3
+      sheet.Range(sheet.cells(rowsNum, 3),sheet.cells(rowsNum, 7)).Merge
+      &#39;设置超链接，从目录点击表名去查看表结构
+      &#39;字段中文名    字段英文名    字段类型    注释    是否主键    是否非空    默认值
+      sheetList.Hyperlinks.Add sheetList.cells(rowIndex,2), &quot;&quot;,&quot;表结构&quot;&amp;&quot;!B&quot;&amp;rowsNum
+      rowsNum = rowsNum + 1
+      sheet.cells(rowsNum, 1) = &quot;字段中文名&quot;
+      sheet.cells(rowsNum, 2) = &quot;字段英文名&quot;
+      sheet.cells(rowsNum, 3) = &quot;字段类型&quot;
+      sheet.cells(rowsNum, 4) = &quot;注释&quot;
+      sheet.cells(rowsNum, 5) = &quot;是否主键&quot;
+      sheet.cells(rowsNum, 6) = &quot;是否非空&quot;
+      sheet.cells(rowsNum, 7) = &quot;默认值&quot;
+      &#39;设置边框
+      sheet.Range(sheet.cells(rowsNum-1, 1),sheet.cells(rowsNum, 7)).Borders.LineStyle = &quot;1&quot;
+      &#39;sheet.Range(sheet.cells(rowsNum-1, 4),sheet.cells(rowsNum, 9)).Borders.LineStyle = &quot;1&quot;
+      &#39;字体为10号
+      sheet.Range(sheet.cells(rowsNum-1, 1),sheet.cells(rowsNum, 7)).Font.Size=10
+            Dim col &#39; running column
+            Dim colsNum
+            colsNum = 0
+      for each col in tab.columns
+        rowsNum = rowsNum + 1
+        colsNum = colsNum + 1
+          sheet.cells(rowsNum, 1) = col.name
+        &#39;sheet.cells(rowsNum, 3) = &quot;&quot;
+          &#39;sheet.cells(rowsNum, 4) = col.name
+          sheet.cells(rowsNum, 2) = col.code
+          sheet.cells(rowsNum, 3) = col.datatype
+        sheet.cells(rowsNum, 4) = col.comment
+          If col.Primary = true Then
+        sheet.cells(rowsNum, 5) = &quot;Y&quot; 
+        Else
+        sheet.cells(rowsNum, 5) = &quot; &quot; 
+        End If
+        If col.Mandatory = true Then
+        sheet.cells(rowsNum, 6) = &quot;Y&quot; 
+        Else
+        sheet.cells(rowsNum, 6) = &quot; &quot; 
+        End If
+        sheet.cells(rowsNum, 7) =  col.defaultvalue
+      next
+      sheet.Range(sheet.cells(rowsNum-colsNum+1,1),sheet.cells(rowsNum,7)).Borders.LineStyle = &quot;3&quot;       
+      &#39;sheet.Range(sheet.cells(rowsNum-colsNum+1,4),sheet.cells(rowsNum,9)).Borders.LineStyle = &quot;3&quot;
+      sheet.Range(sheet.cells(rowsNum-colsNum+1,1),sheet.cells(rowsNum,7)).Font.Size = 10
+      rowsNum = rowsNum + 2
+
+      Output &quot;FullDescription: &quot;       + tab.Name
+   End If
+
+End Sub
+&#39;-----------------------------------------------------------------------------
+&#39; Show List Of Table
+&#39;-----------------------------------------------------------------------------
+Sub ShowTableList(mdl, SheetList)
+   &#39; Show tables of the current model/package
+   Dim rowsNo
+   rowsNo=1
+   &#39; For each table
+   output &quot;begin&quot;
+   SheetList.cells(rowsNo, 1) = &quot;主题&quot;
+   SheetList.cells(rowsNo, 2) = &quot;表中文名&quot;
+   SheetList.cells(rowsNo, 3) = &quot;表英文名&quot;
+   SheetList.cells(rowsNo, 4) = &quot;表说明&quot;
+   rowsNo = rowsNo + 1
+   SheetList.cells(rowsNo, 1) = mdl.name
+   Dim tab
+   For Each tab In mdl.tables
+     If IsObject(tab) Then
+         rowsNo = rowsNo + 1
+      SheetList.cells(rowsNo, 1) = &quot;&quot;
+      SheetList.cells(rowsNo, 2) = tab.name
+      SheetList.cells(rowsNo, 3) = tab.code
+      SheetList.cells(rowsNo, 4) = tab.comment
+     End If
+   Next
+    SheetList.Columns(1).ColumnWidth = 20 
+      SheetList.Columns(2).ColumnWidth = 20 
+      SheetList.Columns(3).ColumnWidth = 30 
+     SheetList.Columns(4).ColumnWidth = 60 
+   output &quot;end&quot;
+End Sub</code></pre>
 
 </div>
 
