@@ -4783,7 +4783,7 @@
 }</code></pre>
 <p><code>DAO封装数据访问思想：用来封装对实体类 User 类的访问/操作。</code><br>UserDao 接口：</p>
 <pre><code class="java">public interface UserDao {
-    void add();
+    void add(String id, String id2)
     void delete();
     void update();
     void select();
@@ -4791,7 +4791,9 @@
 <p>UserDaoImpl 实现类：</p>
 <pre><code class="java">public class UserDaoImpl implements UserDao {
     @Override
-    public void add() { System.out.println(&quot;add&quot;); }
+    public void add(String id, String id2) {
+        System.out.println(&quot;add:&quot; + id + &quot;,&quot; + id2);
+    }
     @Override
     public void delete() { System.out.println(&quot;delete&quot;); }
     @Override
@@ -4832,7 +4834,9 @@
     @Override
     public Object invoke(Object proxy, Method method, Object[] args);</code></pre>
 <p>匿名内部类直接测试：</p>
-<pre><code class="java">public class TestProxy {
+<pre><code class="java">import org.springframework.cglib.proxy.Proxy;
+
+public class TestProxy {
     public static void main(String[] args) {
         UserDao userDao = new UserDaoImpl();
         //动态代理设计模式：匿名内部类对象
@@ -4842,6 +4846,11 @@
                 //Lambda表达式，等价于 new InvocationHandler(){ invoke(){...} }
                 (proxy, method, argss) -&gt; {
                     String methodName = method.getName();
+                    //argss 永不为空，无参时 argss.length=0
+                    for (int i = 0; i &lt; argss.length; i++) {
+                        //代理对象对入参进行更改
+                        argss[i] = &quot;88&quot;;
+                    }
                     Object result;
                     //方法名比较：只增强指定的需要增强的方法
                     if (&quot;add&quot;.equals(methodName)) {
@@ -4853,10 +4862,12 @@
                     }
                     return result;
                 });
-        p.add();
+        p.add(&quot;22&quot;, &quot;33&quot;);
         p.delete();
+    }
 }</code></pre>
 <p><img src="https://img-blog.csdnimg.cn/20200415180432309.png" alt="Java动态代理设计模式"></p>
+<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20210628204436.png" alt="image-20210628204434989"></p>
 <h3 id="1-3-动态代理设计模式-优缺"><a href="#1-3-动态代理设计模式-优缺" class="headerlink" title="1.3 动态代理设计模式 - 优缺"></a>1.3 动态代理设计模式 - 优缺</h3><p>优点：<code>不需要重写接口中的所有方法，耦合度更低</code>。<br>缺点：没有，动态代理就是这么任性，这条gai最靓的仔本仔！</p>
 
 </div>
