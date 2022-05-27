@@ -158,8 +158,8 @@ Fluid.events = {
 |     _| |_     | | | \\_/ |, | || \\__/  |      |
 |    |_____|   [___]'.__.'_/[___]'.__.;__]     |
 |                                              |
-|           Powered by Hexo x Fluid            |
-|         GitHub: https://git.io/JqpVD         |
+|          https://janycode.github.io          |
+|        Powered by Hexo x Fluid x Jerry       |
 |                                              |
 ------------------------------------------------
     `);
