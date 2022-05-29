@@ -19,7 +19,7 @@
     <meta name="description" content="1. 缓存穿透 概念  查不到，缓存层+持久层都压力增大  当用户去查询数据的时候，发现 redis 内存数据库中没有，于是向持久层数据库查询，发现也没有，于是查询失败，当用户过多时，缓存都没有查到，于是都去查持久层数据库，这会给持久层数据库造成很大的压力，此时相当于出现了缓存穿透。   解决方案 × 2   布隆过滤器(★)：是一种数据结构，将所有可能存在的数据哈希到一个足够大的 bitmap">
 <meta property="og:type" content="article">
 <meta property="og:title" content="07-Redis 穿透,击穿,雪崩,倾斜,淘汰,删除">
-<meta property="og:url" content="http://example.com/2017/06/20/05_%E6%95%B0%E6%8D%AE%E5%BA%93/04_Redis/07-Redis%20%E7%A9%BF%E9%80%8F,%E5%87%BB%E7%A9%BF,%E9%9B%AA%E5%B4%A9,%E5%80%BE%E6%96%9C,%E6%B7%98%E6%B1%B0,%E5%88%A0%E9%99%A4/index.html">
+<meta property="og:url" content="https://janycode.github.io/2017/06/20/05_%E6%95%B0%E6%8D%AE%E5%BA%93/04_Redis/07-Redis%20%E7%A9%BF%E9%80%8F,%E5%87%BB%E7%A9%BF,%E9%9B%AA%E5%B4%A9,%E5%80%BE%E6%96%9C,%E6%B7%98%E6%B1%B0,%E5%88%A0%E9%99%A4/index.html">
 <meta property="og:site_name" content="姜源の云笔记">
 <meta property="og:description" content="1. 缓存穿透 概念  查不到，缓存层+持久层都压力增大  当用户去查询数据的时候，发现 redis 内存数据库中没有，于是向持久层数据库查询，发现也没有，于是查询失败，当用户过多时，缓存都没有查到，于是都去查持久层数据库，这会给持久层数据库造成很大的压力，此时相当于出现了缓存穿透。   解决方案 × 2   布隆过滤器(★)：是一种数据结构，将所有可能存在的数据哈希到一个足够大的 bitmap">
 <meta property="og:locale" content="zh_CN">
@@ -85,7 +85,7 @@
   <script id="fluid-configs">
     var Fluid = window.Fluid || {};
     Fluid.ctx = Object.assign({}, Fluid.ctx)
-    var CONFIG = {"hostname":"example.com","root":"/","version":"1.9.0","typing":{"enable":true,"typeSpeed":50,"cursorChar":"|","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":"bfff735c897eb60ea49b735096b20e47","google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+    var CONFIG = {"hostname":"janycode.github.io","root":"/","version":"1.9.0","typing":{"enable":true,"typeSpeed":50,"cursorChar":"|","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":"bfff735c897eb60ea49b735096b20e47","google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
 
     if (CONFIG.web_analytics.follow_dnt) {
       var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
@@ -380,7 +380,7 @@
 <ol>
 <li><p><code>配置 Redis 高可用</code>：其实就是<code>搭建集群</code>环境，有更多的备用机。</p>
 <blockquote>
-<p>Redis 搭建集群参考：<a target="_blank" rel="noopener" href="https://janycode.github.io/2017/06/20/05_%E6%95%B0%E6%8D%AE%E5%BA%93/03_Redis/05-Redis%20%E9%9B%86%E7%BE%A4%E6%90%AD%E5%BB%BA/index.html">Redis 搭建集群步骤</a></p>
+<p>Redis 搭建集群参考：<a href="https://janycode.github.io/2017/06/20/05_%E6%95%B0%E6%8D%AE%E5%BA%93/03_Redis/05-Redis%20%E9%9B%86%E7%BE%A4%E6%90%AD%E5%BB%BA/index.html">Redis 搭建集群步骤</a></p>
 </blockquote>
 </li>
 <li><p><code>限流降级</code>：在缓存失效后，通过加锁或者队列来控制读服务器以及写缓存的线程数量，比如对某个 key 只允许一个线程查询数据和写缓存，其他线程等待。</p>
@@ -405,7 +405,7 @@
 <ol>
 <li><p><code>配置 Redis 高可用</code>：其实就是<code>搭建集群</code>环境，有更多的备用机。</p>
 <blockquote>
-<p>Redis 搭建集群参考：<a target="_blank" rel="noopener" href="https://janycode.github.io/2017/06/20/05_%E6%95%B0%E6%8D%AE%E5%BA%93/03_Redis/05-Redis%20%E9%9B%86%E7%BE%A4%E6%90%AD%E5%BB%BA/index.html">Redis 搭建集群步骤</a></p>
+<p>Redis 搭建集群参考：<a href="https://janycode.github.io/2017/06/20/05_%E6%95%B0%E6%8D%AE%E5%BA%93/03_Redis/05-Redis%20%E9%9B%86%E7%BE%A4%E6%90%AD%E5%BB%BA/index.html">Redis 搭建集群步骤</a></p>
 </blockquote>
 </li>
 </ol>
@@ -533,7 +533,7 @@
   <div class="license-box my-3">
     <div class="license-title">
       <div>07-Redis 穿透,击穿,雪崩,倾斜,淘汰,删除</div>
-      <div>http://example.com/2017/06/20/05_数据库/04_Redis/07-Redis 穿透,击穿,雪崩,倾斜,淘汰,删除/</div>
+      <div>https://janycode.github.io/2017/06/20/05_数据库/04_Redis/07-Redis 穿透,击穿,雪崩,倾斜,淘汰,删除/</div>
     </div>
     <div class="license-meta">
       
@@ -599,7 +599,7 @@
             
   <article id="comments" lazyload>
     
-  <div id="SOHUCS" sid='http://example.com/2017/06/20/05_%E6%95%B0%E6%8D%AE%E5%BA%93/04_Redis/07-Redis%20%E7%A9%BF%E9%80%8F,%E5%87%BB%E7%A9%BF,%E9%9B%AA%E5%B4%A9,%E5%80%BE%E6%96%9C,%E6%B7%98%E6%B1%B0,%E5%88%A0%E9%99%A4/'></div>
+  <div id="SOHUCS" sid='https://janycode.github.io/2017/06/20/05_%E6%95%B0%E6%8D%AE%E5%BA%93/04_Redis/07-Redis%20%E7%A9%BF%E9%80%8F,%E5%87%BB%E7%A9%BF,%E9%9B%AA%E5%B4%A9,%E5%80%BE%E6%96%9C,%E6%B7%98%E6%B1%B0,%E5%88%A0%E9%99%A4/'></div>
   <script type="text/javascript">
     Fluid.utils.loadComments('#SOHUCS', function() {
       Fluid.utils.createScript("https://changyan.sohu.com/upload/changyan.js", function() {
