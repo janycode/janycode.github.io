@@ -1,0 +1,1064 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=light>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Jerry(姜源)">
+  <meta name="keywords" content="Java,Html,CSS,JavaScript,Python,C,Linux,shell编程经验分享、技术总结、心得体会">
+  
+    <meta name="description" content="官方网站：https:&#x2F;&#x2F;www.elastic.co&#x2F;cn&#x2F;elasticsearch&#x2F; 分词器：https:&#x2F;&#x2F;www.cnblogs.com&#x2F;cjsblog&#x2F;p&#x2F;10327673.html 词频计算相关性：https:&#x2F;&#x2F;www.elastic.co&#x2F;guide&#x2F;en&#x2F;elasticsearch&#x2F;guide&#x2F;current&#x2F;relevance-intro.html ElasticSearc">
+<meta property="og:type" content="article">
+<meta property="og:title" content="02-ElasticSearch用法和IK分词器">
+<meta property="og:url" content="https://janycode.github.io/2021/02/13/08_%E6%A1%86%E6%9E%B6%E6%8A%80%E6%9C%AF/09_ElasticSerach/02-ElasticSearch%E7%94%A8%E6%B3%95%E5%92%8CIK%E5%88%86%E8%AF%8D%E5%99%A8/index.html">
+<meta property="og:site_name" content="姜源の云笔记">
+<meta property="og:description" content="官方网站：https:&#x2F;&#x2F;www.elastic.co&#x2F;cn&#x2F;elasticsearch&#x2F; 分词器：https:&#x2F;&#x2F;www.cnblogs.com&#x2F;cjsblog&#x2F;p&#x2F;10327673.html 词频计算相关性：https:&#x2F;&#x2F;www.elastic.co&#x2F;guide&#x2F;en&#x2F;elasticsearch&#x2F;guide&#x2F;current&#x2F;relevance-intro.html ElasticSearc">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20200723190723.png">
+<meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20210213101806.png">
+<meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20210213100944.png">
+<meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20210213100954.png">
+<meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20210213101011.png">
+<meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20210213101102.png">
+<meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20210213101330.png">
+<meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20210213101834.png">
+<meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20210213102025.png">
+<meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20210213101434.png">
+<meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20210213101506.png">
+<meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20210213101756.png">
+<meta property="article:published_time" content="2021-02-13T02:24:55.000Z">
+<meta property="article:modified_time" content="2022-05-28T07:22:57.076Z">
+<meta property="article:author" content="Jerry(姜源)">
+<meta property="article:tag" content="ElasticSearch">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20200723190723.png">
+  
+  
+    <meta name="referrer" content="no-referrer-when-downgrade">
+  
+  
+  <title>02-ElasticSearch用法和IK分词器 - 姜源の云笔记</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"janycode.github.io","root":"/","version":"1.9.0","typing":{"enable":true,"typeSpeed":50,"cursorChar":"|","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":false},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":"bfff735c897eb60ea49b735096b20e47","google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+
+  
+<meta name="generator" content="Hexo 6.2.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 50vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>姜源の云笔记</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tools/">
+                <i class="iconfont icon-slack-fill"></i>
+                工具
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="02-ElasticSearch用法和IK分词器"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-author" aria-hidden="true"></i>
+        Jerry(姜源)
+      </span>
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2021-02-13 10:24" pubdate>
+          星期六, 2021/02/13 10:24:55
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          <!-- compatible with older versions-->
+          14k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          <!-- compatible with older versions-->
+          114 分钟
+        
+      </span>
+    
+
+    
+    
+      
+        <span id="busuanzi_container_page_pv" style="display: none">
+          <i class="iconfont icon-eye" aria-hidden="true"></i>
+          <span id="busuanzi_value_page_pv"></span> 次
+        </span>
+        
+      
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">02-ElasticSearch用法和IK分词器</h1>
+            
+            <div class="markdown-body">
+              
+              <p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20200723190723.png" srcset="/img/loading.gif" lazyload alt="image-20200723190721900"></p>
+<p>官方网站：<a target="_blank" rel="noopener" href="https://www.elastic.co/cn/elasticsearch/">https://www.elastic.co/cn/elasticsearch/</a></p>
+<p>分词器：<a target="_blank" rel="noopener" href="https://www.cnblogs.com/cjsblog/p/10327673.html">https://www.cnblogs.com/cjsblog/p/10327673.html</a></p>
+<p>词频计算相关性：<a target="_blank" rel="noopener" href="https://www.elastic.co/guide/en/elasticsearch/guide/current/relevance-intro.html">https://www.elastic.co/guide/en/elasticsearch/guide/current/relevance-intro.html</a></p>
+<h2 id="ElasticSearch-是什么？"><a href="#ElasticSearch-是什么？" class="headerlink" title="ElasticSearch 是什么？"></a>ElasticSearch 是什么？</h2><p>ElasticSearch 是一个基于Lucene的分布式、RESTful 风格、近实时的搜索和数据分析引擎。以下简称ES</p>
+<p>开发语言： Java</p>
+<p>支持客户端：Java、.NET（C#）、PHP、Python、Apache Groovy、Ruby 等，支持REST风格调用</p>
+<h2 id="为什么选择ES"><a href="#为什么选择ES" class="headerlink" title="为什么选择ES?"></a>为什么选择ES?</h2><p>市场类似类似产品：Solr</p>
+<p>市场地位： 目前已取代Solr成为使用最多最受欢迎的搜索分析引擎</p>
+<p>ElasticSearch 和 Solr的取舍：</p>
+<ol>
+<li><p>ElasticSearch 晚于Solr ，借鉴了Solr的成功经验 更注重扩展性，搜索实时性更高</p>
+</li>
+<li><p>Solr在搜索静态数据时性能更高,ES在更新索引时依然可以维持稳定的搜索性能</p>
+</li>
+<li><p>ES ，Solr搜索指数对比<br> <img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20210213101806.png" srcset="/img/loading.gif" lazyload alt="image-20210213100910539"><br> <img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20210213100944.png" srcset="/img/loading.gif" lazyload alt="image-20210213100943338"><br> <img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20210213100954.png" srcset="/img/loading.gif" lazyload alt="image-20210213100953411"></p>
+</li>
+</ol>
+<h2 id="ES提供的能力"><a href="#ES提供的能力" class="headerlink" title="ES提供的能力"></a>ES提供的能力</h2><ol>
+<li>数据存储，整合</li>
+<li>精确匹配</li>
+<li>模糊搜索：可定义匹配度。 例如：搜索：我是中国人</li>
+<li>聚合搜索：用于数据统计等功能</li>
+<li>相关度搜索： 例如：在多篇文章中搜索某个词语，可以按照默认算法或者自定义评分规则使搜索结果排序符合我们的预期</li>
+<li>特殊类型搜索： 地理空间搜索（计算两点之间距离，搜索指定半径范围数据,搜索指定边界内数据等），Ip地址搜索（ip范围搜索） 等</li>
+<li>搜索建议： 如百度搜索时实时返回的提示词</li>
+</ol>
+<h2 id="ES常用使用场景"><a href="#ES常用使用场景" class="headerlink" title="ES常用使用场景"></a>ES常用使用场景</h2><ol>
+<li><p>站内搜索: 比如各类电商,论坛,新闻,ERP网站,站内搜索功能一般都由ES或Solr支持</p>
+</li>
+<li><p>日志分析: 常用组合ELK,既 ES + Logstash (最新用Beats) + Kibana<br> 监控、统计、日志类时间序的数据存储和分析、可视化，ELK可以完美支持<br> <img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20210213101011.png" srcset="/img/loading.gif" lazyload alt="image-20210213101010195"></p>
+</li>
+<li><p>作为NoSQL Json数据库<br> 作为NoSQL数据库,ES比Mogo读写性能更强大,可以支持PB级数据.<br> 对地理位置等数据支持更好,可以方便的计算经纬度坐标的距离,坐标范围查询等功能</p>
+</li>
+<li><p>BI系统<br> BI系统也成商业智能,主要是通过数据挖掘,数据分析提供有价值的商业决策<br> ES的海量数据处理能力和多样,快速的查询,统计可以提供强大的支撑</p>
+</li>
+</ol>
+<h2 id="ES架构"><a href="#ES架构" class="headerlink" title="ES架构"></a>ES架构</h2><p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20210213101102.png" srcset="/img/loading.gif" lazyload alt="image-20210213101101370"></p>
+<figure class="highlight x86asm"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs x86asm"><span class="hljs-number">1</span>. Gateway是<span class="hljs-built_in">ES</span>用来存储索引的文件系统，支持多种类型。<br><span class="hljs-number">2</span>. Gateway的上层是一个分布式的lucene框架。<br><span class="hljs-number">3</span>. Lucene之上是<span class="hljs-built_in">ES</span>的模块，包括：索引模块、搜索模块、映射解析模块等<br><span class="hljs-number">4</span>. <span class="hljs-built_in">ES</span>模块之上是 Discovery、Scripting和第三方插件。Discovery是<span class="hljs-built_in">ES</span>的节点发现模块，不同机器上的<span class="hljs-built_in">ES</span>节点要组成集群需要进行消息通信，集群内部需要选举master节点，这些工作都是由Discovery模块完成。支持多种发现机制，如 Zen 、EC2、gce、Azure。Scripting用来支持在查询语句中插入javascript、python等脚本语言，scripting模块负责解析这些脚本，使用脚本语句性能稍低。<span class="hljs-built_in">ES</span>也支持多种第三方插件。<br><span class="hljs-number">5</span>. 再上层是<span class="hljs-built_in">ES</span>的传输模块和JMX.传输模块支持多种传输协议，如 Thrift、memecached、http，默认使用http。JMX是java的管理框架，用来管理<span class="hljs-built_in">ES</span>应用。<br><span class="hljs-number">6</span>. 最上层是<span class="hljs-built_in">ES</span>提供给用户的接口，可以通过RESTful接口和<span class="hljs-built_in">ES</span>集群进行交互。<br></code></pre></td></tr></table></figure>
+
+
+
+<h2 id="ES-基本概念"><a href="#ES-基本概念" class="headerlink" title="ES 基本概念"></a>ES 基本概念</h2><p><strong>1、文档 （document）</strong></p>
+<p>文档是ES索引和搜索数据的最小单位。</p>
+<p>它拥有灵活的结构。文档不依赖于预先定义的模式。并非所有的文档都需要拥有相同的字段，它们不受限于同一个模式。</p>
+<p>不过当用于搜索时,为了提高性能通常会定义好每个字段的类型,并使用mapping定义文档结构.</p>
+<p><strong>2、类型 （type）</strong></p>
+<p>类型是文档的逻辑容器，类似于表格是行的容器。在不同的类型中，最好放入不同结构的文档。例如，可以用一个类型存放商品的数据，而另一个类型存放用户的数据。</p>
+<p>PS: 7.X版本已彻底放弃type, 提倡每个索引存放单一类型数据,不再有type的概念了</p>
+<p><strong>3、索引 （index）</strong></p>
+<p>索引是映射类型的容器。一个Elasticsearch索引是独立的大量的文档集合。 每个索引存储在磁盘上的同组文件中，索引存储了所有映射类型的字段，还有一些设置。</p>
+<p>当你插入一个文档时,ES默认会自动为每一个自动匹配一个类型,作为小白直接使用也是可以的, 但是正式环境使用时一般都需要根据业务需求自定义mapping去定义索引字段及字段类型才能发挥出更高的性能</p>
+<p><strong>4、映射（mapping）</strong></p>
+<p>所有文档在写入索引前都将被分析，用户可以设置一些参数，决定如何将输入文本分割为词条，哪些词条应该被过滤掉，或哪些附加处理有必要被调用（比如移除HTML标签）。这就是映射扮演的角色：存储分析链所需的所有信息。</p>
+<p>示例:</p>
+<figure class="highlight ada"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><code class="hljs ada">&#123;<br>  <span class="hljs-string">&quot;doccenter_test&quot;</span> : &#123;<br>    <span class="hljs-string">&quot;mappings&quot;</span> : &#123;<br>      <span class="hljs-string">&quot;DcDoc&quot;</span> : &#123;<br>        <span class="hljs-string">&quot;properties&quot;</span> : &#123;<br>          <span class="hljs-string">&quot;catalogId&quot;</span> : &#123;<br>            <span class="hljs-string">&quot;type&quot;</span> : &quot;<span class="hljs-type">keyword</span><span class="hljs-string">&quot;</span><br><span class="hljs-string">          &#125;,  </span><br><span class="hljs-string">          &quot;</span>docConvertstatus<span class="hljs-string">&quot; : &#123;</span><br><span class="hljs-string">            &quot;</span><span class="hljs-keyword">type</span><span class="hljs-string">&quot; : &quot;</span>keyword<span class="hljs-string">&quot;</span><br><span class="hljs-string">          &#125;,</span><br><span class="hljs-string">          &quot;</span>docCreateddate<span class="hljs-string">&quot; : &#123;</span><br><span class="hljs-string">            &quot;</span><span class="hljs-keyword">type</span><span class="hljs-string">&quot; : &quot;</span>date<span class="hljs-string">&quot;,</span><br><span class="hljs-string">            &quot;</span>format<span class="hljs-string">&quot; : &quot;</span>yyyy-MM-dd HH:mm:ss<span class="hljs-string">&quot;</span><br><span class="hljs-string">          &#125;,</span><br><span class="hljs-string">          &quot;</span>docDowncount<span class="hljs-string">&quot; : &#123;</span><br><span class="hljs-string">            &quot;</span><span class="hljs-keyword">type</span><span class="hljs-string">&quot; : &quot;</span>integer<span class="hljs-string">&quot;</span><br><span class="hljs-string">          &#125;,</span><br><span class="hljs-string">          &quot;</span>docId<span class="hljs-string">&quot; : &#123;</span><br><span class="hljs-string">            &quot;</span><span class="hljs-keyword">type</span><span class="hljs-string">&quot; : &quot;</span>keyword<span class="hljs-string">&quot;</span><br><span class="hljs-string">          &#125;,</span><br><span class="hljs-string">          &quot;</span>docName<span class="hljs-string">&quot; : &#123;</span><br><span class="hljs-string">            &quot;</span><span class="hljs-keyword">type</span><span class="hljs-string">&quot; : &quot;</span>text<span class="hljs-string">&quot;,</span><br><span class="hljs-string">            &quot;</span>analyzer<span class="hljs-string">&quot; : &quot;</span>ik_max_word<span class="hljs-string">&quot;</span><br><span class="hljs-string">          &#125;</span><br><span class="hljs-string">        &#125;</span><br><span class="hljs-string">      &#125;</span><br><span class="hljs-string">    &#125;</span><br><span class="hljs-string">  &#125;</span><br><span class="hljs-string">&#125;</span><br></code></pre></td></tr></table></figure>
+
+
+
+<h2 id="ES-数据类型"><a href="#ES-数据类型" class="headerlink" title="ES 数据类型"></a>ES 数据类型</h2><p>看了上边的mapping定义,是不是发现其中有数据类型的定义了?</p>
+<figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><code class="hljs pgsql">【基本数据类型】<br>字符型：string<br>数字型：long：<span class="hljs-number">64</span>位存储 , <span class="hljs-type">integer</span>：<span class="hljs-number">32</span>位存储 , short：<span class="hljs-number">16</span>位存储 , byte：<span class="hljs-number">8</span>位存储 , <span class="hljs-type">double</span>：<span class="hljs-number">64</span>位双精度存储 , <span class="hljs-type">float</span>：<span class="hljs-number">32</span>位单精度存储<br>日期型：<span class="hljs-type">date</span><br>布尔型: <span class="hljs-type">boolean</span><br>二进制型：binary<br><br>【复杂数据类型】<br>数组类型：数组类型不需要专门指定数组元素的<span class="hljs-keyword">type</span>，例如：<br>	字符型数组: [ &quot;one&quot;, &quot;two&quot; ]<br>	整型数组：[ <span class="hljs-number">1</span>, <span class="hljs-number">2</span> ]<br>	数组型数组：[ <span class="hljs-number">1</span>, [ <span class="hljs-number">2</span>, <span class="hljs-number">3</span> ]] 等价于[ <span class="hljs-number">1</span>, <span class="hljs-number">2</span>, <span class="hljs-number">3</span> ]<br>	对象数组：[ &#123; &quot;name&quot;: &quot;Mary&quot;, &quot;age&quot;: <span class="hljs-number">12</span> &#125;, &#123; &quot;name&quot;: &quot;John&quot;, &quot;age&quot;: <span class="hljs-number">10</span> &#125;]<br>对象类型：* <span class="hljs-keyword">object</span> *用于单个<span class="hljs-type">JSON</span>对象；<br>嵌套类型：* nested *用于<span class="hljs-type">JSON</span>数组；<br><br>【地理位置类型】<br>地理坐标类型：* geo_point *用于经纬度坐标；<br>地理形状类型：* geo_shape *用于类似于多边形的复杂形状；<br><br>【专业类型】<br>IPv4 类型：* ip *用于IPv4 地址；<br>Completion 类型：* completion *提供自动补全建议；<br>Token count 类型：* token_count *用于统计做了标记的字段的<span class="hljs-keyword">index</span>数目，该值会一直增加，不会因为过滤条件而减少。<br>[mapper-murmur3]：通过插件，可以通过 *murmur3 *来计算<span class="hljs-keyword">index</span>的 hash 值；<br>附加类型（Attachment datatype）：采用[mapper-attachments] 插件，可支持* attachments *索引，例如Microsoft Office 格式，<span class="hljs-keyword">Open</span> Document 格式，ePub, HTML 等。<br></code></pre></td></tr></table></figure>
+
+
+
+<h2 id="ElasticSearch-Kibana-和-elasticsearch-head"><a href="#ElasticSearch-Kibana-和-elasticsearch-head" class="headerlink" title="ElasticSearch  , Kibana 和 elasticsearch-head"></a>ElasticSearch  , Kibana 和 elasticsearch-head</h2><p>业务使用中，为了进行调试和管理还需要使用到Kibana和 es-head</p>
+<p>Kibana是为ES提供的可视化界面，在上面我们可以进行DSL的调试，或者管理索引，建立自己的视图等操作 </p>
+<p>elasticsearch-head 是ES一个比较古老的管理服务，虽然界面比较丑，但是功能基本可以满足日常监控和管理使用</p>
+<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20210213101330.png" srcset="/img/loading.gif" lazyload alt="image-20210213101329028"></p>
+<h2 id="第一个HelloWorld-v6-8"><a href="#第一个HelloWorld-v6-8" class="headerlink" title="第一个HelloWorld(v6.8)"></a>第一个HelloWorld(v6.8)</h2><p>首先你得安装好你的ES和Kibana.</p>
+<p>然后复习一下自从学了RESTFUL以来,从来就没有使用过的几个http请求格式</p>
+<p>1）GET：获取请求对象的当前状态。</p>
+<p>2）POST：改变对象的当前状态。ES中插入文档会自动生成ID</p>
+<p>3）PUT：创建一个对象。ES中用于指定ID进行插入</p>
+<p>4）DELETE：销毁对象。</p>
+<p>5）HEAD：请求获取对象的基础信息。</p>
+<p>打开Kibana,进入这个页面</p>
+<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20210213101834.png" srcset="/img/loading.gif" lazyload alt="image-20210213101833843"></p>
+<p>自定义mapping 创建一个索引,你会发现ES的使用就是这么简单</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><code class="hljs json">PUT music<br><span class="hljs-punctuation">&#123;</span><br>    <span class="hljs-attr">&quot;mappings&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">&#123;</span><br>        <span class="hljs-attr">&quot;_doc&quot;</span> <span class="hljs-punctuation">:</span> <span class="hljs-punctuation">&#123;</span><br>            <span class="hljs-attr">&quot;properties&quot;</span> <span class="hljs-punctuation">:</span> <span class="hljs-punctuation">&#123;</span><br>            <br>                <span class="hljs-attr">&quot;name&quot;</span> <span class="hljs-punctuation">:</span> <span class="hljs-punctuation">&#123;</span><br>                    <span class="hljs-attr">&quot;type&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;text&quot;</span><br>                <span class="hljs-punctuation">&#125;</span><span class="hljs-punctuation">,</span><br>                <span class="hljs-attr">&quot;author&quot;</span><span class="hljs-punctuation">:</span><span class="hljs-punctuation">&#123;</span><br>                  <span class="hljs-attr">&quot;type&quot;</span><span class="hljs-punctuation">:</span><span class="hljs-string">&quot;keyword&quot;</span><br>                <span class="hljs-punctuation">&#125;</span><br>            <span class="hljs-punctuation">&#125;</span><br>        <span class="hljs-punctuation">&#125;</span><br>    <span class="hljs-punctuation">&#125;</span><br><span class="hljs-punctuation">&#125;</span><br></code></pre></td></tr></table></figure>
+
+<p>有了索引就可以尝试一下程序员终极技能了:增删改查</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br></pre></td><td class="code"><pre><code class="hljs json">#创建索引<br>PUT music<br><span class="hljs-punctuation">&#123;</span><br>    <span class="hljs-attr">&quot;mappings&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">&#123;</span><br>        <span class="hljs-attr">&quot;musicType&quot;</span> <span class="hljs-punctuation">:</span> <span class="hljs-punctuation">&#123;</span><br>            <span class="hljs-attr">&quot;properties&quot;</span> <span class="hljs-punctuation">:</span> <span class="hljs-punctuation">&#123;</span><br>            <br>                <span class="hljs-attr">&quot;name&quot;</span> <span class="hljs-punctuation">:</span> <span class="hljs-punctuation">&#123;</span><br>                    <span class="hljs-attr">&quot;type&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;text&quot;</span><br>                <span class="hljs-punctuation">&#125;</span><span class="hljs-punctuation">,</span><br>                <span class="hljs-attr">&quot;author&quot;</span><span class="hljs-punctuation">:</span><span class="hljs-punctuation">&#123;</span><br>                  <span class="hljs-attr">&quot;type&quot;</span><span class="hljs-punctuation">:</span><span class="hljs-string">&quot;text&quot;</span><br>                <span class="hljs-punctuation">&#125;</span><br>            <span class="hljs-punctuation">&#125;</span><br>        <span class="hljs-punctuation">&#125;</span><br>    <span class="hljs-punctuation">&#125;</span><br><span class="hljs-punctuation">&#125;</span><br>#插入文档<br>PUT music/musicType/<span class="hljs-number">10000</span> <br><span class="hljs-punctuation">&#123;</span><br>  <span class="hljs-attr">&quot;name&quot;</span><span class="hljs-punctuation">:</span><span class="hljs-string">&quot;牧马城市&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;author&quot;</span><span class="hljs-punctuation">:</span><span class="hljs-string">&quot;谁谁谁&quot;</span><br><span class="hljs-punctuation">&#125;</span><br>#根据id查询<br>GET music/musicType/<span class="hljs-number">10000</span> <br><br>#修改一下歌名<br>PUT music/musicType/<span class="hljs-number">10000</span><br><span class="hljs-punctuation">&#123;</span><br>  <span class="hljs-attr">&quot;name&quot;</span><span class="hljs-punctuation">:</span><span class="hljs-string">&quot;牧马城市&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;author&quot;</span><span class="hljs-punctuation">:</span><span class="hljs-string">&quot;毛不易&quot;</span><br><span class="hljs-punctuation">&#125;</span><br><br>#换个姿势查询所有<br>GET /music/musicType/_search<br><span class="hljs-punctuation">&#123;</span><br>  <span class="hljs-attr">&quot;query&quot;</span><span class="hljs-punctuation">:</span><span class="hljs-punctuation">&#123;</span><br>     <span class="hljs-attr">&quot;match_all&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">&#123;</span><span class="hljs-punctuation">&#125;</span><br>  <span class="hljs-punctuation">&#125;</span><br><span class="hljs-punctuation">&#125;</span><br>#匹配查询<br>GET /music/musicType/_search<br><span class="hljs-punctuation">&#123;</span><br>  <span class="hljs-attr">&quot;query&quot;</span><span class="hljs-punctuation">:</span><span class="hljs-punctuation">&#123;</span><br>    <span class="hljs-attr">&quot;match&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">&#123;</span><br>      <span class="hljs-attr">&quot;name&quot;</span><span class="hljs-punctuation">:</span><span class="hljs-string">&quot;牧马&quot;</span><br>    <span class="hljs-punctuation">&#125;</span><br>  <span class="hljs-punctuation">&#125;</span><br><span class="hljs-punctuation">&#125;</span><br><br>#删除文档<br>DELETE music/musicType/<span class="hljs-number">10000</span><br><br>#换个姿势删除<br>POST music/musicType/_delete_by_query<br><span class="hljs-punctuation">&#123;</span><br>  <span class="hljs-attr">&quot;query&quot;</span><span class="hljs-punctuation">:</span><span class="hljs-punctuation">&#123;</span><br>    <span class="hljs-attr">&quot;match&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">&#123;</span><br>      <span class="hljs-attr">&quot;name&quot;</span><span class="hljs-punctuation">:</span><span class="hljs-string">&quot;牧马&quot;</span><br>    <span class="hljs-punctuation">&#125;</span><br>  <span class="hljs-punctuation">&#125;</span><br><span class="hljs-punctuation">&#125;</span><br><br>#练习完毕<span class="hljs-punctuation">,</span>删除索引<br>DELETE music<br></code></pre></td></tr></table></figure>
+
+<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20210213102025.png" srcset="/img/loading.gif" lazyload alt="image-20210213102023898"></p>
+<h2 id="分词器"><a href="#分词器" class="headerlink" title="分词器"></a>分词器</h2><p>学会了增删改查,理所当然要找个实际需求练练手了,这个时候我们就需要接触到ES的另一个概念:分词</p>
+<p>ES之所以能够对大量文档,大段文字进行快速检索,依靠的就是对文档进行分词,然后生成倒排索引. 数据库知识比较扎实的应该对倒排索引都不陌生, 它记录了每个词的关联文档,频率等信息从而在我们需要的时候能够快速检索. 具体理论可以参考以下文章</p>
+<p><a target="_blank" rel="noopener" href="https://www.cnblogs.com/cjsblog/p/10327673.html">https://www.cnblogs.com/cjsblog/p/10327673.html</a></p>
+<p>而所谓分词就是按照一定规则对大段的文字进行拆分,从而得到n多个有意义的词汇。</p>
+<p>ES默认的分词规则是针对英文的,也就是按照空格拆分.比如:我爱你祖国,会被分词为 我,爱,你,祖,国五个词.  这对中文来说跟没有分词一样,毫无用处。 所以就有了针对中文的专门的分词器：IK Analazer</p>
+<p>IK分词器在中文分词领域是毫无争议的No1 , 甚至强到都没人知道老二是谁</p>
+<p>我们想使用它也很简单,只需要去下载ES相同版本,放在 %ES_HOME%&#x2F;config 目录下</p>
+<p>重启ES即可</p>
+<p>然后我们就可以在定义mapping的时候或者搜索时指定分词器</p>
+<figure class="highlight ada"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><code class="hljs ada">PUT music<br>&#123;<br>    <span class="hljs-string">&quot;mappings&quot;</span>: &#123;<br>        <span class="hljs-string">&quot;musicType&quot;</span> : &#123;<br>            <span class="hljs-string">&quot;properties&quot;</span> : &#123;<br>            <br>                <span class="hljs-string">&quot;name&quot;</span> : &#123;<br>                    <span class="hljs-string">&quot;type&quot;</span>: <span class="hljs-string">&quot;text&quot;</span>,<br>                    <span class="hljs-string">&quot;analyzer&quot;</span>: <span class="hljs-string">&quot;ik_smart&quot;</span><br>                &#125;,<br>                <span class="hljs-string">&quot;author&quot;</span>:&#123;<br>                  <span class="hljs-string">&quot;type&quot;</span>:<span class="hljs-string">&quot;text&quot;</span>,<br>                  <span class="hljs-string">&quot;analyzer&quot;</span>: <span class="hljs-string">&quot;ik_max_word&quot;</span><br>                &#125;<br>            &#125;<br>        &#125;<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>大家会发现我使用了ik_smart, ik_max_word两种分词器.</p>
+<p>这其实是IK提供的两种模式,ik_smart 是精简的分词模式,同样的文字分出的词汇比较少, ik_max_word则会尽可能多的对词进行切分</p>
+<p>我们可以使用Kibana进行简单的测试就可以明白其中的不同</p>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs routeros"><span class="hljs-built_in">GET</span> _analyze <br>&#123;<br>  <span class="hljs-string">&quot;analyzer&quot;</span>:<span class="hljs-string">&quot;ik_smart&quot;</span>,<br>  <span class="hljs-string">&quot;text&quot;</span>:<span class="hljs-string">&quot;我是一个中国人&quot;</span><br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>分词结果: </p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs">我<br>是<br>一个<br>中国人<br></code></pre></td></tr></table></figure>
+
+
+
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs routeros"><span class="hljs-built_in">GET</span> _analyze <br>&#123;<br>  <span class="hljs-string">&quot;analyzer&quot;</span>:<span class="hljs-string">&quot;ik_max_word&quot;</span>,<br>  <span class="hljs-string">&quot;text&quot;</span>:<span class="hljs-string">&quot;我是一个中国人&quot;</span><br>&#125;<br></code></pre></td></tr></table></figure>
+
+
+
+<p>分词结果</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs">我<br>是<br>一个中国<br>一个<br>个中<br>个<br>中国人<br>中国<br>国人<br></code></pre></td></tr></table></figure>
+
+
+
+<h2 id="常见入门问题"><a href="#常见入门问题" class="headerlink" title="常见入门问题"></a>常见入门问题</h2><h4 id="1-ES-6-8-IK分词器bug"><a href="#1-ES-6-8-IK分词器bug" class="headerlink" title="1. ES 6.8 IK分词器bug"></a>1. ES 6.8 IK分词器bug</h4><p>但是再好的代码也有bug, 我们在上一个项目中就遇到了一个6.8版本的bug,7.0已经修复. 在这里还是记录一下,毕竟我们使用的是6.8版本</p>
+<p>这个bug就是在插入某些特定词语的时候IK分词器因为解析问题会报以下错误:</p>
+<figure class="highlight mizar"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs mizar">&quot;startOffset must <span class="hljs-keyword">be</span> non-negative, <span class="hljs-keyword">and</span> endOffset must <span class="hljs-keyword">be</span> &gt;= startOffset, <span class="hljs-keyword">and</span> offsets must <span class="hljs-keyword">not</span> go backwards startOffset=2,endOffset=3,lastStartOffset=3 <span class="hljs-keyword">for</span> field &#x27;description&#x27;&quot;<br></code></pre></td></tr></table></figure>
+
+<p>比如: 肉芽肿性唇炎的特点</p>
+<p>解决方案也很简单:</p>
+<ol>
+<li>升级版本</li>
+<li>将报错的词语添加到自定义分词规则中<br> 显然第二中方案更简单一点</li>
+</ol>
+<h4 id="2-日期格式设置错误"><a href="#2-日期格式设置错误" class="headerlink" title="2. 日期格式设置错误"></a>2. 日期格式设置错误</h4><p>资料中心创建时间 日期格式设置为 yyyy-mm-dd HH:mm:ss  导致排序数据异常<br>正确的格式：</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><code class="hljs json"><span class="hljs-punctuation">&#123;</span><br>  <span class="hljs-attr">&quot;doccenter_dcdoc&quot;</span> <span class="hljs-punctuation">:</span> <span class="hljs-punctuation">&#123;</span><br>    <span class="hljs-attr">&quot;mappings&quot;</span> <span class="hljs-punctuation">:</span> <span class="hljs-punctuation">&#123;</span><br>      <span class="hljs-attr">&quot;DcDoc&quot;</span> <span class="hljs-punctuation">:</span> <span class="hljs-punctuation">&#123;</span><br>        <span class="hljs-attr">&quot;properties&quot;</span> <span class="hljs-punctuation">:</span> <span class="hljs-punctuation">&#123;</span><br>          <span class="hljs-attr">&quot;catalogId&quot;</span> <span class="hljs-punctuation">:</span> <span class="hljs-punctuation">&#123;</span><br>            <span class="hljs-attr">&quot;type&quot;</span> <span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;keyword&quot;</span><br>          <span class="hljs-punctuation">&#125;</span><span class="hljs-punctuation">,</span><br>          <span class="hljs-attr">&quot;docCreateddate&quot;</span> <span class="hljs-punctuation">:</span> <span class="hljs-punctuation">&#123;</span><br>            <span class="hljs-attr">&quot;type&quot;</span> <span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;date&quot;</span><span class="hljs-punctuation">,</span><br>            <span class="hljs-attr">&quot;format&quot;</span> <span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;yyyy-MM-dd HH:mm:ss&quot;</span> # MM表示月份<br>          <span class="hljs-punctuation">&#125;</span><br>     <span class="hljs-punctuation">&#125;</span><br> <span class="hljs-punctuation">&#125;</span><br></code></pre></td></tr></table></figure>
+
+<h4 id="3-设置匹配度-优化查询结果"><a href="#3-设置匹配度-优化查询结果" class="headerlink" title="3. 设置匹配度 优化查询结果"></a>3. 设置匹配度 优化查询结果</h4><p>由于内容的特性，我们不希望将关联度不大的结果展示给用户，所以设置了最新匹配度来进行限定</p>
+<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20210213101434.png" srcset="/img/loading.gif" lazyload alt="image-20210213101433720"></p>
+<h2 id="ES的Java客户端选择"><a href="#ES的Java客户端选择" class="headerlink" title="ES的Java客户端选择"></a>ES的Java客户端选择</h2><p>RestClient, 未来ES会逐渐废弃其他client统一到RestClient ,未来的选择</p>
+<h4 id="1-ES提供了两个JAVA-REST-client-版本"><a href="#1-ES提供了两个JAVA-REST-client-版本" class="headerlink" title="1. ES提供了两个JAVA REST client 版本"></a>1. ES提供了两个JAVA REST client 版本</h4><p>Java Low Level REST Client: 低级别的REST客户端，通过http与集群交互，用户需自己编组请求JSON串，及解析响应JSON串。兼容所有ES版本。</p>
+<p>Java High Level REST Client: 高级别的REST客户端，基于低级别的REST客户端，增加了编组请求JSON串、解析响应JSON串等相关api。使用的版本需要保持和ES服务端的版本一致，否则会有版本问题。</p>
+<ol>
+<li>Java Low Level REST Client</li>
+</ol>
+<p>说明，特点，maven 引入、使用介绍： <a target="_blank" rel="noopener" href="https://www.elastic.co/guide/en/elasticsearch/client/java-rest/current/java-rest-low.html">https://www.elastic.co/guide/en/elasticsearch/client/java-rest/current/java-rest-low.html</a></p>
+<p>API doc ：<a target="_blank" rel="noopener" href="https://artifacts.elastic.co/javadoc/org/elasticsearch/client/elasticsearch-rest-client/6.2.4/index.html">https://artifacts.elastic.co/javadoc/org/elasticsearch/client/elasticsearch-rest-client/6.2.4/index.html</a>.</p>
+<ol start="2">
+<li>Java High Level REST Client  (推荐)</li>
+</ol>
+<p>High Level REST Client 从6.0.0开始加入，目的是以java面向对象的方式来进行请求、响应处理。</p>
+<p>每个API 支持 同步&#x2F;异步 两种方式，同步方法直接返回一个结果对象。异步的方法以async为后缀，通过listener参数来通知结果。</p>
+<p>高级java REST 客户端依赖Elasticsearch core project</p>
+<p>兼容性说明：</p>
+<p>依赖 java1.8 和 Elasticsearch core project</p>
+<p>请使用与服务端ES版本一致的客户端版本</p>
+<p>参考:<a target="_blank" rel="noopener" href="https://blog.csdn.net/qq_26676207/article/details/81019677">https://blog.csdn.net/qq_26676207&#x2F;article&#x2F;details&#x2F;81019677</a></p>
+<h4 id="2-TransportClient"><a href="#2-TransportClient" class="headerlink" title="2. TransportClient"></a>2. TransportClient</h4><p>   官方提示TransportClient在7.0版本过时,8.0版本将被废弃</p>
+<h4 id="3-JestClient"><a href="#3-JestClient" class="headerlink" title="3. JestClient"></a>3. JestClient</h4><h4 id="4-spring-data-elasticsearch"><a href="#4-spring-data-elasticsearch" class="headerlink" title="4. spring-data-elasticsearch"></a>4. spring-data-elasticsearch</h4><p>  spring-data 体系的用户可以使用,如果你不用spring-data还是算了</p>
+<h4 id="5-NodeClient-2-x时代的客户端-5-x已经消失了"><a href="#5-NodeClient-2-x时代的客户端-5-x已经消失了" class="headerlink" title="5. NodeClient(2.x时代的客户端,5.x已经消失了)"></a>5. NodeClient(2.x时代的客户端,5.x已经消失了)</h4><h2 id="ES-节点"><a href="#ES-节点" class="headerlink" title="ES 节点"></a>ES 节点</h2><h4 id="1-客户端节点"><a href="#1-客户端节点" class="headerlink" title="1. 客户端节点"></a>1. 客户端节点</h4><p>　　当主节点和数据节点配置都设置为false的时候，<strong>该节点只能处理路由请求，处理搜索，分发索引操作</strong>等，从本质上来说该客户节点表现为智能负载平衡器。独立的客户端节点在一个比较大的集群中是非常有用的，他协调主节点和数据节点，客户端节点加入集群可以得到集群的状态，根据集群的状态可以直接路由请求。</p>
+<h4 id="2-数据节点"><a href="#2-数据节点" class="headerlink" title="2. 数据节点"></a>2. 数据节点</h4><p>　　数据节点主要是存储索引数据的节点，<strong>主要对文档进行增删改查操作，聚合操作</strong>等。数据节点对cpu，内存，io要求较高， 在优化的时候需要监控数据节点的状态，当资源不够的时候，需要在集群中添加新的节点。</p>
+<h4 id="3-主节点"><a href="#3-主节点" class="headerlink" title="3. 主节点"></a>3. 主节点</h4><p>　 主节点的主要职责是和集群操作相关的内容，如<strong>创建或删除索引，跟踪哪些节点是群集的一部分，并决定哪些分片分配给相关的节点</strong>。稳定的主节点对集群的健康是非常重要的，默认情况下任何一个集群中的节点都有可能被选为主节点，索引数据和搜索查询等操作会占用大量的cpu，内存，io资源，为了确保一个集群的稳定，分离主节点和数据节点是一个比较好的选择。 </p>
+<h4 id="4-生产环境使用建议（规模较大时适用）"><a href="#4-生产环境使用建议（规模较大时适用）" class="headerlink" title="4. 生产环境使用建议（规模较大时适用）"></a>4. 生产环境使用建议（规模较大时适用）</h4><p>　　在一个生产集群中我们可以对这些节点的职责进行划分，建议集群中设置3台以上的节点作为master节点，这些节点只负责成为主节点，维护整个集群的状态。再根据数据量设置一批data节点，这些节点只负责存储数据，后期提供建立索引和查询索引的服务，这样的话如果用户请求比较频繁，这些节点的压力也会比较大，所以在集群中建议再设置一批client节点(node.master: false node.data: false)，这些节点只负责处理用户请求，实现请求转发，负载均衡等功能。</p>
+<h2 id="ES-集群，分片和副本"><a href="#ES-集群，分片和副本" class="headerlink" title="ES 集群，分片和副本"></a>ES 集群，分片和副本</h2><p>想要理解ES是如何实现分布式高可用的就必须要理解以下这张图</p>
+<p>部署架构图</p>
+<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20210213101506.png" srcset="/img/loading.gif" lazyload alt="image-20210213101505689"><br>****集群(cluster):****由一个或多个节点组成, 并通过集群名称与其他集群进行区分</p>
+<p>****节点(node):****单个ElasticSearch实例. 通常一个节点运行在一个隔离的容器或虚拟机中</p>
+<p>****索引(index):****在ES中, 索引是一组文档的集合</p>
+<p><em>*<em>*分片(shard):*<em><strong>因为ES是个分布式的搜索引擎, 所以索引通常都会分解成不同部分, 而这些分布在不同节点的数据就是分片. ES自动管理和组织分片, 并在必要的时候对分片数据进行再平衡分配, 所以用户基本上不用担心分片的处理细节，</strong></em>*一个分片默认最大文档数量是20亿*</em>**.*</em>**</p>
+<p>****副本(replica):****ES默认为一个索引创建5个主分片, 并分别为其创建一个副本分片. 也就是说每个索引都由5个主分片成本, 而每个主分片都相应的有一个copy.</p>
+<p>理解了什么叫分配以后可能会有不少人认为分片越多越好，副本越多性能越高</p>
+<p>其实不然，要根据自己的数据量和写入、读取比例来客观分析。 分片数量关系写入性能的高低，副本数量关系查询速度的快慢，但是少量的数据分配到大量的分片上反而会导致查询性能的降低。 通常认为一个分片大小以30G左右为宜  </p>
+<ul>
+<li>每个分片本质上就是一个Lucene索引, 因此会消耗相应的文件句柄, 内存和CPU资源</li>
+<li>每个搜索请求会调度到索引的每个分片中. 如果分片分散在不同的节点倒是问题不太. 但当分片开始竞争相同的硬件资源时, 性能便会逐步下降</li>
+<li>ES使用<a target="_blank" rel="noopener" href="https://www.elastic.co/guide/en/elasticsearch/guide/current/relevance-intro.html">词频统计来计算相关性</a>. 当然这些统计也会分配到各个分片上. 如果在大量分片上只维护了很少的数据, 则将导致最终的文档相关性较差</li>
+</ul>
+<h2 id="生产中常用优化"><a href="#生产中常用优化" class="headerlink" title="生产中常用优化"></a>生产中常用优化</h2><h4 id="索引优化"><a href="#索引优化" class="headerlink" title="索引优化"></a>索引优化</h4><figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><code class="hljs awk">优化方向：<br>    .合理创建分片和备份<br>  .尽可能严格控制数据类型<br>  .非查询字段不创建索引<br>  .使用合理的分词规则<br>&#123;<br><span class="hljs-string">&quot;settings&quot;</span>:&#123;<br>  <span class="hljs-string">&quot;number_of_replicas&quot;</span>:<span class="hljs-number">0</span>, <span class="hljs-regexp">//</span>备份数,根据需要决定是否需要备份,备份会降低写/改速度,提升查询速度<br>  <span class="hljs-string">&quot;number_of_shards&quot;</span>:<span class="hljs-number">5</span>, <span class="hljs-regexp">//</span>分片数,默认<span class="hljs-number">5</span>. 一般建议每个分片大小<span class="hljs-number">10</span>-<span class="hljs-number">30</span>G, 根据数据大小计算分片数<br>  <span class="hljs-string">&quot;index.store.type&quot;</span>: <span class="hljs-string">&quot;niofs&quot;</span>, <span class="hljs-regexp">//</span>存储方式<br>  <span class="hljs-string">&quot;index.query.default_field&quot;</span>: <span class="hljs-string">&quot;title&quot;</span>,<span class="hljs-regexp">//</span>默认搜索字段<br>  <span class="hljs-string">&quot;index.unassigned.node_left.delayed_timeout&quot;</span>: <span class="hljs-string">&quot;5m&quot;</span>,<span class="hljs-regexp">//</span>节点异常后<span class="hljs-number">5</span>分钟后再执行备份恢复操作,防止  网络抖动引发备份,影响性能<br>  &#125;,<br><span class="hljs-string">&quot;mappings&quot;</span>:&#123;<br>  <span class="hljs-string">&quot;house&quot;</span>:&#123;<br>      <span class="hljs-string">&quot;dynamic&quot;</span> : <span class="hljs-string">&quot;false&quot;</span>,<span class="hljs-regexp">//</span> 可选值 true<span class="hljs-regexp">/ false/</span>strict  数据类型逐渐严格<br>      <span class="hljs-string">&quot;_all&quot;</span>:&#123;<br>            <span class="hljs-string">&quot;enabled&quot;</span>:false <span class="hljs-regexp">//</span><span class="hljs-number">6.0</span>版本后已经废弃,会把所有字段整合起来供搜索,浪费性能  <br>        &#125;  <br>      <span class="hljs-string">&quot;properties&quot;</span>:&#123;<br>         <br>      &#125;<br>  &#125;<br>&#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+
+
+<h4 id="配置优化"><a href="#配置优化" class="headerlink" title="配置优化:"></a>配置优化:</h4><ol>
+<li><p>禁止通配符删除  &#x2F;&#x2F;可动态修改</p>
+</li>
+<li><p>设置合理的刷盘时间 index.refresh_interval:30s&#x2F;&#x2F;重启才能生效</p>
+</li>
+<li><p>集群通信优化,适当延长通信时间可以避免短时间网络异常造成的集群数据恢复</p>
+<p>discovery.zen.fd.ping_interval: 10s  &#x2F;&#x2F;心跳时间</p>
+</li>
+</ol>
+<p>​    discovery.zen.fd.ping_timeout:120s&#x2F;&#x2F;超时时间</p>
+<p>​    discovery.zen.fd.ping_retries:3 &#x2F;&#x2F;重试次数</p>
+<ol start="4">
+<li><p>各个节点各司其职,尽量不要让一个节点担任多个功能</p>
+<p> node.name:master  &#x2F;&#x2F;节点名称</p>
+<p> node.master:true   &#x2F;&#x2F;是否是指挥节点</p>
+<p> node.data: true    &#x2F;&#x2F;是否是数据节点</p>
+</li>
+</ol>
+<p>常见配置:</p>
+<figure class="highlight makefile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs makefile"><span class="hljs-section">指挥节点:</span><br><span class="hljs-section">node.master:true</span><br><span class="hljs-section">node.data: false</span><br><span class="hljs-section">数据节点:</span><br><span class="hljs-section">node.master:false</span><br><span class="hljs-section">node.data: true</span><br><span class="hljs-section">负载均衡节点: [一般我们会用Nginx之类做负载均衡,而不是使用ES的节点去做负载均衡]</span><br><span class="hljs-section">node.master:fale</span><br><span class="hljs-section">node.data: false</span><br></code></pre></td></tr></table></figure>
+
+
+
+<ol start="5">
+<li><p>内存设置[config&#x2F;jvm.options]</p>
+<p> -Xms256m</p>
+<p> -Xmx256m</p>
+</li>
+</ol>
+<p>最大不要超过32G, 并且不要超过总内存的50%</p>
+<ol start="6">
+<li><p>大量数据导入不要单条导入,使用bulk批量导入可以大大提升性能</p>
+</li>
+<li><p>硬盘尽量使用SSD硬盘</p>
+</li>
+</ol>
+<h2 id="查询"><a href="#查询" class="headerlink" title="查询"></a>查询</h2><p>match<br>下面的查询匹配就会进行分词，比如”我是中国人”会被分词为我，中国，中国人 等, 那么所有包含这三个词中的一个或多个的文档就会被搜索出来。</p>
+<p>并且根据lucene的评分机制(TF&#x2F;IDF)来进行评分。</p>
+<figure class="highlight ada"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs ada">&#123;<br>  <span class="hljs-string">&quot;query&quot;</span>: &#123;<br>    <span class="hljs-string">&quot;match&quot;</span>: &#123;<br>        <span class="hljs-string">&quot;content&quot;</span> : &#123;<br>            <span class="hljs-string">&quot;query&quot;</span> : &quot;我是中国人&quot;<br>        &#125;<br>    &#125;<br>  &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>match_phrase  短语匹配</p>
+<p>那么想要精确匹配所有同时包含”中国人”的文档怎么做？就要使用 match_phrase 了</p>
+<p>完全匹配可能也不是我们想要的，我们会希望少匹配字一个也满足，那就需要使用到slop调节因子进行调节。</p>
+<figure class="highlight ada"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs ada">&#123;<br>  <span class="hljs-string">&quot;query&quot;</span>: &#123;<br>    <span class="hljs-string">&quot;match_phrase&quot;</span>: &#123;<br>        <span class="hljs-string">&quot;content&quot;</span> : &#123;<br>            <span class="hljs-string">&quot;query&quot;</span> : &quot;中国人&quot;，<br>             <span class="hljs-string">&quot;slop&quot;</span> : 1<br>        &#125;<br>    &#125;<br>  &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+
+
+<p>multi_match</p>
+<p>实际业务中我们一般需要多个字段进行匹配，其中一个字段有这个文档就满足的话，就可以使用multi_match</p>
+<p>但是multi_match就涉及到匹配评分的问题了。</p>
+<figure class="highlight autoit"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><code class="hljs autoit">&#123;<br>  <span class="hljs-string">&quot;query&quot;</span>: &#123;<br>    <span class="hljs-string">&quot;multi_match&quot;</span>: &#123;<br>      <span class="hljs-string">&quot;query&quot;</span>: <span class="hljs-string">&quot;我是中国人&quot;</span>,<br>      <span class="hljs-string">&quot;type&quot;</span>: <span class="hljs-string">&quot;best_fields&quot;</span>,<br>      <span class="hljs-string">&quot;fields&quot;</span>: [<br>        <span class="hljs-string">&quot;tag&quot;</span>,<br>        <span class="hljs-string">&quot;content&quot;</span><br>      ],<br>      <span class="hljs-string">&quot;tie_breaker&quot;</span>: <span class="hljs-number">0.3</span> <span class="hljs-meta">#意思就是完全匹配<span class="hljs-string">&quot;我 中国人&quot;</span>的文档评分会比较靠前，如果只匹配一个的文档评分乘以0.3的系数，类似的分数控制方式还有很多，需要大家自己去阅读官方文档</span><br><br>    &#125;<br>  &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+
+
+<p> term</p>
+<p>term是代表完全匹配，即不进行分词器分析，文档中必须包含整个搜索的词汇</p>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs css">&#123;<br>  &quot;query&quot;: &#123;<br>    &quot;term&quot;: &#123;<br>      &quot;<span class="hljs-attribute">content</span>&quot;: <span class="hljs-string">&quot;我是中国人&quot;</span><br>    &#125;<br>  &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>bool联合查询: must,should,must_not</p>
+<p>这三个可以这么理解</p>
+<p>*  must: 文档必须完全匹配条件</p>
+<p>*  should: should下面会带一个以上的条件，至少满足一个条件，这个文档就符合should</p>
+<p>*  must_not: 文档必须不匹配条件</p>
+<p>如果我们想要请求”content中带宝马，但是tag中不带宝马”这样类似的需求，就需要用到bool联合查询。</p>
+<p>联合查询就会使用到must,should,must_not三种关键词。</p>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><code class="hljs css">&#123;<br>  &quot;query&quot;: &#123;<br>    &quot;bool&quot;: &#123;<br>      &quot;must&quot;: &#123;<br>        &quot;term&quot;: &#123;<br>          &quot;<span class="hljs-attribute">content</span>&quot;: <span class="hljs-string">&quot;宝马&quot;</span><br>        &#125;<br>      &#125;,<br>      &quot;must_not&quot;: &#123;<br>        &quot;term&quot;: &#123;<br>          &quot;tags&quot;: <span class="hljs-string">&quot;宝马&quot;</span><br>        &#125;<br>      &#125;<br>    &#125;<br>  &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+
+
+<p>合理使用Filter</p>
+<p>Filter 是ES中的过滤查询，是一种精确匹配，它会按照条件对文档进行过滤，不匹配的文档都会被过滤掉而不再参与后续的评分。<br>而且能够使用到ES的各种优化和缓存，这就意味着在数据稀疏的情况下，使用Filter可以大大提高查询性能</p>
+<p>示例：</p>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><code class="hljs css">GET /_search<br>&#123;<br>  &quot;query&quot;: &#123; （<span class="hljs-number">1</span>）<br>    &quot;bool&quot;: &#123; （<span class="hljs-number">2</span>）<br>      &quot;must&quot;: [<br>        &#123; &quot;match&quot;: &#123; &quot;title&quot;:   <span class="hljs-string">&quot;Search&quot;</span>        &#125;&#125;, （<span class="hljs-number">3</span>）<br>        &#123; &quot;match&quot;: &#123; &quot;<span class="hljs-attribute">content</span>&quot;: <span class="hljs-string">&quot;Elasticsearch&quot;</span> &#125;&#125;  （<span class="hljs-number">4</span>）<br>      ],<br>      &quot;<span class="hljs-attribute">filter</span>&quot;: [ （<span class="hljs-number">5</span>）<br>        &#123; &quot;term&quot;:  &#123; &quot;status&quot;: <span class="hljs-string">&quot;published&quot;</span> &#125;&#125;, （<span class="hljs-number">6</span>）<br>        &#123; &quot;range&quot;: &#123; &quot;publish_date&quot;: &#123; &quot;gte&quot;: <span class="hljs-string">&quot;2015-01-01&quot;</span> &#125;&#125;&#125; （<span class="hljs-number">7</span>）<br>      ]<br>    &#125;<br>  &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+
+
+<p>除了上述我们列出的常用查询方式以外还有很多其他方式的查询，我们无法一一列举，<br>ES的评分规则因为比较复杂这里也没有做过多介绍<br>大家可以参照以下学习路线进行学习</p>
+<h2 id="ES学习路线"><a href="#ES学习路线" class="headerlink" title="ES学习路线"></a>ES学习路线</h2><p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20210213101756.png" srcset="/img/loading.gif" lazyload alt="ES学习路线"></p>
+
+              
+            </div>
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/08-%E6%A1%86%E6%9E%B6%E6%8A%80%E6%9C%AF/" class="category-chain-item">08_框架技术</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/08-%E6%A1%86%E6%9E%B6%E6%8A%80%E6%9C%AF/09-Elasticsearch/" class="category-chain-item">09_Elasticsearch</a>
+  
+  
+
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/ElasticSearch/">#ElasticSearch</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>02-ElasticSearch用法和IK分词器</div>
+      <div>https://janycode.github.io/2021/02/13/08_框架技术/09_ElasticSerach/02-ElasticSearch用法和IK分词器/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Jerry(姜源)</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2021年2月13日</div>
+        </div>
+      
+      
+      <div class="license-meta-item">
+        <div>许可协议</div>
+        <div>
+          
+            
+            
+              <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+              <span class="hint--top hint--rounded" aria-label="BY - 姜源">
+                <i class="iconfont icon-by"></i>
+              </span>
+              </a>
+            
+          
+        </div>
+      </div>
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2021/02/17/00_%E5%85%88%E5%88%A9%E5%85%B6%E5%99%A8/01_Intellij%20IDEA/11-IDEA-%E7%94%9F%E6%88%90Javadoc%E5%A4%96%E9%83%A8%E6%96%87%E6%A1%A3/" title="11-IDEA-生成Javadoc外部文档">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">11-IDEA-生成Javadoc外部文档</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2021/02/04/20_%E6%94%B6%E8%97%8F%E6%95%B4%E7%90%86/03_%E5%B7%A5%E5%85%B7%E7%B1%BB/12-BaseController/" title="12-BaseController">
+                        <span class="hidden-mobile">12-BaseController</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+  <article id="comments" lazyload>
+    
+  <div id="SOHUCS" sid='https://janycode.github.io/2021/02/13/08_%E6%A1%86%E6%9E%B6%E6%8A%80%E6%9C%AF/09_ElasticSerach/02-ElasticSearch%E7%94%A8%E6%B3%95%E5%92%8CIK%E5%88%86%E8%AF%8D%E5%99%A8/'></div>
+  <script type="text/javascript">
+    Fluid.utils.loadComments('#SOHUCS', function() {
+      Fluid.utils.createScript("https://changyan.sohu.com/upload/changyan.js", function() {
+        window.changyan.api.config({"appid":"cyw5OHIcO","appkey":"fea3446b3df4b3f129f34da4cbc87e51"})
+      });
+    });
+  </script>
+  <noscript>Please enable JavaScript to view the comments</noscript>
+
+
+  </article>
+
+
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://simple.blog.csdn.net" target="_blank" rel="nofollow noopener"><span>CSDN</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/janycode" target="_blank" rel="nofollow noopener"><span>GitHub</span></a> <i class="iconfont icon-love"></i> <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="busuanzi_container_site_pv" style="display: none">
+        总访问量(PV) 
+        <span id="busuanzi_value_site_pv"></span>
+         次，
+      </span>
+    
+    
+      <span id="busuanzi_container_site_uv" style="display: none">
+        总访客数(UV) 
+        <span id="busuanzi_value_site_uv"></span>
+         人
+      </span>
+    
+    
+  
+</div>
+
+  
+  
+  
+</div>
+
+<!-- live2d 动画 -->
+<script src="https://eqcn.ajz.miesnfu.com/wp-content/plugins/wp-3d-pony/live2dw/lib/L2Dwidget.min.js"></script>
+<script>
+    L2Dwidget.init({
+        "model": {
+            jsonPath: "https://unpkg.com/live2d-widget-model-haruto@1.0.5/assets/haruto.model.json",
+            "scale": 1
+        },
+        "display": {
+            "position": "right",
+            "width": 100,
+            "height": 200,
+            "hOffset": 35,
+            "vOffset": -85
+        },
+        "mobile": {
+            "show": false,
+            "scale": 0.1
+        },
+        "react": {
+            "opacityDefault": 0.75,
+            "opacityOnHover": 0.2
+        }
+    });
+</script>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <!-- Baidu Analytics -->
+    <script defer>
+      if (!Fluid.ctx.dnt) {
+        var _hmt = _hmt || [];
+        (function() {
+          var hm = document.createElement("script");
+          hm.src = "https://hm.baidu.com/hm.js?bfff735c897eb60ea49b735096b20e47";
+          var s = document.getElementsByTagName("script")[0];
+          s.parentNode.insertBefore(hm, s);
+        })();
+      }
+    </script>
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.0/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      headingSelector : CONFIG.toc.headingSelector || 'h1,h2,h3,h4,h5,h6',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      collapseDepth   : CONFIG.toc.collapseDepth || 0,
+      scrollSmooth    : true,
+      headingsOffset  : -boardTop
+    });
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+  });
+</script>
+
+
+  <script>
+  (function() {
+    var enableLang = CONFIG.code_language.enable && CONFIG.code_language.default;
+    var enableCopy = CONFIG.copy_btn;
+    if (!enableLang && !enableCopy) {
+      return;
+    }
+
+    function getBgClass(ele) {
+      return Fluid.utils.getBackgroundLightness(ele) >= 0 ? 'code-widget-light' : 'code-widget-dark';
+    }
+
+    var copyTmpl = '';
+    copyTmpl += '<div class="code-widget">';
+    copyTmpl += 'LANG';
+    copyTmpl += '</div>';
+    jQuery('.markdown-body pre').each(function() {
+      var $pre = jQuery(this);
+      if ($pre.find('code.mermaid').length > 0) {
+        return;
+      }
+      if ($pre.find('span.line').length > 0) {
+        return;
+      }
+
+      var lang = '';
+
+      if (enableLang) {
+        lang = CONFIG.code_language.default;
+        if ($pre[0].children.length > 0 && $pre[0].children[0].classList.length >= 2 && $pre.children().hasClass('hljs')) {
+          lang = $pre[0].children[0].classList[1];
+        } else if ($pre[0].getAttribute('data-language')) {
+          lang = $pre[0].getAttribute('data-language');
+        } else if ($pre.parent().hasClass('sourceCode') && $pre[0].children.length > 0 && $pre[0].children[0].classList.length >= 2) {
+          lang = $pre[0].children[0].classList[1];
+          $pre.parent().addClass('code-wrapper');
+        } else if ($pre.parent().hasClass('markdown-body') && $pre[0].classList.length === 0) {
+          $pre.wrap('<div class="code-wrapper"></div>');
+        }
+        lang = lang.toUpperCase().replace('NONE', CONFIG.code_language.default);
+      }
+      $pre.append(copyTmpl.replace('LANG', lang).replace('code-widget">',
+        getBgClass($pre[0]) + (enableCopy ? ' code-widget copy-btn" data-clipboard-snippet><i class="iconfont icon-copy"></i>' : ' code-widget">')));
+
+      if (enableCopy) {
+        Fluid.utils.createScript('https://lib.baomitu.com/clipboard.js/2.0.10/clipboard.min.js', function() {
+          var clipboard = new window.ClipboardJS('.copy-btn', {
+            target: function(trigger) {
+              var nodes = trigger.parentNode.childNodes;
+              for (var i = 0; i < nodes.length; i++) {
+                if (nodes[i].tagName === 'CODE') {
+                  return nodes[i];
+                }
+              }
+            }
+          });
+          clipboard.on('success', function(e) {
+            e.clearSelection();
+            e.trigger.innerHTML = e.trigger.innerHTML.replace('icon-copy', 'icon-success');
+            setTimeout(function() {
+              e.trigger.innerHTML = e.trigger.innerHTML.replace('icon-success', 'icon-copy');
+            }, 2000);
+          });
+        });
+      }
+    });
+  })();
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script  src="/js/local-search.js" ></script>
+
+  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

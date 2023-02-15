@@ -1,0 +1,880 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=light>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Jerry(姜源)">
+  <meta name="keywords" content="Java,Html,CSS,JavaScript,Python,C,Linux,shell编程经验分享、技术总结、心得体会">
+  
+    <meta name="description" content="参考资料：- 1. 砍价核心数据流程 2. 砍价规则生成流程  12345678910111213141516171819202122232425262728293031323334353637383940414243444546474849505152535455565758596061626364656667686970717273747576777879808182838485868788">
+<meta property="og:type" content="article">
+<meta property="og:title" content="04-砍价系统核心流程设计">
+<meta property="og:url" content="https://janycode.github.io/2020/11/29/15_%E9%A1%B9%E7%9B%AE%E8%AE%BE%E8%AE%A1/01_%E4%B8%9A%E5%8A%A1%E8%AE%BE%E8%AE%A1/04-%E7%A0%8D%E4%BB%B7%E7%B3%BB%E7%BB%9F%E6%A0%B8%E5%BF%83%E6%B5%81%E7%A8%8B%E8%AE%BE%E8%AE%A1/index.html">
+<meta property="og:site_name" content="姜源の云笔记">
+<meta property="og:description" content="参考资料：- 1. 砍价核心数据流程 2. 砍价规则生成流程  12345678910111213141516171819202122232425262728293031323334353637383940414243444546474849505152535455565758596061626364656667686970717273747576777879808182838485868788">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20201129160345.png">
+<meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20201129155741.png">
+<meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20201129155915.png">
+<meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20201129155947.png">
+<meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20201129160118.png">
+<meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20201129160152.png">
+<meta property="article:published_time" content="2020-11-29T07:50:36.000Z">
+<meta property="article:modified_time" content="2022-05-28T09:36:01.685Z">
+<meta property="article:author" content="Jerry(姜源)">
+<meta property="article:tag" content="系统设计">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20201129160345.png">
+  
+  
+    <meta name="referrer" content="no-referrer-when-downgrade">
+  
+  
+  <title>04-砍价系统核心流程设计 - 姜源の云笔记</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"janycode.github.io","root":"/","version":"1.9.0","typing":{"enable":true,"typeSpeed":50,"cursorChar":"|","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":false},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":"bfff735c897eb60ea49b735096b20e47","google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+
+  
+<meta name="generator" content="Hexo 6.2.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 50vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>姜源の云笔记</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tools/">
+                <i class="iconfont icon-slack-fill"></i>
+                工具
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="04-砍价系统核心流程设计"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-author" aria-hidden="true"></i>
+        Jerry(姜源)
+      </span>
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2020-11-29 15:50" pubdate>
+          星期日, 2020/11/29 15:50:36
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          <!-- compatible with older versions-->
+          15k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          <!-- compatible with older versions-->
+          123 分钟
+        
+      </span>
+    
+
+    
+    
+      
+        <span id="busuanzi_container_page_pv" style="display: none">
+          <i class="iconfont icon-eye" aria-hidden="true"></i>
+          <span id="busuanzi_value_page_pv"></span> 次
+        </span>
+        
+      
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">04-砍价系统核心流程设计</h1>
+            
+            <div class="markdown-body">
+              
+              <p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20201129160345.png" srcset="/img/loading.gif" lazyload alt="image-20201129160344316"></p>
+<p>参考资料：-</p>
+<h3 id="1-砍价核心数据流程"><a href="#1-砍价核心数据流程" class="headerlink" title="1. 砍价核心数据流程"></a>1. 砍价核心数据流程</h3><p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20201129155741.png" srcset="/img/loading.gif" lazyload alt="image-20201129155739877"></p>
+<h3 id="2-砍价规则生成流程"><a href="#2-砍价规则生成流程" class="headerlink" title="2. 砍价规则生成流程"></a>2. 砍价规则生成流程</h3><p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20201129155915.png" srcset="/img/loading.gif" lazyload alt="image-20201129155914282"></p>
+<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20201129155947.png" srcset="/img/loading.gif" lazyload alt="image-20201129155946630"></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br><span class="line">169</span><br><span class="line">170</span><br><span class="line">171</span><br><span class="line">172</span><br><span class="line">173</span><br><span class="line">174</span><br><span class="line">175</span><br><span class="line">176</span><br><span class="line">177</span><br><span class="line">178</span><br><span class="line">179</span><br><span class="line">180</span><br><span class="line">181</span><br><span class="line">182</span><br><span class="line">183</span><br><span class="line">184</span><br><span class="line">185</span><br><span class="line">186</span><br><span class="line">187</span><br><span class="line">188</span><br><span class="line">189</span><br><span class="line">190</span><br><span class="line">191</span><br><span class="line">192</span><br><span class="line">193</span><br><span class="line">194</span><br><span class="line">195</span><br><span class="line">196</span><br><span class="line">197</span><br><span class="line">198</span><br><span class="line">199</span><br><span class="line">200</span><br><span class="line">201</span><br><span class="line">202</span><br><span class="line">203</span><br><span class="line">204</span><br><span class="line">205</span><br><span class="line">206</span><br><span class="line">207</span><br><span class="line">208</span><br><span class="line">209</span><br><span class="line">210</span><br><span class="line">211</span><br><span class="line">212</span><br><span class="line">213</span><br><span class="line">214</span><br><span class="line">215</span><br><span class="line">216</span><br><span class="line">217</span><br><span class="line">218</span><br><span class="line">219</span><br><span class="line">220</span><br><span class="line">221</span><br><span class="line">222</span><br><span class="line">223</span><br><span class="line">224</span><br><span class="line">225</span><br><span class="line">226</span><br><span class="line">227</span><br><span class="line">228</span><br><span class="line">229</span><br><span class="line">230</span><br><span class="line">231</span><br><span class="line">232</span><br><span class="line">233</span><br><span class="line">234</span><br><span class="line">235</span><br><span class="line">236</span><br><span class="line">237</span><br><span class="line">238</span><br><span class="line">239</span><br><span class="line">240</span><br><span class="line">241</span><br><span class="line">242</span><br><span class="line">243</span><br><span class="line">244</span><br><span class="line">245</span><br><span class="line">246</span><br><span class="line">247</span><br><span class="line">248</span><br><span class="line">249</span><br><span class="line">250</span><br><span class="line">251</span><br><span class="line">252</span><br><span class="line">253</span><br><span class="line">254</span><br><span class="line">255</span><br><span class="line">256</span><br><span class="line">257</span><br><span class="line">258</span><br><span class="line">259</span><br><span class="line">260</span><br><span class="line">261</span><br><span class="line">262</span><br><span class="line">263</span><br><span class="line">264</span><br><span class="line">265</span><br><span class="line">266</span><br><span class="line">267</span><br><span class="line">268</span><br><span class="line">269</span><br><span class="line">270</span><br><span class="line">271</span><br><span class="line">272</span><br><span class="line">273</span><br><span class="line">274</span><br><span class="line">275</span><br><span class="line">276</span><br><span class="line">277</span><br><span class="line">278</span><br><span class="line">279</span><br><span class="line">280</span><br><span class="line">281</span><br><span class="line">282</span><br><span class="line">283</span><br><span class="line">284</span><br><span class="line">285</span><br><span class="line">286</span><br><span class="line">287</span><br><span class="line">288</span><br><span class="line">289</span><br><span class="line">290</span><br><span class="line">291</span><br><span class="line">292</span><br><span class="line">293</span><br><span class="line">294</span><br><span class="line">295</span><br><span class="line">296</span><br><span class="line">297</span><br><span class="line">298</span><br><span class="line">299</span><br><span class="line">300</span><br><span class="line">301</span><br><span class="line">302</span><br><span class="line">303</span><br><span class="line">304</span><br><span class="line">305</span><br><span class="line">306</span><br><span class="line">307</span><br><span class="line">308</span><br><span class="line">309</span><br><span class="line">310</span><br><span class="line">311</span><br><span class="line">312</span><br><span class="line">313</span><br><span class="line">314</span><br><span class="line">315</span><br><span class="line">316</span><br><span class="line">317</span><br><span class="line">318</span><br><span class="line">319</span><br><span class="line">320</span><br><span class="line">321</span><br><span class="line">322</span><br><span class="line">323</span><br><span class="line">324</span><br><span class="line">325</span><br><span class="line">326</span><br><span class="line">327</span><br><span class="line">328</span><br><span class="line">329</span><br><span class="line">330</span><br><span class="line">331</span><br><span class="line">332</span><br><span class="line">333</span><br><span class="line">334</span><br><span class="line">335</span><br><span class="line">336</span><br><span class="line">337</span><br><span class="line">338</span><br><span class="line">339</span><br><span class="line">340</span><br><span class="line">341</span><br><span class="line">342</span><br><span class="line">343</span><br><span class="line">344</span><br><span class="line">345</span><br><span class="line">346</span><br><span class="line">347</span><br><span class="line">348</span><br><span class="line">349</span><br><span class="line">350</span><br><span class="line">351</span><br><span class="line">352</span><br><span class="line">353</span><br><span class="line">354</span><br><span class="line">355</span><br><span class="line">356</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-comment">//算法工具类</span><br><span class="hljs-keyword">import</span> java.math.BigDecimal;<br><span class="hljs-keyword">import</span> java.math.BigInteger;<br><span class="hljs-keyword">import</span> java.util.*;<br><br><span class="hljs-meta">@SuppressWarnings(&quot;all&quot;)</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">BargainUtil</span> &#123;<br>    <span class="hljs-comment">/**</span><br><span class="hljs-comment">     * 随机金额倍数指数范围</span><br><span class="hljs-comment">     */</span><br>    <span class="hljs-keyword">private</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">final</span> <span class="hljs-type">BigDecimal</span> <span class="hljs-variable">HIGH_INDEX</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">BigDecimal</span>(<span class="hljs-string">&quot;1.5&quot;</span>);<br>    <span class="hljs-keyword">private</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">final</span> <span class="hljs-type">BigDecimal</span> <span class="hljs-variable">LOW_INDEX</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">BigDecimal</span>(<span class="hljs-string">&quot;0.5&quot;</span>);<br><br>    <span class="hljs-keyword">public</span> <span class="hljs-title function_">BargainUtil</span><span class="hljs-params">()</span> &#123;<br><br>    &#125;<br><br>    <span class="hljs-comment">/**</span><br><span class="hljs-comment">     * 返回砍价列表</span><br><span class="hljs-comment">     * <span class="hljs-doctag">@param</span> role 砍价规则</span><br><span class="hljs-comment">     * <span class="hljs-doctag">@return</span></span><br><span class="hljs-comment">     */</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> List&lt;BigInteger&gt; <span class="hljs-title function_">getbargainList</span><span class="hljs-params">(BargainRole role)</span> <span class="hljs-keyword">throws</span> Exception &#123;<br>        <span class="hljs-keyword">if</span> (role.getLowPrice() == <span class="hljs-literal">null</span>) &#123;<br>            role.setLowPrice(BigInteger.ZERO);<br>        &#125;<br>        <span class="hljs-keyword">return</span> calculation(role);<br>    &#125;<br><br>    <span class="hljs-comment">/**</span><br><span class="hljs-comment">     * 计算砍价明细，并模拟砍价</span><br><span class="hljs-comment">     * <span class="hljs-doctag">@param</span> role 砍价规则</span><br><span class="hljs-comment">     */</span><br>    <span class="hljs-keyword">private</span> <span class="hljs-keyword">static</span> List&lt;BigInteger&gt; <span class="hljs-title function_">calculation</span><span class="hljs-params">(BargainRole role)</span> <span class="hljs-keyword">throws</span> Exception &#123;<br>        <span class="hljs-comment">/*</span><br><span class="hljs-comment">         * 砍价例子：</span><br><span class="hljs-comment">         * 规则：前10%的人可帮砍掉帮砍金额的80%</span><br><span class="hljs-comment">         * 商品：随机模式，默认10人帮砍，则发起人砍价成功</span><br><span class="hljs-comment">         */</span><br><br>        <span class="hljs-keyword">if</span> (role.getPercentagePerson() == <span class="hljs-literal">null</span> || role.getPercentagePrice() == <span class="hljs-literal">null</span>) &#123;<br>            <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">Exception</span>(<span class="hljs-string">&quot;砍价策略必须设置&quot;</span>);<br>        &#125;<br>        <span class="hljs-comment">/* 不能设为0|单方面设置100 */</span><br>        <span class="hljs-type">boolean</span> <span class="hljs-variable">b1</span> <span class="hljs-operator">=</span> role.getPercentagePrice().compareTo(<span class="hljs-number">0</span>) &lt;= <span class="hljs-number">0</span> || role.getPercentagePerson().compareTo(<span class="hljs-number">0</span>) &lt;= <span class="hljs-number">0</span>;<br>        <span class="hljs-type">boolean</span> <span class="hljs-variable">b2</span> <span class="hljs-operator">=</span> role.getPercentagePrice().equals(<span class="hljs-number">100</span>) &amp;&amp; !role.getPercentagePerson().equals(<span class="hljs-number">100</span>);<br>        <span class="hljs-type">boolean</span> <span class="hljs-variable">b3</span> <span class="hljs-operator">=</span> !role.getPercentagePrice().equals(<span class="hljs-number">100</span>) &amp;&amp; role.getPercentagePerson().equals(<span class="hljs-number">100</span>);<br>        <span class="hljs-keyword">if</span> (b1 || b2 || b3) &#123;<br>            <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">Exception</span>(<span class="hljs-string">&quot;砍价策略设置有误&quot;</span>);<br>        &#125;<br>        <span class="hljs-keyword">if</span> (role.getTotalPrice() == <span class="hljs-literal">null</span> || role.getTotalPrice().compareTo(BigInteger.ZERO) &lt;= <span class="hljs-number">0</span>) &#123;<br>            <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">Exception</span>(<span class="hljs-string">&quot;商品价格数据异常&quot;</span>);<br>        &#125;<br>        <span class="hljs-keyword">if</span> (role.getTotalTimes() == <span class="hljs-literal">null</span> || role.getTotalTimes().compareTo(<span class="hljs-number">0</span>) &lt;= <span class="hljs-number">0</span>) &#123;<br>            <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">Exception</span>(<span class="hljs-string">&quot;砍价次数数据异常&quot;</span>);<br>        &#125;<br>        <span class="hljs-comment">/* 砍价人次不能高于商品价格 */</span><br>        <span class="hljs-comment">//砍价人次（默认N人帮砍发起人砍价成功） 10 &lt;= 19.9</span><br>        <span class="hljs-keyword">if</span> (<span class="hljs-keyword">new</span> <span class="hljs-title class_">BigInteger</span>(role.getTotalTimes().toString()).compareTo(role.getTotalPrice().subtract(role.getLowPrice())) &gt; <span class="hljs-number">0</span>) &#123;<br>            <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">Exception</span>(<span class="hljs-string">&quot;砍价人次不能高于商品价格&quot;</span>);<br>        &#125;<br>        <span class="hljs-comment">//待砍金额(即帮砍金额) = 原价 - 底价(活动价)</span><br>        <span class="hljs-comment">//如商品原价 200 底价 19.9，待砍金额 = 200 - 19.9 = 180.1 (四舍五入) = 180</span><br>        <span class="hljs-type">BigInteger</span> <span class="hljs-variable">difference</span> <span class="hljs-operator">=</span> role.getTotalPrice().subtract(role.getLowPrice());<br>        <span class="hljs-type">BigInteger</span> <span class="hljs-variable">index</span> <span class="hljs-operator">=</span> BigInteger.ONE;<br>        <span class="hljs-comment">//在待砍金额 &gt;100w 时，将待砍金额缩小 100 倍，即相当于按单位 元 来处理，其他不变</span><br>        <span class="hljs-keyword">if</span> (difference.compareTo(<span class="hljs-keyword">new</span> <span class="hljs-title class_">BigInteger</span>(<span class="hljs-string">&quot;100000000&quot;</span>)) &gt; <span class="hljs-number">0</span>) &#123;<br>            index = <span class="hljs-keyword">new</span> <span class="hljs-title class_">BigInteger</span>(<span class="hljs-string">&quot;10000&quot;</span>);<br>            difference = difference.divide(index);<br>        &#125;<br><br>        <span class="hljs-comment">//第1批人数：默认进行帮砍发起人可砍价成功的人数 × 前 N% 的人砍掉帮砍金额一定比例</span><br>        <span class="hljs-comment">//如前10%的人可帮砍掉帮砍金额80%，默认10人帮砍，发起人砍价成功</span><br>        <span class="hljs-comment">//此第1批人数 = 10 × 10% = 1人</span><br>        <span class="hljs-type">Integer</span> <span class="hljs-variable">part1</span> <span class="hljs-operator">=</span> BigDecimal.valueOf(role.getTotalTimes() * role.getPercentagePerson())<br>                .divide(BigDecimal.valueOf(<span class="hljs-number">100</span>), BigDecimal.ROUND_DOWN).intValue();<br>        <span class="hljs-keyword">if</span> (part1 == <span class="hljs-number">0</span>) &#123;<br>            part1 = <span class="hljs-number">1</span>;<br>        &#125;<br>        <span class="hljs-comment">//第1批人可砍金额：待砍金额 × 前一定比例的人砍掉帮砍金额的 N%</span><br>        <span class="hljs-comment">//如前10%的人可帮砍掉帮砍金额80%，默认10人帮砍，发起人砍价成功</span><br>        <span class="hljs-comment">//此第1批人可砍金额 = 18010(180.1) × 80(80%) / 100 = 144.08 = 144 元(舍弃小数点)</span><br>        <span class="hljs-type">BigInteger</span> <span class="hljs-variable">price1</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">BigDecimal</span>(difference.multiply(BigInteger.valueOf(role.getPercentagePrice())))<br>                .divide(BigDecimal.valueOf(<span class="hljs-number">100</span>), BigDecimal.ROUND_DOWN).toBigInteger();<br><br>        <span class="hljs-comment">//第2批人数：默认进行帮砍发起人可砍价成功的人数 - 第1批人</span><br>        <span class="hljs-comment">//10 - 1 = 9 人</span><br>        <span class="hljs-type">Integer</span> <span class="hljs-variable">part2</span> <span class="hljs-operator">=</span> role.getTotalTimes() - part1;<br>        <span class="hljs-comment">//第2批人可砍金额：帮砍价格 - 第1批砍掉的价格</span><br>        <span class="hljs-comment">//180 - 144 = 36 元</span><br>        <span class="hljs-type">BigInteger</span> <span class="hljs-variable">price2</span> <span class="hljs-operator">=</span> difference.subtract(price1);<br><br>        List&lt;BigInteger&gt; firstlist;<br>        <span class="hljs-comment">//当默认帮砍可成功的人数=1 或 第1批人数&gt;第1批可砍价格 或 第二批人数&gt;第2批可砍价格</span><br>        <span class="hljs-comment">//(10 == 1) || (1 &gt; 144) || (9 &gt; 36)</span><br>        <span class="hljs-keyword">if</span> (role.getTotalTimes() == <span class="hljs-number">1</span> || part1 &gt; price1.intValue() || part2 &gt; price2.intValue()) &#123;<br>            firstlist = random(difference, role.getTotalTimes());<br>        &#125; <span class="hljs-keyword">else</span> &#123;<br>            <span class="hljs-comment">//使用第1批人和第1批可砍价格进行随机分配金额</span><br>            <span class="hljs-comment">//part1: 传参(144, 1)</span><br>            firstlist = random(price1, part1);<br>            <span class="hljs-keyword">if</span> (part2.compareTo(<span class="hljs-number">0</span>) &gt; <span class="hljs-number">0</span>) &#123;<br>                <span class="hljs-comment">//part2: 传参(36, 9)</span><br>                List&lt;BigInteger&gt; secondlist = random(price2, part2);<br>                firstlist.addAll(secondlist);<br>            &#125;<br>        &#125;<br>        <span class="hljs-comment">//firstlist = &#123;109, 46, 30, 50, 46, 30, 50, 51, 19, 51&#125;</span><br><br>        <span class="hljs-comment">//处理 index &gt; 1 的情况，即 帮砍金额 &gt; 100w 时</span><br>        <span class="hljs-keyword">if</span> (index.compareTo(BigInteger.ONE) &gt; <span class="hljs-number">0</span>) &#123;<br>            <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> <span class="hljs-variable">i</span> <span class="hljs-operator">=</span> <span class="hljs-number">0</span>; i &lt; firstlist.size(); i++) &#123;<br>                firstlist.set(i, firstlist.get(i).multiply(index));<br>                role.setTotalPrice(role.getTotalPrice().subtract(firstlist.get(i)));<br>            &#125;<br>            <span class="hljs-keyword">if</span> (role.getTotalPrice().subtract(role.getLowPrice()).compareTo(BigInteger.ZERO) &gt; <span class="hljs-number">0</span>) &#123;<br>                firstlist.set(firstlist.size() - <span class="hljs-number">1</span>, firstlist.get(firstlist.size() - <span class="hljs-number">1</span>).add(role.getTotalPrice().subtract(role.getLowPrice())));<br>            &#125;<br>        &#125;<br><br>        <span class="hljs-keyword">return</span> firstlist;<br>    &#125;<br><br>    <span class="hljs-comment">/**</span><br><span class="hljs-comment">     * 随机分配金额</span><br><span class="hljs-comment">     * <span class="hljs-doctag">@param</span> price   阶段可砍金额</span><br><span class="hljs-comment">     * <span class="hljs-doctag">@param</span> persons 阶段助力次数</span><br><span class="hljs-comment">     * <span class="hljs-doctag">@return</span></span><br><span class="hljs-comment">     */</span><br>    <span class="hljs-keyword">private</span> <span class="hljs-keyword">static</span> List&lt;BigInteger&gt; <span class="hljs-title function_">random</span><span class="hljs-params">(BigInteger price, Integer persons)</span> <span class="hljs-keyword">throws</span> Exception &#123;<br>        <span class="hljs-comment">//阶段平均可砍金额</span><br>        <span class="hljs-comment">//144 / 1 = 144, 36 / 9 = 4</span><br>        <span class="hljs-type">BigInteger</span> <span class="hljs-variable">average</span> <span class="hljs-operator">=</span> price.divide(BigInteger.valueOf(persons));<br><br>        <span class="hljs-comment">//随机数上限</span><br>        <span class="hljs-comment">//144 * 1.5 = 216, 36 * 1.5 = 54</span><br>        <span class="hljs-type">BigInteger</span> <span class="hljs-variable">high</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">BigDecimal</span>(average).multiply(HIGH_INDEX).toBigInteger();<br>        <span class="hljs-keyword">if</span> (high.compareTo(price) &gt; <span class="hljs-number">0</span>) &#123;<br>            high = price;<br>        &#125;<br>        <span class="hljs-comment">//随机数下限</span><br>        <span class="hljs-comment">//144 * 0.5 = 72, 36 * 0.5 = 18</span><br>        <span class="hljs-type">BigInteger</span> <span class="hljs-variable">low</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">BigDecimal</span>(average).multiply(LOW_INDEX).toBigInteger();<br>        <span class="hljs-keyword">if</span> (low.compareTo(BigInteger.ONE) &lt; <span class="hljs-number">0</span>) &#123;<br>            low = BigInteger.ONE;<br>        &#125;<br><br>        <span class="hljs-type">int</span>[] ints;<br>        <span class="hljs-keyword">try</span> &#123;<br>            <span class="hljs-comment">//random.ints(a, b, c) 第1个参数为生成随机数数组的元素个数，第2和第3个参数为随机数的范围</span><br>            <span class="hljs-comment">//part1: 1人，72~256之间的随机数数组, 如 [109]</span><br>            <span class="hljs-comment">//part2: 9人，18~54之间的随机数数组，如 [46, 30, 50, 46, 30, 50, 51, 19, 51]</span><br>            ints = <span class="hljs-keyword">new</span> <span class="hljs-title class_">Random</span>().ints(persons, low.intValue(), high.intValue() + <span class="hljs-number">1</span>).toArray();<br>        &#125; <span class="hljs-keyword">catch</span> (Exception e) &#123;<br>            <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">Exception</span>(<span class="hljs-string">&quot;砍价规则不合规，请调整&quot;</span>);<br>        &#125;<br><br>        <span class="hljs-comment">//将生成的随机数放入 list 中，sum 为随机金额数的累加值</span><br>        List&lt;BigInteger&gt; list = <span class="hljs-keyword">new</span> <span class="hljs-title class_">ArrayList</span>&lt;&gt;();<br>        <span class="hljs-type">BigInteger</span> <span class="hljs-variable">sum</span> <span class="hljs-operator">=</span> BigInteger.ZERO;<br>        <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> x : ints) &#123;<br>            sum = sum.add(BigInteger.valueOf(x));<br>            list.add(BigInteger.valueOf(x));<br>        &#125;<br><br>        <span class="hljs-comment">//模拟砍价：生成的随机砍价金额数组的累积和 sum 默认砍1次，如果没砍到 0 及 &lt;0 则继续使用 list 中的金额挨个往下砍</span><br>        <span class="hljs-comment">//part1: sum = 随机出的 [109] 的和为 109 &lt; price(144), 进 else if</span><br>        <span class="hljs-comment">//part2: sum = 随机出的 [46, 30, 50, 46, 30, 50, 51, 19, 51] 的和为 373 &lt; price(36)，进 if</span><br>        <span class="hljs-keyword">if</span> (sum.compareTo(price) &gt; <span class="hljs-number">0</span>) &#123;<br>            <span class="hljs-comment">//part2: 373-36=337</span><br>            <span class="hljs-type">int</span> <span class="hljs-variable">val</span> <span class="hljs-operator">=</span> sum.subtract(price).intValue();<br>            <span class="hljs-comment">//val=337, 遍历 list(长度9), 每遍历一个 list 的元素，判断该元素 &gt; 1，将该元素-1，将 val-1</span><br>            <span class="hljs-comment">//直到 val = 0，list 中每个元素逐个-1，总共减掉了 val 的大小</span><br>            <span class="hljs-keyword">while</span> (val &gt; <span class="hljs-number">0</span>) &#123;<br>                <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> <span class="hljs-variable">i</span> <span class="hljs-operator">=</span> <span class="hljs-number">0</span>; i &lt; list.size(); i++) &#123;<br>                    <span class="hljs-keyword">if</span> (val &gt; <span class="hljs-number">0</span>) &#123;<br>                        <span class="hljs-keyword">if</span> (list.get(i).compareTo(BigInteger.ONE) &gt; <span class="hljs-number">0</span>) &#123;<br>                            list.set(i, list.get(i).subtract(BigInteger.ONE));<br>                            val--;<br>                        &#125;<br>                    &#125; <span class="hljs-keyword">else</span> &#123;<br>                        <span class="hljs-keyword">break</span>;<br>                    &#125;<br>                &#125;<br>            &#125;<br>        &#125; <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (sum.compareTo(price) &lt; <span class="hljs-number">0</span>) &#123;<br>            <span class="hljs-comment">//part1: 144-109=35</span><br>            <span class="hljs-type">int</span> <span class="hljs-variable">val</span> <span class="hljs-operator">=</span> price.subtract(sum).intValue();<br>            <span class="hljs-comment">//val=35, 遍历 list(长度1), 每遍历一个 list 的元素，将该元素+1，将 val-1</span><br>            <span class="hljs-comment">//直到 val = 0，list 中每个元素逐个+1，总共加上了 val 大小的值</span><br>            <span class="hljs-keyword">while</span> (val &gt; <span class="hljs-number">0</span>) &#123;<br>                <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> <span class="hljs-variable">i</span> <span class="hljs-operator">=</span> <span class="hljs-number">0</span>; i &lt; list.size(); i++) &#123;<br>                    <span class="hljs-keyword">if</span> (val &gt; <span class="hljs-number">0</span>) &#123;<br>                        list.set(i, list.get(i).add(BigInteger.ONE));<br>                        val--;<br>                    &#125; <span class="hljs-keyword">else</span> &#123;<br>                        <span class="hljs-keyword">break</span>;<br>                    &#125;<br>                &#125;<br>            &#125;<br>        &#125;<br><br>        <span class="hljs-keyword">return</span> list;<br>    &#125;<br><br>    <span class="hljs-comment">/**</span><br><span class="hljs-comment">     * 生成不重复随机数</span><br><span class="hljs-comment">     */</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> List&lt;Integer&gt; <span class="hljs-title function_">getRandomnum</span><span class="hljs-params">(Integer count, Integer min, Integer max)</span> &#123;<br>        <span class="hljs-keyword">if</span> (count == <span class="hljs-literal">null</span> || min == <span class="hljs-literal">null</span> || max == <span class="hljs-literal">null</span>) &#123;<br>            <span class="hljs-keyword">return</span> <span class="hljs-literal">null</span>;<br>        &#125;<br>        <span class="hljs-keyword">if</span> (max - min &lt; count) &#123;<br>            <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">RuntimeException</span>(<span class="hljs-string">&quot;illegal parameter&quot;</span>);<br>        &#125;<br>        HashSet&lt;Integer&gt; set = <span class="hljs-keyword">new</span> <span class="hljs-title class_">HashSet</span>&lt;&gt;();<br>        <span class="hljs-keyword">while</span> (set.size() &lt; count) &#123;<br>            set.add(<span class="hljs-keyword">new</span> <span class="hljs-title class_">Random</span>().ints(<span class="hljs-number">1</span>, min, max).findFirst().getAsInt());<br>        &#125;<br>        <span class="hljs-keyword">return</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">ArrayList</span>&lt;&gt;(set);<br>    &#125;<br><br>    <span class="hljs-comment">/**</span><br><span class="hljs-comment">     * 生成砍价附加规则随机数</span><br><span class="hljs-comment">     */</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> Map <span class="hljs-title function_">getExtraRoleDetails</span><span class="hljs-params">(Integer looptimes, Integer roleSectiontimes, List&lt;Map&gt; roleExtra)</span> &#123;<br>        <span class="hljs-type">int</span>[] sections = <span class="hljs-keyword">new</span> <span class="hljs-title class_">int</span>[looptimes + <span class="hljs-number">1</span>];<br>        sections[<span class="hljs-number">0</span>] = <span class="hljs-number">1</span>;<br>        <span class="hljs-comment">//sections = &#123;1, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50&#125;</span><br>        <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> <span class="hljs-variable">i</span> <span class="hljs-operator">=</span> <span class="hljs-number">1</span>; i &lt; looptimes + <span class="hljs-number">1</span>; i++) &#123;<br>            sections[i] = roleSectiontimes * i;<br>        &#125;<br>        <span class="hljs-comment">//list : &#123;3, 3&#125;</span><br>        List&lt;Integer&gt; list = <span class="hljs-keyword">new</span> <span class="hljs-title class_">ArrayList</span>&lt;&gt;();<br>        roleExtra.forEach((map) -&gt; &#123;<br>            Map&lt;String, Integer&gt; extra = (Map&lt;String, Integer&gt;) map;<br>            <span class="hljs-type">int</span> <span class="hljs-variable">tag</span> <span class="hljs-operator">=</span> extra.get(<span class="hljs-string">&quot;num&quot;</span>) == <span class="hljs-literal">null</span> ? <span class="hljs-number">0</span> : Integer.parseInt(extra.get(<span class="hljs-string">&quot;num&quot;</span>).toString());<br>            <span class="hljs-keyword">while</span> (tag &gt; <span class="hljs-number">0</span>) &#123;<br>                list.add(extra.get(<span class="hljs-string">&quot;person&quot;</span>));<br>                tag--;<br>            &#125;<br>        &#125;);<br>        <span class="hljs-comment">//砍价金额明细，长度是 sections长度 * 随机出现的次数</span><br>        <span class="hljs-comment">//details(size=10*2=20): &#123;&quot;22&quot;:&quot;3&quot;,&quot;44&quot;:&quot;3&quot;,&quot;34&quot;:&quot;3&quot;,&quot;13&quot;:&quot;3&quot;,&quot;46&quot;:&quot;3&quot;,&quot;14&quot;:&quot;3&quot;,&quot;36&quot;:&quot;3&quot;,&quot;37&quot;:&quot;3&quot;,&quot;16&quot;:&quot;3&quot;,&quot;49&quot;:&quot;3&quot;,&quot;28&quot;:&quot;3&quot;,&quot;18&quot;:&quot;3&quot;,&quot;29&quot;:&quot;3&quot;,&quot;1&quot;:&quot;3&quot;,&quot;3&quot;:&quot;3&quot;,&quot;7&quot;:&quot;3&quot;,&quot;8&quot;:&quot;3&quot;,&quot;41&quot;:&quot;3&quot;,&quot;31&quot;:&quot;3&quot;,&quot;21&quot;:&quot;3&quot;&#125;</span><br>        Map&lt;String, Integer&gt; details = <span class="hljs-keyword">new</span> <span class="hljs-title class_">HashMap</span>&lt;&gt;();<br>        <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> <span class="hljs-variable">i</span> <span class="hljs-operator">=</span> <span class="hljs-number">0</span>; i &lt; sections.length - <span class="hljs-number">1</span>; i++) &#123;<br>            <span class="hljs-comment">//randomnums: 在 sections 中相邻两个数之间生成 list.size() 个随机数</span><br>            List&lt;Integer&gt; randomnums = getRandomnum(list.size(), sections[i], sections[i + <span class="hljs-number">1</span>]);<br>            <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> <span class="hljs-variable">j</span> <span class="hljs-operator">=</span> <span class="hljs-number">0</span>; j &lt; list.size(); j++) &#123;<br>                details.put(String.valueOf(randomnums.get(j)), list.get(j));<br>            &#125;<br>        &#125;<br>        <span class="hljs-keyword">return</span> details;<br>    &#125;<br><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">main</span><span class="hljs-params">(String[] args)</span> <span class="hljs-keyword">throws</span> Exception &#123;<br>        <span class="hljs-type">int</span>[] ints = <span class="hljs-keyword">new</span> <span class="hljs-title class_">Random</span>().ints(<span class="hljs-number">1</span>, <span class="hljs-number">72</span>, <span class="hljs-number">256</span> + <span class="hljs-number">1</span>).toArray();<br>        System.out.println(<span class="hljs-string">&quot;Arrays.toString(ints) = &quot;</span> + Arrays.toString(ints));<br><br>        <span class="hljs-type">int</span>[] ints2 = <span class="hljs-keyword">new</span> <span class="hljs-title class_">Random</span>().ints(<span class="hljs-number">9</span>, <span class="hljs-number">18</span>, <span class="hljs-number">54</span> + <span class="hljs-number">1</span>).toArray();<br>        System.out.println(<span class="hljs-string">&quot;Arrays.toString(ints2) = &quot;</span> + Arrays.toString(ints2));<br><br>        <span class="hljs-type">BargainRole</span> <span class="hljs-variable">role</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">BargainRole</span>();<br>        role.setTotalPrice(<span class="hljs-keyword">new</span> <span class="hljs-title class_">BigInteger</span>(<span class="hljs-string">&quot;100000000010&quot;</span>));<br>        role.setLowPrice(<span class="hljs-keyword">new</span> <span class="hljs-title class_">BigInteger</span>(<span class="hljs-string">&quot;1000001&quot;</span>));<br>        role.setTotalTimes(<span class="hljs-number">100</span>);<br>        role.setPercentagePerson(<span class="hljs-number">99</span>);<br>        role.setPercentagePrice(<span class="hljs-number">99</span>);<br><br>        List&lt;BigInteger&gt; list = BargainUtil.getbargainList(role);<br>        System.out.println(<span class="hljs-string">&quot;随机金额列表(单位:分)：&quot;</span> + list);<br>        <span class="hljs-type">BigInteger</span> <span class="hljs-variable">sum</span> <span class="hljs-operator">=</span> BigInteger.ZERO;<br>        <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> <span class="hljs-variable">i</span> <span class="hljs-operator">=</span> <span class="hljs-number">0</span>; i &lt; list.size(); i++) &#123;<br>            sum = sum.add(list.get(i));<br>        &#125;<br>        System.out.println(<span class="hljs-string">&quot;确认总额：&quot;</span> + sum);<br>        System.out.println(<span class="hljs-string">&quot;列表size：&quot;</span> + list.size());<br>    &#125;<br>&#125;<br><br><br><span class="hljs-comment">//Bean类</span><br><span class="hljs-keyword">class</span> <span class="hljs-title class_">BargainRole</span> &#123;<br>    <span class="hljs-comment">/**</span><br><span class="hljs-comment">     * 商品金额</span><br><span class="hljs-comment">     */</span><br>    <span class="hljs-keyword">private</span> BigInteger totalPrice;<br>    <span class="hljs-comment">/**</span><br><span class="hljs-comment">     * 最低砍至金额</span><br><span class="hljs-comment">     */</span><br>    <span class="hljs-keyword">private</span> BigInteger lowPrice;<br>    <span class="hljs-comment">/**</span><br><span class="hljs-comment">     * 砍价总数量</span><br><span class="hljs-comment">     */</span><br>    <span class="hljs-keyword">private</span> Integer totalTimes;<br>    <span class="hljs-comment">/**</span><br><span class="hljs-comment">     * 前 N %位帮砍者(可砍掉一定的百分比金额)</span><br><span class="hljs-comment">     */</span><br>    <span class="hljs-keyword">private</span> Integer percentagePerson;<br>    <span class="hljs-comment">/**</span><br><span class="hljs-comment">     * 可砍掉商品帮砍金额的 N %</span><br><span class="hljs-comment">     */</span><br>    <span class="hljs-keyword">private</span> Integer percentagePrice;<br><br><br>    <span class="hljs-keyword">public</span> BigInteger <span class="hljs-title function_">getTotalPrice</span><span class="hljs-params">()</span> &#123;<br>        <span class="hljs-keyword">return</span> totalPrice;<br>    &#125;<br><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">setTotalPrice</span><span class="hljs-params">(BigInteger totalPrice)</span> &#123;<br>        <span class="hljs-built_in">this</span>.totalPrice = totalPrice;<br>    &#125;<br><br>    <span class="hljs-keyword">public</span> Integer <span class="hljs-title function_">getTotalTimes</span><span class="hljs-params">()</span> &#123;<br>        <span class="hljs-keyword">return</span> totalTimes;<br>    &#125;<br><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">setTotalTimes</span><span class="hljs-params">(Integer totalTimes)</span> &#123;<br>        <span class="hljs-built_in">this</span>.totalTimes = totalTimes;<br>    &#125;<br><br>    <span class="hljs-keyword">public</span> Integer <span class="hljs-title function_">getPercentagePerson</span><span class="hljs-params">()</span> &#123;<br>        <span class="hljs-keyword">return</span> percentagePerson;<br>    &#125;<br><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">setPercentagePerson</span><span class="hljs-params">(Integer percentagePerson)</span> &#123;<br>        <span class="hljs-built_in">this</span>.percentagePerson = percentagePerson;<br>    &#125;<br><br>    <span class="hljs-keyword">public</span> Integer <span class="hljs-title function_">getPercentagePrice</span><span class="hljs-params">()</span> &#123;<br>        <span class="hljs-keyword">return</span> percentagePrice;<br>    &#125;<br><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">setPercentagePrice</span><span class="hljs-params">(Integer percentagePrice)</span> &#123;<br>        <span class="hljs-built_in">this</span>.percentagePrice = percentagePrice;<br>    &#125;<br><br>    <span class="hljs-keyword">public</span> BigInteger <span class="hljs-title function_">getLowPrice</span><span class="hljs-params">()</span> &#123;<br>        <span class="hljs-keyword">return</span> lowPrice;<br>    &#125;<br><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">setLowPrice</span><span class="hljs-params">(BigInteger lowPrice)</span> &#123;<br>        <span class="hljs-built_in">this</span>.lowPrice = lowPrice;<br>    &#125;<br><br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-keyword">public</span> String <span class="hljs-title function_">toString</span><span class="hljs-params">()</span> &#123;<br>        <span class="hljs-keyword">return</span> <span class="hljs-string">&quot;BargainRole&#123;&quot;</span> +<br>                <span class="hljs-string">&quot;totalPrice=&quot;</span> + totalPrice +<br>                <span class="hljs-string">&quot;, lowPrice=&quot;</span> + lowPrice +<br>                <span class="hljs-string">&quot;, totalTimes=&quot;</span> + totalTimes +<br>                <span class="hljs-string">&quot;, percentagePerson=&quot;</span> + percentagePerson +<br>                <span class="hljs-string">&quot;, percentagePrice=&quot;</span> + percentagePrice +<br>                <span class="hljs-string">&#x27;&#125;&#x27;</span>;<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<blockquote>
+<p><strong>砍价活动示例</strong>：</p>
+<p>每人最多砍 1 个商品（发起人）</p>
+<p>每人最多帮砍 1 个商品（帮砍人）</p>
+<p>前 10%位帮砍者，砍掉商品帮砍金额的 80%（活动砍价规则）</p>
+<p><strong>砍价商品示例</strong>：</p>
+<p>商品原价 200、商品底价 19.9</p>
+<p>固定模式(不校验附加规则)：固定 10 人帮砍，发起人砍价成功</p>
+<p>随机模式(需校验附加规则)：</p>
+<ol>
+<li><p>默认 10 人帮砍，发起人砍价成功</p>
+</li>
+<li><p>其中每有 5 人发起砍价：</p>
+</li>
+</ol>
+<p>  2.1 随机出现 2 次，3 人进行帮砍，发起人砍价成功（用于生成砍价明细）</p>
+<p><strong>砍价规则</strong> - 与商品1对1：</p>
+<p>原价200、底价19.9、前10%砍掉帮砍金额的80%、10人帮砍可以砍价成功</p>
+<p><strong>附加规则</strong> - 与商品1对1：</p>
+<p>配置的循环次数10、每 5 人发起砍价、随机2次3人帮砍可以砍价成功(可多个)</p>
+<p><code>砍价规则表：砍价金额明细</code> <strong>roleAmountdetails</strong></p>
+<p>-&gt; 商品添加时使用随机模式，即附加规则，会生成该砍价金额明细</p>
+<p>核心算法：</p>
+<ol>
+<li>通过配置文件配置的循环次数默认x，每y人发起砍价，生成1个递增倍数的数组(长度x+1,元素值y值倍数递增) array</li>
+</ol>
+<p>  如循环默认10次，每5人发起砍价：[1, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50]</p>
+<ol start="2">
+<li>通过附加规则(随机x次y人帮砍,发起人砍价成功)，生成1个人次列表(长度x,元素值均为y) list</li>
+</ol>
+<p>  如随机2次，3人帮砍，发起人砍价成功：{3, 3}</p>
+<ol start="3">
+<li>通过双重循环+随机数组生成random.ints()方法，生成砍价规则金额明细(长度(array.length-1) * list.size()) map</li>
+</ol>
+<p>  如array.length-1&#x3D;10, list.size()&#x3D;2, 生成的砍价规则金额明细 map 为{“22”:”3”,”44”:”3”,”34”:”3”,”13”:”3”,”46”:”3”,”14”:”3”,”36”:”3”,”37”:”3”,”16”:”3”,”49”:”3”,”28”:”3”,”18”:”3”,”29”:”3”,”1”:”3”,”3”:”3”,”7”:”3”,”8”:”3”,”41”:”3”,”31”:”3”,”21”:”3”}</p>
+<p><code>用户砍价表：砍价金额明细</code> <strong>ubAmountdetails</strong></p>
+<p>-&gt; 在用户发起砍价时生成通过砍价规则表里的砍价金额明细，生成当前商品的砍价明细存入用户砍价表，帮砍时去查询取出对应值</p>
+<p>核心算法：(模拟砍价)</p>
+<ol>
+<li>计算金额 price</li>
+</ol>
+<p>  第1部分 list 为前面配置一定比例帮砍者可砍掉帮砍金额的百分比 * 帮砍金额</p>
+<p>  第2部分 list 剩余需要帮砍的金额</p>
+<p>  如帮砍金额&#x3D;200-19.9&#x3D;180.1，第1部分 (200-19.9)*80%&#x3D;144, 第2部分 (200-19.9)-144&#x3D;36.1, 即 144+36.1&#x3D;180.1</p>
+<ol start="2">
+<li>生成随机数组 array</li>
+</ol>
+<p>  第1部分的帮砍金额，以1.5倍和0.5倍作为上下限通过 random.ints() 生成随机数组，长度为默认帮砍成功人数 * 该帮砍人次百分比(即这部分比例的人数)</p>
+<p>  第2部分的帮砍金额，同样方式生成数组，长度为默认帮砍成功人数 - 第1部分人数(即剩余人数)</p>
+<p>  如 第1部分 1人，72~256之间的随机数数组, 如 [109]</p>
+<p>  如 第2部分 9人，18~54之间的随机数数组，如 [46, 30, 50, 46, 30, 50, 51, 19, 51]</p>
+<ol start="3">
+<li>将数组转为 list，经过模拟砍价后，生成list，拼接第1部分和第2部分的总 list</li>
+</ol>
+<p>  如默认10人帮砍，发起人砍价成功时的 用户帮砍金额明细 list &#x3D; {14408, 382, 358, 363, 350, 325, 421, 545, 527, 331}, 总&#x3D;18010</p>
+<p>  如随机x次3人帮砍，发起人砍价成功时的 用户帮砍金额明细 list &#x3D; {14408, 1984, 1618}, 总&#x3D;18010</p>
+</blockquote>
+<h3 id="3-砍价发起-amp-帮砍"><a href="#3-砍价发起-amp-帮砍" class="headerlink" title="3. 砍价发起 &amp; 帮砍"></a>3. 砍价发起 &amp; 帮砍</h3><p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20201129160118.png" srcset="/img/loading.gif" lazyload alt="image-20201129160117038"></p>
+<h3 id="4-砍价成功下单"><a href="#4-砍价成功下单" class="headerlink" title="4. 砍价成功下单"></a>4. 砍价成功下单</h3><p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20201129160152.png" srcset="/img/loading.gif" lazyload alt="image-20201129160151594"></p>
+<h3 id="5-仿拼多多砍价算法"><a href="#5-仿拼多多砍价算法" class="headerlink" title="5. 仿拼多多砍价算法"></a>5. 仿拼多多砍价算法</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">import</span> java.util.ArrayList;<br><span class="hljs-keyword">import</span> java.util.Collections;<br><span class="hljs-keyword">import</span> java.util.List;<br> <br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">ReducePriceUtils</span> &#123;<br>    <span class="hljs-comment">/**</span><br><span class="hljs-comment">     * 1.总金额不超过总共可砍的价格*100  单位是分</span><br><span class="hljs-comment">     * 2.每次砍价都能砍到金额，最低不能低于1分，最大金额不能超过（总共可砍的价）*100</span><br><span class="hljs-comment">     */</span><br>    <span class="hljs-keyword">private</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">final</span> <span class="hljs-type">int</span> <span class="hljs-variable">MINMONEY</span> <span class="hljs-operator">=</span> <span class="hljs-number">1</span>;<br>    <span class="hljs-keyword">private</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">final</span> <span class="hljs-type">int</span> <span class="hljs-variable">MAXMONEY</span> <span class="hljs-operator">=</span> <span class="hljs-number">200</span>*<span class="hljs-number">100</span>;<br> <br>    <span class="hljs-comment">/**</span><br><span class="hljs-comment">     * 这里为了避免某一次砍价占用大量资金，我们需要设定非最后一次砍价的最大金额，</span><br><span class="hljs-comment">     * 我们把他设置为砍价金额平均值的N倍</span><br><span class="hljs-comment">     */</span><br>    <span class="hljs-keyword">private</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">final</span> <span class="hljs-type">double</span> <span class="hljs-variable">TIMES</span> <span class="hljs-operator">=</span> <span class="hljs-number">3.1</span>;<br> <br>    <span class="hljs-comment">/**</span><br><span class="hljs-comment">     * 砍价合法性校验</span><br><span class="hljs-comment">     * <span class="hljs-doctag">@param</span> money</span><br><span class="hljs-comment">     * <span class="hljs-doctag">@param</span> count</span><br><span class="hljs-comment">     * <span class="hljs-doctag">@return</span></span><br><span class="hljs-comment">     */</span><br>    <span class="hljs-keyword">private</span> <span class="hljs-keyword">static</span> <span class="hljs-type">boolean</span> <span class="hljs-title function_">isRight</span><span class="hljs-params">(<span class="hljs-type">int</span> money,<span class="hljs-type">int</span> count)</span>&#123;<br>        <span class="hljs-type">double</span> <span class="hljs-variable">avg</span> <span class="hljs-operator">=</span> money/count;<br>        <span class="hljs-comment">//小于最小金额</span><br>        <span class="hljs-keyword">if</span> (avg&lt;MINMONEY) &#123;<br>            <span class="hljs-keyword">return</span> <span class="hljs-literal">false</span>;<br>        &#125;<span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (avg&gt;MAXMONEY) &#123;<br>            <span class="hljs-keyword">return</span> <span class="hljs-literal">false</span>;<br>        &#125;<br>        <span class="hljs-keyword">return</span> <span class="hljs-literal">true</span>;<br>    &#125;<br> <br>    <span class="hljs-comment">/**</span><br><span class="hljs-comment">     * 随机分配一个金额</span><br><span class="hljs-comment">     * <span class="hljs-doctag">@param</span> mnoney</span><br><span class="hljs-comment">     * <span class="hljs-doctag">@param</span> minS：最小金额</span><br><span class="hljs-comment">     * <span class="hljs-doctag">@param</span> maxS：最大金额</span><br><span class="hljs-comment">     * <span class="hljs-doctag">@param</span> count</span><br><span class="hljs-comment">     * <span class="hljs-doctag">@return</span></span><br><span class="hljs-comment">     */</span><br>    <span class="hljs-keyword">private</span> <span class="hljs-keyword">static</span> <span class="hljs-type">int</span> <span class="hljs-title function_">randomReducePrice</span><span class="hljs-params">(<span class="hljs-type">int</span> money,<span class="hljs-type">int</span> minS,<span class="hljs-type">int</span> maxS,<span class="hljs-type">int</span> count)</span>&#123;<br>        <span class="hljs-comment">//若只有一个，直接返回</span><br>        <span class="hljs-keyword">if</span> (count==<span class="hljs-number">1</span>) &#123;<br>            <span class="hljs-keyword">return</span> money;<br>        &#125;<br>        <span class="hljs-comment">//如果最大金额和最小金额相等，直接返回金额</span><br>        <span class="hljs-keyword">if</span> (minS==maxS) &#123;<br>            <span class="hljs-keyword">return</span> minS;<br>        &#125;<br>        <span class="hljs-type">int</span> max=maxS&gt;money?money:maxS;<br>        <span class="hljs-comment">//分配砍价正确情况，允许砍价的最大值</span><br>        <span class="hljs-type">int</span> <span class="hljs-variable">maxY</span> <span class="hljs-operator">=</span> money-(count-<span class="hljs-number">1</span>)*minS;<br>        <span class="hljs-comment">//分配砍价正确情况，允许砍价最小值</span><br>        <span class="hljs-type">int</span> <span class="hljs-variable">minY</span> <span class="hljs-operator">=</span> money-(count-<span class="hljs-number">1</span>)*maxS;<br>        <span class="hljs-comment">//随机产生砍价的最小值</span><br>        <span class="hljs-type">int</span> <span class="hljs-variable">min</span> <span class="hljs-operator">=</span> minS&gt;minY?minS:minY;<br>        <span class="hljs-comment">//随机产生砍价的最大值</span><br>        max = max&gt;maxY?maxY:max;<br>        <span class="hljs-comment">//随机产生一个砍价</span><br>        <span class="hljs-keyword">return</span> (<span class="hljs-type">int</span>)Math.rint(Math.random()*(max-min) +min);<br>    &#125;<br> <br>    <span class="hljs-comment">/**</span><br><span class="hljs-comment">     * 砍价</span><br><span class="hljs-comment">     * <span class="hljs-doctag">@param</span> money 可砍总价</span><br><span class="hljs-comment">     * <span class="hljs-doctag">@param</span> count 个数</span><br><span class="hljs-comment">     * <span class="hljs-doctag">@return</span></span><br><span class="hljs-comment">     */</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> List&lt;Double&gt; <span class="hljs-title function_">splitReducePrice</span><span class="hljs-params">(<span class="hljs-type">int</span> money,<span class="hljs-type">int</span> count)</span>&#123;<br>        <span class="hljs-comment">//红包合法性分析</span><br>        <span class="hljs-keyword">if</span> (!isRight(money, count)) &#123;<br>            <span class="hljs-keyword">return</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">ArrayList</span>&lt;&gt;();<br>        &#125;<br>        <span class="hljs-comment">//红包列表</span><br>        List&lt;Double&gt; list = <span class="hljs-keyword">new</span> <span class="hljs-title class_">ArrayList</span>&lt;&gt;();<br>        <span class="hljs-comment">//每个红包的最大的金额为平均金额的TIMES倍</span><br>        <span class="hljs-type">int</span> <span class="hljs-variable">max</span> <span class="hljs-operator">=</span> (<span class="hljs-type">int</span>)(money*TIMES/count);<br>        max = max&gt;MAXMONEY?MAXMONEY:max;<br>        <span class="hljs-comment">//分配红包</span><br>        <span class="hljs-type">int</span> <span class="hljs-variable">sum</span> <span class="hljs-operator">=</span> <span class="hljs-number">0</span>;<br> <br>        <span class="hljs-keyword">for</span>(<span class="hljs-type">int</span> i=<span class="hljs-number">0</span>;i&lt;count;i++)&#123;<br>            <span class="hljs-type">int</span> <span class="hljs-variable">one</span> <span class="hljs-operator">=</span> randomReducePrice(money, MINMONEY, max, count-i);<br>            list.add(one/<span class="hljs-number">100.0</span>);<br>            money-=one;<br>            sum += one;<br>        &#125;<br>        System.out.println(<span class="hljs-string">&quot;sum:&quot;</span>+sum);<br>        <span class="hljs-keyword">return</span> list;<br>    &#125;<br> <br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">main</span><span class="hljs-params">(String[] args)</span> &#123;<br>        List&lt;Double&gt; list = splitReducePrice(<span class="hljs-number">19799</span>, <span class="hljs-number">10</span>);<br>        System.out.println(list);<br>    &#125;<br></code></pre></td></tr></table></figure>
+
+<p>砍价分配结果：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs java">sum:<span class="hljs-number">19799</span><br>[<span class="hljs-number">1.65</span>, <span class="hljs-number">3.94</span>, <span class="hljs-number">4.29</span>, <span class="hljs-number">3.44</span>, <span class="hljs-number">1.09</span>, <span class="hljs-number">33.65</span>, <span class="hljs-number">11.41</span>, <span class="hljs-number">43.78</span>, <span class="hljs-number">46.74</span>, <span class="hljs-number">48.0</span>]<br></code></pre></td></tr></table></figure>
+
+
+              
+            </div>
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/15-%E9%A1%B9%E7%9B%AE%E8%AE%BE%E8%AE%A1/" class="category-chain-item">15_项目设计</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/15-%E9%A1%B9%E7%9B%AE%E8%AE%BE%E8%AE%A1/01-%E4%B8%9A%E5%8A%A1%E8%AE%BE%E8%AE%A1/" class="category-chain-item">01_业务设计</a>
+  
+  
+
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/%E7%B3%BB%E7%BB%9F%E8%AE%BE%E8%AE%A1/">#系统设计</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>04-砍价系统核心流程设计</div>
+      <div>https://janycode.github.io/2020/11/29/15_项目设计/01_业务设计/04-砍价系统核心流程设计/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Jerry(姜源)</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2020年11月29日</div>
+        </div>
+      
+      
+      <div class="license-meta-item">
+        <div>许可协议</div>
+        <div>
+          
+            
+            
+              <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+              <span class="hint--top hint--rounded" aria-label="BY - 姜源">
+                <i class="iconfont icon-by"></i>
+              </span>
+              </a>
+            
+          
+        </div>
+      </div>
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2020/12/03/00_%E5%85%88%E5%88%A9%E5%85%B6%E5%99%A8/01_Intellij%20IDEA/09-IDEA-LeetCode%E7%AE%97%E6%B3%95%E7%BB%83%E4%B9%A0%E6%8F%92%E4%BB%B6/" title="09-IDEA-LeetCode算法练习插件">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">09-IDEA-LeetCode算法练习插件</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2020/11/27/15_%E9%A1%B9%E7%9B%AE%E8%AE%BE%E8%AE%A1/01_%E4%B8%9A%E5%8A%A1%E8%AE%BE%E8%AE%A1/02-%E7%A7%92%E6%9D%80%E7%B3%BB%E7%BB%9F%E6%A0%B8%E5%BF%83%E6%B5%81%E7%A8%8B%E8%AE%BE%E8%AE%A1/" title="02-秒杀系统核心流程设计">
+                        <span class="hidden-mobile">02-秒杀系统核心流程设计</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+  <article id="comments" lazyload>
+    
+  <div id="SOHUCS" sid='https://janycode.github.io/2020/11/29/15_%E9%A1%B9%E7%9B%AE%E8%AE%BE%E8%AE%A1/01_%E4%B8%9A%E5%8A%A1%E8%AE%BE%E8%AE%A1/04-%E7%A0%8D%E4%BB%B7%E7%B3%BB%E7%BB%9F%E6%A0%B8%E5%BF%83%E6%B5%81%E7%A8%8B%E8%AE%BE%E8%AE%A1/'></div>
+  <script type="text/javascript">
+    Fluid.utils.loadComments('#SOHUCS', function() {
+      Fluid.utils.createScript("https://changyan.sohu.com/upload/changyan.js", function() {
+        window.changyan.api.config({"appid":"cyw5OHIcO","appkey":"fea3446b3df4b3f129f34da4cbc87e51"})
+      });
+    });
+  </script>
+  <noscript>Please enable JavaScript to view the comments</noscript>
+
+
+  </article>
+
+
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://simple.blog.csdn.net" target="_blank" rel="nofollow noopener"><span>CSDN</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/janycode" target="_blank" rel="nofollow noopener"><span>GitHub</span></a> <i class="iconfont icon-love"></i> <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="busuanzi_container_site_pv" style="display: none">
+        总访问量(PV) 
+        <span id="busuanzi_value_site_pv"></span>
+         次，
+      </span>
+    
+    
+      <span id="busuanzi_container_site_uv" style="display: none">
+        总访客数(UV) 
+        <span id="busuanzi_value_site_uv"></span>
+         人
+      </span>
+    
+    
+  
+</div>
+
+  
+  
+  
+</div>
+
+<!-- live2d 动画 -->
+<script src="https://eqcn.ajz.miesnfu.com/wp-content/plugins/wp-3d-pony/live2dw/lib/L2Dwidget.min.js"></script>
+<script>
+    L2Dwidget.init({
+        "model": {
+            jsonPath: "https://unpkg.com/live2d-widget-model-haruto@1.0.5/assets/haruto.model.json",
+            "scale": 1
+        },
+        "display": {
+            "position": "right",
+            "width": 100,
+            "height": 200,
+            "hOffset": 35,
+            "vOffset": -85
+        },
+        "mobile": {
+            "show": false,
+            "scale": 0.1
+        },
+        "react": {
+            "opacityDefault": 0.75,
+            "opacityOnHover": 0.2
+        }
+    });
+</script>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <!-- Baidu Analytics -->
+    <script defer>
+      if (!Fluid.ctx.dnt) {
+        var _hmt = _hmt || [];
+        (function() {
+          var hm = document.createElement("script");
+          hm.src = "https://hm.baidu.com/hm.js?bfff735c897eb60ea49b735096b20e47";
+          var s = document.getElementsByTagName("script")[0];
+          s.parentNode.insertBefore(hm, s);
+        })();
+      }
+    </script>
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.0/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      headingSelector : CONFIG.toc.headingSelector || 'h1,h2,h3,h4,h5,h6',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      collapseDepth   : CONFIG.toc.collapseDepth || 0,
+      scrollSmooth    : true,
+      headingsOffset  : -boardTop
+    });
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+  });
+</script>
+
+
+  <script>
+  (function() {
+    var enableLang = CONFIG.code_language.enable && CONFIG.code_language.default;
+    var enableCopy = CONFIG.copy_btn;
+    if (!enableLang && !enableCopy) {
+      return;
+    }
+
+    function getBgClass(ele) {
+      return Fluid.utils.getBackgroundLightness(ele) >= 0 ? 'code-widget-light' : 'code-widget-dark';
+    }
+
+    var copyTmpl = '';
+    copyTmpl += '<div class="code-widget">';
+    copyTmpl += 'LANG';
+    copyTmpl += '</div>';
+    jQuery('.markdown-body pre').each(function() {
+      var $pre = jQuery(this);
+      if ($pre.find('code.mermaid').length > 0) {
+        return;
+      }
+      if ($pre.find('span.line').length > 0) {
+        return;
+      }
+
+      var lang = '';
+
+      if (enableLang) {
+        lang = CONFIG.code_language.default;
+        if ($pre[0].children.length > 0 && $pre[0].children[0].classList.length >= 2 && $pre.children().hasClass('hljs')) {
+          lang = $pre[0].children[0].classList[1];
+        } else if ($pre[0].getAttribute('data-language')) {
+          lang = $pre[0].getAttribute('data-language');
+        } else if ($pre.parent().hasClass('sourceCode') && $pre[0].children.length > 0 && $pre[0].children[0].classList.length >= 2) {
+          lang = $pre[0].children[0].classList[1];
+          $pre.parent().addClass('code-wrapper');
+        } else if ($pre.parent().hasClass('markdown-body') && $pre[0].classList.length === 0) {
+          $pre.wrap('<div class="code-wrapper"></div>');
+        }
+        lang = lang.toUpperCase().replace('NONE', CONFIG.code_language.default);
+      }
+      $pre.append(copyTmpl.replace('LANG', lang).replace('code-widget">',
+        getBgClass($pre[0]) + (enableCopy ? ' code-widget copy-btn" data-clipboard-snippet><i class="iconfont icon-copy"></i>' : ' code-widget">')));
+
+      if (enableCopy) {
+        Fluid.utils.createScript('https://lib.baomitu.com/clipboard.js/2.0.10/clipboard.min.js', function() {
+          var clipboard = new window.ClipboardJS('.copy-btn', {
+            target: function(trigger) {
+              var nodes = trigger.parentNode.childNodes;
+              for (var i = 0; i < nodes.length; i++) {
+                if (nodes[i].tagName === 'CODE') {
+                  return nodes[i];
+                }
+              }
+            }
+          });
+          clipboard.on('success', function(e) {
+            e.clearSelection();
+            e.trigger.innerHTML = e.trigger.innerHTML.replace('icon-copy', 'icon-success');
+            setTimeout(function() {
+              e.trigger.innerHTML = e.trigger.innerHTML.replace('icon-success', 'icon-copy');
+            }, 2000);
+          });
+        });
+      }
+    });
+  })();
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script  src="/js/local-search.js" ></script>
+
+  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

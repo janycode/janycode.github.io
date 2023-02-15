@@ -1,0 +1,1058 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=light>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Jerry(姜源)">
+  <meta name="keywords" content="Java,Html,CSS,JavaScript,Python,C,Linux,shell编程经验分享、技术总结、心得体会">
+  
+    <meta name="description" content="参考资料:  Junit 5 用户手册 JUnit 5 简介，第 1 部分:JUnit 5 Jupiter API JUnit 5 简介，第 2 部分:JUnit 5 Vintage 和 JUnit Jupiter 扩展模型  0. JUnit 4 用法1234567891011121314151617import org.junit.Before;import org.junit.Test;i">
+<meta property="og:type" content="article">
+<meta property="og:title" content="02-Junit 5架构和使用">
+<meta property="og:url" content="https://janycode.github.io/2019/05/30/09_%E8%B0%83%E8%AF%95%E6%B5%8B%E8%AF%95/02_%E5%8D%95%E5%85%83%E6%B5%8B%E8%AF%95/02-Junit%205%E6%9E%B6%E6%9E%84%E5%92%8C%E4%BD%BF%E7%94%A8/index.html">
+<meta property="og:site_name" content="姜源の云笔记">
+<meta property="og:description" content="参考资料:  Junit 5 用户手册 JUnit 5 简介，第 1 部分:JUnit 5 Jupiter API JUnit 5 简介，第 2 部分:JUnit 5 Vintage 和 JUnit Jupiter 扩展模型  0. JUnit 4 用法1234567891011121314151617import org.junit.Before;import org.junit.Test;i">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20220226112744.png">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20200429130117536.jpg?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3NpbmF0XzM2MTg0MDc1,size_16,color_FFFFFF,t_70#pic_center">
+<meta property="article:published_time" content="2019-05-30T09:35:06.000Z">
+<meta property="article:modified_time" content="2022-05-28T07:36:33.289Z">
+<meta property="article:author" content="Jerry(姜源)">
+<meta property="article:tag" content="测试">
+<meta property="article:tag" content="Junit5">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20220226112744.png">
+  
+  
+    <meta name="referrer" content="no-referrer-when-downgrade">
+  
+  
+  <title>02-Junit 5架构和使用 - 姜源の云笔记</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"janycode.github.io","root":"/","version":"1.9.0","typing":{"enable":true,"typeSpeed":50,"cursorChar":"|","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":false},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":"bfff735c897eb60ea49b735096b20e47","google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+
+  
+<meta name="generator" content="Hexo 6.2.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 50vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>姜源の云笔记</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tools/">
+                <i class="iconfont icon-slack-fill"></i>
+                工具
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="02-Junit 5架构和使用"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-author" aria-hidden="true"></i>
+        Jerry(姜源)
+      </span>
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2019-05-30 17:35" pubdate>
+          星期四, 2019/05/30 17:35:06
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          <!-- compatible with older versions-->
+          10k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          <!-- compatible with older versions-->
+          84 分钟
+        
+      </span>
+    
+
+    
+    
+      
+        <span id="busuanzi_container_page_pv" style="display: none">
+          <i class="iconfont icon-eye" aria-hidden="true"></i>
+          <span id="busuanzi_value_page_pv"></span> 次
+        </span>
+        
+      
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">02-Junit 5架构和使用</h1>
+            
+            <div class="markdown-body">
+              
+              <p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20220226112744.png" srcset="/img/loading.gif" lazyload alt="image-20220226112743888"></p>
+<p>参考资料:</p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://github.com/DanielHit/myblog/blob/7382d6931fa2f8141173ac100db0db5abebcb1e2/source/_posts/Junit5%20%E7%94%A8%E6%88%B7%E6%89%8B%E5%86%8C.md">Junit 5 用户手册</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.ibm.com/developerworks/cn/java/j-introducing-junit5-part1-jupiter-api/index.html">JUnit 5 简介，第 1 部分:JUnit 5 Jupiter API</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.ibm.com/developerworks/cn/java/j-introducing-junit5-part2-vintage-jupiter-extension-model/index.html?ca=drs-">JUnit 5 简介，第 2 部分:JUnit 5 Vintage 和 JUnit Jupiter 扩展模型</a></li>
+</ul>
+<h3 id="0-JUnit-4-用法"><a href="#0-JUnit-4-用法" class="headerlink" title="0. JUnit 4 用法"></a>0. JUnit 4 用法</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">import</span> org.junit.Before;<br><span class="hljs-keyword">import</span> org.junit.Test;<br><span class="hljs-keyword">import</span> java.util.UUID;<br><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">Demo01</span> &#123;<br>    String uuid;<br><br>    <span class="hljs-meta">@Before</span> <span class="hljs-comment">// 该注解会在执行 @Test 注解的方法前调用执行</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">init</span><span class="hljs-params">()</span> &#123;<br>        uuid = UUID.randomUUID().toString().replace(<span class="hljs-string">&quot;-&quot;</span>, <span class="hljs-string">&quot;&quot;</span>);<br>    &#125;<br><br>    <span class="hljs-meta">@Test</span> <span class="hljs-comment">// 直接运行，不需要手写 main 方法（底层其实还是 main 方法）</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">test</span><span class="hljs-params">()</span> &#123;<br>        System.out.println(<span class="hljs-string">&quot;随机码 = &quot;</span> + uuid); <span class="hljs-comment">// 随机码 = 00bfd84953f04013aec86a02b6f5503b</span><br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+
+
+<h3 id="1-JUnit-5-架构"><a href="#1-JUnit-5-架构" class="headerlink" title="1. JUnit 5 架构"></a>1. JUnit 5 架构</h3><p>Junit5 &#x3D; JUnit Platform + JUnit Jupiter + JUnit Vintage</p>
+<h5 id="使用-JUnit-Jupiter-编写测试内容"><a href="#使用-JUnit-Jupiter-编写测试内容" class="headerlink" title="使用 JUnit Jupiter 编写测试内容"></a>使用 JUnit Jupiter 编写测试内容</h5><p>JUnit Jupiter 包含两个组件：<code>API</code> 和 <code>Test Engine</code>。</p>
+<ul>
+<li>使用 API （ 通过注解、断言、回调等） <code>创建</code>单元测试。</li>
+<li>使用 Test Engine <code>发现和执行</code> JUnit Jupiter 单元测试。</li>
+</ul>
+<h5 id="使用-JUnit-Platform-运行测试"><a href="#使用-JUnit-Platform-运行测试" class="headerlink" title="使用 JUnit Platform 运行测试"></a>使用 JUnit Platform 运行测试</h5><p>JUnit Platform 包含 API、Test Engine 和 Launcher。</p>
+<p>运行单元测试的过程分为两部分：</p>
+<ul>
+<li>发现测试和创建测试计划<ul>
+<li>提供由一个 TestEngine 实现的，用于发现测试和创建测试计划的 API</li>
+<li>使用 IDE 和构建工具发起测试发现流程</li>
+<li>根据测试规范创建测试计划</li>
+</ul>
+</li>
+<li>启动测试计划，以执行测试和向用户报告结果<ul>
+<li>提供由一个或多个 TestEngine 实现的，用于执行测试的 API</li>
+<li>通过 IDE 和构建工具发起测试执行工作</li>
+<li>Launcher 组件负责执行在测试发现期间创建的测试计划</li>
+</ul>
+</li>
+</ul>
+<h5 id="后向兼容性：JUnit-Vintage"><a href="#后向兼容性：JUnit-Vintage" class="headerlink" title="后向兼容性：JUnit Vintage"></a>后向兼容性：JUnit Vintage</h5><p>JUnit Vintage 可确保现有 JUnit 测试能与使用 JUnit Jupiter 创建的新测试一同运行。</p>
+<p>JUnit Vintage 本身由两个模块组成：</p>
+<ul>
+<li>junit：junit 是用于 JUnit 3 和 JUnit 4 的 API。</li>
+<li>junit-vintage-engine：是在 JUnit Platform 上运行 JUnit 3 和 JUnit 4 测试的测试引擎。</li>
+</ul>
+<p><img src="https://img-blog.csdnimg.cn/20200429130117536.jpg?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3NpbmF0XzM2MTg0MDc1,size_16,color_FFFFFF,t_70#pic_center" srcset="/img/loading.gif" lazyload alt="JUnit"></p>
+<h3 id="2-JUnit-Jupiter-编写"><a href="#2-JUnit-Jupiter-编写" class="headerlink" title="2. JUnit Jupiter 编写"></a>2. JUnit Jupiter 编写</h3><h4 id="注解"><a href="#注解" class="headerlink" title="注解"></a>注解</h4><p>JUnit 4 与 JUnit 5 中的常用注解比较</p>
+<table>
+<thead>
+<tr>
+<th>JUnit 5</th>
+<th>JUnit 4</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>@Test</td>
+<td>@Test</td>
+<td>被注解的方法是一个测试方法。与 JUnit 4 相同。</td>
+</tr>
+<tr>
+<td>@BeforeAll</td>
+<td>@BeforeClass</td>
+<td>被注解的（静态）方法将在当前类中的所有 @Test 方法前执行一次。</td>
+</tr>
+<tr>
+<td>@AfterAll</td>
+<td>@AfterClass</td>
+<td>被注解的（静态）方法将在当前类中的所有 @Test 方法后执行一次。</td>
+</tr>
+<tr>
+<td>@BeforeEach</td>
+<td>@Before</td>
+<td>被注解的方法将在当前类中的每个 @Test 方法前执行。</td>
+</tr>
+<tr>
+<td>@AfterEach</td>
+<td>@After</td>
+<td>被注解的方法将在当前类中的每个 @Test 方法后执行。</td>
+</tr>
+<tr>
+<td>@Disabled</td>
+<td>@Ignore</td>
+<td>被注解的方法不会执行（将被跳过），但会报告为已执行。</td>
+</tr>
+<tr>
+<td>@ExtendWith</td>
+<td>@RunWith</td>
+<td>放在测试类名之前，用来确定这个类怎么运行的</td>
+</tr>
+<tr>
+<td>@ExtendWith</td>
+<td>@Rule</td>
+<td>一组实现了TestRule接口的共享类</td>
+</tr>
+<tr>
+<td>@ExtendWith</td>
+<td>@ClassRule</td>
+<td>用于测试类中的静态变量，必须是TestRule接口的public实例</td>
+</tr>
+<tr>
+<td>@Tag</td>
+<td>@Category</td>
+<td>被用于通过声明标签来过滤测试方法</td>
+</tr>
+<tr>
+<td>@TestFactory</td>
+<td></td>
+<td>声明这个方法是针对于dynamic tests测试工厂</td>
+</tr>
+<tr>
+<td>@DisplayName</td>
+<td></td>
+<td>给这个类或者方法设定一个特殊的名字</td>
+</tr>
+<tr>
+<td>@Nested</td>
+<td></td>
+<td>声明这个方法是 一个嵌套的, 非静态的方法</td>
+</tr>
+</tbody></table>
+<h5 id="使用注解"><a href="#使用注解" class="headerlink" title="使用注解"></a>使用注解</h5><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@RunWith(JUnitPlatform.class)</span><br><span class="hljs-meta">@DisplayName(&quot;Testing using JUnit 5&quot;)</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">JUnit5AppTest</span> &#123;<br>  <br>  <span class="hljs-keyword">private</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">final</span> <span class="hljs-type">Logger</span> <span class="hljs-variable">log</span> <span class="hljs-operator">=</span> LoggerFactory.getLogger(JUnit5AppTest.class);<br>  <br>  <span class="hljs-keyword">private</span> App classUnderTest;<br>  <br>  <span class="hljs-meta">@BeforeAll</span><br>  <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">init</span><span class="hljs-params">()</span> &#123;<br>    <span class="hljs-comment">// Do something before ANY test is run in this class</span><br>  &#125;<br>  <br>  <span class="hljs-meta">@AfterAll</span><br>  <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">done</span><span class="hljs-params">()</span> &#123;<br>    <span class="hljs-comment">// Do something after ALL tests in this class are run</span><br>  &#125;<br>  <br>  <span class="hljs-meta">@BeforeEach</span><br>  <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">setUp</span><span class="hljs-params">()</span> <span class="hljs-keyword">throws</span> Exception &#123;<br>    classUnderTest = <span class="hljs-keyword">new</span> <span class="hljs-title class_">App</span>();<br>  &#125;<br>  <br>  <span class="hljs-meta">@AfterEach</span><br>  <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">tearDown</span><span class="hljs-params">()</span> <span class="hljs-keyword">throws</span> Exception &#123;<br>    classUnderTest = <span class="hljs-literal">null</span>;<br>  &#125;<br>  <br>  <span class="hljs-meta">@Test</span><br>  <span class="hljs-meta">@DisplayName(&quot;Dummy test&quot;)</span><br>  <span class="hljs-keyword">void</span> <span class="hljs-title function_">aTest</span><span class="hljs-params">()</span> &#123;<br>    log.info(<span class="hljs-string">&quot;As written, this test will always pass!&quot;</span>);<br>    assertEquals(<span class="hljs-number">4</span>, (<span class="hljs-number">2</span> + <span class="hljs-number">2</span>));<br>  &#125;<br>  <br>  <span class="hljs-meta">@Test</span><br>  <span class="hljs-meta">@Disabled</span><br>  <span class="hljs-meta">@DisplayName(&quot;A disabled test&quot;)</span><br>  <span class="hljs-keyword">void</span> <span class="hljs-title function_">testNotRun</span><span class="hljs-params">()</span> &#123;<br>    log.info(<span class="hljs-string">&quot;This test will not run (it is disabled, silly).&quot;</span>);<br>  &#125;<br>.<br>.<br>&#125;<br></code></pre></td></tr></table></figure>
+
+
+
+<h4 id="断言"><a href="#断言" class="headerlink" title="断言"></a>断言</h4><p>Junit Jupiter 继承了许多 Junit 4 中的断言方法，同时增加了一些适配 Java 8 lambdas 特点的方法。所有的 Junit Jupiter 都是静态方法，在 org.junit.jupiter.Assertions 类中。</p>
+<figure class="highlight reasonml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><code class="hljs reasonml">import static org.junit.jupiter.api.<span class="hljs-module-access"><span class="hljs-module"><span class="hljs-identifier">Assertions</span>.</span></span>assertEquals;<br>import static org.junit.jupiter.api.<span class="hljs-module-access"><span class="hljs-module"><span class="hljs-identifier">Assertions</span>.</span></span>assertFalse;<br>import static org.junit.jupiter.api.<span class="hljs-module-access"><span class="hljs-module"><span class="hljs-identifier">Assertions</span>.</span></span>assertNotNull;<br>import static org.junit.jupiter.api.<span class="hljs-module-access"><span class="hljs-module"><span class="hljs-identifier">Assertions</span>.</span></span>assertNull;<br>import static org.junit.jupiter.api.<span class="hljs-module-access"><span class="hljs-module"><span class="hljs-identifier">Assertions</span>.</span></span>assertTrue;<br>.<br>.<br>  @Test<br>  @<span class="hljs-constructor">DisplayName(<span class="hljs-string">&quot;Dummy test&quot;</span>)</span><br>  void dummy<span class="hljs-constructor">Test()</span> &#123;<br>    <span class="hljs-built_in">int</span> expected = <span class="hljs-number">4</span>;<br>    <span class="hljs-built_in">int</span> actual = <span class="hljs-number">2</span> + <span class="hljs-number">2</span>;<br>    <span class="hljs-keyword">assert</span><span class="hljs-constructor">Equals(<span class="hljs-params">expected</span>, <span class="hljs-params">actual</span>, <span class="hljs-string">&quot;INCONCEIVABLE!&quot;</span>)</span>;<br>    <span class="hljs-comment">//</span><br>    Object nullValue = null;<br>    <span class="hljs-keyword">assert</span><span class="hljs-constructor">False(<span class="hljs-params">nullValue</span> != <span class="hljs-params">null</span>)</span>;<br>    <span class="hljs-keyword">assert</span><span class="hljs-constructor">Null(<span class="hljs-params">nullValue</span>)</span>;<br>    <span class="hljs-keyword">assert</span><span class="hljs-constructor">NotNull(<span class="hljs-string">&quot;A String&quot;</span>, <span class="hljs-string">&quot;INCONCEIVABLE!&quot;</span>)</span>;<br>    <span class="hljs-keyword">assert</span><span class="hljs-constructor">True(<span class="hljs-params">nullValue</span> <span class="hljs-operator">==</span> <span class="hljs-params">null</span>)</span>;<br>    .<br>    .<br>  &#125;<br></code></pre></td></tr></table></figure>
+
+<h5 id="assertAll"><a href="#assertAll" class="headerlink" title="@assertAll()"></a>@assertAll()</h5><p>assertAll() 包含的所有断言都会执行，即使一个或多个断言失败也是如此。</p>
+<figure class="highlight livescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><code class="hljs livescript"><span class="hljs-keyword">import</span> <span class="hljs-keyword">static</span> org.junit.jupiter.api.Assertions.assertAll;<br>.<br>.<br>@Test<br>@DisplayName(<span class="hljs-string">&quot;Dummy test&quot;</span>)<br><span class="hljs-literal">void</span> dummyTest() &#123;<br>  int expected = <span class="hljs-number">4</span>;<br>  int actual = <span class="hljs-number">2</span> + <span class="hljs-number">2</span>;<br>  <span class="hljs-built_in">Object</span> nullValue = <span class="hljs-literal">null</span>;<br>  .<br>  .<br>  assertAll(<br>      <span class="hljs-string">&quot;Assert All of these&quot;</span>,<br>      <span class="hljs-function"><span class="hljs-params">()</span> -&gt;</span> assertEquals(expected, actual, <span class="hljs-string">&quot;INCONCEIVABLE!&quot;</span>),<br>      <span class="hljs-function"><span class="hljs-params">()</span> -&gt;</span> assertFalse(nullValue != <span class="hljs-literal">null</span>),<br>      <span class="hljs-function"><span class="hljs-params">()</span> -&gt;</span> assertNull(nullValue),<br>      <span class="hljs-function"><span class="hljs-params">()</span> -&gt;</span> assertNotNull(<span class="hljs-string">&quot;A String&quot;</span>, <span class="hljs-string">&quot;INCONCEIVABLE!&quot;</span>),<br>      <span class="hljs-function"><span class="hljs-params">()</span> -&gt;</span> assertTrue(nullValue == <span class="hljs-literal">null</span>));<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<h5 id="assertThrows"><a href="#assertThrows" class="headerlink" title="@assertThrows()"></a>@assertThrows()</h5><p>在某些条件下，接受测试的类应抛出异常。JUnit 4 通过 expected &#x3D; 方法参数或一个 @Rule 提供此能力。与此相反，JUnit Jupiter 通过 Assertions 类提供此能力，使它与其他断言更加一致。</p>
+<figure class="highlight livescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs livescript"><span class="hljs-keyword">import</span> <span class="hljs-keyword">static</span> org.junit.jupiter.api.Assertions.assertThrows;<br><span class="hljs-keyword">import</span> <span class="hljs-keyword">static</span> org.junit.jupiter.api.Assertions.assertEquals;<br>.<br>.<br>@Test()<br>@DisplayName(<span class="hljs-string">&quot;Empty argument&quot;</span>)<br>public <span class="hljs-literal">void</span> testAdd_ZeroOperands_EmptyArgument() &#123;<br>  long[] numbersToSum = &#123;&#125;;<br>  assertThrows<span class="hljs-function"><span class="hljs-params">(IllegalArgumentException.<span class="hljs-keyword">class</span>, () -&gt; classUnderTest.add(numbersToSum))</span>;</span><br><span class="hljs-function">&#125;</span><br></code></pre></td></tr></table></figure>
+
+
+
+<h4 id="前置条件"><a href="#前置条件" class="headerlink" title="前置条件"></a>前置条件</h4><p>前置条件 (Assumption) 与断言类似，但前置条件必须为 true，否则测试将中止。</p>
+<p>前置条件是 org.junit.jupiter.api.Assumptions 类的静态方法。</p>
+<h5 id="assumeTrue"><a href="#assumeTrue" class="headerlink" title="assumeTrue()"></a>assumeTrue()</h5><p>如果条件不成立，就不会执行 lambda 表达式的内容。</p>
+<figure class="highlight reasonml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs reasonml">@Test<br>@<span class="hljs-constructor">DisplayName(<span class="hljs-string">&quot;This test is only run on Fridays&quot;</span>)</span><br>public void test<span class="hljs-constructor">Add_OnlyOnFriday()</span> &#123;<br>  LocalDateTime ldt = <span class="hljs-module-access"><span class="hljs-module"><span class="hljs-identifier">LocalDateTime</span>.</span></span>now<span class="hljs-literal">()</span>;<br>  assume<span class="hljs-constructor">True(<span class="hljs-params">ldt</span>.<span class="hljs-params">getDayOfWeek</span>()</span>.get<span class="hljs-constructor">Value()</span><span class="hljs-operator"> == </span><span class="hljs-number">5</span>);<br>  <span class="hljs-comment">// Remainder of test (only executed if assumption holds)...</span><br>&#125;<br></code></pre></td></tr></table></figure>
+
+<h5 id="assumingThat"><a href="#assumingThat" class="headerlink" title="assumingThat()"></a>assumingThat()</h5><p>无论 assumingThat() 中的前置条件成立与否，都会执行 lambda 表达式后的所有代码</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@Test</span><br><span class="hljs-meta">@DisplayName(&quot;This test is only run on Fridays (with lambda)&quot;)</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">testAdd_OnlyOnFriday_WithLambda</span><span class="hljs-params">()</span> &#123;<br>  <span class="hljs-type">LocalDateTime</span> <span class="hljs-variable">ldt</span> <span class="hljs-operator">=</span> LocalDateTime.now();<br>  assumingThat(ldt.getDayOfWeek().getValue() == <span class="hljs-number">5</span>,<br>      () -&gt; &#123;<br>        <span class="hljs-comment">// Execute this if assumption holds...</span><br>      &#125;);<br>  <span class="hljs-comment">// Execute this regardless</span><br>&#125;<br></code></pre></td></tr></table></figure>
+
+
+
+<h4 id="嵌套测试"><a href="#嵌套测试" class="headerlink" title="嵌套测试"></a>嵌套测试</h4><p>只有非静态的嵌套类可以被标记为 @Nested 测试，嵌套可以是任意的深度。</p>
+<p>每个单元测试可以拥有自己的测试前和测试后生命周期，除了一个例外: @BeforeAll 和 @AfterAll 不起作用。</p>
+<figure class="highlight less"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><code class="hljs less"><span class="hljs-variable">@RunWith</span>(JUnitPlatform.class)<br><span class="hljs-variable">@DisplayName</span>(<span class="hljs-string">&quot;Testing JUnit 5&quot;</span>)<br>public class JUnit5AppTest &#123;<br>.<br>.                <br>  @<span class="hljs-selector-tag">Nested</span><br>  @<span class="hljs-selector-tag">DisplayName</span>(<span class="hljs-string">&quot;When zero operands&quot;</span>)<br>  <span class="hljs-selector-tag">class</span> <span class="hljs-selector-tag">JUnit5AppZeroOperandsTest</span> &#123;<br>  <br>  <span class="hljs-comment">// @Test methods go here...</span><br>  <br>  &#125;<br>.<br>.<br>&#125;<br></code></pre></td></tr></table></figure>
+
+
+
+<h3 id="3-JUnit-Platform-运行"><a href="#3-JUnit-Platform-运行" class="headerlink" title="3. JUnit Platform 运行"></a>3. JUnit Platform 运行</h3><p>在 IDE 中运行单元测试</p>
+<figure class="highlight axapta"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs axapta">@RunWith(JUnitPlatform.<span class="hljs-keyword">class</span>)<br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">JUnit5AppTest</span> &#123;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>使用 Maven 运行单元测试</p>
+<figure class="highlight armasm"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs armasm"><span class="hljs-keyword">mvn</span> test<br></code></pre></td></tr></table></figure>
+
+
+
+<h3 id="4-JUnit-Jupiter-扩展"><a href="#4-JUnit-Jupiter-扩展" class="headerlink" title="4. JUnit Jupiter 扩展"></a>4. JUnit Jupiter 扩展</h3><h4 id="扩展-JUnit-4-的核心功能"><a href="#扩展-JUnit-4-的核心功能" class="headerlink" title="扩展 JUnit 4 的核心功能"></a>扩展 JUnit 4 的核心功能</h4><p>使用 Runner 和 @Rule 扩展。</p>
+<h5 id="Runner"><a href="#Runner" class="headerlink" title="Runner"></a>Runner</h5><p>必须在测试类级别上使用 @RunWith 注解来声明 Runner，每个测试类最多只能拥有一个 Runner。</p>
+<p>常见的第三方Runner ，比如用于运行基于 Spring 的单元测试的 SpringJUnit4ClassRunner，以及用于处理单元测试中 Mockito 对象的 MockitoJUnitRunner。</p>
+<h5 id="Rule"><a href="#Rule" class="headerlink" title="@Rule"></a>@Rule</h5><p>为了解决 Runner 概念的这一内置限制，JUnit 4.7 引入了 @Rule。</p>
+<p>一个测试类可声明多个 @Rule，这些规则可在测试方法级别和类级别上运行</p>
+<h5 id="扩展点和测试生命周期"><a href="#扩展点和测试生命周期" class="headerlink" title="扩展点和测试生命周期"></a>扩展点和测试生命周期</h5><p>一个扩展点对应于 JUnit test 生命周期中一个预定义的点。</p>
+<table>
+<thead>
+<tr>
+<th>接口</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>AfterAllCallback</td>
+<td>定义 API 扩展，希望在调用所有测试后让测试容器执行额外的行为。</td>
+</tr>
+<tr>
+<td>AfterEachCallback</td>
+<td>定义 API 扩展，希望在调用每个测试方法后让测试执行额外的行为。</td>
+</tr>
+<tr>
+<td>AfterTestExecutionCallback</td>
+<td>定义 API 扩展，希望在执行每个测试后让测试立即执行额外的行为。</td>
+</tr>
+<tr>
+<td>BeforeAllCallback</td>
+<td>定义 API 扩展，希望在调用所有测试前让测试容器执行额外的行为。</td>
+</tr>
+<tr>
+<td>BeforeEachCallback</td>
+<td>定义 API 扩展，希望在调用每个测试前让测试执行额外的行为。</td>
+</tr>
+<tr>
+<td>BeforeTestExecutionCallback</td>
+<td>定义 API 扩展，希望在执行每个测试前让测试立即执行额外的行为。</td>
+</tr>
+<tr>
+<td>ParameterResolver</td>
+<td>定义 API 扩展，希望在运行时动态解析参数。</td>
+</tr>
+<tr>
+<td>TestExecutionExceptionHandler</td>
+<td>定义 API 扩展，希望处理在测试执行期间抛出的异常。</td>
+</tr>
+</tbody></table>
+<h5 id="激活扩展"><a href="#激活扩展" class="headerlink" title="激活扩展"></a>激活扩展</h5><p>要激活上述扩展，只需使用 @ExtendWith 注解注册它</p>
+<figure class="highlight less"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><code class="hljs less"><span class="hljs-variable">@ExtendWith</span>(MyBeforeEachCallbackExtension.class)<br>public class MyTestClass &#123;<br>.<br>.<br>    @<span class="hljs-selector-tag">Test</span><br>    <span class="hljs-selector-tag">public</span> <span class="hljs-selector-tag">void</span> <span class="hljs-selector-tag">myTestMethod</span>() &#123;<br>        <span class="hljs-comment">// Test code here</span><br>    &#125;<br>    <span class="hljs-variable">@Test</span><br>    public void someOtherTestMethod() &#123;<br>        <span class="hljs-comment">// Test code here</span><br>    &#125;<br>.<br>.<br>&#125;<br></code></pre></td></tr></table></figure>
+
+
+
+<h4 id="参数注入"><a href="#参数注入" class="headerlink" title="参数注入"></a>参数注入</h4><p>将一个参数传递给 @Test 方法</p>
+<h5 id="ParameterResolver-接口"><a href="#ParameterResolver-接口" class="headerlink" title="ParameterResolver 接口"></a>ParameterResolver 接口</h5><p>ParameterResolver 接口包含 2 个方法：</p>
+<ul>
+<li>supports() 方法：测试引擎解析测试类参数时，首先会调用 supports() 方法，查看该扩展是否能处理这种参数类型。</li>
+<li>resolve() 方法：如果 supports() 返回 true，则调用 resolve() 来获取正确类型的 Object，随后在调用测试方法时会使用该对象。</li>
+</ul>
+<h5 id="创建-ParameterResolver-实现"><a href="#创建-ParameterResolver-实现" class="headerlink" title="创建 ParameterResolver 实现"></a>创建 ParameterResolver 实现</h5><figure class="highlight aspectj"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><code class="hljs aspectj"><span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">GeneratedPersonParameterResolver</span> <span class="hljs-keyword">implements</span> <span class="hljs-title">ParameterResolver</span> </span>&#123;<br> <br>  <span class="hljs-meta">@Override</span><br>  <span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">boolean</span> <span class="hljs-title">supportsParameter</span><span class="hljs-params">(ParameterContext parameterContext, ExtensionContext extensionContext)</span></span><br><span class="hljs-function">      <span class="hljs-keyword">throws</span> ParameterResolutionException </span>&#123;<br>    <span class="hljs-keyword">return</span> parameterContext.getParameter().getType() == Person.class;<br>  &#125;<br> <br>  <span class="hljs-meta">@Override</span><br>  <span class="hljs-keyword">public</span> <span class="hljs-function">Object <span class="hljs-title">resolveParameter</span><span class="hljs-params">(ParameterContext parameterContext, ExtensionContext extensionContext)</span></span><br><span class="hljs-function">      <span class="hljs-keyword">throws</span> ParameterResolutionException </span>&#123;<br>    <span class="hljs-function"><span class="hljs-keyword">return</span> PersonGenerator.<span class="hljs-title">createPerson</span><span class="hljs-params">()</span></span>;<br>  &#125;<br> <br>&#125;<br></code></pre></td></tr></table></figure>
+
+<h5 id="使用-ParameterResolver-实现"><a href="#使用-ParameterResolver-实现" class="headerlink" title="使用 ParameterResolver 实现"></a>使用 ParameterResolver 实现</h5><p>在类或方法上，使用 @ExtendWith 注解完成注册工作</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-meta">@ExtendWith(<span class="hljs-params">GeneratedPersonParameterResolver.<span class="hljs-keyword">class</span></span>)</span><br></code></pre></td></tr></table></figure>
+
+
+
+<h4 id="参数化测试"><a href="#参数化测试" class="headerlink" title="参数化测试"></a>参数化测试</h4><p>参数化测试是指多次调用 @Test 方法，但每次都使用不同的参数值。参数化测试必须使用 @ParameterizedTest 进行注解，而且必须为其参数指定一个来源。</p>
+<p>JUnit Jupiter 提供了多个来源。每个来源指定一个 @ArgumentsSource，也就是一个 ArgumentsProvider 实现。</p>
+<h5 id="ValueSource"><a href="#ValueSource" class="headerlink" title="@ValueSource"></a>@ValueSource</h5><p>仅支持以下类型：String、int、long、double</p>
+<figure class="highlight reasonml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs reasonml">@ParameterizedTest<br>@<span class="hljs-constructor">ValueSource(<span class="hljs-params">longs</span> = &#123; 1L, 2L, 3L, 4L, 5L &#125;)</span><br>public void find<span class="hljs-constructor">ById(Long <span class="hljs-params">id</span>)</span> &#123;<br>  <span class="hljs-keyword">assert</span><span class="hljs-constructor">NotNull(<span class="hljs-params">classUnderTest</span>)</span>;<br>  Person personFound = classUnderTest.find<span class="hljs-constructor">ById(<span class="hljs-params">id</span>)</span>;<br>  <span class="hljs-keyword">assert</span><span class="hljs-constructor">NotNull(<span class="hljs-params">personFound</span>)</span>;<br>  <span class="hljs-keyword">assert</span><span class="hljs-constructor">Equals(<span class="hljs-params">id</span>, <span class="hljs-params">personFound</span>.<span class="hljs-params">getId</span>()</span>);<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<h5 id="EnumSource"><a href="#EnumSource" class="headerlink" title="@EnumSource"></a>@EnumSource</h5><figure class="highlight reasonml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs reasonml">@ParameterizedTest<br>@<span class="hljs-constructor">EnumSource(PersonTestEnum.<span class="hljs-params">class</span>)</span><br>public void find<span class="hljs-constructor">ById(PersonTestEnum <span class="hljs-params">testPerson</span>)</span> &#123;<br>  <span class="hljs-keyword">assert</span><span class="hljs-constructor">NotNull(<span class="hljs-params">classUnderTest</span>)</span>;<br>  Person person = testPerson.get<span class="hljs-constructor">Person()</span>;<br>  Person personFound = classUnderTest.find<span class="hljs-constructor">ById(<span class="hljs-params">person</span>.<span class="hljs-params">getId</span>()</span>);<br>  <span class="hljs-keyword">assert</span><span class="hljs-constructor">NotNull(<span class="hljs-params">personFound</span>)</span>;<br>  perform<span class="hljs-constructor">PersonAssertions(<span class="hljs-params">person</span>.<span class="hljs-params">getLastName</span>()</span>, person.get<span class="hljs-constructor">FirstName()</span>, person.get<span class="hljs-constructor">Age()</span>, person.get<span class="hljs-constructor">EyeColor()</span>,<br>      person.get<span class="hljs-constructor">Gender()</span>, personFound);<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<h5 id="MethodSource"><a href="#MethodSource" class="headerlink" title="@MethodSource"></a>@MethodSource</h5><p>一个方法来源必须声明为 static，返回类型必须是 Stream、Iterator、Iterable 或数组。</p>
+<figure class="highlight reasonml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs reasonml">@ParameterizedTest<br>@<span class="hljs-constructor">MethodSource(<span class="hljs-params">value</span> = <span class="hljs-string">&quot;personProvider&quot;</span>)</span><br>public void find<span class="hljs-constructor">ById(Person <span class="hljs-params">paramPerson</span>)</span> &#123;<br>  <span class="hljs-keyword">assert</span><span class="hljs-constructor">NotNull(<span class="hljs-params">classUnderTest</span>)</span>;<br>  long id = paramPerson.get<span class="hljs-constructor">Id()</span>;<br>  Person personFound = classUnderTest.find<span class="hljs-constructor">ById(<span class="hljs-params">id</span>)</span>;<br>  <span class="hljs-keyword">assert</span><span class="hljs-constructor">NotNull(<span class="hljs-params">personFound</span>)</span>;<br>  perform<span class="hljs-constructor">PersonAssertions(<span class="hljs-params">paramPerson</span>.<span class="hljs-params">getLastName</span>()</span>, paramPerson.get<span class="hljs-constructor">FirstName()</span>,<br>      paramPerson.get<span class="hljs-constructor">Age()</span>,<br>      paramPerson.get<span class="hljs-constructor">EyeColor()</span>, paramPerson.get<span class="hljs-constructor">Gender()</span>, personFound);<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<h5 id="自定义显示名称"><a href="#自定义显示名称" class="headerlink" title="自定义显示名称"></a>自定义显示名称</h5><p>可以通过向 @ParameterizedTest 注解提供任何以下属性值来自定义输出：</p>
+<ul>
+<li>{index}：从 1 开始的索引（当前测试迭代 ）。</li>
+<li>{arguments}：完整的参数列表，使用逗号分隔。</li>
+<li>{0}, {1} …：一个特定的参数（0 是第一个，依此类推）。</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@ParameterizedTest(name = &quot;@ValueSource: FindById(): Test# &#123;index&#125;: Id: &#123;0&#125;&quot;)</span><br></code></pre></td></tr></table></figure>
+
+
+
+<h4 id="动态测试"><a href="#动态测试" class="headerlink" title="动态测试"></a>动态测试</h4><h5 id="TestFactory"><a href="#TestFactory" class="headerlink" title="@TestFactory"></a>@TestFactory</h5><p>@TestFactory 方法用于生成动态测试。此方法必须返回 DynamicTest 实例的 Stream、Collection、Iterable 或 Iterator。</p>
+<h5 id="创建-TestFactory"><a href="#创建-TestFactory" class="headerlink" title="创建 @TestFactory"></a>创建 @TestFactory</h5><figure class="highlight livescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><code class="hljs livescript">@TestFactory<br>Collection&lt;DynamicTest&gt; dynamicTestsFromCollection() &#123;<br>    <span class="hljs-keyword">return</span> Arrays.asList(<br>        dynamicTest<span class="hljs-function"><span class="hljs-params">(<span class="hljs-string">&quot;1st dynamic test&quot;</span>, () -&gt; assertTrue(<span class="hljs-literal">true</span>))</span>,</span><br><span class="hljs-function">        <span class="hljs-title">dynamicTest</span><span class="hljs-params">(<span class="hljs-string">&quot;2nd dynamic test&quot;</span>, () -&gt; assertEquals(<span class="hljs-number">4</span>, <span class="hljs-number">2</span> * <span class="hljs-number">2</span>))</span></span><br><span class="hljs-function">    );</span><br><span class="hljs-function">&#125;</span><br><span class="hljs-function"></span><br><span class="hljs-function"></span><br><span class="hljs-function">@<span class="hljs-title">TestFactory</span></span><br><span class="hljs-function"><span class="hljs-title">Stream</span>&lt;<span class="hljs-title">DynamicTest</span>&gt; <span class="hljs-title">dynamicTestsFromStream</span><span class="hljs-params">()</span> &#123;</span><br><span class="hljs-function">    <span class="hljs-title">return</span> <span class="hljs-title">Stream</span>.<span class="hljs-title">of</span><span class="hljs-params">(<span class="hljs-string">&quot;A&quot;</span>, <span class="hljs-string">&quot;B&quot;</span>, <span class="hljs-string">&quot;C&quot;</span>)</span>.<span class="hljs-title">map</span><span class="hljs-params">(</span></span><br><span class="hljs-params"><span class="hljs-function">        str -&gt; dynamicTest(<span class="hljs-string">&quot;test&quot;</span> + str, () -&gt; &#123; /* ... */ &#125;))</span>;</span><br><span class="hljs-function">&#125;</span><br></code></pre></td></tr></table></figure>
+
+
+
+<h4 id="标签和过滤"><a href="#标签和过滤" class="headerlink" title="标签和过滤"></a>标签和过滤</h4><p>可使用标签来注解方法或类。然后可使用 Maven POM 或 Gradle 构建脚本中的过滤器设置来过滤掉此测试。</p>
+<h5 id="使用-Maven-过滤"><a href="#使用-Maven-过滤" class="headerlink" title="使用 Maven 过滤"></a>使用 Maven 过滤</h5><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><code class="hljs xml"><span class="hljs-tag">&lt;<span class="hljs-name">build</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">plugins</span>&gt;</span><br>    .<br>    .<br>        <span class="hljs-tag">&lt;<span class="hljs-name">plugin</span>&gt;</span><br>            <span class="hljs-tag">&lt;<span class="hljs-name">artifactId</span>&gt;</span>maven-surefire-plugin<span class="hljs-tag">&lt;/<span class="hljs-name">artifactId</span>&gt;</span><br>            <span class="hljs-tag">&lt;<span class="hljs-name">version</span>&gt;</span>2.19<span class="hljs-tag">&lt;/<span class="hljs-name">version</span>&gt;</span><br>            <span class="hljs-tag">&lt;<span class="hljs-name">configuration</span>&gt;</span><br>                <span class="hljs-tag">&lt;<span class="hljs-name">properties</span>&gt;</span><br>                    <span class="hljs-tag">&lt;<span class="hljs-name">excludeTags</span>&gt;</span>advanced<span class="hljs-tag">&lt;/<span class="hljs-name">excludeTags</span>&gt;</span><br>                <span class="hljs-tag">&lt;/<span class="hljs-name">properties</span>&gt;</span><br>            <span class="hljs-tag">&lt;/<span class="hljs-name">configuration</span>&gt;</span><br>    .<br>    .<br>    <span class="hljs-tag">&lt;/<span class="hljs-name">plugins</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">build</span>&gt;</span><br></code></pre></td></tr></table></figure>
+
+<h5 id="使用-Gradle-过滤"><a href="#使用-Gradle-过滤" class="headerlink" title="使用 Gradle 过滤"></a>使用 Gradle 过滤</h5><figure class="highlight fsharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs fsharp"><span class="hljs-keyword">junitPlatform</span> &#123;<br>  <span class="hljs-keyword">filters</span> &#123;<br>    <span class="hljs-keyword">engines</span> &#123;<br>    &#125;<br>    <span class="hljs-keyword">tags</span> &#123;<br>        exclude <span class="hljs-symbol">&#x27;advanced</span>&#x27;<br>    &#125;<br>  &#125;<br>  logManager <span class="hljs-symbol">&#x27;org</span>.apache.logging.log4j.jul.LogManager&#x27;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+
+
+
+              
+            </div>
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/09-%E8%B0%83%E8%AF%95%E6%B5%8B%E8%AF%95/" class="category-chain-item">09_调试测试</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/09-%E8%B0%83%E8%AF%95%E6%B5%8B%E8%AF%95/02-%E5%8D%95%E5%85%83%E6%B5%8B%E8%AF%95/" class="category-chain-item">02_单元测试</a>
+  
+  
+
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/%E6%B5%8B%E8%AF%95/">#测试</a>
+      
+        <a href="/tags/Junit5/">#Junit5</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>02-Junit 5架构和使用</div>
+      <div>https://janycode.github.io/2019/05/30/09_调试测试/02_单元测试/02-Junit 5架构和使用/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Jerry(姜源)</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2019年5月30日</div>
+        </div>
+      
+      
+      <div class="license-meta-item">
+        <div>许可协议</div>
+        <div>
+          
+            
+            
+              <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+              <span class="hint--top hint--rounded" aria-label="BY - 姜源">
+                <i class="iconfont icon-by"></i>
+              </span>
+              </a>
+            
+          
+        </div>
+      </div>
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2019/06/15/01_%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/05_Windows/02-hosts%E8%87%AA%E7%94%A8/" title="01-win批处理命令大全">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">01-win批处理命令大全</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2019/05/25/13_%E7%AC%AC%E4%B8%89%E6%96%B9/00_%E5%85%8D%E8%B4%B9API/" title="00_免费API">
+                        <span class="hidden-mobile">00_免费API</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+  <article id="comments" lazyload>
+    
+  <div id="SOHUCS" sid='https://janycode.github.io/2019/05/30/09_%E8%B0%83%E8%AF%95%E6%B5%8B%E8%AF%95/02_%E5%8D%95%E5%85%83%E6%B5%8B%E8%AF%95/02-Junit%205%E6%9E%B6%E6%9E%84%E5%92%8C%E4%BD%BF%E7%94%A8/'></div>
+  <script type="text/javascript">
+    Fluid.utils.loadComments('#SOHUCS', function() {
+      Fluid.utils.createScript("https://changyan.sohu.com/upload/changyan.js", function() {
+        window.changyan.api.config({"appid":"cyw5OHIcO","appkey":"fea3446b3df4b3f129f34da4cbc87e51"})
+      });
+    });
+  </script>
+  <noscript>Please enable JavaScript to view the comments</noscript>
+
+
+  </article>
+
+
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://simple.blog.csdn.net" target="_blank" rel="nofollow noopener"><span>CSDN</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/janycode" target="_blank" rel="nofollow noopener"><span>GitHub</span></a> <i class="iconfont icon-love"></i> <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="busuanzi_container_site_pv" style="display: none">
+        总访问量(PV) 
+        <span id="busuanzi_value_site_pv"></span>
+         次，
+      </span>
+    
+    
+      <span id="busuanzi_container_site_uv" style="display: none">
+        总访客数(UV) 
+        <span id="busuanzi_value_site_uv"></span>
+         人
+      </span>
+    
+    
+  
+</div>
+
+  
+  
+  
+</div>
+
+<!-- live2d 动画 -->
+<script src="https://eqcn.ajz.miesnfu.com/wp-content/plugins/wp-3d-pony/live2dw/lib/L2Dwidget.min.js"></script>
+<script>
+    L2Dwidget.init({
+        "model": {
+            jsonPath: "https://unpkg.com/live2d-widget-model-haruto@1.0.5/assets/haruto.model.json",
+            "scale": 1
+        },
+        "display": {
+            "position": "right",
+            "width": 100,
+            "height": 200,
+            "hOffset": 35,
+            "vOffset": -85
+        },
+        "mobile": {
+            "show": false,
+            "scale": 0.1
+        },
+        "react": {
+            "opacityDefault": 0.75,
+            "opacityOnHover": 0.2
+        }
+    });
+</script>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <!-- Baidu Analytics -->
+    <script defer>
+      if (!Fluid.ctx.dnt) {
+        var _hmt = _hmt || [];
+        (function() {
+          var hm = document.createElement("script");
+          hm.src = "https://hm.baidu.com/hm.js?bfff735c897eb60ea49b735096b20e47";
+          var s = document.getElementsByTagName("script")[0];
+          s.parentNode.insertBefore(hm, s);
+        })();
+      }
+    </script>
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.0/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      headingSelector : CONFIG.toc.headingSelector || 'h1,h2,h3,h4,h5,h6',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      collapseDepth   : CONFIG.toc.collapseDepth || 0,
+      scrollSmooth    : true,
+      headingsOffset  : -boardTop
+    });
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+  });
+</script>
+
+
+  <script>
+  (function() {
+    var enableLang = CONFIG.code_language.enable && CONFIG.code_language.default;
+    var enableCopy = CONFIG.copy_btn;
+    if (!enableLang && !enableCopy) {
+      return;
+    }
+
+    function getBgClass(ele) {
+      return Fluid.utils.getBackgroundLightness(ele) >= 0 ? 'code-widget-light' : 'code-widget-dark';
+    }
+
+    var copyTmpl = '';
+    copyTmpl += '<div class="code-widget">';
+    copyTmpl += 'LANG';
+    copyTmpl += '</div>';
+    jQuery('.markdown-body pre').each(function() {
+      var $pre = jQuery(this);
+      if ($pre.find('code.mermaid').length > 0) {
+        return;
+      }
+      if ($pre.find('span.line').length > 0) {
+        return;
+      }
+
+      var lang = '';
+
+      if (enableLang) {
+        lang = CONFIG.code_language.default;
+        if ($pre[0].children.length > 0 && $pre[0].children[0].classList.length >= 2 && $pre.children().hasClass('hljs')) {
+          lang = $pre[0].children[0].classList[1];
+        } else if ($pre[0].getAttribute('data-language')) {
+          lang = $pre[0].getAttribute('data-language');
+        } else if ($pre.parent().hasClass('sourceCode') && $pre[0].children.length > 0 && $pre[0].children[0].classList.length >= 2) {
+          lang = $pre[0].children[0].classList[1];
+          $pre.parent().addClass('code-wrapper');
+        } else if ($pre.parent().hasClass('markdown-body') && $pre[0].classList.length === 0) {
+          $pre.wrap('<div class="code-wrapper"></div>');
+        }
+        lang = lang.toUpperCase().replace('NONE', CONFIG.code_language.default);
+      }
+      $pre.append(copyTmpl.replace('LANG', lang).replace('code-widget">',
+        getBgClass($pre[0]) + (enableCopy ? ' code-widget copy-btn" data-clipboard-snippet><i class="iconfont icon-copy"></i>' : ' code-widget">')));
+
+      if (enableCopy) {
+        Fluid.utils.createScript('https://lib.baomitu.com/clipboard.js/2.0.10/clipboard.min.js', function() {
+          var clipboard = new window.ClipboardJS('.copy-btn', {
+            target: function(trigger) {
+              var nodes = trigger.parentNode.childNodes;
+              for (var i = 0; i < nodes.length; i++) {
+                if (nodes[i].tagName === 'CODE') {
+                  return nodes[i];
+                }
+              }
+            }
+          });
+          clipboard.on('success', function(e) {
+            e.clearSelection();
+            e.trigger.innerHTML = e.trigger.innerHTML.replace('icon-copy', 'icon-success');
+            setTimeout(function() {
+              e.trigger.innerHTML = e.trigger.innerHTML.replace('icon-success', 'icon-copy');
+            }, 2000);
+          });
+        });
+      }
+    });
+  })();
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script  src="/js/local-search.js" ></script>
+
+  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

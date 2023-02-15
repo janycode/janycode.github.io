@@ -1,0 +1,977 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=light>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Jerry(姜源)">
+  <meta name="keywords" content="Java,Html,CSS,JavaScript,Python,C,Linux,shell编程经验分享、技术总结、心得体会">
+  
+    <meta name="description" content="1. MySQL查询过程 2. 优化工具  3. 解决问题思路3.1 一般应急调优的思路针对突然的业务办理卡顿，无法进行正常的业务处理！需要立马解决的场景！ 12345671、show processlist2、explain select id ,name from stu where name&#x3D;&amp;#x27;clsn&amp;#x27;; # ALL id name age sexselect id,">
+<meta property="og:type" content="article">
+<meta property="og:title" content="01-MySQL最全优化经验">
+<meta property="og:url" content="https://janycode.github.io/2021/11/25/16_%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96/02_%E6%95%B0%E6%8D%AE%E5%BA%93%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96/01-MySQL%E6%9C%80%E5%85%A8%E4%BC%98%E5%8C%96%E7%BB%8F%E9%AA%8C/index.html">
+<meta property="og:site_name" content="姜源の云笔记">
+<meta property="og:description" content="1. MySQL查询过程 2. 优化工具  3. 解决问题思路3.1 一般应急调优的思路针对突然的业务办理卡顿，无法进行正常的业务处理！需要立马解决的场景！ 12345671、show processlist2、explain select id ,name from stu where name&#x3D;&amp;#x27;clsn&amp;#x27;; # ALL id name age sexselect id,">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20200812132738.png">
+<meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/chaxunguocheng.jpg">
+<meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20220125101548.png">
+<meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20220125101605.png">
+<meta property="article:published_time" content="2021-11-25T15:28:08.000Z">
+<meta property="article:modified_time" content="2022-05-28T09:37:21.435Z">
+<meta property="article:author" content="Jerry(姜源)">
+<meta property="article:tag" content="MySQL">
+<meta property="article:tag" content="性能优化">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20200812132738.png">
+  
+  
+    <meta name="referrer" content="no-referrer-when-downgrade">
+  
+  
+  <title>01-MySQL最全优化经验 - 姜源の云笔记</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"janycode.github.io","root":"/","version":"1.9.0","typing":{"enable":true,"typeSpeed":50,"cursorChar":"|","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":false},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":"bfff735c897eb60ea49b735096b20e47","google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+
+  
+<meta name="generator" content="Hexo 6.2.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 50vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>姜源の云笔记</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tools/">
+                <i class="iconfont icon-slack-fill"></i>
+                工具
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="01-MySQL最全优化经验"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-author" aria-hidden="true"></i>
+        Jerry(姜源)
+      </span>
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2021-11-25 23:28" pubdate>
+          星期四, 2021/11/25 23:28:08
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          <!-- compatible with older versions-->
+          6.9k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          <!-- compatible with older versions-->
+          58 分钟
+        
+      </span>
+    
+
+    
+    
+      
+        <span id="busuanzi_container_page_pv" style="display: none">
+          <i class="iconfont icon-eye" aria-hidden="true"></i>
+          <span id="busuanzi_value_page_pv"></span> 次
+        </span>
+        
+      
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">01-MySQL最全优化经验</h1>
+            
+            <div class="markdown-body">
+              
+              <p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20200812132738.png" srcset="/img/loading.gif" lazyload alt="image-20200812132737977"></p>
+<h3 id="1-MySQL查询过程"><a href="#1-MySQL查询过程" class="headerlink" title="1. MySQL查询过程"></a>1. MySQL查询过程</h3><p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/chaxunguocheng.jpg" srcset="/img/loading.gif" lazyload alt="chaxunguocheng"></p>
+<h3 id="2-优化工具"><a href="#2-优化工具" class="headerlink" title="2. 优化工具"></a>2. 优化工具</h3><p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20220125101548.png" srcset="/img/loading.gif" lazyload alt="001"></p>
+<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20220125101605.png" srcset="/img/loading.gif" lazyload alt="002"></p>
+<h3 id="3-解决问题思路"><a href="#3-解决问题思路" class="headerlink" title="3. 解决问题思路"></a>3. 解决问题思路</h3><h4 id="3-1-一般应急调优的思路"><a href="#3-1-一般应急调优的思路" class="headerlink" title="3.1 一般应急调优的思路"></a>3.1 一般应急调优的思路</h4><p>针对突然的业务办理卡顿，无法进行正常的业务处理！需要立马解决的场景！</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs SQL"><span class="hljs-number">1</span>、<span class="hljs-keyword">show</span> processlist<br><span class="hljs-number">2</span>、explain <span class="hljs-keyword">select</span> id ,name <span class="hljs-keyword">from</span> stu <span class="hljs-keyword">where</span> name<span class="hljs-operator">=</span><span class="hljs-string">&#x27;clsn&#x27;</span>; # <span class="hljs-keyword">ALL</span> id name age sex<br><span class="hljs-keyword">select</span> id,name <span class="hljs-keyword">from</span> stu <span class="hljs-keyword">where</span> id<span class="hljs-operator">=</span><span class="hljs-number">2</span><span class="hljs-number">-1</span> 函数 结果集<span class="hljs-operator">&gt;</span><span class="hljs-number">30</span>;<br><span class="hljs-keyword">show</span> index <span class="hljs-keyword">from</span> <span class="hljs-keyword">table</span>;<br><span class="hljs-number">3</span>、通过执行计划判断，索引问题(有没有、合不合理)或者语句本身问题<br><span class="hljs-number">4</span>、<span class="hljs-keyword">show</span> status <span class="hljs-keyword">like</span> <span class="hljs-string">&#x27;%lock%&#x27;</span>; # 查询锁状态<br>kill SESSION_ID; # 杀掉有问题的session<br></code></pre></td></tr></table></figure>
+
+<h4 id="3-2-常规调优思路"><a href="#3-2-常规调优思路" class="headerlink" title="3.2 常规调优思路"></a>3.2 常规调优思路</h4><p>针对业务周期性的卡顿，例如在每天 10-11 点业务特别慢，但是还能够使用，过了这段时间就好了。</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs SQL"><span class="hljs-number">1</span>、查看 slowlog，分析 slowlog，分析出查询慢的语句。<br><span class="hljs-number">2</span>、按照一定优先级，进行一个一个的排查所有慢语句。<br><span class="hljs-number">3</span>、分析 top <span class="hljs-keyword">sql</span>，进行 explain 调试，查看语句执行时间。<br><span class="hljs-number">4</span>、调整索引或语句本身。<br></code></pre></td></tr></table></figure>
+
+<h4 id="3-3-系统层面"><a href="#3-3-系统层面" class="headerlink" title="3.3 系统层面"></a>3.3 系统层面</h4><p> cpu方面：<code>vmstat、sar top、htop、nmon、mpstat</code></p>
+<p> 内存：<code>free 、ps -aux</code></p>
+<p> IO 设备(磁盘、网络)：<code>iostat 、 ss 、 netstat 、 iptraf、iftop、lsof</code></p>
+<p> <code>vmstat</code> 命令说明：</p>
+<ul>
+<li>Procs：r 显示有多少进程正在等待 CPU 时间。b 显示处于不可中断的休眠的进程数量。在等待 I&#x2F;O</li>
+<li>Memory：swpd 显示被交换到磁盘的数据块的数量。未被使用的数据块，用户缓冲数据块，用于操作系统的数据块的数量</li>
+<li>Swap：操作系统每秒从磁盘上交换到内存和从内存交换到磁盘的数据块的数量。s1 和 s0 最好是 0</li>
+<li>Io：每秒从设备中读入 b1 的写入到设备 b0 的数据块的数量。反映了磁盘 I&#x2F;O</li>
+<li>System：显示了每秒发生中断的数量(in)和上下文交换(cs)的数量</li>
+<li>Cpu：显示用于运行用户代码，系统代码，空闲，等待 I&#x2F;O 的 CPU 时间</li>
+</ul>
+<p><code>iostat</code>命令说明</p>
+<p>实例命令： iostat -dk 1 5</p>
+<p>iostat -d -k -x 5 (查看设备使用率(%util)和响应时间(await))</p>
+<ul>
+<li>tps：该设备每秒的传输次数。“一次传输”意思是“一次 I&#x2F;O 请求”。多个逻辑请求可能会被合并为“一次 I&#x2F;O 请求”。</li>
+<li>iops ：硬件出厂的时候，厂家定义的一个每秒最大的 IO 次数,”一次传输”请求的大小是未知的。</li>
+<li>kB_read&#x2F;s：每秒从设备(drive expressed)读取的数据量；</li>
+<li>KB_wrtn&#x2F;s：每秒向设备(drive expressed)写入的数据量；</li>
+<li>kB_read：读取的总数据量；</li>
+<li>kB_wrtn：写入的总数量数据量；这些单位都为 Kilobytes。</li>
+</ul>
+<p>你认为到底负载高好，还是低好呢？在实际的生产中，一般认为 <code>cpu 只要不超过 90% </code>都没什么问题 。</p>
+<p>当然不排除下面这些特殊情况：</p>
+<p><strong>问题一：cpu 负载高，IO 负载低</strong></p>
+<ul>
+<li>内存不够</li>
+<li>磁盘性能差</li>
+<li>SQL 问题 ——&gt;去数据库层，进一步排查 sql 问题</li>
+<li>IO 出问题了(磁盘到临界了、raid 设计不好、raid 降级、锁、在单位时间内 tps 过高)</li>
+<li>tps 过高: 大量的小数据 IO、大量的全表扫描</li>
+</ul>
+<p> <strong>问题二：IO 负载高，cpu 负载低</strong></p>
+<ul>
+<li>大量小的 IO 写操作：</li>
+<li>autocommit ，产生大量小 IO</li>
+<li>IO&#x2F;PS 磁盘的一个定值，硬件出厂的时候，厂家定义的一个每秒最大的 IO 次数。</li>
+<li>大量大的 IO 写操作</li>
+<li>SQL 问题的几率比较大</li>
+</ul>
+<p><strong>问题三：IO 和 cpu 负载都很高</strong></p>
+<p>硬件不够了或 SQL 存在问题</p>
+<h3 id="4-MySQL优化100条建议"><a href="#4-MySQL优化100条建议" class="headerlink" title="4. MySQL优化100条建议"></a>4. MySQL优化100条建议</h3><h4 id="4-1-服务器硬件和OS调优"><a href="#4-1-服务器硬件和OS调优" class="headerlink" title="4.1 服务器硬件和OS调优"></a>4.1 服务器硬件和OS调优</h4><p>1、有足够的物理内存，能将整个InnoDB文件加载到内存里 —— 如果访问的文件在内存里，而不是在磁盘上，InnoDB会快很多。</p>
+<p> 2、全力避免 Swap 操作 — 交换（swapping）是从磁盘读取数据，所以会很慢。</p>
+<p> 3、使用电池供电的RAM（Battery-Backed RAM）。</p>
+<p> 4、使用一个高级磁盘阵列 — 最好是 RAID10 或者更高。</p>
+<p> 5、避免使用RAID5 — 和校验需要确保完整性，开销很高。</p>
+<p> 6、将你的操作系统和数据分开，不仅仅是逻辑上要分开，物理上也要分开 — 操作系统的读写开销会影响数据库的性能。</p>
+<p> 7、将临时文件和复制日志与数据文件分开 — 后台的写操作影响数据库从磁盘文件的读写操作。</p>
+<p> 8、更多的磁盘空间等于更高的速度。</p>
+<p> 9、磁盘速度越快越好。</p>
+<p> 10、SAS优于SATA。</p>
+<p> 11、小磁盘的速度比大磁盘的更快，尤其是在 RAID 中。</p>
+<p> 12、使用电池供电的缓存 RAID（Battery-Backed Cache RAID）控制器。</p>
+<p> 13、避免使用软磁盘阵列。</p>
+<p> 考虑使用固态IO卡（不是磁盘）来作为数据分区 — 几乎对所有量级数据，这种卡能够支持 2 GBps 的写操作。</p>
+<p> 15、在 Linux 系统上，设置 swappiness 的值为0 — 没有理由在数据库服务器上缓存文件，这种方式在Web服务器或桌面应用中用的更多。</p>
+<p>16、尽可能使用 noatime 和 nodirtime 来挂载文件系统 — 没有必要为每次访问来更新文件的修改时间。</p>
+<p>17、使用 XFS 文件系统 — 一个比ext3更快的、更小的文件系统，拥有更多的日志选项，同时，MySQL在ext3上存在双缓冲区的问题。</p>
+<p>18、优化你的 XFS 文件系统日志和缓冲区参数 – -为了获取最大的性能基准。</p>
+<p>19、在Linux系统中，使用 NOOP 或 DEADLINE IO 调度器 — CFQ 和 ANTICIPATORY 调度器已经被证明比 NOOP 和 DEADLINE 慢。</p>
+<p>20、使用 64 位操作系统 — 有更多的内存能用于寻址和 MySQL 使用。</p>
+<p>21、将不用的包和后台程序从服务器上删除 — 减少资源占用。</p>
+<p>22、将使用 MySQL 的 host 和 MySQL自身的 host 都配置在一个 host 文件中 — 这样没有 DNS 查找。 </p>
+<p>23、永远不要强制杀死一个MySQL进程 — 你将损坏数据库，并运行备份。</p>
+<p>24、让你的服务器只服务于MySQL — 后台处理程序和其他服务会占用数据库的 CPU 时间。</p>
+<h4 id="4-2-配置优化"><a href="#4-2-配置优化" class="headerlink" title="4.2 配置优化"></a>4.2 配置优化</h4><p>25、使用 innodb_flush_method&#x3D;O_DIRECT 来避免写的时候出现双缓冲区。</p>
+<p>26、避免使用 O_DIRECT 和 EXT3 文件系统 — 这会把所有写入的东西序列化。</p>
+<p>27、分配足够 innodb_buffer_pool_size ，来将整个InnoDB 文件加载到内存 — 减少从磁盘上读。</p>
+<p>28、不要让 innodb_log_file_size 太大，这样能够更快，也有更多的磁盘空间 — 经常刷新有利降低发生故障时的恢复时间。</p>
+<p>29、不要同时使用 innodb_thread_concurrency 和 thread_concurrency 变量 — 这两个值不能兼容。</p>
+<p>30、为 max_connections 指定一个小的值 — 太多的连接将耗尽你的RAM，导致整个MySQL服务器被锁定。</p>
+<p>31、保持 thread_cache 在一个相对较高的数值，大约是 16 — 防止打开连接时候速度下降。</p>
+<p>32、使用 skip-name-resolve — 移除 DNS 查找。</p>
+<p>33、如果你的查询重复率比较高，并且你的数据不是经常改变，请使用查询缓存 — 但是，在经常改变的数据上使用查询缓存会对性能有负面影响。</p>
+<p>34、增加 temp_table_size — 防止磁盘写。</p>
+<p>35、增加 max_heap_table_size — 防止磁盘写。</p>
+<p>36、不要将 sort_buffer_size 的值设置的太高 — 可能导致连接很快耗尽所有内存。</p>
+<p>37、监控 key_read_requests 和 key_reads，以便确定 key_buffer 的值 — key 的读需求应该比 key_reads 的值更高，否则使用 key_buffer 就没有效率了。</p>
+<p>38、设置 innodb_flush_log_at_trx_commit &#x3D; 0 可以提高性能，但是保持默认值（1）的话，能保证数据的完整性，也能保证复制不会滞后。</p>
+<p>39、有一个测试环境，便于测试你的配置，可以经常重启，不会影响生产环境。</p>
+<h4 id="4-3-MySQL-Schema-优化"><a href="#4-3-MySQL-Schema-优化" class="headerlink" title="4.3 MySQL Schema 优化"></a>4.3 MySQL Schema 优化</h4><p>40、保证你的数据库的整洁性。</p>
+<p>41、归档老数据 — 删除查询中检索或返回的多余的行</p>
+<p>42、在数据上加上索引。</p>
+<p>43、不要过度使用索引，评估你的查询。</p>
+<p>44、压缩 text 和 blob 数据类型 — 为了节省空间，减少从磁盘读数据。</p>
+<p>45、UTF 8 和 UTF16 比 latin1 慢。</p>
+<p>46、有节制的使用触发器。</p>
+<p>47、保持数据最小量的冗余 — 不要复制没必要的数据.</p>
+<p>48、使用链接表，而不是扩展行。</p>
+<p>49、注意你的数据类型，尽可能的使用最小的。</p>
+<p>50、如果其他数据需要经常需要查询，而 blob&#x2F;text 不需要，则将 blob&#x2F;text 数据域其他数据分离。</p>
+<p>51、经常检查和优化表。</p>
+<p>52、经常做重写 InnoDB 表的优化。</p>
+<p>53、有时，增加列时，先删除索引，之后在加上索引会更快。</p>
+<p>54、为不同的需求选择不同的存储引擎。</p>
+<p>55、日志表或审计表使用ARCHIVE存储引擎 — 写的效率更高。</p>
+<p>56、将 session 数据存储在 memcache 中，而不是 MySQL 中 — memcache 可以设置自动过期，防止MySQL对临时数据高成本的读写操作。</p>
+<p>57、如果字符串的长度是可变的，则使用VARCHAR代替CHAR — 节约空间，因为CHAR是固定长度，而VARCHAR不是（utf8 不受这个影响）。</p>
+<p>58、逐步对 schema 做修改 — 一个小的变化将产生的巨大的影响。</p>
+<p>59、在开发环境测试所有 schema 变动，而不是在生产环境的镜像上去做。</p>
+<p>60、不要随意改变你的配置文件，这可能产生非常大的影响。</p>
+<p>61、有时候，少量的配置会更好。</p>
+<p>62、质疑使用通用的MySQL配置文件。</p>
+<h4 id="4-4-查询优化"><a href="#4-4-查询优化" class="headerlink" title="4.4 查询优化"></a>4.4 查询优化</h4><p>63、使用慢查询日志，找出执行慢的查询。</p>
+<p>64、使用 EXPLAIN 来决定查询功能是否合适。</p>
+<p>65、经常测试你的查询，看是否需要做性能优化 — 性能可能会随着时间的变化而变化。</p>
+<p>66、避免在整个表上使用count(*) ，它可能会将整个表锁住。</p>
+<p>67、保持查询一致，这样后续类似的查询就能使用查询缓存了。</p>
+<p>68、如果合适，用 GROUP BY 代替 DISTINCT。</p>
+<p>69、在 WHERE、GROUP BY 和 ORDER BY 的列上加上索引。</p>
+<p>70、保证索引简单，不要在同一列上加多个索引。</p>
+<p>71、有时，MySQL 会选择错误的索引，这种情况使用 USE INDEX。</p>
+<p>72、使用 SQL_MODE&#x3D;STRICT 来检查问题。</p>
+<p>73、索引字段少于5个时，UNION 操作用 LIMIT，而不是 OR。</p>
+<p>74、使用 INSERT ON DUPLICATE KEY 或 INSERT IGNORE 来代替 UPDATE，避免 UPDATE 前需要先 SELECT。</p>
+<p>75、使用索引字段和 ORDER BY 来代替 MAX。</p>
+<p>76、避免使用 ORDER BY RAND()。</p>
+<p>77、LIMIT M,N 在特定场景下会降低查询效率，有节制使用。</p>
+<p>78、使用 UNION 来代替 WHERE 子句中的子查询。</p>
+<p>79、对 UPDATE 来说，使用 SHARE MODE 来防止排他锁。</p>
+<p>80、重启 MySQL 时，记得预热数据库，确保将数据加载到内存，提高查询效率。</p>
+<p>81、使用 DROP TABLE ，然后再 CREATE TABLE ，而不是 DELETE FROM ，以删除表中所有数据。</p>
+<p>82、最小化你要查询的数据，只获取你需要的数据，通常来说不要使用 *。</p>
+<p>83、考虑持久连接，而不是多次建立连接，已减少资源的消耗。</p>
+<p>84、基准查询，包括服务器的负载，有时一个简单的查询会影响其他的查询。</p>
+<p>85、当服务器的负载增加时，使用SHOW PROCESSLIST来查看慢的&#x2F;有问题的查询。</p>
+<p>86、在存有生产环境数据副本的开发环境中，测试所有可疑的查询。</p>
+<h4 id="4-5-备份过程"><a href="#4-5-备份过程" class="headerlink" title="4.5 备份过程"></a>4.5 备份过程</h4><p>87、在二级复制服务器上进行备份。</p>
+<p>88、备份过程中停止数据的复制，以防止出现数据依赖和外键约束的不一致。</p>
+<p>89、彻底停止MySQL之后，再从数据文件进行备份。</p>
+<p>90、如果使用MySQL dump进行备份，请同时备份二进制日志 — 确保复制过程不被中断。</p>
+<p>91、不要信任 LVM 快照的备份 — 可能会创建不一致的数据，将来会因此产生问题。</p>
+<p>92、为每个表做一个备份，这样更容易实现单表的恢复 — 如果数据与其他表是相互独立的。</p>
+<p>93、使用 mysqldump 时，指定 -opt 参数。</p>
+<p>94、备份前检测和优化表。</p>
+<p>95、临时禁用外键约束，来提高导入的速度。</p>
+<p>96、临时禁用唯一性检查，来提高导入的速度。</p>
+<p>97、每次备份完后，计算数据库&#x2F;表数据和索引的大小，监控其增长。</p>
+<p>98、使用定时任务（cron）脚本，来监控从库复制的错误和延迟。</p>
+<p>99、定期备份数据。</p>
+<p>100、定期测试备份的数据。</p>
+<h3 id="5-SQL优化积累"><a href="#5-SQL优化积累" class="headerlink" title="5. SQL优化积累"></a>5. SQL优化积累</h3><ol start="0">
+<li>禁用 select *</li>
+<li>inner join 优于left&#x2F;right join, 因为会选择小表做驱动表</li>
+<li>效率：count(*) &gt; count(1) &gt; count(id) &gt; count(列名)</li>
+<li>多聚合函数时，要么重写sql(推荐)，要么使用联合索引</li>
+<li>单条结果的SQL查询可以追加 limit 1，效率更高</li>
+<li>单位为分转元的 SQL数据库字段处理 和 Java代码处理</li>
+</ol>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs SQL"><span class="hljs-operator">/</span><span class="hljs-operator">/</span><span class="hljs-keyword">SQL</span> 分转元，保留<span class="hljs-number">2</span>位小数<br><span class="hljs-keyword">TRUNCATE</span>(soutcomePayamount<span class="hljs-operator">/</span> <span class="hljs-number">100</span>, <span class="hljs-number">2</span>) <span class="hljs-keyword">AS</span> soutcomePayamount<br><br><span class="hljs-operator">/</span><span class="hljs-operator">/</span>Java 分转元，保留<span class="hljs-number">2</span>位小数<br>BigDecimal price <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span>  BigDecimal(map.get(&quot;soutcomePayamount&quot;) <span class="hljs-operator">=</span><span class="hljs-operator">=</span> <span class="hljs-keyword">null</span> ? &quot;0&quot; :  map.get(&quot;soutcomePayamount&quot;).toString());<br>map.put(&quot;soutcomePayamount&quot;,  price.compareTo(BigDecimal.ZERO) <span class="hljs-operator">&gt;</span> <span class="hljs-number">0</span> ? (price.divide(BigDecimal.valueOf(<span class="hljs-number">100</span>), <span class="hljs-number">2</span>,  BigDecimal.ROUND_DOWN)) : <span class="hljs-number">0</span>);<br></code></pre></td></tr></table></figure>
+
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs SQL"><span class="hljs-operator">/</span><span class="hljs-operator">/</span>按照传入的参数的顺序进行对应排序<br>String <span class="hljs-keyword">sql</span> <span class="hljs-operator">=</span> &quot;SELECT userId, schoolName, schoolProvince&quot; <span class="hljs-operator">+</span><br>        &quot; FROM AcUserschool `U`&quot; <span class="hljs-operator">+</span><br>        &quot;         LEFT JOIN AcSchool `AS` ON `U`.schoolId = `AS`.schoolId&quot; <span class="hljs-operator">+</span><br>        &quot; WHERE userId IN (&quot; <span class="hljs-operator">+</span> SQLUtils.getIn(userIdList) <span class="hljs-operator">+</span> &quot;)&quot; <span class="hljs-operator">+</span><br>        &quot; ORDER BY INSTR(&#x27;&quot; <span class="hljs-operator">+</span> userIds <span class="hljs-operator">+</span> &quot;&#x27;, CONCAT(userId))&quot;;<br></code></pre></td></tr></table></figure>
+
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><code class="hljs SQL"><span class="hljs-operator">/</span><span class="hljs-operator">/</span>一行转多列固定用法<br><span class="hljs-keyword">SELECT</span><br>    a.id,<br>    a.username,<br>    SUBSTRING_INDEX( SUBSTRING_INDEX( a.tags, <span class="hljs-string">&#x27;,&#x27;</span>, b.help_topic_id <span class="hljs-operator">+</span> <span class="hljs-number">1</span> ), <span class="hljs-string">&#x27;,&#x27;</span>,<span class="hljs-operator">-</span> <span class="hljs-number">1</span> ) <span class="hljs-keyword">AS</span> tag<br><span class="hljs-keyword">FROM</span><br>    `testmysql_hangzhuanlie` <span class="hljs-keyword">AS</span> a<br><span class="hljs-keyword">JOIN</span> mysql.help_topic <span class="hljs-keyword">AS</span> b<br><span class="hljs-keyword">ON</span> b.help_topic_id <span class="hljs-operator">&lt;</span> ( length( a.tags ) <span class="hljs-operator">-</span> length( REPLACE ( a.tags, <span class="hljs-string">&#x27;,&#x27;</span>, <span class="hljs-string">&#x27;&#x27;</span> ) ) <span class="hljs-operator">+</span> <span class="hljs-number">1</span> );<br><br><br><br>    <span class="hljs-keyword">SELECT</span><br>        tab.cliqueorderId,<br>        <span class="hljs-built_in">TRIM</span>(<br>            SUBSTRING_INDEX(<br>                SUBSTRING_INDEX(<br>                    tab.lproducts,<br>                    <span class="hljs-string">&#x27;,&#x27;</span>,<br>                    b.help_topic_id <span class="hljs-operator">+</span> <span class="hljs-number">1</span><br>                ),<br>                <span class="hljs-string">&#x27;,&#x27;</span> ,<span class="hljs-operator">-</span> <span class="hljs-number">1</span><br>            )<br>        ) <span class="hljs-keyword">AS</span> lproduct<br>    <span class="hljs-keyword">FROM</span><br>        (<span class="hljs-keyword">SELECT</span> cliqueorderId, lproductMaps, REPLACE(REPLACE(REPLACE(lproductMaps <span class="hljs-operator">-</span><span class="hljs-operator">&gt;&gt;</span> <span class="hljs-string">&#x27;$[*].lproductId&#x27;</span>, <span class="hljs-string">&#x27;[&#x27;</span>, <span class="hljs-string">&#x27;&#x27;</span>), <span class="hljs-string">&#x27;]&#x27;</span>, <span class="hljs-string">&#x27;&#x27;</span>), <span class="hljs-string">&#x27;&quot;&#x27;</span>, <span class="hljs-string">&#x27;&#x27;</span>) <span class="hljs-keyword">as</span> lproducts <span class="hljs-keyword">FROM</span> AcCliqueorder <span class="hljs-keyword">where</span> cliqueId <span class="hljs-operator">=</span> <span class="hljs-string">&#x27;CLIQUE20210323020000000001&#x27;</span>) tab<br>     <span class="hljs-keyword">JOIN</span> mysql.help_topic b <span class="hljs-keyword">ON</span> b.help_topic_id <span class="hljs-operator">&lt;</span> (<br>        LENGTH(tab.lproducts) <span class="hljs-operator">-</span> LENGTH(REPLACE(tab.lproducts, <span class="hljs-string">&#x27;,&#x27;</span>, <span class="hljs-string">&#x27;&#x27;</span>)) <span class="hljs-operator">+</span> <span class="hljs-number">1</span><br>    )<br></code></pre></td></tr></table></figure>
+
+
+              
+            </div>
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/16-%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96/" class="category-chain-item">16_性能优化</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/16-%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96/02-%E6%95%B0%E6%8D%AE%E5%BA%93%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96/" class="category-chain-item">02_数据库性能优化</a>
+  
+  
+
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/MySQL/">#MySQL</a>
+      
+        <a href="/tags/%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96/">#性能优化</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>01-MySQL最全优化经验</div>
+      <div>https://janycode.github.io/2021/11/25/16_性能优化/02_数据库性能优化/01-MySQL最全优化经验/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Jerry(姜源)</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2021年11月25日</div>
+        </div>
+      
+      
+      <div class="license-meta-item">
+        <div>许可协议</div>
+        <div>
+          
+            
+            
+              <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+              <span class="hint--top hint--rounded" aria-label="BY - 姜源">
+                <i class="iconfont icon-by"></i>
+              </span>
+              </a>
+            
+          
+        </div>
+      </div>
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2021/12/30/02_%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/01_Java/01_JavaSE/05_%E5%B9%B6%E5%8F%91%E5%92%8C%E9%94%81/06-40%E8%A1%8C%E4%BB%A3%E7%A0%81%E6%90%9E%E9%80%8F%E7%BA%BF%E7%A8%8B%E6%B1%A0/" title="06-40行代码搞透线程池">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">06-40行代码搞透线程池</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2021/10/17/02_%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/01_Java/01_JavaSE/05_%E5%B9%B6%E5%8F%91%E5%92%8C%E9%94%81/07-%E7%BA%BF%E7%A8%8B%E6%B1%A0%E5%B9%B6%E8%A1%8C%E6%9F%A5%E8%AF%A2/" title="07-线程池并行查询">
+                        <span class="hidden-mobile">07-线程池并行查询</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+  <article id="comments" lazyload>
+    
+  <div id="SOHUCS" sid='https://janycode.github.io/2021/11/25/16_%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96/02_%E6%95%B0%E6%8D%AE%E5%BA%93%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96/01-MySQL%E6%9C%80%E5%85%A8%E4%BC%98%E5%8C%96%E7%BB%8F%E9%AA%8C/'></div>
+  <script type="text/javascript">
+    Fluid.utils.loadComments('#SOHUCS', function() {
+      Fluid.utils.createScript("https://changyan.sohu.com/upload/changyan.js", function() {
+        window.changyan.api.config({"appid":"cyw5OHIcO","appkey":"fea3446b3df4b3f129f34da4cbc87e51"})
+      });
+    });
+  </script>
+  <noscript>Please enable JavaScript to view the comments</noscript>
+
+
+  </article>
+
+
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://simple.blog.csdn.net" target="_blank" rel="nofollow noopener"><span>CSDN</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/janycode" target="_blank" rel="nofollow noopener"><span>GitHub</span></a> <i class="iconfont icon-love"></i> <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="busuanzi_container_site_pv" style="display: none">
+        总访问量(PV) 
+        <span id="busuanzi_value_site_pv"></span>
+         次，
+      </span>
+    
+    
+      <span id="busuanzi_container_site_uv" style="display: none">
+        总访客数(UV) 
+        <span id="busuanzi_value_site_uv"></span>
+         人
+      </span>
+    
+    
+  
+</div>
+
+  
+  
+  
+</div>
+
+<!-- live2d 动画 -->
+<script src="https://eqcn.ajz.miesnfu.com/wp-content/plugins/wp-3d-pony/live2dw/lib/L2Dwidget.min.js"></script>
+<script>
+    L2Dwidget.init({
+        "model": {
+            jsonPath: "https://unpkg.com/live2d-widget-model-haruto@1.0.5/assets/haruto.model.json",
+            "scale": 1
+        },
+        "display": {
+            "position": "right",
+            "width": 100,
+            "height": 200,
+            "hOffset": 35,
+            "vOffset": -85
+        },
+        "mobile": {
+            "show": false,
+            "scale": 0.1
+        },
+        "react": {
+            "opacityDefault": 0.75,
+            "opacityOnHover": 0.2
+        }
+    });
+</script>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <!-- Baidu Analytics -->
+    <script defer>
+      if (!Fluid.ctx.dnt) {
+        var _hmt = _hmt || [];
+        (function() {
+          var hm = document.createElement("script");
+          hm.src = "https://hm.baidu.com/hm.js?bfff735c897eb60ea49b735096b20e47";
+          var s = document.getElementsByTagName("script")[0];
+          s.parentNode.insertBefore(hm, s);
+        })();
+      }
+    </script>
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.0/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      headingSelector : CONFIG.toc.headingSelector || 'h1,h2,h3,h4,h5,h6',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      collapseDepth   : CONFIG.toc.collapseDepth || 0,
+      scrollSmooth    : true,
+      headingsOffset  : -boardTop
+    });
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+  });
+</script>
+
+
+  <script>
+  (function() {
+    var enableLang = CONFIG.code_language.enable && CONFIG.code_language.default;
+    var enableCopy = CONFIG.copy_btn;
+    if (!enableLang && !enableCopy) {
+      return;
+    }
+
+    function getBgClass(ele) {
+      return Fluid.utils.getBackgroundLightness(ele) >= 0 ? 'code-widget-light' : 'code-widget-dark';
+    }
+
+    var copyTmpl = '';
+    copyTmpl += '<div class="code-widget">';
+    copyTmpl += 'LANG';
+    copyTmpl += '</div>';
+    jQuery('.markdown-body pre').each(function() {
+      var $pre = jQuery(this);
+      if ($pre.find('code.mermaid').length > 0) {
+        return;
+      }
+      if ($pre.find('span.line').length > 0) {
+        return;
+      }
+
+      var lang = '';
+
+      if (enableLang) {
+        lang = CONFIG.code_language.default;
+        if ($pre[0].children.length > 0 && $pre[0].children[0].classList.length >= 2 && $pre.children().hasClass('hljs')) {
+          lang = $pre[0].children[0].classList[1];
+        } else if ($pre[0].getAttribute('data-language')) {
+          lang = $pre[0].getAttribute('data-language');
+        } else if ($pre.parent().hasClass('sourceCode') && $pre[0].children.length > 0 && $pre[0].children[0].classList.length >= 2) {
+          lang = $pre[0].children[0].classList[1];
+          $pre.parent().addClass('code-wrapper');
+        } else if ($pre.parent().hasClass('markdown-body') && $pre[0].classList.length === 0) {
+          $pre.wrap('<div class="code-wrapper"></div>');
+        }
+        lang = lang.toUpperCase().replace('NONE', CONFIG.code_language.default);
+      }
+      $pre.append(copyTmpl.replace('LANG', lang).replace('code-widget">',
+        getBgClass($pre[0]) + (enableCopy ? ' code-widget copy-btn" data-clipboard-snippet><i class="iconfont icon-copy"></i>' : ' code-widget">')));
+
+      if (enableCopy) {
+        Fluid.utils.createScript('https://lib.baomitu.com/clipboard.js/2.0.10/clipboard.min.js', function() {
+          var clipboard = new window.ClipboardJS('.copy-btn', {
+            target: function(trigger) {
+              var nodes = trigger.parentNode.childNodes;
+              for (var i = 0; i < nodes.length; i++) {
+                if (nodes[i].tagName === 'CODE') {
+                  return nodes[i];
+                }
+              }
+            }
+          });
+          clipboard.on('success', function(e) {
+            e.clearSelection();
+            e.trigger.innerHTML = e.trigger.innerHTML.replace('icon-copy', 'icon-success');
+            setTimeout(function() {
+              e.trigger.innerHTML = e.trigger.innerHTML.replace('icon-success', 'icon-copy');
+            }, 2000);
+          });
+        });
+      }
+    });
+  })();
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script  src="/js/local-search.js" ></script>
+
+  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

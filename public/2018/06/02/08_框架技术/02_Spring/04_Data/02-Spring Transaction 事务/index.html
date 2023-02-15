@@ -1,0 +1,1130 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=light>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Jerry(姜源)">
+  <meta name="keywords" content="Java,Html,CSS,JavaScript,Python,C,Linux,shell编程经验分享、技术总结、心得体会">
+  
+    <meta name="description" content="参考资料：https:&#x2F;&#x2F;lfvepclr.gitbooks.io&#x2F;spring-framework-5-doc-cn&#x2F;content&#x2F; 1. Spring 事务特性事务 : 是逻辑上一组操作，要么全都成功，要么全都失败.事务特性 : ACID  原子性 : 事务不可分割 一致性 : 事务执行的前后，数据完整性保持一致 隔离性 : 一个事务执行的时候，不应该受到其他事务的打扰 持久性 : 一旦结">
+<meta property="og:type" content="article">
+<meta property="og:title" content="02-Spring Transaction 事务">
+<meta property="og:url" content="https://janycode.github.io/2018/06/02/08_%E6%A1%86%E6%9E%B6%E6%8A%80%E6%9C%AF/02_Spring/04_Data/02-Spring%20Transaction%20%E4%BA%8B%E5%8A%A1/index.html">
+<meta property="og:site_name" content="姜源の云笔记">
+<meta property="og:description" content="参考资料：https:&#x2F;&#x2F;lfvepclr.gitbooks.io&#x2F;spring-framework-5-doc-cn&#x2F;content&#x2F; 1. Spring 事务特性事务 : 是逻辑上一组操作，要么全都成功，要么全都失败.事务特性 : ACID  原子性 : 事务不可分割 一致性 : 事务执行的前后，数据完整性保持一致 隔离性 : 一个事务执行的时候，不应该受到其他事务的打扰 持久性 : 一旦结">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20200617144911.png">
+<meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20210218092219.png">
+<meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20210218092235.png">
+<meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20210218092251.png">
+<meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20210218092306.png">
+<meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20210218092326.png">
+<meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20210218092340.png">
+<meta property="article:published_time" content="2018-06-02T09:20:30.000Z">
+<meta property="article:modified_time" content="2022-05-28T03:44:07.049Z">
+<meta property="article:author" content="Jerry(姜源)">
+<meta property="article:tag" content="事务">
+<meta property="article:tag" content="Spring">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20200617144911.png">
+  
+  
+    <meta name="referrer" content="no-referrer-when-downgrade">
+  
+  
+  <title>02-Spring Transaction 事务 - 姜源の云笔记</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"janycode.github.io","root":"/","version":"1.9.0","typing":{"enable":true,"typeSpeed":50,"cursorChar":"|","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":false},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":"bfff735c897eb60ea49b735096b20e47","google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+
+  
+<meta name="generator" content="Hexo 6.2.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 50vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>姜源の云笔记</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tools/">
+                <i class="iconfont icon-slack-fill"></i>
+                工具
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="02-Spring Transaction 事务"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-author" aria-hidden="true"></i>
+        Jerry(姜源)
+      </span>
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2018-06-02 17:20" pubdate>
+          星期六, 2018/06/02 17:20:30
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          <!-- compatible with older versions-->
+          363 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          <!-- compatible with older versions-->
+          4 分钟
+        
+      </span>
+    
+
+    
+    
+      
+        <span id="busuanzi_container_page_pv" style="display: none">
+          <i class="iconfont icon-eye" aria-hidden="true"></i>
+          <span id="busuanzi_value_page_pv"></span> 次
+        </span>
+        
+      
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">02-Spring Transaction 事务</h1>
+            
+            <div class="markdown-body">
+              
+              <p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20200617144911.png" srcset="/img/loading.gif" lazyload alt="LOGO"></p>
+<p>参考资料：<a target="_blank" rel="noopener" href="https://lfvepclr.gitbooks.io/spring-framework-5-doc-cn/content/">https://lfvepclr.gitbooks.io/spring-framework-5-doc-cn/content/</a></p>
+<h3 id="1-Spring-事务特性"><a href="#1-Spring-事务特性" class="headerlink" title="1. Spring 事务特性"></a>1. Spring 事务特性</h3><p>事务 : 是逻辑上一组操作，要么全都成功，要么全都失败.<br>事务特性 : <code>ACID</code></p>
+<ul>
+<li><strong>原子性</strong> : 事务不可分割</li>
+<li><strong>一致性</strong> : 事务执行的前后，数据完整性保持一致</li>
+<li><strong>隔离性</strong> : 一个事务执行的时候，不应该受到其他事务的打扰</li>
+<li><strong>持久性</strong> : 一旦结束，数据就永久的保存到数据库</li>
+</ul>
+<blockquote>
+<p>如果不考虑隔离性:<br><strong>脏读</strong> : 一个事务读到另一个事务未提交数据<br><strong>不可重复读</strong> : 一个事务读到另一个事务已经提交数据（update）导致一个事务多次查询结果不一致<br><strong>幻读&#x2F;虚读</strong> : select 某记录是否存在，结果是不存在，准备插入此记录，但执行 insert 时发现此记录已存在（因刚好被另一个事务 insert），无法插入，此时 select 过程发生幻读。</p>
+</blockquote>
+<table style="margin: auto;"">
+<tbody>
+<tr>
+<th>事务隔离级别</th>
+<th>脏读</th>
+<th>不可重复读</th>
+<th>幻读</th>
+</tr>
+<tr>
+<td>读未提交（read-uncommitted）</td>
+<td>是</td>
+<td>是</td>
+<td>是</td>
+</tr>
+<tr>
+<td>读已提交（read-committed）</td>
+<td>否</td>
+<td>是</td>
+<td>是</td>
+</tr>
+<tr>
+<td>可重复读（repeatable-read）</td>
+<td>否</td>
+<td>否</td>
+<td>是</td>
+</tr>
+<tr>
+<td>串行化/序列化（serializable）</td>
+<td>否</td>
+<td>否</td>
+<td>否</td>
+</tr>
+</tbody>
+</table>
+
+<blockquote>
+<p>mySQL 数据库存储引擎：innoDB(支持事务)、MyISAM(不支持事务)</p>
+</blockquote>
+<p>一般，存在两种类型的丢失更新，对于一个事务回滚另外一个事务提交而引发的数据不一致的情况称为第一类丢失更新。如：</p>
+<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20210218092219.png" srcset="/img/loading.gif" lazyload alt="image-20210218092218568"></p>
+<p>目前大部分数据库已经克服了第一类丢失更新的问题。如果多个事务并发提交，就会导致第二类丢失更新的情况：</p>
+<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20210218092235.png" srcset="/img/loading.gif" lazyload alt="image-20210218092234416"></p>
+<p>为了克服这类问题，数据库提出了事务之间的隔离级别。共有4类隔离级别：</p>
+<p>（1）未提交读（最低隔离级别）</p>
+<p>允许一个事务读取另外一个事务没有提交的数据，可能发生脏读场景。</p>
+<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20210218092251.png" srcset="/img/loading.gif" lazyload alt="image-20210218092250147"></p>
+<p>（2）读写提交</p>
+<p>指一个事务只能读取另外一个事务已经提交的数据，不能读取未提交的数据。</p>
+<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20210218092306.png" srcset="/img/loading.gif" lazyload alt="image-20210218092305424"></p>
+<p>但是读写提交也会产生下面问题（不可重复读）：</p>
+<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20210218092326.png" srcset="/img/loading.gif" lazyload alt="image-20210218092324953"></p>
+<p>为了克服这个不足，数据库的隔离级别还提出了可重复度的隔离级别，能够消除不可重复度问题。</p>
+<p>（3）可重复读</p>
+<p>目标是克服读写提交中出现的不可重复读现象：</p>
+<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20210218092340.png" srcset="/img/loading.gif" lazyload alt="image-20210218092339271"></p>
+<p>（4）串行化</p>
+<p>数据库最高的隔离级别，它会要求所有的SQL都会按照顺序执行，这样可以克服上述隔离级别中出现的所有问题，能够完全保证数据的完整性。但追求更高的隔离性，也要付出锁的代价。有了锁，意味着性能的丢失，而且隔离级别越高，性能越是直线下降。</p>
+<p>配置默认的隔离级别（在application.properties属性文件中）：</p>
+<figure class="highlight properties"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs properties"><span class="hljs-comment">#隔离级别数字配置的含义</span><br><span class="hljs-comment">#-1 数据库默认隔离级别</span><br><span class="hljs-comment">#1 未提交读</span><br><span class="hljs-comment">#2 读写提交</span><br><span class="hljs-comment">#4 可重复读</span><br><span class="hljs-comment">#8 串行化</span><br><span class="hljs-comment">#tomca数据默认隔离级别</span><br><span class="hljs-attr">spring.datasource.tomcat.default-transaction-isolation</span>=<span class="hljs-string">2</span><br></code></pre></td></tr></table></figure>
+
+<p>代码配置事务的隔离级别和传播行为：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-comment">//isolation 隔离级别，propagation 传播行为，readOnly 只读。</span><br><span class="hljs-meta">@Transactional(isolation= Isolation.REPEATABLE_READ, propagation= Propagation.REQUIRED, readOnly=false)</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">transfer</span><span class="hljs-params">(Integer from, Integer to, Double money)</span> &#123;...&#125;<br></code></pre></td></tr></table></figure>
+
+
+
+<h3 id="2-Spring-事务API"><a href="#2-Spring-事务API" class="headerlink" title="2. Spring 事务API"></a>2. Spring 事务API</h3><ul>
+<li><p><strong>PlatformTransactionManager</strong> : 平台事务管理器</p>
+<ul>
+<li>getTransaction(TransactionDefinition definition) </li>
+<li>rollback(TransactionStatus status) </li>
+<li>commit(TransactionStatus status)</li>
+</ul>
+</li>
+<li><p><strong>TransactionDefinition</strong> : 事务定义</p>
+<ul>
+<li>ISOLation_XXX：事务隔离级别(isolation)<ul>
+<li>ISOLATION_DEFAULT : 默认级别，Mysql –&gt; <code>repeatable_read</code> | Oracle –&gt;&gt; <code>read_commited</code></li>
+<li>ISOLATION_READ_UNCOMMITTED</li>
+<li>ISOLATION_READ_COMMITTED </li>
+<li>ISOLATION_REPEATABLE_READ </li>
+<li>ISOLATION_SERIALIZABLE</li>
+</ul>
+</li>
+<li>PROPAGATION_XXX：事务的传播行为</li>
+</ul>
+</li>
+<li><p><strong>TransactionStatus</strong> : 事务状态<br>  是否有保存点<br>  是否是一个新的事务<br>  事务是否已经提交</p>
+</li>
+</ul>
+<blockquote>
+<p>关系 : </p>
+<p>PlatformTransactionManager 通过 TransactionDefinition 设置事务相关信息管理事务，管理事务过程中，产生一些事务状态，状态由 TransactionStatus 记录。</p>
+</blockquote>
+<p>API详解:</p>
+<p><strong>PlatformTransactionManager</strong> : 接口<br>Spring为不同的持久化框架提供了不同 PlatformTransactionManager 接口实现。</p>
+<p>使用Spring JDBC或iBatis 进行持久化数据时使用（★）：</p>
+<ul>
+<li>org.springframework.jdbc.datasource.<strong>DataSourceTransactionManager</strong></li>
+</ul>
+<p>使用Hibernate进行持久化数据时使用：</p>
+<ul>
+<li>org.springframework.orm.hibernate.<strong>HibernateTransactionManager</strong></li>
+</ul>
+<p>使用JPA进行持久化时使用：</p>
+<ul>
+<li>org.springframework.orm.jpa.<strong>JpaTransactionManager</strong></li>
+</ul>
+<p>当持久化机制是Jdo时使用：</p>
+<ul>
+<li>org.springframework.jdo.<strong>JdoTransactionManager</strong></li>
+</ul>
+<p>使用一个JTA实现来管理事务，在一个事务跨越多个资源时必须使用：</p>
+<ul>
+<li>org.springframework.transaction.jta.<strong>JtaTransactionManager</strong></li>
+</ul>
+<h3 id="3-Spring-事务传播行为"><a href="#3-Spring-事务传播行为" class="headerlink" title="3. Spring 事务传播行为"></a>3. Spring 事务传播行为</h3><p>不是JDBC事务管理，用来解决实际开发的问题。</p>
+<p>传播行为：<code>解决业务层之间调用的事务的关系</code> (ServiceA.m() 方法与 ServiceB.m() 方法)</p>
+<ul>
+<li><p><strong><code>PROPAGATION_REQUIRED</code></strong> :	支持当前事务，如果不存在 就新建一个</p>
+<blockquote>
+<p>A,B——如果A有事务，B使用A的事务，如果A没有事务，B就开启一个新的事务(A,B是在一个事务中)</p>
+</blockquote>
+</li>
+<li><p><strong>PROPAGATION_SUPPORTS</strong> :	支持当前事务，如果不存在，就不使用事务</p>
+<blockquote>
+<p>A,B——如果A有事务，B使用A的事务，如果A没有事务，B就不使用事务</p>
+</blockquote>
+</li>
+<li><p><strong>PROPAGATION_MANDATORY</strong> :	支持当前事务，如果不存在，抛出异常</p>
+<blockquote>
+<p>A,B——如果A有事务，B使用A的事务，如果A没有事务，抛出异常</p>
+</blockquote>
+</li>
+<li><p><strong><code>PROPAGATION_REQUIRES_NEW</code></strong> :	如果有事务存在，挂起当前事务，创建一个新的事务</p>
+<blockquote>
+<p>A,B——如果A有事务，B将A的事务挂起，重新创建一个新的事务(A,B不在一个事务中，事务互不影响)</p>
+</blockquote>
+</li>
+<li><p><strong>PROPAGATION_NOT_SUPPORTED</strong> :	以非事务方式运行，如果有事务存在，挂起当前事务</p>
+<blockquote>
+<p>A,B——非事务的方式运行，A有事务，就会挂起当前的事务</p>
+</blockquote>
+</li>
+<li><p><strong>PROPAGATION_NEVER</strong> :	以非事务方式运行，如果有事务存在，抛出异常</p>
+</li>
+<li><p><strong><code>PROPAGATION_NESTED</code></strong> :	如果当前事务存在，则嵌套事务执行。基于 SavePoint 技术</p>
+<blockquote>
+<p>A,B——A有事务，A执行之后，将A事务执行之后的内容保存到SavePoint；B事务有异常的话，用户需要自己设置事务提交还是回滚。</p>
+</blockquote>
+</li>
+<li><p>常用：<br>PROPAGATION_REQUIRED<br>PROPAGATION_REQUIRES_NEW<br>PROPAGATION_NESTED</p>
+</li>
+</ul>
+<h3 id="4-Spring-事务分类"><a href="#4-Spring-事务分类" class="headerlink" title="4. Spring 事务分类"></a>4. Spring 事务分类</h3><ul>
+<li><p>Spring 事务管理<br>  分层开发：事务处在Service层。</p>
+</li>
+<li><p>Spring 事务管理分成两类</p>
+<ul>
+<li><p>编程式事务管理 : 手动编写代码完成事务管理 (xml配置 + transactionTemplate.execute())</p>
+</li>
+<li><p><code>声明式事务管理</code> : 不需要手动编写代码和配置 (★ @Transactional 注解)</p>
+</li>
+</ul>
+</li>
+</ul>
+<h4 id="4-1-编程式事务"><a href="#4-1-编程式事务" class="headerlink" title="4.1 编程式事务"></a>4.1 编程式事务</h4><ul>
+<li><strong>TransactionTemplate</strong></li>
+</ul>
+<p>在 doIntransaction 里处理逻辑。如果出异常了，就执行 isRollbackOnly 方法进行回滚。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@Autowired</span><br>TransactionTemplate transactionTemplate;<br><br>transactionTemplate.execute((TransactionStatus transactionStatus) -&gt; &#123;<br>    <span class="hljs-keyword">try</span> &#123;<br>        <span class="hljs-comment">//...</span><br>    &#125; <span class="hljs-keyword">catch</span> (Exception e) &#123;<br>        transactionStatus.isRollbackOnly();<br>        <span class="hljs-keyword">throw</span> e;<br>    &#125;<br>    <span class="hljs-keyword">return</span> <span class="hljs-literal">null</span>;<br>&#125;);<br></code></pre></td></tr></table></figure>
+
+
+
+<ul>
+<li><strong>TransactionManager</strong></li>
+</ul>
+<p>手动 commit，异常就 rollback</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-type">TransactionStatus</span> <span class="hljs-variable">status</span> <span class="hljs-operator">=</span> transactionManager.getTransaction(<span class="hljs-keyword">new</span> <span class="hljs-title class_">DefaultTransactionDefinition</span>());<br><span class="hljs-keyword">try</span> &#123;<br>    userRepository.save(user);<br>    transactionManager.commit(status);<br>&#125; <span class="hljs-keyword">catch</span> (Exception e) &#123;<br>    transactionManager.rollback(status);<br>    e.printStackTrace();<br>&#125;<br></code></pre></td></tr></table></figure>
+
+
+
+<h4 id="4-2-声明式事务"><a href="#4-2-声明式事务" class="headerlink" title="4.2 声明式事务"></a>4.2 声明式事务</h4><p>Spring 事务的本质是数据库对事务的支持。</p>
+<p>支持方式：</p>
+<ul>
+<li><code>@EnableTransactionManagement</code> 注解方式，开启对事务注解的解析</li>
+<li><code>&lt;tx:annotation-driven /&gt;</code> XML配置方式，开启 spring 对注解事务的支持</li>
+</ul>
+<h3 id="5-Spring-事务操作转账"><a href="#5-Spring-事务操作转账" class="headerlink" title="5. Spring 事务操作转账"></a>5. Spring 事务操作转账</h3><h4 id="5-1-无事务操作"><a href="#5-1-无事务操作" class="headerlink" title="5.1 无事务操作"></a>5.1 无事务操作</h4><ol>
+<li>创建表</li>
+</ol>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-keyword">CREATE</span> <span class="hljs-keyword">TABLE</span> `account` (<br>    `id` <span class="hljs-type">int</span>(<span class="hljs-number">11</span>) <span class="hljs-keyword">NOT</span> <span class="hljs-keyword">NULL</span> AUTO_INCREMENT,<br>    `name` <span class="hljs-type">varchar</span>(<span class="hljs-number">20</span>) <span class="hljs-keyword">NOT</span> <span class="hljs-keyword">NULL</span>,<br>    `money` <span class="hljs-keyword">double</span> <span class="hljs-keyword">DEFAULT</span> <span class="hljs-keyword">NULL</span>,<br>    <span class="hljs-keyword">PRIMARY</span> KEY (`id`)<br>) ENGINE<span class="hljs-operator">=</span>InnoDB AUTO_INCREMENT<span class="hljs-operator">=</span><span class="hljs-number">3</span> <span class="hljs-keyword">DEFAULT</span> CHARSET<span class="hljs-operator">=</span>utf8;<br><br><span class="hljs-keyword">INSERT</span> <span class="hljs-keyword">INTO</span> `account` <span class="hljs-keyword">VALUES</span> (<span class="hljs-string">&#x27;1&#x27;</span>, <span class="hljs-string">&#x27;aaa&#x27;</span>, <span class="hljs-string">&#x27;1000&#x27;</span>);<br><span class="hljs-keyword">INSERT</span> <span class="hljs-keyword">INTO</span> `account` <span class="hljs-keyword">VALUES</span> (<span class="hljs-string">&#x27;2&#x27;</span>, <span class="hljs-string">&#x27;bbb&#x27;</span>, <span class="hljs-string">&#x27;1000&#x27;</span>);<br></code></pre></td></tr></table></figure>
+
+<ol start="2">
+<li>创建项目，导入依赖</li>
+</ol>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><code class="hljs xml"><span class="hljs-tag">&lt;<span class="hljs-name">dependencies</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">dependency</span>&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">groupId</span>&gt;</span>org.springframework<span class="hljs-tag">&lt;/<span class="hljs-name">groupId</span>&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">artifactId</span>&gt;</span>spring-context<span class="hljs-tag">&lt;/<span class="hljs-name">artifactId</span>&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">version</span>&gt;</span>5.0.2.RELEASE<span class="hljs-tag">&lt;/<span class="hljs-name">version</span>&gt;</span><br>    <span class="hljs-tag">&lt;/<span class="hljs-name">dependency</span>&gt;</span><br>    <span class="hljs-comment">&lt;!-- Spring 事务依赖 --&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">dependency</span>&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">groupId</span>&gt;</span>org.springframework<span class="hljs-tag">&lt;/<span class="hljs-name">groupId</span>&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">artifactId</span>&gt;</span>spring-tx<span class="hljs-tag">&lt;/<span class="hljs-name">artifactId</span>&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">version</span>&gt;</span>5.0.2.RELEASE<span class="hljs-tag">&lt;/<span class="hljs-name">version</span>&gt;</span><br>    <span class="hljs-tag">&lt;/<span class="hljs-name">dependency</span>&gt;</span><br><br>    <span class="hljs-tag">&lt;<span class="hljs-name">dependency</span>&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">groupId</span>&gt;</span>org.aspectj<span class="hljs-tag">&lt;/<span class="hljs-name">groupId</span>&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">artifactId</span>&gt;</span>aspectjweaver<span class="hljs-tag">&lt;/<span class="hljs-name">artifactId</span>&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">version</span>&gt;</span>1.8.13<span class="hljs-tag">&lt;/<span class="hljs-name">version</span>&gt;</span><br>    <span class="hljs-tag">&lt;/<span class="hljs-name">dependency</span>&gt;</span><br><br>    <span class="hljs-tag">&lt;<span class="hljs-name">dependency</span>&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">groupId</span>&gt;</span>org.springframework<span class="hljs-tag">&lt;/<span class="hljs-name">groupId</span>&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">artifactId</span>&gt;</span>spring-jdbc<span class="hljs-tag">&lt;/<span class="hljs-name">artifactId</span>&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">version</span>&gt;</span>5.0.2.RELEASE<span class="hljs-tag">&lt;/<span class="hljs-name">version</span>&gt;</span><br>    <span class="hljs-tag">&lt;/<span class="hljs-name">dependency</span>&gt;</span><br><br>    <span class="hljs-tag">&lt;<span class="hljs-name">dependency</span>&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">groupId</span>&gt;</span>com.alibaba<span class="hljs-tag">&lt;/<span class="hljs-name">groupId</span>&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">artifactId</span>&gt;</span>druid<span class="hljs-tag">&lt;/<span class="hljs-name">artifactId</span>&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">version</span>&gt;</span>1.0.9<span class="hljs-tag">&lt;/<span class="hljs-name">version</span>&gt;</span><br>    <span class="hljs-tag">&lt;/<span class="hljs-name">dependency</span>&gt;</span><br><br>    <span class="hljs-tag">&lt;<span class="hljs-name">dependency</span>&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">groupId</span>&gt;</span>mysql<span class="hljs-tag">&lt;/<span class="hljs-name">groupId</span>&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">artifactId</span>&gt;</span>mysql-connector-java<span class="hljs-tag">&lt;/<span class="hljs-name">artifactId</span>&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">version</span>&gt;</span>5.1.32<span class="hljs-tag">&lt;/<span class="hljs-name">version</span>&gt;</span><br>    <span class="hljs-tag">&lt;/<span class="hljs-name">dependency</span>&gt;</span><br><br>    <span class="hljs-tag">&lt;<span class="hljs-name">dependency</span>&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">groupId</span>&gt;</span>junit<span class="hljs-tag">&lt;/<span class="hljs-name">groupId</span>&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">artifactId</span>&gt;</span>junit<span class="hljs-tag">&lt;/<span class="hljs-name">artifactId</span>&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">version</span>&gt;</span>4.12<span class="hljs-tag">&lt;/<span class="hljs-name">version</span>&gt;</span><br>    <span class="hljs-tag">&lt;/<span class="hljs-name">dependency</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">dependencies</span>&gt;</span><br></code></pre></td></tr></table></figure>
+
+<ol start="3">
+<li>创建接口和类 Dao &amp; Service</li>
+</ol>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-comment">// 1.AccountDao</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">interface</span> <span class="hljs-title class_">AccountDao</span> &#123;<br>    <span class="hljs-comment">// 加钱</span><br>    <span class="hljs-keyword">void</span> <span class="hljs-title function_">increaseMoney</span><span class="hljs-params">(Integer id, Double money)</span>;<br>    <span class="hljs-comment">// 减钱</span><br>    <span class="hljs-keyword">void</span> <span class="hljs-title function_">decreaseMoney</span><span class="hljs-params">(Integer id, Double money)</span>;<br>&#125;<br><br><span class="hljs-comment">// 2.AccountDaoImpl</span><br><span class="hljs-comment">// 继承 JdbcDaoSupport 可以直接调用父类方法(含了1个 jdbcTemplate)</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">AccountDaoImpl</span> <span class="hljs-keyword">extends</span> <span class="hljs-title class_">JdbcDaoSupport</span> <span class="hljs-keyword">implements</span> <span class="hljs-title class_">AccountDao</span>  &#123;<br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">increaseMoney</span><span class="hljs-params">(Integer id, Double money)</span> &#123;<br>        getJdbcTemplate().update(<span class="hljs-string">&quot;update account set money = money+? where id = ? &quot;</span>, money,id);<br>    &#125;<br><br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">decreaseMoney</span><span class="hljs-params">(Integer id, Double money)</span> &#123;<br>        getJdbcTemplate().update(<span class="hljs-string">&quot;update account set money = money-? where id = ? &quot;</span>, money,id);<br>    &#125;<br>&#125;<br>    <br><span class="hljs-comment">// 3.AccountService</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">interface</span> <span class="hljs-title class_">AccountService</span> &#123;<br>    <span class="hljs-comment">//转账方法</span><br>    <span class="hljs-keyword">void</span> <span class="hljs-title function_">transfer</span><span class="hljs-params">(Integer from,Integer to,Double money)</span>;<br>&#125;<br><br><span class="hljs-comment">// 4.AccountServiceImpl</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">AccountServiceImpl</span> <span class="hljs-keyword">implements</span> <span class="hljs-title class_">AccountService</span> &#123;<br>    <span class="hljs-keyword">private</span> AccountDao accountDao;<br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">transfer</span><span class="hljs-params">(Integer from, Integer to, Double money)</span> &#123;<br>        <span class="hljs-comment">// 减钱</span><br>        accountDao.decreaseMoney(from, money);<br>        <span class="hljs-comment">// int i = 1 / 0;// 如果发生异常数据（钱）会丢失，数据不一致</span><br>        <span class="hljs-comment">// 加钱</span><br>        accountDao.increaseMoney(to, money);<br>    &#125;<br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">setAccountDao</span><span class="hljs-params">(AccountDao accountDao)</span> &#123;<br>        <span class="hljs-built_in">this</span>.accountDao = accountDao;<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<ol start="4">
+<li>创建 applicationContext.xml 引入事务 <code>tx</code> 约束</li>
+</ol>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><code class="hljs java">&lt;?xml version=<span class="hljs-string">&quot;1.0&quot;</span> encoding=<span class="hljs-string">&quot;UTF-8&quot;</span>?&gt;<br>&lt;beans xmlns:xsi=<span class="hljs-string">&quot;http://www.w3.org/2001/XMLSchema-instance&quot;</span><br>       xmlns=<span class="hljs-string">&quot;http://www.springframework.org/schema/beans&quot;</span> xmlns:context=<span class="hljs-string">&quot;http://www.springframework.org/schema/context&quot;</span><br>       xmlns:aop=<span class="hljs-string">&quot;http://www.springframework.org/schema/aop&quot;</span> xmlns:tx=<span class="hljs-string">&quot;http://www.springframework.org/schema/tx&quot;</span><br>       xsi:schemaLocation=<span class="hljs-string">&quot;http://www.springframework.org/schema/beans</span><br><span class="hljs-string">    http://www.springframework.org/schema/beans/spring-beans-4.2.xsd</span><br><span class="hljs-string">    http://www.springframework.org/schema/context</span><br><span class="hljs-string">    http://www.springframework.org/schema/context/spring-context-4.2.xsd</span><br><span class="hljs-string">    http://www.springframework.org/schema/aop</span><br><span class="hljs-string">    http://www.springframework.org/schema/aop/spring-aop-4.2.xsd</span><br><span class="hljs-string">    http://www.springframework.org/schema/tx</span><br><span class="hljs-string">    http://www.springframework.org/schema/tx/spring-tx-4.2.xsd &quot;</span>&gt;<br><br>    &lt;bean name=<span class="hljs-string">&quot;dataSource&quot;</span> class=<span class="hljs-string">&quot;com.alibaba.druid.pool.DruidDataSource&quot;</span>&gt;<br>        &lt;property name=<span class="hljs-string">&quot;url&quot;</span> value=<span class="hljs-string">&quot;jdbc:mysql://localhost:3306/数据库名&quot;</span>&gt;&lt;/property&gt;<br>        &lt;property name=<span class="hljs-string">&quot;driverClassName&quot;</span> value=<span class="hljs-string">&quot;com.mysql.jdbc.Driver&quot;</span>&gt;&lt;/property&gt;<br>        &lt;property name=<span class="hljs-string">&quot;username&quot;</span> value=<span class="hljs-string">&quot;root&quot;</span>&gt;&lt;/property&gt;<br>        &lt;property name=<span class="hljs-string">&quot;password&quot;</span> value=<span class="hljs-string">&quot;root&quot;</span>&gt;&lt;/property&gt;<br>    &lt;/bean&gt;<br><br>    &lt;bean name=<span class="hljs-string">&quot;accountDao&quot;</span> class=<span class="hljs-string">&quot;com.AccountDaoImpl&quot;</span>&gt;<br>        &lt;property name=<span class="hljs-string">&quot;dataSource&quot;</span> ref=<span class="hljs-string">&quot;dataSource&quot;</span>&gt;&lt;/property&gt;<br>    &lt;/bean&gt;<br><br>    &lt;bean name=<span class="hljs-string">&quot;accountService&quot;</span> class=<span class="hljs-string">&quot;com.AccountServiceImpl&quot;</span>&gt;<br>        &lt;property name=<span class="hljs-string">&quot;accountDao&quot;</span> ref=<span class="hljs-string">&quot;accountDao&quot;</span>&gt;&lt;/property&gt;<br>    &lt;/bean&gt;<br><br>&lt;/beans&gt;<br></code></pre></td></tr></table></figure>
+
+<p>5.测试</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">Demo</span> &#123;<br>    <span class="hljs-meta">@Test</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">test</span><span class="hljs-params">()</span>&#123;<br>        <span class="hljs-type">ApplicationContext</span> <span class="hljs-variable">context</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">ClassPathXmlApplicationContext</span>(<span class="hljs-string">&quot;applicationContext.xml&quot;</span>);<br>        <span class="hljs-type">AccountService</span> <span class="hljs-variable">accountService</span> <span class="hljs-operator">=</span> (AccountService)context.getBean(<span class="hljs-string">&quot;accountService&quot;</span>);<br>        accountService.transfer(<span class="hljs-number">1</span>, <span class="hljs-number">2</span>, <span class="hljs-number">100d</span>);<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<h4 id="5-2-XML-配置事务"><a href="#5-2-XML-配置事务" class="headerlink" title="5.2 XML 配置事务"></a>5.2 XML 配置事务</h4><p>无事务操作时，如果在转账方法中出现异常后，数据前后会产生不一致，此时，我们需要用 Spring 的事务管理来解决这一问题。</p>
+<p>手动编码的方式完成事务管理，缺点 : <strong>代码量增加，代码有侵入性</strong>。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-comment">// 修改AccountServiceImpl</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">AccountServiceImpl</span> <span class="hljs-keyword">implements</span> <span class="hljs-title class_">AccountService</span> &#123;<br>    <span class="hljs-keyword">private</span> AccountDao accountDao;<br>    <span class="hljs-comment">// TransactionTemplate 事务模板类</span><br>    <span class="hljs-keyword">private</span> TransactionTemplate transactionTemplate;<br><br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">transfer</span><span class="hljs-params">(Integer from, Integer to, Double money)</span> &#123;<br>        <span class="hljs-comment">// 事务模板调用 execute 来自动开启、关闭、以及异常时自动回滚操作</span><br>        transactionTemplate.execute(<span class="hljs-keyword">new</span> <span class="hljs-title class_">TransactionCallbackWithoutResult</span>() &#123;<br>            <span class="hljs-meta">@Override</span><br>            <span class="hljs-keyword">protected</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">doInTransactionWithoutResult</span><span class="hljs-params">(TransactionStatus transactionStatus)</span> &#123;<br>                <span class="hljs-comment">// 减钱</span><br>                accountDao.decreaseMoney(from, money);<br>                <span class="hljs-type">int</span> <span class="hljs-variable">i</span> <span class="hljs-operator">=</span> <span class="hljs-number">1</span> / <span class="hljs-number">0</span>; <span class="hljs-comment">// 如果发生异常数据（钱）不会丢失，数据保持一致</span><br>                <span class="hljs-comment">// 加钱</span><br>                accountDao.increaseMoney(to, money);<br>            &#125;<br>        &#125;);<br>    &#125;<br><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">setAccountDao</span><span class="hljs-params">(AccountDao accountDao)</span> &#123;<br>        <span class="hljs-built_in">this</span>.accountDao = accountDao;<br>    &#125;<br><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">setTransactionTemplate</span><span class="hljs-params">(TransactionTemplate transactionTemplate)</span> &#123;<br>        <span class="hljs-built_in">this</span>.transactionTemplate = transactionTemplate;<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><code class="hljs xml"><span class="hljs-comment">&lt;!-- applicationContext.xml --&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">bean</span> <span class="hljs-attr">name</span>=<span class="hljs-string">&quot;dataSource&quot;</span> <span class="hljs-attr">class</span>=<span class="hljs-string">&quot;com.alibaba.druid.pool.DruidDataSource&quot;</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">property</span> <span class="hljs-attr">name</span>=<span class="hljs-string">&quot;url&quot;</span> <span class="hljs-attr">value</span>=<span class="hljs-string">&quot;jdbc:mysql://localhost:3306/mydb&quot;</span> /&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">property</span> <span class="hljs-attr">name</span>=<span class="hljs-string">&quot;driverClassName&quot;</span> <span class="hljs-attr">value</span>=<span class="hljs-string">&quot;com.mysql.jdbc.Driver&quot;</span> /&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">property</span> <span class="hljs-attr">name</span>=<span class="hljs-string">&quot;username&quot;</span> <span class="hljs-attr">value</span>=<span class="hljs-string">&quot;root&quot;</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">property</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">property</span> <span class="hljs-attr">name</span>=<span class="hljs-string">&quot;password&quot;</span> <span class="hljs-attr">value</span>=<span class="hljs-string">&quot;root&quot;</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">property</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">bean</span>&gt;</span><br><br><span class="hljs-comment">&lt;!-- TransactionManager 事务核心管理器，封装了所有事务操作，依赖于连接池 --&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">bean</span> <span class="hljs-attr">name</span>=<span class="hljs-string">&quot;transactionManager&quot;</span> <span class="hljs-attr">class</span>=<span class="hljs-string">&quot;org.springframework.jdbc.datasource.DataSourceTransactionManager&quot;</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">property</span> <span class="hljs-attr">name</span>=<span class="hljs-string">&quot;dataSource&quot;</span> <span class="hljs-attr">ref</span>=<span class="hljs-string">&quot;dataSource&quot;</span> /&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">bean</span>&gt;</span><br><br><span class="hljs-comment">&lt;!-- TransactionTemplate 事务模板对象，依赖于事务核心管理器 --&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">bean</span> <span class="hljs-attr">name</span>=<span class="hljs-string">&quot;transactionTemplate&quot;</span> <span class="hljs-attr">class</span>=<span class="hljs-string">&quot;org.springframework.transaction.support.TransactionTemplate&quot;</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">property</span> <span class="hljs-attr">name</span>=<span class="hljs-string">&quot;transactionManager&quot;</span> <span class="hljs-attr">ref</span>=<span class="hljs-string">&quot;transactionManager&quot;</span> /&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">bean</span>&gt;</span><br><br><span class="hljs-tag">&lt;<span class="hljs-name">bean</span> <span class="hljs-attr">name</span>=<span class="hljs-string">&quot;accountDao&quot;</span> <span class="hljs-attr">class</span>=<span class="hljs-string">&quot;com.AccountDaoImpl&quot;</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">property</span> <span class="hljs-attr">name</span>=<span class="hljs-string">&quot;dataSource&quot;</span> <span class="hljs-attr">ref</span>=<span class="hljs-string">&quot;dataSource&quot;</span> /&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">bean</span>&gt;</span><br><br><span class="hljs-tag">&lt;<span class="hljs-name">bean</span> <span class="hljs-attr">name</span>=<span class="hljs-string">&quot;accountService&quot;</span> <span class="hljs-attr">class</span>=<span class="hljs-string">&quot;com.AccountServiceImpl&quot;</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">property</span> <span class="hljs-attr">name</span>=<span class="hljs-string">&quot;accountDao&quot;</span> <span class="hljs-attr">ref</span>=<span class="hljs-string">&quot;accountDao&quot;</span> /&gt;</span><br>    <span class="hljs-comment">&lt;!-- 为 accountService 注入事务模板对象 --&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">property</span> <span class="hljs-attr">name</span>=<span class="hljs-string">&quot;transactionTemplate&quot;</span> <span class="hljs-attr">ref</span>=<span class="hljs-string">&quot;transactionTemplate&quot;</span> /&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">bean</span>&gt;</span><br></code></pre></td></tr></table></figure>
+
+<blockquote>
+<p>此时调用测试类测试，在转账出现异常时，Spring 事务会自动进行回滚，让数据保持一致。</p>
+</blockquote>
+<h4 id="5-3-配置事务通知"><a href="#5-3-配置事务通知" class="headerlink" title="5.3 配置事务通知"></a>5.3 配置事务通知</h4><p>修改 applicationContext.xml，配置事务通知是需注意：</p>
+<p>企业中配置CRUD方法一般使用 <code>方法名+通配符*</code> 的形式配置通知，此时类中的方法名要和配置的方法名一致。</p>
+<p>使用 <code>&lt;tx:advice&gt; &lt;tx:attributes&gt; &lt;tx:method ... /&gt; </code> 配置指定方法的事务通知。</p>
+<ul>
+<li>以方法为单位，指定方法应用什么事务属性：<ul>
+<li><strong>isolation</strong>：用于指定事务的<code>隔离级别</code>。默认值是 DEFAULT，表示使用数据库的默认隔离级别。</li>
+<li><strong>propagation</strong>：用于指定事务的<code>传播行为</code>。默认值是 REQUIRED，表示一定会有事务，增删改的选择。查询方法可以选择 SUPPORTS。</li>
+<li><strong>read-only</strong>：用于指定事务是否<code>只读</code>。只有查询方法才能设置为true。默认值是false，表示读写。</li>
+<li><strong>timeout</strong>：用于指定事务的<code>超时时间</code>，默认值是-1，表示永不超时。如果指定了数值，以秒为单位。</li>
+<li><strong>rollback-for</strong>：用于<code>指定一个异常，决定是否回滚</code>，当产生该异常时，事务回滚，产生其他异常时，事务不回滚。没有默认值。表示任何异常都回滚。</li>
+<li><strong>no-rollback-for</strong>：用于<code>指定一个异常，决定是否不回滚</code>，当产生该异常时，事务不回滚，产生其他异常时事务回滚。没有默认值。表示任何异常都回滚。</li>
+</ul>
+</li>
+</ul>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><code class="hljs xml"><span class="hljs-tag">&lt;<span class="hljs-name">bean</span> <span class="hljs-attr">name</span>=<span class="hljs-string">&quot;dataSource&quot;</span> <span class="hljs-attr">class</span>=<span class="hljs-string">&quot;com.alibaba.druid.pool.DruidDataSource&quot;</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">property</span> <span class="hljs-attr">name</span>=<span class="hljs-string">&quot;url&quot;</span> <span class="hljs-attr">value</span>=<span class="hljs-string">&quot;jdbc:mysql://localhost:3306/mydb&quot;</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">property</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">property</span> <span class="hljs-attr">name</span>=<span class="hljs-string">&quot;driverClassName&quot;</span> <span class="hljs-attr">value</span>=<span class="hljs-string">&quot;com.mysql.jdbc.Driver&quot;</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">property</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">property</span> <span class="hljs-attr">name</span>=<span class="hljs-string">&quot;username&quot;</span> <span class="hljs-attr">value</span>=<span class="hljs-string">&quot;root&quot;</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">property</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">property</span> <span class="hljs-attr">name</span>=<span class="hljs-string">&quot;password&quot;</span> <span class="hljs-attr">value</span>=<span class="hljs-string">&quot;root&quot;</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">property</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">bean</span>&gt;</span><br><br><span class="hljs-comment">&lt;!-- 事务核心管理器,封装了所有事务操作. 依赖于连接池 --&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">bean</span> <span class="hljs-attr">name</span>=<span class="hljs-string">&quot;transactionManager&quot;</span></span><br><span class="hljs-tag">      <span class="hljs-attr">class</span>=<span class="hljs-string">&quot;org.springframework.jdbc.datasource.DataSourceTransactionManager&quot;</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">property</span> <span class="hljs-attr">name</span>=<span class="hljs-string">&quot;dataSource&quot;</span> <span class="hljs-attr">ref</span>=<span class="hljs-string">&quot;dataSource&quot;</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">property</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">bean</span>&gt;</span><br><br><span class="hljs-comment">&lt;!-- 配置事务通知 --&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">tx:advice</span> <span class="hljs-attr">id</span>=<span class="hljs-string">&quot;txAdvice&quot;</span> <span class="hljs-attr">transaction-manager</span>=<span class="hljs-string">&quot;transactionManager&quot;</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">tx:attributes</span>&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">tx:method</span> <span class="hljs-attr">name</span>=<span class="hljs-string">&quot;save*&quot;</span> <span class="hljs-attr">isolation</span>=<span class="hljs-string">&quot;REPEATABLE_READ&quot;</span> <span class="hljs-attr">propagation</span>=<span class="hljs-string">&quot;REQUIRED&quot;</span> <span class="hljs-attr">read-only</span>=<span class="hljs-string">&quot;false&quot;</span> /&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">tx:method</span> <span class="hljs-attr">name</span>=<span class="hljs-string">&quot;persist*&quot;</span> <span class="hljs-attr">isolation</span>=<span class="hljs-string">&quot;REPEATABLE_READ&quot;</span> <span class="hljs-attr">propagation</span>=<span class="hljs-string">&quot;REQUIRED&quot;</span> <span class="hljs-attr">read-only</span>=<span class="hljs-string">&quot;false&quot;</span> /&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">tx:method</span> <span class="hljs-attr">name</span>=<span class="hljs-string">&quot;update*&quot;</span> <span class="hljs-attr">isolation</span>=<span class="hljs-string">&quot;REPEATABLE_READ&quot;</span> <span class="hljs-attr">propagation</span>=<span class="hljs-string">&quot;REQUIRED&quot;</span> <span class="hljs-attr">read-only</span>=<span class="hljs-string">&quot;false&quot;</span> /&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">tx:method</span> <span class="hljs-attr">name</span>=<span class="hljs-string">&quot;modify*&quot;</span> <span class="hljs-attr">isolation</span>=<span class="hljs-string">&quot;REPEATABLE_READ&quot;</span> <span class="hljs-attr">propagation</span>=<span class="hljs-string">&quot;REQUIRED&quot;</span> <span class="hljs-attr">read-only</span>=<span class="hljs-string">&quot;false&quot;</span> /&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">tx:method</span> <span class="hljs-attr">name</span>=<span class="hljs-string">&quot;delete*&quot;</span> <span class="hljs-attr">isolation</span>=<span class="hljs-string">&quot;REPEATABLE_READ&quot;</span> <span class="hljs-attr">propagation</span>=<span class="hljs-string">&quot;REQUIRED&quot;</span> <span class="hljs-attr">read-only</span>=<span class="hljs-string">&quot;false&quot;</span> /&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">tx:method</span> <span class="hljs-attr">name</span>=<span class="hljs-string">&quot;remove*&quot;</span> <span class="hljs-attr">isolation</span>=<span class="hljs-string">&quot;REPEATABLE_READ&quot;</span> <span class="hljs-attr">propagation</span>=<span class="hljs-string">&quot;REQUIRED&quot;</span> <span class="hljs-attr">read-only</span>=<span class="hljs-string">&quot;false&quot;</span> /&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">tx:method</span> <span class="hljs-attr">name</span>=<span class="hljs-string">&quot;get*&quot;</span> <span class="hljs-attr">isolation</span>=<span class="hljs-string">&quot;REPEATABLE_READ&quot;</span> <span class="hljs-attr">propagation</span>=<span class="hljs-string">&quot;REQUIRED&quot;</span> <span class="hljs-attr">read-only</span>=<span class="hljs-string">&quot;true&quot;</span> /&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">tx:method</span> <span class="hljs-attr">name</span>=<span class="hljs-string">&quot;find*&quot;</span> <span class="hljs-attr">isolation</span>=<span class="hljs-string">&quot;REPEATABLE_READ&quot;</span> <span class="hljs-attr">propagation</span>=<span class="hljs-string">&quot;REQUIRED&quot;</span> <span class="hljs-attr">read-only</span>=<span class="hljs-string">&quot;true&quot;</span> /&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">tx:method</span> <span class="hljs-attr">name</span>=<span class="hljs-string">&quot;transfer&quot;</span> <span class="hljs-attr">isolation</span>=<span class="hljs-string">&quot;REPEATABLE_READ&quot;</span> <span class="hljs-attr">propagation</span>=<span class="hljs-string">&quot;REQUIRED&quot;</span> <span class="hljs-attr">read-only</span>=<span class="hljs-string">&quot;false&quot;</span> /&gt;</span><br>    <span class="hljs-tag">&lt;/<span class="hljs-name">tx:attributes</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">tx:advice</span>&gt;</span><br><br><span class="hljs-comment">&lt;!-- 配置织入 --&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">aop:config</span>&gt;</span><br>    <span class="hljs-comment">&lt;!-- 配置切点表达式 --&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">aop:pointcut</span> <span class="hljs-attr">expression</span>=<span class="hljs-string">&quot;execution(* com.demo.service.*ServiceImpl.*(..))&quot;</span> <span class="hljs-attr">id</span>=<span class="hljs-string">&quot;txPc&quot;</span> /&gt;</span><br>    <span class="hljs-comment">&lt;!-- 配置切面 : 通知+切点 advice-ref:通知的名称 pointcut-ref:切点的名称 --&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">aop:advisor</span> <span class="hljs-attr">advice-ref</span>=<span class="hljs-string">&quot;txAdvice&quot;</span> <span class="hljs-attr">pointcut-ref</span>=<span class="hljs-string">&quot;txPc&quot;</span> /&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">aop:config</span>&gt;</span><br><br><span class="hljs-tag">&lt;<span class="hljs-name">bean</span> <span class="hljs-attr">name</span>=<span class="hljs-string">&quot;accountDao&quot;</span> <span class="hljs-attr">class</span>=<span class="hljs-string">&quot;com.AccountDaoImpl&quot;</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">property</span> <span class="hljs-attr">name</span>=<span class="hljs-string">&quot;dataSource&quot;</span> <span class="hljs-attr">ref</span>=<span class="hljs-string">&quot;dataSource&quot;</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">property</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">bean</span>&gt;</span><br><br><span class="hljs-tag">&lt;<span class="hljs-name">bean</span> <span class="hljs-attr">name</span>=<span class="hljs-string">&quot;accountService&quot;</span> <span class="hljs-attr">class</span>=<span class="hljs-string">&quot;com.AccountServiceImpl&quot;</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">property</span> <span class="hljs-attr">name</span>=<span class="hljs-string">&quot;accountDao&quot;</span> <span class="hljs-attr">ref</span>=<span class="hljs-string">&quot;accountDao&quot;</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">property</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">bean</span>&gt;</span><br></code></pre></td></tr></table></figure>
+
+
+
+<h4 id="5-4-注解-配置事务"><a href="#5-4-注解-配置事务" class="headerlink" title="5.4 注解 配置事务"></a>5.4 注解 配置事务</h4><p>注解配置（aop）的方式完成事务管理，修改 applicationContext.xml : </p>
+<p><code>&lt;tx:annotation-driven /&gt;</code> 开启 spring 对注解事务的支持。</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><code class="hljs xml"><span class="hljs-tag">&lt;<span class="hljs-name">bean</span> <span class="hljs-attr">name</span>=<span class="hljs-string">&quot;dataSource&quot;</span> <span class="hljs-attr">class</span>=<span class="hljs-string">&quot;com.alibaba.druid.pool.DruidDataSource&quot;</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">property</span> <span class="hljs-attr">name</span>=<span class="hljs-string">&quot;url&quot;</span> <span class="hljs-attr">value</span>=<span class="hljs-string">&quot;jdbc:mysql://localhost:3306/mydb&quot;</span> /&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">property</span> <span class="hljs-attr">name</span>=<span class="hljs-string">&quot;driverClassName&quot;</span> <span class="hljs-attr">value</span>=<span class="hljs-string">&quot;com.mysql.jdbc.Driver&quot;</span> /&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">property</span> <span class="hljs-attr">name</span>=<span class="hljs-string">&quot;username&quot;</span> <span class="hljs-attr">value</span>=<span class="hljs-string">&quot;root&quot;</span> /&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">property</span> <span class="hljs-attr">name</span>=<span class="hljs-string">&quot;password&quot;</span> <span class="hljs-attr">value</span>=<span class="hljs-string">&quot;root&quot;</span> /&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">bean</span>&gt;</span><br><br><span class="hljs-comment">&lt;!-- 事务核心管理器,封装了所有事务操作. 依赖于连接池 --&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">bean</span> <span class="hljs-attr">name</span>=<span class="hljs-string">&quot;transactionManager&quot;</span> <span class="hljs-attr">class</span>=<span class="hljs-string">&quot;org.springframework.jdbc.datasource.DataSourceTransactionManager&quot;</span>&gt;</span><br>	<span class="hljs-tag">&lt;<span class="hljs-name">property</span> <span class="hljs-attr">name</span>=<span class="hljs-string">&quot;dataSource&quot;</span> <span class="hljs-attr">ref</span>=<span class="hljs-string">&quot;dataSource&quot;</span> /&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">bean</span>&gt;</span><br><br><span class="hljs-comment">&lt;!-- 开启 spring 对注解事务的支持--&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">tx:annotation-driven</span> /&gt;</span><br><br><span class="hljs-tag">&lt;<span class="hljs-name">bean</span> <span class="hljs-attr">name</span>=<span class="hljs-string">&quot;accountDao&quot;</span> <span class="hljs-attr">class</span>=<span class="hljs-string">&quot;com.AccountDaoImpl&quot;</span>&gt;</span><br>	<span class="hljs-tag">&lt;<span class="hljs-name">property</span> <span class="hljs-attr">name</span>=<span class="hljs-string">&quot;dataSource&quot;</span> <span class="hljs-attr">ref</span>=<span class="hljs-string">&quot;dataSource&quot;</span> /&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">bean</span>&gt;</span><br><br><span class="hljs-tag">&lt;<span class="hljs-name">bean</span> <span class="hljs-attr">name</span>=<span class="hljs-string">&quot;accountService&quot;</span> <span class="hljs-attr">class</span>=<span class="hljs-string">&quot;com.AccountServiceImpl&quot;</span>&gt;</span><br>	<span class="hljs-tag">&lt;<span class="hljs-name">property</span> <span class="hljs-attr">name</span>=<span class="hljs-string">&quot;accountDao&quot;</span> <span class="hljs-attr">ref</span>=<span class="hljs-string">&quot;accountDao&quot;</span> /&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">bean</span>&gt;</span><br></code></pre></td></tr></table></figure>
+
+<p><strong>@Transactional</strong> 注解</p>
+<table>
+<thead>
+<tr>
+<th>属性</th>
+<th>类型</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>value</td>
+<td>String</td>
+<td>事务管理器</td>
+</tr>
+<tr>
+<td>propagation</td>
+<td>Propagation</td>
+<td>传播级别</td>
+</tr>
+<tr>
+<td>isolation</td>
+<td>Isolation</td>
+<td>隔离级别</td>
+</tr>
+<tr>
+<td>readOnly</td>
+<td>boolean</td>
+<td>读&#x2F;写与只读事务</td>
+</tr>
+<tr>
+<td>timeout</td>
+<td>int</td>
+<td>事务超时(秒)</td>
+</tr>
+<tr>
+<td>rollbackFor</td>
+<td>Class</td>
+<td>触发事务回滚的类，默认只对未检查异常有效</td>
+</tr>
+<tr>
+<td>noRollbackFor</td>
+<td>Class</td>
+<td>设置不需要进行回滚的异常类数组</td>
+</tr>
+</tbody></table>
+<ul>
+<li><strong>@Transactional</strong> 特性<ul>
+<li>类上添加 @Transactional，在每个方法单开一个事务，管理方式相同。</li>
+<li>@Transactional 注解只在 public 方法上起作用。</li>
+<li>默认只对未检查异常回滚</li>
+<li>只读事务只在事务启动时应用，否则即使配置也会被忽略。</li>
+</ul>
+</li>
+</ul>
+<p>修改 AccountServiceImpl : </p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-comment">//  注解添加声明式事务</span><br><span class="hljs-meta">@Transactional(isolation=Isolation.REPEATABLE_READ, propagation=Propagation.REQUIRED, readOnly=true)</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">AccountServiceImpl</span> <span class="hljs-keyword">implements</span> <span class="hljs-title class_">AccountService</span> &#123;<br>    <span class="hljs-keyword">private</span> AccountDao accountDao;<br><br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-comment">//如果该方法与类名上的配置不同，可以单独在这个方法上配置注解，单独生效自己的</span><br>    <span class="hljs-meta">@Transactional(isolation= Isolation.REPEATABLE_READ, propagation= Propagation.REQUIRED, readOnly=false)</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">transfer</span><span class="hljs-params">(Integer from, Integer to, Double money)</span> &#123;<br>        <span class="hljs-comment">// 减钱</span><br>        accountDao.decreaseMoney(from, money);<br>        <span class="hljs-type">int</span> <span class="hljs-variable">i</span> <span class="hljs-operator">=</span> <span class="hljs-number">1</span> / <span class="hljs-number">0</span>;<span class="hljs-comment">// 如果发生异常数据（钱）不会丢失，数据保持一致</span><br>        <span class="hljs-comment">// 加钱</span><br>        accountDao.increaseMoney(to, money);<br>    &#125;<br><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">setAccountDao</span><span class="hljs-params">(AccountDao accountDao)</span> &#123;<br>        <span class="hljs-built_in">this</span>.accountDao = accountDao;<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+
+              
+            </div>
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/08-%E6%A1%86%E6%9E%B6%E6%8A%80%E6%9C%AF/" class="category-chain-item">08_框架技术</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/08-%E6%A1%86%E6%9E%B6%E6%8A%80%E6%9C%AF/02-Spring/" class="category-chain-item">02_Spring</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/08-%E6%A1%86%E6%9E%B6%E6%8A%80%E6%9C%AF/02-Spring/04-Data/" class="category-chain-item">04_Data</a>
+  
+  
+
+  
+
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/%E4%BA%8B%E5%8A%A1/">#事务</a>
+      
+        <a href="/tags/Spring/">#Spring</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>02-Spring Transaction 事务</div>
+      <div>https://janycode.github.io/2018/06/02/08_框架技术/02_Spring/04_Data/02-Spring Transaction 事务/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Jerry(姜源)</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2018年6月2日</div>
+        </div>
+      
+      
+      <div class="license-meta-item">
+        <div>许可协议</div>
+        <div>
+          
+            
+            
+              <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+              <span class="hint--top hint--rounded" aria-label="BY - 姜源">
+                <i class="iconfont icon-by"></i>
+              </span>
+              </a>
+            
+          
+        </div>
+      </div>
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2018/06/20/08_%E6%A1%86%E6%9E%B6%E6%8A%80%E6%9C%AF/04_SpringBoot/13_SpringBoot+Swagger2/" title="13_SpringBoot+Swagger2">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">13_SpringBoot+Swagger2</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2018/06/01/08_%E6%A1%86%E6%9E%B6%E6%8A%80%E6%9C%AF/02_Spring/03_AOP/01-Spring%20AOP/" title="01-Spring AOP">
+                        <span class="hidden-mobile">01-Spring AOP</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+  <article id="comments" lazyload>
+    
+  <div id="SOHUCS" sid='https://janycode.github.io/2018/06/02/08_%E6%A1%86%E6%9E%B6%E6%8A%80%E6%9C%AF/02_Spring/04_Data/02-Spring%20Transaction%20%E4%BA%8B%E5%8A%A1/'></div>
+  <script type="text/javascript">
+    Fluid.utils.loadComments('#SOHUCS', function() {
+      Fluid.utils.createScript("https://changyan.sohu.com/upload/changyan.js", function() {
+        window.changyan.api.config({"appid":"cyw5OHIcO","appkey":"fea3446b3df4b3f129f34da4cbc87e51"})
+      });
+    });
+  </script>
+  <noscript>Please enable JavaScript to view the comments</noscript>
+
+
+  </article>
+
+
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://simple.blog.csdn.net" target="_blank" rel="nofollow noopener"><span>CSDN</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/janycode" target="_blank" rel="nofollow noopener"><span>GitHub</span></a> <i class="iconfont icon-love"></i> <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="busuanzi_container_site_pv" style="display: none">
+        总访问量(PV) 
+        <span id="busuanzi_value_site_pv"></span>
+         次，
+      </span>
+    
+    
+      <span id="busuanzi_container_site_uv" style="display: none">
+        总访客数(UV) 
+        <span id="busuanzi_value_site_uv"></span>
+         人
+      </span>
+    
+    
+  
+</div>
+
+  
+  
+  
+</div>
+
+<!-- live2d 动画 -->
+<script src="https://eqcn.ajz.miesnfu.com/wp-content/plugins/wp-3d-pony/live2dw/lib/L2Dwidget.min.js"></script>
+<script>
+    L2Dwidget.init({
+        "model": {
+            jsonPath: "https://unpkg.com/live2d-widget-model-haruto@1.0.5/assets/haruto.model.json",
+            "scale": 1
+        },
+        "display": {
+            "position": "right",
+            "width": 100,
+            "height": 200,
+            "hOffset": 35,
+            "vOffset": -85
+        },
+        "mobile": {
+            "show": false,
+            "scale": 0.1
+        },
+        "react": {
+            "opacityDefault": 0.75,
+            "opacityOnHover": 0.2
+        }
+    });
+</script>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <!-- Baidu Analytics -->
+    <script defer>
+      if (!Fluid.ctx.dnt) {
+        var _hmt = _hmt || [];
+        (function() {
+          var hm = document.createElement("script");
+          hm.src = "https://hm.baidu.com/hm.js?bfff735c897eb60ea49b735096b20e47";
+          var s = document.getElementsByTagName("script")[0];
+          s.parentNode.insertBefore(hm, s);
+        })();
+      }
+    </script>
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.0/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      headingSelector : CONFIG.toc.headingSelector || 'h1,h2,h3,h4,h5,h6',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      collapseDepth   : CONFIG.toc.collapseDepth || 0,
+      scrollSmooth    : true,
+      headingsOffset  : -boardTop
+    });
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+  });
+</script>
+
+
+  <script>
+  (function() {
+    var enableLang = CONFIG.code_language.enable && CONFIG.code_language.default;
+    var enableCopy = CONFIG.copy_btn;
+    if (!enableLang && !enableCopy) {
+      return;
+    }
+
+    function getBgClass(ele) {
+      return Fluid.utils.getBackgroundLightness(ele) >= 0 ? 'code-widget-light' : 'code-widget-dark';
+    }
+
+    var copyTmpl = '';
+    copyTmpl += '<div class="code-widget">';
+    copyTmpl += 'LANG';
+    copyTmpl += '</div>';
+    jQuery('.markdown-body pre').each(function() {
+      var $pre = jQuery(this);
+      if ($pre.find('code.mermaid').length > 0) {
+        return;
+      }
+      if ($pre.find('span.line').length > 0) {
+        return;
+      }
+
+      var lang = '';
+
+      if (enableLang) {
+        lang = CONFIG.code_language.default;
+        if ($pre[0].children.length > 0 && $pre[0].children[0].classList.length >= 2 && $pre.children().hasClass('hljs')) {
+          lang = $pre[0].children[0].classList[1];
+        } else if ($pre[0].getAttribute('data-language')) {
+          lang = $pre[0].getAttribute('data-language');
+        } else if ($pre.parent().hasClass('sourceCode') && $pre[0].children.length > 0 && $pre[0].children[0].classList.length >= 2) {
+          lang = $pre[0].children[0].classList[1];
+          $pre.parent().addClass('code-wrapper');
+        } else if ($pre.parent().hasClass('markdown-body') && $pre[0].classList.length === 0) {
+          $pre.wrap('<div class="code-wrapper"></div>');
+        }
+        lang = lang.toUpperCase().replace('NONE', CONFIG.code_language.default);
+      }
+      $pre.append(copyTmpl.replace('LANG', lang).replace('code-widget">',
+        getBgClass($pre[0]) + (enableCopy ? ' code-widget copy-btn" data-clipboard-snippet><i class="iconfont icon-copy"></i>' : ' code-widget">')));
+
+      if (enableCopy) {
+        Fluid.utils.createScript('https://lib.baomitu.com/clipboard.js/2.0.10/clipboard.min.js', function() {
+          var clipboard = new window.ClipboardJS('.copy-btn', {
+            target: function(trigger) {
+              var nodes = trigger.parentNode.childNodes;
+              for (var i = 0; i < nodes.length; i++) {
+                if (nodes[i].tagName === 'CODE') {
+                  return nodes[i];
+                }
+              }
+            }
+          });
+          clipboard.on('success', function(e) {
+            e.clearSelection();
+            e.trigger.innerHTML = e.trigger.innerHTML.replace('icon-copy', 'icon-success');
+            setTimeout(function() {
+              e.trigger.innerHTML = e.trigger.innerHTML.replace('icon-success', 'icon-copy');
+            }, 2000);
+          });
+        });
+      }
+    });
+  })();
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script  src="/js/local-search.js" ></script>
+
+  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

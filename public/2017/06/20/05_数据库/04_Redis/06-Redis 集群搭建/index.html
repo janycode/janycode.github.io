@@ -1,0 +1,971 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=light>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Jerry(姜源)">
+  <meta name="keywords" content="Java,Html,CSS,JavaScript,Python,C,Linux,shell编程经验分享、技术总结、心得体会">
+  
+    <meta name="description" content="官网教程：https:&#x2F;&#x2F;www.redis.net.cn&#x2F;tutorial&#x2F;3515.html 1. Redis 集群搭建1.1 redis-cluster架构图 1.2 redis-cluster投票:容错 1.3 架构细节(1) 所有的 redis 节点彼此互联(PING-PONG 机制)， 内部使用二进制协议优化传输速度和带宽(2) 节点的 fail 是通过集群中超过半数的节点检测失效时">
+<meta property="og:type" content="article">
+<meta property="og:title" content="06-Redis 集群搭建">
+<meta property="og:url" content="https://janycode.github.io/2017/06/20/05_%E6%95%B0%E6%8D%AE%E5%BA%93/04_Redis/06-Redis%20%E9%9B%86%E7%BE%A4%E6%90%AD%E5%BB%BA/index.html">
+<meta property="og:site_name" content="姜源の云笔记">
+<meta property="og:description" content="官网教程：https:&#x2F;&#x2F;www.redis.net.cn&#x2F;tutorial&#x2F;3515.html 1. Redis 集群搭建1.1 redis-cluster架构图 1.2 redis-cluster投票:容错 1.3 架构细节(1) 所有的 redis 节点彼此互联(PING-PONG 机制)， 内部使用二进制协议优化传输速度和带宽(2) 节点的 fail 是通过集群中超过半数的节点检测失效时">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20200815230440.png">
+<meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20200708151909.jpg">
+<meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20200708151912.jpg">
+<meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20200708151915.bmp">
+<meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20200708162501.jpg">
+<meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20200708162503.jpg">
+<meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20200708162507.jpg">
+<meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20200708162510.jpg">
+<meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20200708162512.jpg">
+<meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20200708162515.jpg">
+<meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20200708162517.jpg">
+<meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20200708162520.jpg">
+<meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20200708162523.jpg">
+<meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20200708162527.jpg">
+<meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20200708162700.jpg">
+<meta property="article:published_time" content="2017-06-20T15:04:05.000Z">
+<meta property="article:modified_time" content="2022-05-28T03:24:12.635Z">
+<meta property="article:author" content="Jerry(姜源)">
+<meta property="article:tag" content="配置">
+<meta property="article:tag" content="Redis">
+<meta property="article:tag" content="集群">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20200815230440.png">
+  
+  
+    <meta name="referrer" content="no-referrer-when-downgrade">
+  
+  
+  <title>06-Redis 集群搭建 - 姜源の云笔记</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"janycode.github.io","root":"/","version":"1.9.0","typing":{"enable":true,"typeSpeed":50,"cursorChar":"|","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":false},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":"bfff735c897eb60ea49b735096b20e47","google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+
+  
+<meta name="generator" content="Hexo 6.2.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 50vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>姜源の云笔记</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tools/">
+                <i class="iconfont icon-slack-fill"></i>
+                工具
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="06-Redis 集群搭建"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-author" aria-hidden="true"></i>
+        Jerry(姜源)
+      </span>
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2017-06-20 23:04" pubdate>
+          星期二, 2017/06/20 23:04:05
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          <!-- compatible with older versions-->
+          15k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          <!-- compatible with older versions-->
+          128 分钟
+        
+      </span>
+    
+
+    
+    
+      
+        <span id="busuanzi_container_page_pv" style="display: none">
+          <i class="iconfont icon-eye" aria-hidden="true"></i>
+          <span id="busuanzi_value_page_pv"></span> 次
+        </span>
+        
+      
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">06-Redis 集群搭建</h1>
+            
+            <div class="markdown-body">
+              
+              <p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20200815230440.png" srcset="/img/loading.gif" lazyload alt="image-20200815230439632"></p>
+<p>官网教程：<a target="_blank" rel="noopener" href="https://www.redis.net.cn/tutorial/3515.html">https://www.redis.net.cn/tutorial/3515.html</a></p>
+<h3 id="1-Redis-集群搭建"><a href="#1-Redis-集群搭建" class="headerlink" title="1. Redis 集群搭建"></a>1. Redis 集群搭建</h3><h4 id="1-1-redis-cluster架构图"><a href="#1-1-redis-cluster架构图" class="headerlink" title="1.1 redis-cluster架构图"></a>1.1 redis-cluster架构图</h4><p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20200708151909.jpg" srcset="/img/loading.gif" lazyload></p>
+<h4 id="1-2-redis-cluster投票-容错"><a href="#1-2-redis-cluster投票-容错" class="headerlink" title="1.2 redis-cluster投票:容错"></a>1.2 redis-cluster投票:容错</h4><p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20200708151912.jpg" srcset="/img/loading.gif" lazyload></p>
+<h4 id="1-3-架构细节"><a href="#1-3-架构细节" class="headerlink" title="1.3 架构细节"></a>1.3 架构细节</h4><p>(1) 所有的 redis 节点彼此互联(<code>PING-PONG 机制</code>)， 内部使用二进制协议优化传输速度和带宽<br>(2) 节点的 fail 是通过集群中超过半数的节点检测失效时才生效<br>(3) 客户端与 redis 节点直连， 不需要中间 proxy 层，客户端不需要连接集群所有节点， 连接集群中任何一个可用节点即可<br>(4) redis-cluster 把所有的物理节点映射到 [0-16383]slot 上， cluster 负责维护 node &lt;-&gt; slot &lt;-&gt; value。</p>
+<p>Redis 集群中内置了 16384 个哈希槽，当需要在 Redis 集群中放置一个 key-value 时，redis 先对 key 使用 crc16 算法算出一个结果，然后把结果对 16384 求余数，这样每个 key 都会对应一个编号在 0-16383 之间的哈希槽，redis 会根据节点数量大致均等的将哈希槽映射到不同的节点。</p>
+<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20200708151915.bmp" srcset="/img/loading.gif" lazyload></p>
+<h4 id="1-4-Redis集群的搭建-1"><a href="#1-4-Redis集群的搭建-1" class="headerlink" title="1.4 Redis集群的搭建-1"></a>1.4 Redis集群的搭建-1</h4><p>Redis集群中至少应该有三个节点，要保证集群的高可用，需要每个节点有一个备份机。<br>Redis集群至少需要 6 台服务器。</p>
+<blockquote>
+<p>搭建伪分布式：可以使用一台虚拟机运行6个 redis-server 进程，然后修改 redis 的端口号 7001-7006 (自定义端口， 只要不和其他程序重复)</p>
+</blockquote>
+<ul>
+<li><strong>搭建准备</strong></li>
+</ul>
+<ol>
+<li>使用 ruby 脚本搭建集群。需要ruby的运行环境。</li>
+</ol>
+<p>[root@localhost ~]# <code>yum install ruby</code><br>[root@localhost ~]# <code>yum install rubygems</code></p>
+<ol start="2">
+<li>上传并安装ruby脚本运行使用的包。</li>
+</ol>
+<p>[root@localhost ~]# <code>gem install redis-3.0.0.gem</code><br>Successfully installed redis-3.0.0<br>1 gem installed<br>Installing ri documentation for redis-3.0.0…<br>Installing RDoc documentation for redis-3.0.0…<br>[root@localhost ~]# <code>cd redis-3.0.7/src</code><br>[root@localhost src]# <code>ll *.rb</code><br>-rwxrwxr-x. 1 root root 48141 Apr  1  2015 redis-trib.rb</p>
+<ul>
+<li><strong>搭建步骤</strong></li>
+</ul>
+<blockquote>
+<p>需要6台redis服务器，搭建伪分布式，需要6个redis实例，需要运行在不同的端口7001-7006。</p>
+</blockquote>
+<ol>
+<li><p>创建6个 redis 实例<br> 每个实例运行在不同的端口。需要修改 redis.conf 配置文件。配置文件中还需要把 cluster-enabled yes 前的注释去掉。</p>
+</li>
+<li><p>启动每个 redis 实例</p>
+</li>
+<li><p>使用 ruby 脚本搭建集群<br> [root@localhost src]# <code>./redis-trib.rb create --replicas 1 10.0.135.131:7001 10.0.135.131:7002 10.0.135.131:7003 10.0.135.131:7004 10.0.135.131:7005 10.0.135.131:7006</code></p>
+</li>
+<li><p>创建关闭集群的脚本<br> 注意下面创建集群使用的 ip 地址不能使用 127.0.0.1 ， 要使用当前机器的ip。<br> 比如 如果是公网机器就使用公网ip，内网机器就使用内网ip， 如果你使用127.0.0.1 会出现使用java代码连接集群的时候，即便你在代码中填写的是外网或者是 内网ip，但是创建了集群对象后，它内部使用的 ip 都是127.0.0.1，导致连接集群失败，因为java代码所在的电脑上面没有 redis。<br> [root@localhost redis-cluster]# <code>vim shutdow-all.sh</code></p>
+ <figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs sh">redis01/redis-cli -p 7001 shutdown<br>redis01/redis-cli -p 7002 shutdown<br>redis01/redis-cli -p 7003 shutdown<br>redis01/redis-cli -p 7004 shutdown<br>redis01/redis-cli -p 7005 shutdown<br>redis01/redis-cli -p 7006 shutdown<br></code></pre></td></tr></table></figure>
+
+<p> [root@localhost redis-cluster]# <code>chmod u+x shutdow-all.sh</code><br> [root@localhost redis-cluster]# <code>./redis-trib.rb create --replicas 1 10.0.135.131:7001 10.0.135.131:7002 10.0.135.131:7003 10.0.135.131:7004 10.0.135.131:7005  10.0.135.131:7006</code></p>
+ <figure class="highlight crmsh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br></pre></td><td class="code"><pre><code class="hljs crmsh">&gt;&gt;&gt; Creating cluster<br>Connecting to <span class="hljs-keyword">node</span> <span class="hljs-title">10</span>.<span class="hljs-number">0.135</span>.<span class="hljs-number">131</span>:<span class="hljs-number">7001</span>: OK<br>Connecting to <span class="hljs-keyword">node</span> <span class="hljs-title">10</span>.<span class="hljs-number">0.135</span>.<span class="hljs-number">131</span>:<span class="hljs-number">7002</span>: OK<br>Connecting to <span class="hljs-keyword">node</span> <span class="hljs-title">10</span>.<span class="hljs-number">0.135</span>.<span class="hljs-number">131</span>:<span class="hljs-number">7003</span>: OK<br>Connecting to <span class="hljs-keyword">node</span> <span class="hljs-title">10</span>.<span class="hljs-number">0.135</span>.<span class="hljs-number">131</span>:<span class="hljs-number">7004</span>: OK<br>Connecting to <span class="hljs-keyword">node</span> <span class="hljs-title">10</span>.<span class="hljs-number">0.135</span>.<span class="hljs-number">131</span>:<span class="hljs-number">7005</span>: OK<br>Connecting to <span class="hljs-keyword">node</span> <span class="hljs-title">10</span>.<span class="hljs-number">0.135</span>.<span class="hljs-number">131</span>:<span class="hljs-number">7006</span>: OK<br>&gt;&gt;&gt; Performing hash slots allocation on <span class="hljs-number">6</span> nodes...<br>Using <span class="hljs-number">3</span> masters:<br><span class="hljs-number">10.0</span>.<span class="hljs-number">135.131</span>:<span class="hljs-number">7001</span><br><span class="hljs-number">10.0</span>.<span class="hljs-number">135.131</span>:<span class="hljs-number">7002</span><br><span class="hljs-number">10.0</span>.<span class="hljs-number">135.131</span>:<span class="hljs-number">7003</span><br>Adding replica <span class="hljs-number">10.0</span>.<span class="hljs-number">135.131</span>:<span class="hljs-number">7004</span> to <span class="hljs-number">10.0</span>.<span class="hljs-number">135.131</span>:<span class="hljs-number">7001</span><br>Adding replica <span class="hljs-number">10.0</span>.<span class="hljs-number">135.131</span>:<span class="hljs-number">7005</span> to <span class="hljs-number">10.0</span>.<span class="hljs-number">135.131</span>:<span class="hljs-number">7002</span><br>Adding replica <span class="hljs-number">10.0</span>.<span class="hljs-number">135.131</span>:<span class="hljs-number">7006</span> to <span class="hljs-number">10.0</span>.<span class="hljs-number">135.131</span>:<span class="hljs-number">7003</span><br>M: <span class="hljs-number">2</span>e48ae301e9c32b04a7d4d92e15e98e78de8c1f3 <span class="hljs-number">10.0</span>.<span class="hljs-number">135.131</span>:<span class="hljs-number">7001</span><br>   slots:<span class="hljs-number">0</span>-<span class="hljs-number">5460</span> (<span class="hljs-number">5461</span> slots) <span class="hljs-keyword">master</span><br><span class="hljs-title">M</span>: <span class="hljs-number">8</span>cd93a9a943b4ef851af6a03edd699a6061ace01 <span class="hljs-number">10.0</span>.<span class="hljs-number">135.131</span>:<span class="hljs-number">7002</span><br>   slots:<span class="hljs-number">5461</span>-<span class="hljs-number">10922</span> (<span class="hljs-number">5462</span> slots) <span class="hljs-keyword">master</span><br><span class="hljs-title">M</span>: <span class="hljs-number">2935007902</span>d83f20b1253d7f43dae32aab9744e6 <span class="hljs-number">10.0</span>.<span class="hljs-number">135.131</span>:<span class="hljs-number">7003</span><br>   slots:<span class="hljs-number">10923</span>-<span class="hljs-number">16383</span> (<span class="hljs-number">5461</span> slots) <span class="hljs-keyword">master</span><br><span class="hljs-title">S</span>: <span class="hljs-number">74</span>f9d9706f848471583929fc8bbde3c8e99e211b <span class="hljs-number">10.0</span>.<span class="hljs-number">135.131</span>:<span class="hljs-number">7004</span><br>   replicates <span class="hljs-number">2</span>e48ae301e9c32b04a7d4d92e15e98e78de8c1f3<br>S: <span class="hljs-number">42</span>cc9e25ebb19dda92591364c1df4b3a518b795b <span class="hljs-number">10.0</span>.<span class="hljs-number">135.131</span>:<span class="hljs-number">7005</span><br>   replicates <span class="hljs-number">8</span>cd93a9a943b4ef851af6a03edd699a6061ace01<br>S: <span class="hljs-number">8</span>b1b11d509d29659c2831e7a9f6469c060dfcd39 <span class="hljs-number">10.0</span>.<span class="hljs-number">135.131</span>:<span class="hljs-number">7006</span><br>   replicates <span class="hljs-number">2935007902</span>d83f20b1253d7f43dae32aab9744e6<br>Can I set the above configuration? (<span class="hljs-keyword">type</span> &#x27;yes&#x27; to accept): yes<br>&gt;&gt;&gt; Nodes configuration updated<br>&gt;&gt;&gt; Assign a different config epoch to each <span class="hljs-keyword">node</span><br><span class="hljs-title">&gt;&gt;&gt; Sending</span> CLUSTER MEET messages to join the cluster<br>Waiting for the cluster to join.....<br>&gt;&gt;&gt; Performing Cluster Check (using <span class="hljs-keyword">node</span> <span class="hljs-title">10</span>.<span class="hljs-number">0.135</span>.<span class="hljs-number">131</span>:<span class="hljs-number">7001</span>)<br>M: <span class="hljs-number">2</span>e48ae301e9c32b04a7d4d92e15e98e78de8c1f3 <span class="hljs-number">10.0</span>.<span class="hljs-number">135.131</span>:<span class="hljs-number">7001</span><br>   slots:<span class="hljs-number">0</span>-<span class="hljs-number">5460</span> (<span class="hljs-number">5461</span> slots) <span class="hljs-keyword">master</span><br><span class="hljs-title">M</span>: <span class="hljs-number">8</span>cd93a9a943b4ef851af6a03edd699a6061ace01 <span class="hljs-number">10.0</span>.<span class="hljs-number">135.131</span>:<span class="hljs-number">7002</span><br>   slots:<span class="hljs-number">5461</span>-<span class="hljs-number">10922</span> (<span class="hljs-number">5462</span> slots) <span class="hljs-keyword">master</span><br><span class="hljs-title">M</span>: <span class="hljs-number">2935007902</span>d83f20b1253d7f43dae32aab9744e6 <span class="hljs-number">10.0</span>.<span class="hljs-number">135.131</span>:<span class="hljs-number">7003</span><br>   slots:<span class="hljs-number">10923</span>-<span class="hljs-number">16383</span> (<span class="hljs-number">5461</span> slots) <span class="hljs-keyword">master</span><br><span class="hljs-title">M</span>: <span class="hljs-number">74</span>f9d9706f848471583929fc8bbde3c8e99e211b <span class="hljs-number">10.0</span>.<span class="hljs-number">135.131</span>:<span class="hljs-number">7004</span><br>   slots: (<span class="hljs-number">0</span> slots) <span class="hljs-keyword">master</span><br>   <span class="hljs-title">replicates</span> <span class="hljs-number">2</span>e48ae301e9c32b04a7d4d92e15e98e78de8c1f3<br>M: <span class="hljs-number">42</span>cc9e25ebb19dda92591364c1df4b3a518b795b <span class="hljs-number">10.0</span>.<span class="hljs-number">135.131</span>:<span class="hljs-number">7005</span><br>   slots: (<span class="hljs-number">0</span> slots) <span class="hljs-keyword">master</span><br>   <span class="hljs-title">replicates</span> <span class="hljs-number">8</span>cd93a9a943b4ef851af6a03edd699a6061ace01<br>M: <span class="hljs-number">8</span>b1b11d509d29659c2831e7a9f6469c060dfcd39 <span class="hljs-number">10.0</span>.<span class="hljs-number">135.131</span>:<span class="hljs-number">7006</span><br>   slots: (<span class="hljs-number">0</span> slots) <span class="hljs-keyword">master</span><br>   <span class="hljs-title">replicates</span> <span class="hljs-number">2935007902</span>d83f20b1253d7f43dae32aab9744e6<br>[OK] All nodes agree about slots configuration.<br>&gt;&gt;&gt; Check for open slots...<br>&gt;&gt;&gt; Check slots coverage...<br>[OK] All <span class="hljs-number">16384</span> slots covered.<br></code></pre></td></tr></table></figure>
+</li>
+<li><p>集群的使用方法<br>Redis-cli 连接集群。<br> [root@localhost redis-cluster]# <code>redis01/redis-cli -p 7002 -c</code><br> -c：代表连接的是redis集群</p>
+</li>
+</ol>
+<h4 id="1-4-Redis集群的搭建-2"><a href="#1-4-Redis集群的搭建-2" class="headerlink" title="1.4 Redis集群的搭建-2"></a>1.4 Redis集群的搭建-2</h4><p>需要6台redis服务器。搭建伪分布式。</p>
+<p>需要6个redis实例。</p>
+<p>需要运行在不同的端口7001-7006</p>
+<ol>
+<li>新建一个连接<br> 切换到&#x2F;usr&#x2F;local：[root@redis ~]# <code>cd /usr/local</code><br> 创建一个目录：[root@redis local]# <code>mkdir redis-cluster</code><br> 拷贝redis的bin目录：[root@redis local]# <code>cp redis/bin redis-cluster/redis01 -r</code><br> 进入到redis01目录下删除持久化文件：[root@redis redis01]# <code>rm -f dump.rdb</code><br> 需要修改redis.conf配置文件：[root@redis redis01]# <code>vim redis.conf</code></li>
+</ol>
+<p>修改端口号：</p>
+<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20200708162501.jpg" srcset="/img/loading.gif" lazyload alt="img"></p>
+<p>打开注释：</p>
+<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20200708162503.jpg" srcset="/img/loading.gif" lazyload alt="img"></p>
+<p>切换到redis-cluster目录下，再复制5个redis实例：</p>
+<p>[root@redis redis-cluster]# <code>cp -r redis01/ redis02</code></p>
+<p>[root@redis redis-cluster]# <code>cp -r redis01/ redis03</code></p>
+<p>[root@redis redis-cluster]# <code>cp -r redis01/ redis04</code></p>
+<p>[root@redis redis-cluster]# <code>cp -r redis01/ redis05</code></p>
+<p>[root@redis redis-cluster]# <code>cp -r redis01/ redis06</code></p>
+<p>修改每个redis实例的端口号：</p>
+<p>[root@redis redis-cluster]# <code>vim redis02/redis.conf</code>  修改端口号：port —&gt;&gt;7002</p>
+<p>[root@redis redis-cluster]# <code>vim redis03/redis.conf</code>  修改端口号：port —&gt;&gt;7003</p>
+<p>[root@redis redis-cluster]# <code>vim redis04/redis.conf</code>  修改端口号：port —&gt;&gt;7004</p>
+<p>[root@redis redis-cluster]# <code>vim redis05/redis.conf</code>  修改端口号：port —&gt;&gt;7005</p>
+<p>[root@redis redis-cluster]# <code>vim redis06/redis.conf</code>  修改端口号：port —&gt;&gt;7006</p>
+<ol start="2">
+<li><strong>启动每个redis实例</strong><br> 创建批处理文件：[root@redis redis-cluster]# <code>vim start-all.sh</code></li>
+</ol>
+<p>设置内容：</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><code class="hljs sh"><span class="hljs-built_in">cd</span> redis01<br>./redis-server redis.conf<br><span class="hljs-built_in">cd</span> ..<br><span class="hljs-built_in">cd</span> redis02<br>./redis-server redis.conf<br><span class="hljs-built_in">cd</span> ..<br><span class="hljs-built_in">cd</span> redis03<br>./redis-server redis.conf<br><span class="hljs-built_in">cd</span> ..<br><span class="hljs-built_in">cd</span> redis04<br>./redis-server redis.conf<br><span class="hljs-built_in">cd</span> ..<br><span class="hljs-built_in">cd</span> redis05<br>./redis-server redis.conf<br><span class="hljs-built_in">cd</span> ..<br><span class="hljs-built_in">cd</span> redis06<br>./redis-server redis.conf<br><span class="hljs-built_in">cd</span> ..<br></code></pre></td></tr></table></figure>
+
+<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20200708162507.jpg" srcset="/img/loading.gif" lazyload alt="img"></p>
+<p>对start-all.sh文件授权：[root@redis redis-cluster]# <code>chmod u+x start-all.sh</code></p>
+<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20200708162510.jpg" srcset="/img/loading.gif" lazyload alt="img"></p>
+<p>启动：[root@redis redis-cluster]# <code>./start-all.sh</code></p>
+<p>查看：[root@redis redis-cluster]# <code>ps aux|grep redis</code></p>
+<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20200708162512.jpg" srcset="/img/loading.gif" lazyload alt="img"></p>
+<p>切换目录：[root@redis redis-cluster]# <code>cd ~/redis-3.0.0/src</code></p>
+<p>拷贝文件：[root@redis src]# cp redis-trib.rb &#x2F;usr&#x2F;local&#x2F;redis-cluster&#x2F;</p>
+<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20200708162515.jpg" srcset="/img/loading.gif" lazyload alt="img"></p>
+<p>切换回redis-cluster目录：[root@redis src]# <code>cd /usr/local/redis-cluster/</code></p>
+<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20200708162517.jpg" srcset="/img/loading.gif" lazyload alt="img"></p>
+<p>使用ruby脚本搭建集群。需要ruby的运行环境，安装ruby</p>
+<p>[root@redis redis-cluster]# <code>yum install ruby</code></p>
+<p>[root@redis redis-cluster]# <code>yum install rubygems</code></p>
+<p>安装ruby的第三方库，找到集群配置文件 <strong>redis-3.0.0.gem</strong> 文件</p>
+<p>上传到虚拟机root目录下，切换目录然后安装：</p>
+<p>[root@redis redis-cluster]# <code>cd ~</code></p>
+<p>[root@redis ~]# <code>gem install redis-3.0.0</code></p>
+<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20200708162520.jpg" srcset="/img/loading.gif" lazyload alt="img"></p>
+<ol start="3">
+<li><strong>使用ruby脚本搭建集群</strong></li>
+</ol>
+<p>切换回redis-cluster目录：[root@redis src]# <code>cd /usr/local/redis-cluster/</code></p>
+<p>执行以下命令：（注意：IP修改成当前虚拟机的IP地址）</p>
+<p>[root@redis src]# <code>./redis-trib.rb create --replicas 1 192.168.25.130:7001 192.168.25.130:7002 192.168.25.130:7003 192.168.25.130:7004 192.168.25.130:7005 192.168.25.130:7006</code></p>
+<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20200708162523.jpg" srcset="/img/loading.gif" lazyload alt="img"></p>
+<p>输入：<code>yes</code></p>
+<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20200708162527.jpg" srcset="/img/loading.gif" lazyload alt="img"></p>
+<p>集群搭建完毕。</p>
+<p>（如果是六台虚拟机（或是六台电脑）上搭建，需要先关闭防火墙，搭建集群的命令只需要在任意有一台电脑上执行一遍即可）</p>
+<p>测试：（任意指定一个端口号进行测试）</p>
+<p>[root@redis redis-cluster]# <code>redis01/redis-cli -p 7004 -c</code></p>
+<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20200708162700.jpg" srcset="/img/loading.gif" lazyload alt="img"></p>
+<p>发现存储数据时会不断跳到不同的槽点，实现均匀分布存储。</p>
+<p>创建关闭集群的脚本：</p>
+<p>[root@localhost redis-cluster]# <code>vim shutdow-all.sh</code></p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs sh">redis01/redis-cli -p 7001 shutdown<br>redis01/redis-cli -p 7002 shutdown<br>redis01/redis-cli -p 7003 shutdown<br>redis01/redis-cli -p 7004 shutdown<br>redis01/redis-cli -p 7005 shutdown<br>redis01/redis-cli -p 7006 shutdown<br></code></pre></td></tr></table></figure>
+
+<p>[root@localhost redis-cluster]# <code>chmod u+x shutdow-all.sh</code></p>
+<h3 id="2-Jedis"><a href="#2-Jedis" class="headerlink" title="2. Jedis"></a>2. Jedis</h3><h4 id="2-1-连接单机版"><a href="#2-1-连接单机版" class="headerlink" title="2.1 连接单机版"></a>2.1 连接单机版</h4><p>第一步：创建一个 <code>Jedis</code> 对象。需要指定服务端的ip及端口</p>
+<p>第二步：使用 Jedis 对象操作数据库，每个 redis 命令对应一个方法</p>
+<p>第三步：打印结果</p>
+<p>第四步：关闭 Jedis</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@Test</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">testJedis</span><span class="hljs-params">()</span> <span class="hljs-keyword">throws</span> Exception &#123;<br>	<span class="hljs-comment">// 第一步：创建一个Jedis对象。需要指定服务端的ip及端口。</span><br>	<span class="hljs-type">Jedis</span> <span class="hljs-variable">jedis</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">Jedis</span>(<span class="hljs-string">&quot;10.0.135.131&quot;</span>， <span class="hljs-number">6379</span>);<br>	<span class="hljs-comment">// 第二步：使用Jedis对象操作数据库，每个redis命令对应一个方法。</span><br>	<span class="hljs-type">String</span> <span class="hljs-variable">result</span> <span class="hljs-operator">=</span> jedis.get(<span class="hljs-string">&quot;hello&quot;</span>);<br>	<span class="hljs-comment">// 第三步：打印结果。</span><br>	System.out.println(result);<br>	<span class="hljs-comment">// 第四步：关闭Jedis</span><br>	jedis.close();<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<h4 id="2-2-连接池连接单机版"><a href="#2-2-连接池连接单机版" class="headerlink" title="2.2 连接池连接单机版"></a>2.2 连接池连接单机版</h4><p>第一步：创建一个 <code>JedisPool</code> 对象。需要指定服务端的 ip 及端口。</p>
+<p>第二步：从 JedisPool 中获得 Jedis 对象。</p>
+<p>第三步：使用 Jedis 操作 redis 服务器。</p>
+<p>第四步：操作完毕后关闭 jedis 对象，连接池回收资源。</p>
+<p>第五步：关闭 JedisPool 对象。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@Test</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">testJedisPool</span><span class="hljs-params">()</span> <span class="hljs-keyword">throws</span> Exception &#123;<br>	<span class="hljs-comment">// 第一步：创建一个JedisPool对象。需要指定服务端的ip及端口。</span><br>	<span class="hljs-type">JedisPool</span> <span class="hljs-variable">jedisPool</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">JedisPool</span>(<span class="hljs-string">&quot;10.0.135.131&quot;</span>， <span class="hljs-number">6379</span>);<br>	<span class="hljs-comment">// 第二步：从JedisPool中获得Jedis对象。</span><br>	<span class="hljs-type">Jedis</span> <span class="hljs-variable">jedis</span> <span class="hljs-operator">=</span> jedisPool.getResource();<br>	<span class="hljs-comment">// 第三步：使用Jedis操作redis服务器。</span><br>	jedis.set(<span class="hljs-string">&quot;jedis&quot;</span>， <span class="hljs-string">&quot;test&quot;</span>);<br>	<span class="hljs-type">String</span> <span class="hljs-variable">result</span> <span class="hljs-operator">=</span> jedis.get(<span class="hljs-string">&quot;jedis&quot;</span>);<br>	System.out.println(result);<br>	<span class="hljs-comment">// 第四步：操作完毕后关闭jedis对象，连接池回收资源。</span><br>	jedis.close();<br>	<span class="hljs-comment">// 第五步：关闭JedisPool对象。</span><br>	jedisPool.close();<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<h4 id="2-3-连接集群版"><a href="#2-3-连接集群版" class="headerlink" title="2.3 连接集群版"></a>2.3 连接集群版</h4><p>第一步：使用 <code>JedisCluster</code> 对象，需要一个 <code>Set&lt;HostAndPort&gt;</code> 参数，即 Redis 节点的列表。</p>
+<p>第二步：直接使用 JedisCluster 对象操作 redis，在系统中单例存在。</p>
+<p>第三步：打印结果</p>
+<p>第四步：系统关闭前，关闭 JedisCluster 对象。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@Test</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">testJedisCluster</span><span class="hljs-params">()</span> <span class="hljs-keyword">throws</span> Exception &#123;<br>	<span class="hljs-comment">// 第一步：使用JedisCluster对象。需要一个Set&lt;HostAndPort&gt;参数。Redis节点的列表。</span><br>	Set&lt;HostAndPort&gt; nodes = <span class="hljs-keyword">new</span> <span class="hljs-title class_">HashSet</span>&lt;&gt;();<br>	nodes.add(<span class="hljs-keyword">new</span> <span class="hljs-title class_">HostAndPort</span>(<span class="hljs-string">&quot;10.0.135.131&quot;</span>， <span class="hljs-number">7001</span>));<br>	nodes.add(<span class="hljs-keyword">new</span> <span class="hljs-title class_">HostAndPort</span>(<span class="hljs-string">&quot;10.0.135.131&quot;</span>， <span class="hljs-number">7002</span>));<br>	nodes.add(<span class="hljs-keyword">new</span> <span class="hljs-title class_">HostAndPort</span>(<span class="hljs-string">&quot;10.0.135.131&quot;</span>， <span class="hljs-number">7003</span>));<br>	nodes.add(<span class="hljs-keyword">new</span> <span class="hljs-title class_">HostAndPort</span>(<span class="hljs-string">&quot;10.0.135.131&quot;</span>， <span class="hljs-number">7004</span>));<br>	nodes.add(<span class="hljs-keyword">new</span> <span class="hljs-title class_">HostAndPort</span>(<span class="hljs-string">&quot;10.0.135.131&quot;</span>， <span class="hljs-number">7005</span>));<br>	nodes.add(<span class="hljs-keyword">new</span> <span class="hljs-title class_">HostAndPort</span>(<span class="hljs-string">&quot;10.0.135.131&quot;</span>， <span class="hljs-number">7006</span>));<br>	<span class="hljs-type">JedisCluster</span> <span class="hljs-variable">jedisCluster</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">JedisCluster</span>(nodes);<br>	<span class="hljs-comment">// 第二步：直接使用JedisCluster对象操作redis。在系统中单例存在。</span><br>	jedisCluster.set(<span class="hljs-string">&quot;hello&quot;</span>， <span class="hljs-string">&quot;100&quot;</span>);<br>	<span class="hljs-type">String</span> <span class="hljs-variable">result</span> <span class="hljs-operator">=</span> jedisCluster.get(<span class="hljs-string">&quot;hello&quot;</span>);<br>	<span class="hljs-comment">// 第三步：打印结果</span><br>	System.out.println(result);<br>	<span class="hljs-comment">// 第四步：系统关闭前，关闭JedisCluster对象。</span><br>	jedisCluster.close();<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<h3 id="3-封装和整合spring"><a href="#3-封装和整合spring" class="headerlink" title="3. 封装和整合spring"></a>3. 封装和整合spring</h3><p>常用的操作 redis 的方法提取出一个接口，分别对应单机版和集群版创建两个实现类。</p>
+<h4 id="3-1-接口定义"><a href="#3-1-接口定义" class="headerlink" title="3.1 接口定义"></a>3.1 接口定义</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">interface</span> <span class="hljs-title class_">JedisClient</span> &#123;<br>	String <span class="hljs-title function_">set</span><span class="hljs-params">(String key， String value)</span>;<br>	String <span class="hljs-title function_">get</span><span class="hljs-params">(String key)</span>;<br>	Boolean <span class="hljs-title function_">exists</span><span class="hljs-params">(String key)</span>;<br>	Long <span class="hljs-title function_">expire</span><span class="hljs-params">(String key， <span class="hljs-type">int</span> seconds)</span>;<br>	Long <span class="hljs-title function_">ttl</span><span class="hljs-params">(String key)</span>;<br>	Long <span class="hljs-title function_">incr</span><span class="hljs-params">(String key)</span>;<br>	Long <span class="hljs-title function_">hset</span><span class="hljs-params">(String key， String field， String value)</span>;<br>	String <span class="hljs-title function_">hget</span><span class="hljs-params">(String key， String field)</span>;<br>	Long <span class="hljs-title function_">hdel</span><span class="hljs-params">(String key， String... field)</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<h4 id="3-2-单机版实现类"><a href="#3-2-单机版实现类" class="headerlink" title="3.2 单机版实现类"></a>3.2 单机版实现类</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">JedisClientPool</span> <span class="hljs-keyword">implements</span> <span class="hljs-title class_">JedisClient</span> &#123;<br>	<span class="hljs-meta">@Autowired</span><br>	<span class="hljs-keyword">private</span> JedisPool jedisPool;<br><br>	<span class="hljs-meta">@Override</span><br>	<span class="hljs-keyword">public</span> String <span class="hljs-title function_">set</span><span class="hljs-params">(String key， String value)</span> &#123;<br>		<span class="hljs-type">Jedis</span> <span class="hljs-variable">jedis</span> <span class="hljs-operator">=</span> jedisPool.getResource();<br>		<span class="hljs-type">String</span> <span class="hljs-variable">result</span> <span class="hljs-operator">=</span> jedis.set(key， value);<br>		jedis.close();<br>		<span class="hljs-keyword">return</span> result;<br>	&#125;<br><br>	<span class="hljs-meta">@Override</span><br>	<span class="hljs-keyword">public</span> String <span class="hljs-title function_">get</span><span class="hljs-params">(String key)</span> &#123;<br>		<span class="hljs-type">Jedis</span> <span class="hljs-variable">jedis</span> <span class="hljs-operator">=</span> jedisPool.getResource();<br>		<span class="hljs-type">String</span> <span class="hljs-variable">result</span> <span class="hljs-operator">=</span> jedis.get(key);<br>		jedis.close();<br>		<span class="hljs-keyword">return</span> result;<br>	&#125;<br><br>	<span class="hljs-meta">@Override</span><br>	<span class="hljs-keyword">public</span> Boolean <span class="hljs-title function_">exists</span><span class="hljs-params">(String key)</span> &#123;<br>		<span class="hljs-type">Jedis</span> <span class="hljs-variable">jedis</span> <span class="hljs-operator">=</span> jedisPool.getResource();<br>		<span class="hljs-type">Boolean</span> <span class="hljs-variable">result</span> <span class="hljs-operator">=</span> jedis.exists(key);<br>		jedis.close();<br>		<span class="hljs-keyword">return</span> result;<br>	&#125;<br><br>	<span class="hljs-meta">@Override</span><br>	<span class="hljs-keyword">public</span> Long <span class="hljs-title function_">expire</span><span class="hljs-params">(String key， <span class="hljs-type">int</span> seconds)</span> &#123;<br>		<span class="hljs-type">Jedis</span> <span class="hljs-variable">jedis</span> <span class="hljs-operator">=</span> jedisPool.getResource();<br>		<span class="hljs-type">Long</span> <span class="hljs-variable">result</span> <span class="hljs-operator">=</span> jedis.expire(key， seconds);<br>		jedis.close();<br>		<span class="hljs-keyword">return</span> result;<br>	&#125;<br><br>	<span class="hljs-meta">@Override</span><br>	<span class="hljs-keyword">public</span> Long <span class="hljs-title function_">ttl</span><span class="hljs-params">(String key)</span> &#123;<br>		<span class="hljs-type">Jedis</span> <span class="hljs-variable">jedis</span> <span class="hljs-operator">=</span> jedisPool.getResource();<br>		<span class="hljs-type">Long</span> <span class="hljs-variable">result</span> <span class="hljs-operator">=</span> jedis.ttl(key);<br>		jedis.close();<br>		<span class="hljs-keyword">return</span> result;<br>	&#125;<br><br>	<span class="hljs-meta">@Override</span><br>	<span class="hljs-keyword">public</span> Long <span class="hljs-title function_">incr</span><span class="hljs-params">(String key)</span> &#123;<br>		<span class="hljs-type">Jedis</span> <span class="hljs-variable">jedis</span> <span class="hljs-operator">=</span> jedisPool.getResource();<br>		<span class="hljs-type">Long</span> <span class="hljs-variable">result</span> <span class="hljs-operator">=</span> jedis.incr(key);<br>		jedis.close();<br>		<span class="hljs-keyword">return</span> result;<br>	&#125;<br><br>	<span class="hljs-meta">@Override</span><br>	<span class="hljs-keyword">public</span> Long <span class="hljs-title function_">hset</span><span class="hljs-params">(String key， String field， String value)</span> &#123;<br>		<span class="hljs-type">Jedis</span> <span class="hljs-variable">jedis</span> <span class="hljs-operator">=</span> jedisPool.getResource();<br>		<span class="hljs-type">Long</span> <span class="hljs-variable">result</span> <span class="hljs-operator">=</span> jedis.hset(key， field， value);<br>		jedis.close();<br>		<span class="hljs-keyword">return</span> result;<br>	&#125;<br><br>	<span class="hljs-meta">@Override</span><br>	<span class="hljs-keyword">public</span> String <span class="hljs-title function_">hget</span><span class="hljs-params">(String key， String field)</span> &#123;<br>		<span class="hljs-type">Jedis</span> <span class="hljs-variable">jedis</span> <span class="hljs-operator">=</span> jedisPool.getResource();<br>		<span class="hljs-type">String</span> <span class="hljs-variable">result</span> <span class="hljs-operator">=</span> jedis.hget(key， field);<br>		jedis.close();<br>		<span class="hljs-keyword">return</span> result;<br>	&#125;<br><br>	<span class="hljs-meta">@Override</span><br>	<span class="hljs-keyword">public</span> Long <span class="hljs-title function_">hdel</span><span class="hljs-params">(String key， String... field)</span> &#123;<br>		<span class="hljs-type">Jedis</span> <span class="hljs-variable">jedis</span> <span class="hljs-operator">=</span> jedisPool.getResource();<br>		<span class="hljs-type">Long</span> <span class="hljs-variable">result</span> <span class="hljs-operator">=</span> jedis.hdel(key， field);<br>		jedis.close();<br>		<span class="hljs-keyword">return</span> result;<br>	&#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<h4 id="3-3-单机版-Spring-配置"><a href="#3-3-单机版-Spring-配置" class="headerlink" title="3.3 单机版 Spring 配置"></a>3.3 单机版 Spring 配置</h4><p>applicationContext-redis.xml</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><code class="hljs Xml"><span class="hljs-meta">&lt;?xml version=<span class="hljs-string">&quot;1.0&quot;</span> encoding=<span class="hljs-string">&quot;UTF-8&quot;</span>?&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">beans</span> <span class="hljs-attr">xmlns</span>=<span class="hljs-string">&quot;http://www.springframework.org/schema/beans&quot;</span></span><br><span class="hljs-tag">	<span class="hljs-attr">xmlns:context</span>=<span class="hljs-string">&quot;http://www.springframework.org/schema/context&quot;</span> <span class="hljs-attr">xmlns:p</span>=<span class="hljs-string">&quot;http://www.springframework.org/schema/p&quot;</span></span><br><span class="hljs-tag">	<span class="hljs-attr">xmlns:aop</span>=<span class="hljs-string">&quot;http://www.springframework.org/schema/aop&quot;</span> <span class="hljs-attr">xmlns:tx</span>=<span class="hljs-string">&quot;http://www.springframework.org/schema/tx&quot;</span></span><br><span class="hljs-tag">	<span class="hljs-attr">xmlns:xsi</span>=<span class="hljs-string">&quot;http://www.w3.org/2001/XMLSchema-instance&quot;</span></span><br><span class="hljs-tag">	<span class="hljs-attr">xsi:schemaLocation</span>=<span class="hljs-string">&quot;http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.3.xsd</span></span><br><span class="hljs-string"><span class="hljs-tag">	http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.3.xsd</span></span><br><span class="hljs-string"><span class="hljs-tag">	http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-4.3.xsd http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.3.xsd</span></span><br><span class="hljs-string"><span class="hljs-tag">	http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-4.3.xsd&quot;</span>&gt;</span><br><br>	<span class="hljs-comment">&lt;!-- 配置单机版的连接 --&gt;</span><br>	<span class="hljs-tag">&lt;<span class="hljs-name">bean</span> <span class="hljs-attr">id</span>=<span class="hljs-string">&quot;jedisPool&quot;</span> <span class="hljs-attr">class</span>=<span class="hljs-string">&quot;redis.clients.jedis.JedisPool&quot;</span>&gt;</span><br>		<span class="hljs-tag">&lt;<span class="hljs-name">constructor-arg</span> <span class="hljs-attr">name</span>=<span class="hljs-string">&quot;host&quot;</span> <span class="hljs-attr">value</span>=<span class="hljs-string">&quot;10.0.135.131&quot;</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">constructor-arg</span>&gt;</span><br>		<span class="hljs-tag">&lt;<span class="hljs-name">constructor-arg</span> <span class="hljs-attr">name</span>=<span class="hljs-string">&quot;port&quot;</span> <span class="hljs-attr">value</span>=<span class="hljs-string">&quot;6379&quot;</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">constructor-arg</span>&gt;</span><br>	<span class="hljs-tag">&lt;/<span class="hljs-name">bean</span>&gt;</span><br>	<span class="hljs-tag">&lt;<span class="hljs-name">bean</span> <span class="hljs-attr">id</span>=<span class="hljs-string">&quot;jedisClientPool&quot;</span> <span class="hljs-attr">class</span>=<span class="hljs-string">&quot;com.qianfeng.jedis.JedisClientPool&quot;</span>/&gt;</span><br>	<br><span class="hljs-tag">&lt;/<span class="hljs-name">beans</span>&gt;</span><br></code></pre></td></tr></table></figure>
+
+<h4 id="3-4-集群版实现类"><a href="#3-4-集群版实现类" class="headerlink" title="3.4 集群版实现类"></a>3.4 集群版实现类</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">JedisClientCluster</span> <span class="hljs-keyword">implements</span> <span class="hljs-title class_">JedisClient</span> &#123;<br>	<span class="hljs-meta">@Autowired</span><br>	<span class="hljs-keyword">private</span> JedisCluster jedisCluster;<br><br>	<span class="hljs-meta">@Override</span><br>	<span class="hljs-keyword">public</span> String <span class="hljs-title function_">set</span><span class="hljs-params">(String key， String value)</span> &#123;<br>		<span class="hljs-keyword">return</span> jedisCluster.set(key， value);<br>	&#125;<br><br>	<span class="hljs-meta">@Override</span><br>	<span class="hljs-keyword">public</span> String <span class="hljs-title function_">get</span><span class="hljs-params">(String key)</span> &#123;<br>		<span class="hljs-keyword">return</span> jedisCluster.get(key);<br>	&#125;<br><br>	<span class="hljs-meta">@Override</span><br>	<span class="hljs-keyword">public</span> Boolean <span class="hljs-title function_">exists</span><span class="hljs-params">(String key)</span> &#123;<br>		<span class="hljs-keyword">return</span> jedisCluster.exists(key);<br>	&#125;<br><br>	<span class="hljs-meta">@Override</span><br>	<span class="hljs-keyword">public</span> Long <span class="hljs-title function_">expire</span><span class="hljs-params">(String key， <span class="hljs-type">int</span> seconds)</span> &#123;<br>		<span class="hljs-keyword">return</span> jedisCluster.expire(key， seconds);<br>	&#125;<br><br>	<span class="hljs-meta">@Override</span><br>	<span class="hljs-keyword">public</span> Long <span class="hljs-title function_">ttl</span><span class="hljs-params">(String key)</span> &#123;<br>		<span class="hljs-keyword">return</span> jedisCluster.ttl(key);<br>	&#125;<br><br>	<span class="hljs-meta">@Override</span><br>	<span class="hljs-keyword">public</span> Long <span class="hljs-title function_">incr</span><span class="hljs-params">(String key)</span> &#123;<br>		<span class="hljs-keyword">return</span> jedisCluster.incr(key);<br>	&#125;<br><br>	<span class="hljs-meta">@Override</span><br>	<span class="hljs-keyword">public</span> Long <span class="hljs-title function_">hset</span><span class="hljs-params">(String key， String field， String value)</span> &#123;<br>		<span class="hljs-keyword">return</span> jedisCluster.hset(key， field， value);<br>	&#125;<br><br>	<span class="hljs-meta">@Override</span><br>	<span class="hljs-keyword">public</span> String <span class="hljs-title function_">hget</span><span class="hljs-params">(String key， String field)</span> &#123;<br>		<span class="hljs-keyword">return</span> jedisCluster.hget(key， field);<br>	&#125;<br><br>	<span class="hljs-meta">@Override</span><br>	<span class="hljs-keyword">public</span> Long <span class="hljs-title function_">hdel</span><span class="hljs-params">(String key， String... field)</span> &#123;<br>		<span class="hljs-keyword">return</span> jedisCluster.hdel(key， field);<br>	&#125;<br><br>&#125;<br></code></pre></td></tr></table></figure>
+
+<h4 id="3-5-集群版-Spring-配置"><a href="#3-5-集群版-Spring-配置" class="headerlink" title="3.5 集群版 Spring 配置"></a>3.5 集群版 Spring 配置</h4><p>applicationContext-redis.xml</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><code class="hljs Xml"><span class="hljs-comment">&lt;!-- 集群版的配置 --&gt;</span><br>	<span class="hljs-tag">&lt;<span class="hljs-name">bean</span> <span class="hljs-attr">id</span>=<span class="hljs-string">&quot;jedisCluster&quot;</span> <span class="hljs-attr">class</span>=<span class="hljs-string">&quot;redis.clients.jedis.JedisCluster&quot;</span>&gt;</span><br>		<span class="hljs-tag">&lt;<span class="hljs-name">constructor-arg</span>&gt;</span><br>			<span class="hljs-tag">&lt;<span class="hljs-name">set</span>&gt;</span><br>				<span class="hljs-tag">&lt;<span class="hljs-name">bean</span> <span class="hljs-attr">class</span>=<span class="hljs-string">&quot;redis.clients.jedis.HostAndPort&quot;</span>&gt;</span><br>					<span class="hljs-tag">&lt;<span class="hljs-name">constructor-arg</span> <span class="hljs-attr">name</span>=<span class="hljs-string">&quot;host&quot;</span> <span class="hljs-attr">value</span>=<span class="hljs-string">&quot;10.0.135.131&quot;</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">constructor-arg</span>&gt;</span><br>					<span class="hljs-tag">&lt;<span class="hljs-name">constructor-arg</span> <span class="hljs-attr">name</span>=<span class="hljs-string">&quot;port&quot;</span> <span class="hljs-attr">value</span>=<span class="hljs-string">&quot;7001&quot;</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">constructor-arg</span>&gt;</span><br>				<span class="hljs-tag">&lt;/<span class="hljs-name">bean</span>&gt;</span><br>				<span class="hljs-tag">&lt;<span class="hljs-name">bean</span> <span class="hljs-attr">class</span>=<span class="hljs-string">&quot;redis.clients.jedis.HostAndPort&quot;</span>&gt;</span><br>					<span class="hljs-tag">&lt;<span class="hljs-name">constructor-arg</span> <span class="hljs-attr">name</span>=<span class="hljs-string">&quot;host&quot;</span> <span class="hljs-attr">value</span>=<span class="hljs-string">&quot;10.0.135.131&quot;</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">constructor-arg</span>&gt;</span><br>					<span class="hljs-tag">&lt;<span class="hljs-name">constructor-arg</span> <span class="hljs-attr">name</span>=<span class="hljs-string">&quot;port&quot;</span> <span class="hljs-attr">value</span>=<span class="hljs-string">&quot;7002&quot;</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">constructor-arg</span>&gt;</span><br>				<span class="hljs-tag">&lt;/<span class="hljs-name">bean</span>&gt;</span><br>				<span class="hljs-tag">&lt;<span class="hljs-name">bean</span> <span class="hljs-attr">class</span>=<span class="hljs-string">&quot;redis.clients.jedis.HostAndPort&quot;</span>&gt;</span><br>					<span class="hljs-tag">&lt;<span class="hljs-name">constructor-arg</span> <span class="hljs-attr">name</span>=<span class="hljs-string">&quot;host&quot;</span> <span class="hljs-attr">value</span>=<span class="hljs-string">&quot;10.0.135.131&quot;</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">constructor-arg</span>&gt;</span><br>					<span class="hljs-tag">&lt;<span class="hljs-name">constructor-arg</span> <span class="hljs-attr">name</span>=<span class="hljs-string">&quot;port&quot;</span> <span class="hljs-attr">value</span>=<span class="hljs-string">&quot;7003&quot;</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">constructor-arg</span>&gt;</span><br>				<span class="hljs-tag">&lt;/<span class="hljs-name">bean</span>&gt;</span><br>				<span class="hljs-tag">&lt;<span class="hljs-name">bean</span> <span class="hljs-attr">class</span>=<span class="hljs-string">&quot;redis.clients.jedis.HostAndPort&quot;</span>&gt;</span><br>					<span class="hljs-tag">&lt;<span class="hljs-name">constructor-arg</span> <span class="hljs-attr">name</span>=<span class="hljs-string">&quot;host&quot;</span> <span class="hljs-attr">value</span>=<span class="hljs-string">&quot;10.0.135.131&quot;</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">constructor-arg</span>&gt;</span><br>					<span class="hljs-tag">&lt;<span class="hljs-name">constructor-arg</span> <span class="hljs-attr">name</span>=<span class="hljs-string">&quot;port&quot;</span> <span class="hljs-attr">value</span>=<span class="hljs-string">&quot;7004&quot;</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">constructor-arg</span>&gt;</span><br>				<span class="hljs-tag">&lt;/<span class="hljs-name">bean</span>&gt;</span><br>				<span class="hljs-tag">&lt;<span class="hljs-name">bean</span> <span class="hljs-attr">class</span>=<span class="hljs-string">&quot;redis.clients.jedis.HostAndPort&quot;</span>&gt;</span><br>					<span class="hljs-tag">&lt;<span class="hljs-name">constructor-arg</span> <span class="hljs-attr">name</span>=<span class="hljs-string">&quot;host&quot;</span> <span class="hljs-attr">value</span>=<span class="hljs-string">&quot;10.0.135.131&quot;</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">constructor-arg</span>&gt;</span><br>					<span class="hljs-tag">&lt;<span class="hljs-name">constructor-arg</span> <span class="hljs-attr">name</span>=<span class="hljs-string">&quot;port&quot;</span> <span class="hljs-attr">value</span>=<span class="hljs-string">&quot;7005&quot;</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">constructor-arg</span>&gt;</span><br>				<span class="hljs-tag">&lt;/<span class="hljs-name">bean</span>&gt;</span><br>				<span class="hljs-tag">&lt;<span class="hljs-name">bean</span> <span class="hljs-attr">class</span>=<span class="hljs-string">&quot;redis.clients.jedis.HostAndPort&quot;</span>&gt;</span><br>					<span class="hljs-tag">&lt;<span class="hljs-name">constructor-arg</span> <span class="hljs-attr">name</span>=<span class="hljs-string">&quot;host&quot;</span> <span class="hljs-attr">value</span>=<span class="hljs-string">&quot;10.0.135.131&quot;</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">constructor-arg</span>&gt;</span><br>					<span class="hljs-tag">&lt;<span class="hljs-name">constructor-arg</span> <span class="hljs-attr">name</span>=<span class="hljs-string">&quot;port&quot;</span> <span class="hljs-attr">value</span>=<span class="hljs-string">&quot;7006&quot;</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">constructor-arg</span>&gt;</span><br>				<span class="hljs-tag">&lt;/<span class="hljs-name">bean</span>&gt;</span><br>			<span class="hljs-tag">&lt;/<span class="hljs-name">set</span>&gt;</span><br>		<span class="hljs-tag">&lt;/<span class="hljs-name">constructor-arg</span>&gt;</span><br>	<span class="hljs-tag">&lt;/<span class="hljs-name">bean</span>&gt;</span><br>	<span class="hljs-tag">&lt;<span class="hljs-name">bean</span> <span class="hljs-attr">id</span>=<span class="hljs-string">&quot;jedisClientCluster&quot;</span> <span class="hljs-attr">class</span>=<span class="hljs-string">&quot;cn.e3mall.jedis.JedisClientCluster&quot;</span>/&gt;</span><br></code></pre></td></tr></table></figure>
+
+<blockquote>
+<p>注意：</p>
+<p><code>单机版 和 集群版不能共存</code>，只能各自使用。</p>
+</blockquote>
+
+              
+            </div>
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/05-%E6%95%B0%E6%8D%AE%E5%BA%93/" class="category-chain-item">05_数据库</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/05-%E6%95%B0%E6%8D%AE%E5%BA%93/03-Redis/" class="category-chain-item">03_Redis</a>
+  
+  
+
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/%E9%85%8D%E7%BD%AE/">#配置</a>
+      
+        <a href="/tags/Redis/">#Redis</a>
+      
+        <a href="/tags/%E9%9B%86%E7%BE%A4/">#集群</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>06-Redis 集群搭建</div>
+      <div>https://janycode.github.io/2017/06/20/05_数据库/04_Redis/06-Redis 集群搭建/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Jerry(姜源)</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2017年6月20日</div>
+        </div>
+      
+      
+      <div class="license-meta-item">
+        <div>许可协议</div>
+        <div>
+          
+            
+            
+              <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+              <span class="hint--top hint--rounded" aria-label="BY - 姜源">
+                <i class="iconfont icon-by"></i>
+              </span>
+              </a>
+            
+          
+        </div>
+      </div>
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2017/06/20/05_%E6%95%B0%E6%8D%AE%E5%BA%93/04_Redis/07-Redis%20%E7%A9%BF%E9%80%8F,%E5%87%BB%E7%A9%BF,%E9%9B%AA%E5%B4%A9,%E5%80%BE%E6%96%9C,%E6%B7%98%E6%B1%B0,%E5%88%A0%E9%99%A4/" title="07-Redis 穿透,击穿,雪崩,倾斜,淘汰,删除">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">07-Redis 穿透,击穿,雪崩,倾斜,淘汰,删除</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2017/06/20/05_%E6%95%B0%E6%8D%AE%E5%BA%93/04_Redis/05-Redis%20%E4%B8%BB%E4%BB%8E%E5%A4%8D%E5%88%B6+%E5%93%A8%E5%85%B5%E6%A8%A1%E5%BC%8F/" title="05-Redis 主从复制+哨兵模式">
+                        <span class="hidden-mobile">05-Redis 主从复制+哨兵模式</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+  <article id="comments" lazyload>
+    
+  <div id="SOHUCS" sid='https://janycode.github.io/2017/06/20/05_%E6%95%B0%E6%8D%AE%E5%BA%93/04_Redis/06-Redis%20%E9%9B%86%E7%BE%A4%E6%90%AD%E5%BB%BA/'></div>
+  <script type="text/javascript">
+    Fluid.utils.loadComments('#SOHUCS', function() {
+      Fluid.utils.createScript("https://changyan.sohu.com/upload/changyan.js", function() {
+        window.changyan.api.config({"appid":"cyw5OHIcO","appkey":"fea3446b3df4b3f129f34da4cbc87e51"})
+      });
+    });
+  </script>
+  <noscript>Please enable JavaScript to view the comments</noscript>
+
+
+  </article>
+
+
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://simple.blog.csdn.net" target="_blank" rel="nofollow noopener"><span>CSDN</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/janycode" target="_blank" rel="nofollow noopener"><span>GitHub</span></a> <i class="iconfont icon-love"></i> <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="busuanzi_container_site_pv" style="display: none">
+        总访问量(PV) 
+        <span id="busuanzi_value_site_pv"></span>
+         次，
+      </span>
+    
+    
+      <span id="busuanzi_container_site_uv" style="display: none">
+        总访客数(UV) 
+        <span id="busuanzi_value_site_uv"></span>
+         人
+      </span>
+    
+    
+  
+</div>
+
+  
+  
+  
+</div>
+
+<!-- live2d 动画 -->
+<script src="https://eqcn.ajz.miesnfu.com/wp-content/plugins/wp-3d-pony/live2dw/lib/L2Dwidget.min.js"></script>
+<script>
+    L2Dwidget.init({
+        "model": {
+            jsonPath: "https://unpkg.com/live2d-widget-model-haruto@1.0.5/assets/haruto.model.json",
+            "scale": 1
+        },
+        "display": {
+            "position": "right",
+            "width": 100,
+            "height": 200,
+            "hOffset": 35,
+            "vOffset": -85
+        },
+        "mobile": {
+            "show": false,
+            "scale": 0.1
+        },
+        "react": {
+            "opacityDefault": 0.75,
+            "opacityOnHover": 0.2
+        }
+    });
+</script>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <!-- Baidu Analytics -->
+    <script defer>
+      if (!Fluid.ctx.dnt) {
+        var _hmt = _hmt || [];
+        (function() {
+          var hm = document.createElement("script");
+          hm.src = "https://hm.baidu.com/hm.js?bfff735c897eb60ea49b735096b20e47";
+          var s = document.getElementsByTagName("script")[0];
+          s.parentNode.insertBefore(hm, s);
+        })();
+      }
+    </script>
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.0/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      headingSelector : CONFIG.toc.headingSelector || 'h1,h2,h3,h4,h5,h6',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      collapseDepth   : CONFIG.toc.collapseDepth || 0,
+      scrollSmooth    : true,
+      headingsOffset  : -boardTop
+    });
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+  });
+</script>
+
+
+  <script>
+  (function() {
+    var enableLang = CONFIG.code_language.enable && CONFIG.code_language.default;
+    var enableCopy = CONFIG.copy_btn;
+    if (!enableLang && !enableCopy) {
+      return;
+    }
+
+    function getBgClass(ele) {
+      return Fluid.utils.getBackgroundLightness(ele) >= 0 ? 'code-widget-light' : 'code-widget-dark';
+    }
+
+    var copyTmpl = '';
+    copyTmpl += '<div class="code-widget">';
+    copyTmpl += 'LANG';
+    copyTmpl += '</div>';
+    jQuery('.markdown-body pre').each(function() {
+      var $pre = jQuery(this);
+      if ($pre.find('code.mermaid').length > 0) {
+        return;
+      }
+      if ($pre.find('span.line').length > 0) {
+        return;
+      }
+
+      var lang = '';
+
+      if (enableLang) {
+        lang = CONFIG.code_language.default;
+        if ($pre[0].children.length > 0 && $pre[0].children[0].classList.length >= 2 && $pre.children().hasClass('hljs')) {
+          lang = $pre[0].children[0].classList[1];
+        } else if ($pre[0].getAttribute('data-language')) {
+          lang = $pre[0].getAttribute('data-language');
+        } else if ($pre.parent().hasClass('sourceCode') && $pre[0].children.length > 0 && $pre[0].children[0].classList.length >= 2) {
+          lang = $pre[0].children[0].classList[1];
+          $pre.parent().addClass('code-wrapper');
+        } else if ($pre.parent().hasClass('markdown-body') && $pre[0].classList.length === 0) {
+          $pre.wrap('<div class="code-wrapper"></div>');
+        }
+        lang = lang.toUpperCase().replace('NONE', CONFIG.code_language.default);
+      }
+      $pre.append(copyTmpl.replace('LANG', lang).replace('code-widget">',
+        getBgClass($pre[0]) + (enableCopy ? ' code-widget copy-btn" data-clipboard-snippet><i class="iconfont icon-copy"></i>' : ' code-widget">')));
+
+      if (enableCopy) {
+        Fluid.utils.createScript('https://lib.baomitu.com/clipboard.js/2.0.10/clipboard.min.js', function() {
+          var clipboard = new window.ClipboardJS('.copy-btn', {
+            target: function(trigger) {
+              var nodes = trigger.parentNode.childNodes;
+              for (var i = 0; i < nodes.length; i++) {
+                if (nodes[i].tagName === 'CODE') {
+                  return nodes[i];
+                }
+              }
+            }
+          });
+          clipboard.on('success', function(e) {
+            e.clearSelection();
+            e.trigger.innerHTML = e.trigger.innerHTML.replace('icon-copy', 'icon-success');
+            setTimeout(function() {
+              e.trigger.innerHTML = e.trigger.innerHTML.replace('icon-success', 'icon-copy');
+            }, 2000);
+          });
+        });
+      }
+    });
+  })();
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script  src="/js/local-search.js" ></script>
+
+  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

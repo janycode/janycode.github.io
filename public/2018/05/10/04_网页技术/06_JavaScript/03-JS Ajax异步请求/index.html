@@ -1,0 +1,904 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=light>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Jerry(姜源)">
+  <meta name="keywords" content="Java,Html,CSS,JavaScript,Python,C,Linux,shell编程经验分享、技术总结、心得体会">
+  
+    <meta name="description" content="1. Ajax 异步请求 说明AJAX, Asynchronous Javascript And XML，异步 JavaScript 和 XML，一种创建交互式网页应用的网页开发技术。 原理：通过在后台与服务器进行少量数据交换，AJAX可以是网页实现异步更新。这意味着可以在不重新加载整个网页的情况下，对网页的部分内容进行更新。（普通不适用AJAX的网页如果需要更新则必须刷新整个页面内容） 作用：">
+<meta property="og:type" content="article">
+<meta property="og:title" content="03-JS Ajax异步请求">
+<meta property="og:url" content="https://janycode.github.io/2018/05/10/04_%E7%BD%91%E9%A1%B5%E6%8A%80%E6%9C%AF/06_JavaScript/03-JS%20Ajax%E5%BC%82%E6%AD%A5%E8%AF%B7%E6%B1%82/index.html">
+<meta property="og:site_name" content="姜源の云笔记">
+<meta property="og:description" content="1. Ajax 异步请求 说明AJAX, Asynchronous Javascript And XML，异步 JavaScript 和 XML，一种创建交互式网页应用的网页开发技术。 原理：通过在后台与服务器进行少量数据交换，AJAX可以是网页实现异步更新。这意味着可以在不重新加载整个网页的情况下，对网页的部分内容进行更新。（普通不适用AJAX的网页如果需要更新则必须刷新整个页面内容） 作用：">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20200510093132594.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3NpbmF0XzM2MTg0MDc1,size_16,color_FFFFFF,t_70#pic_center">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20200606142921842.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3NpbmF0XzM2MTg0MDc1,size_16,color_FFFFFF,t_70">
+<meta property="article:published_time" content="2018-05-10T02:19:39.000Z">
+<meta property="article:modified_time" content="2022-05-28T02:29:50.715Z">
+<meta property="article:author" content="Jerry(姜源)">
+<meta property="article:tag" content="JavaScript">
+<meta property="article:tag" content="Ajax">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://img-blog.csdnimg.cn/20200510093132594.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3NpbmF0XzM2MTg0MDc1,size_16,color_FFFFFF,t_70#pic_center">
+  
+  
+    <meta name="referrer" content="no-referrer-when-downgrade">
+  
+  
+  <title>03-JS Ajax异步请求 - 姜源の云笔记</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"janycode.github.io","root":"/","version":"1.9.0","typing":{"enable":true,"typeSpeed":50,"cursorChar":"|","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":false},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":"bfff735c897eb60ea49b735096b20e47","google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+
+  
+<meta name="generator" content="Hexo 6.2.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 50vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>姜源の云笔记</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tools/">
+                <i class="iconfont icon-slack-fill"></i>
+                工具
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="03-JS Ajax异步请求"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-author" aria-hidden="true"></i>
+        Jerry(姜源)
+      </span>
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2018-05-10 10:19" pubdate>
+          星期四, 2018/05/10 10:19:39
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          <!-- compatible with older versions-->
+          16k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          <!-- compatible with older versions-->
+          130 分钟
+        
+      </span>
+    
+
+    
+    
+      
+        <span id="busuanzi_container_page_pv" style="display: none">
+          <i class="iconfont icon-eye" aria-hidden="true"></i>
+          <span id="busuanzi_value_page_pv"></span> 次
+        </span>
+        
+      
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">03-JS Ajax异步请求</h1>
+            
+            <div class="markdown-body">
+              
+              <h3 id="1-Ajax-异步请求-说明"><a href="#1-Ajax-异步请求-说明" class="headerlink" title="1. Ajax 异步请求 说明"></a>1. Ajax 异步请求 说明</h3><p>AJAX, Asynchronous Javascript And XML，<code>异步 JavaScript 和 XML</code>，一种创建交互式网页应用的网页开发技术。</p>
+<p><strong>原理</strong>：<br>通过在后台与服务器进行少量数据交换，AJAX可以是网页实现异步更新。<br>这意味着可以在不重新加载整个网页的情况下，<code>对网页的部分内容进行更新</code>。<br>（普通不适用AJAX的网页如果需要更新则必须刷新整个页面内容）</p>
+<p><strong>作用</strong>：</p>
+<ol>
+<li>可以刷新局部页面内容</li>
+<li>可以发起异步请求</li>
+</ol>
+<p><strong>异步&amp;同步请求</strong>：</p>
+<ul>
+<li>同步请求：当页面内容发生改变时，必须全部刷新，且刷新的时候不能发出其他请求。</li>
+<li>异步请求：可以局部改变网页的内容，当正在发生改变时，其他的模块内容也可以发出请求。</li>
+</ul>
+<h3 id="2-Ajax-实现对象：XMLHttpRequest"><a href="#2-Ajax-实现对象：XMLHttpRequest" class="headerlink" title="2. Ajax 实现对象：XMLHttpRequest"></a>2. Ajax 实现对象：XMLHttpRequest</h3><p>XMLHttpRequest 异步请求对象提供了对 HTTP 协议的完全的访问,包括做出 POST 和 HEAD 请求以及普通的 GET 请求的能力。</p>
+<h4 id="2-1-xhr-建立-Ajax-流程"><a href="#2-1-xhr-建立-Ajax-流程" class="headerlink" title="2.1 xhr 建立 Ajax 流程"></a>2.1 xhr 建立 Ajax 流程</h4><ol>
+<li>new 一个 xhr 对象；</li>
+<li>调用 xhr 对象的 open 方法；</li>
+<li>send 一些数据；</li>
+<li>对服务器的响应过程进行监听，来知道服务器是否正确得做出了响应，接着就可以做一些事情。比如获取服务器响应的内容，在页面上进行呈现。</li>
+</ol>
+<p><img src="https://img-blog.csdnimg.cn/20200510093132594.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3NpbmF0XzM2MTg0MDc1,size_16,color_FFFFFF,t_70#pic_center" srcset="/img/loading.gif" lazyload alt="在这里插入图片描述"></p>
+<h4 id="2-2-xhr-属性、句柄、方法"><a href="#2-2-xhr-属性、句柄、方法" class="headerlink" title="2.2 xhr 属性、句柄、方法"></a>2.2 xhr 属性、句柄、方法</h4><p>按照建立 Ajax 流程：<br>① <strong>创建</strong></p>
+<ul>
+<li><code>new XMLHttpRequest()</code> 创建一个 XMLHttpRequest 对象</li>
+</ul>
+<p>② <strong>事件句柄</strong></p>
+<ul>
+<li><code>onreadystatechange</code>： 用于指定XMLHttpRequest对象状态改变时的事件处理函数</li>
+</ul>
+<p>③ <strong>属性</strong></p>
+<ul>
+<li><code>status</code> &#x2F; <code>statusText</code>：以数字&#x2F;文本形式返回http状态码</li>
+<li><code>readyState</code>： XMLHttpRequest对象的处理状态，响应返回成功的时候得到通知<br>0 ：请求未初始化。open() 还没有调用，xhr 对象已创建或已被 abort() 方法重置<br>1 ：服务器连接已建立。open() 已经调用了，但是 send() 方法未调用。请求还没有被发送<br>2 ：请求已经接收。send() 方法已调用，HTTP 请求已发送到 Web 服务器<br>3 ：请求处理中。所有响应头信息已接收，响应体开始接收单未完成<br>4 ：请求已完成。响应已就绪，HTTP 响应已经完全接收，也就是响应完成了</li>
+</ul>
+<blockquote>
+<ul>
+<li>当 <code>status === 200 &amp;&amp; readyState === 4</code> 时才去读取响应数据。</li>
+</ul>
+</blockquote>
+<ul>
+<li><code>responseText</code> &#x2F; <code>responsXML</code>：获得字符串&#x2F;XML形式的响应数据</li>
+<li><code>getAllResponseHeader()</code>：获取所有的响应报头</li>
+<li><code>getResponseHeader()</code>：查询响应中的某个字段的值</li>
+</ul>
+<p>④ <strong>方法</strong></p>
+<ul>
+<li><code>open()</code>：打开链接。</li>
+</ul>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs javascript"><span class="hljs-title function_">open</span>(请求方式, 请求路径, flag); <span class="hljs-comment">// flag==true 异步请求, false 同步请求</span><br></code></pre></td></tr></table></figure>
+
+<ul>
+<li><code>setRequestHeader()</code>：设置请求头。<br>模拟form表单，专用于POST请求</li>
+</ul>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs javascript"><span class="hljs-title function_">setRequestHeader</span>(<span class="hljs-string">&quot;Content-Type&quot;</span>, <span class="hljs-string">&quot;application/x-www-form-urlencoded&quot;</span>);<br></code></pre></td></tr></table></figure>
+
+
+<ul>
+<li><code>send()</code>： 发送数据<br>GET请求，send 方法不需要携带参数，直接将参数拼接在 open 方法的路径后面<br>POST 请求，需要 send 方法带参来发送</li>
+</ul>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs javascript"><span class="hljs-title function_">send</span>(请求参数数据);<br></code></pre></td></tr></table></figure>
+
+
+
+<h3 id="3-Ajax-异步-GET-x2F-POST-请求"><a href="#3-Ajax-异步-GET-x2F-POST-请求" class="headerlink" title="3. Ajax 异步 GET&#x2F;POST 请求"></a>3. Ajax 异步 GET&#x2F;POST 请求</h3><p>服务器 Servlet 处理请求的资源：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@WebServlet(name = &quot;TestAjaxServlet&quot;, urlPatterns = &quot;/ajax&quot;)</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">TestAjaxServlet</span> <span class="hljs-keyword">extends</span> <span class="hljs-title class_">HttpServlet</span> &#123;<br>    <span class="hljs-keyword">protected</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">doPost</span><span class="hljs-params">(HttpServletRequest request, HttpServletResponse response)</span> <span class="hljs-keyword">throws</span> ... &#123;<br>    	<span class="hljs-comment">// 获取参数</span><br>        <span class="hljs-type">String</span> <span class="hljs-variable">username</span> <span class="hljs-operator">=</span> request.getParameter(<span class="hljs-string">&quot;username&quot;</span>);<br>        <span class="hljs-type">String</span> <span class="hljs-variable">password</span> <span class="hljs-operator">=</span> request.getParameter(<span class="hljs-string">&quot;password&quot;</span>);<br>        <span class="hljs-keyword">if</span> (username != <span class="hljs-literal">null</span> &amp;&amp; password != <span class="hljs-literal">null</span>) &#123;<br>            <span class="hljs-type">String</span> <span class="hljs-variable">msg</span> <span class="hljs-operator">=</span> <span class="hljs-string">&quot;账户可用&quot;</span>;<br>            <span class="hljs-type">boolean</span> <span class="hljs-variable">flag</span> <span class="hljs-operator">=</span> <span class="hljs-literal">true</span>;<br>            Map&lt;String, Object&gt; map = <span class="hljs-keyword">new</span> <span class="hljs-title class_">HashMap</span>&lt;&gt;();<br>            map.put(<span class="hljs-string">&quot;flag&quot;</span>, flag);<br>            map.put(<span class="hljs-string">&quot;msg&quot;</span>, msg);<br>			<span class="hljs-comment">// 封装 JSON 字符串</span><br>            <span class="hljs-type">ObjectMapper</span> <span class="hljs-variable">objectMapper</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">ObjectMapper</span>();<br>            <span class="hljs-type">String</span> <span class="hljs-variable">resp</span> <span class="hljs-operator">=</span> objectMapper.writeValueAsString(map);<br>			<span class="hljs-comment">// 响应到浏览器（浏览器页面 Ajax 会接收处理）</span><br>            response.setContentType(<span class="hljs-string">&quot;text/html;charset=utf-8&quot;</span>);<br>            response.getWriter().write(resp);<br>        &#125;<br>    &#125;<br>    <span class="hljs-keyword">protected</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">doGet</span><span class="hljs-params">(HttpServletRequest request, HttpServletResponse response)</span> <span class="hljs-keyword">throw</span> ... &#123;<br>        doPost(request, response);<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<h4 id="3-1-Ajax-GET-请求"><a href="#3-1-Ajax-GET-请求" class="headerlink" title="3.1 Ajax GET 请求"></a>3.1 Ajax GET 请求</h4><figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br></pre></td><td class="code"><pre><code class="hljs html"><span class="hljs-tag">&lt;<span class="hljs-name">title</span>&gt;</span>ajax-get请求<span class="hljs-tag">&lt;/<span class="hljs-name">title</span>&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">script</span>&gt;</span><span class="language-javascript"></span><br><span class="language-javascript">    <span class="hljs-comment">/**</span></span><br><span class="hljs-comment"><span class="language-javascript">     * 1. 创建异步请求对象 XMLHttpRequest</span></span><br><span class="hljs-comment"><span class="language-javascript">     * <span class="hljs-doctag">@returns</span> &#123;<span class="hljs-type">XMLHttpRequest</span>&#125;</span></span><br><span class="hljs-comment"><span class="language-javascript">     */</span></span><br><span class="language-javascript">    <span class="hljs-keyword">function</span> <span class="hljs-title function_">createXMLHttpRequest</span>(<span class="hljs-params"></span>) &#123;</span><br><span class="language-javascript">        <span class="hljs-keyword">var</span> xmlHttp;</span><br><span class="language-javascript">        <span class="hljs-keyword">try</span> &#123;</span><br><span class="language-javascript">            <span class="hljs-comment">// IE7+, Chrome, Firefox, Opera 8.0+, Safari 主流浏览器</span></span><br><span class="language-javascript">            xmlHttp = <span class="hljs-keyword">new</span> <span class="hljs-title class_">XMLHttpRequest</span>();</span><br><span class="language-javascript">        &#125; <span class="hljs-keyword">catch</span> (e) &#123;</span><br><span class="language-javascript">            <span class="hljs-keyword">try</span> &#123;</span><br><span class="language-javascript">                <span class="hljs-comment">// IE6, IE5 浏览器</span></span><br><span class="language-javascript">                xmlHttp = <span class="hljs-keyword">new</span> <span class="hljs-title class_">ActiveXObject</span>(<span class="hljs-string">&quot;Msxml2.XMLHTTP&quot;</span>);</span><br><span class="language-javascript">            &#125; <span class="hljs-keyword">catch</span> (e) &#123;</span><br><span class="language-javascript">                <span class="hljs-keyword">try</span> &#123;</span><br><span class="language-javascript">                    <span class="hljs-comment">// 其他浏览器</span></span><br><span class="language-javascript">                    xmlHttp = <span class="hljs-keyword">new</span> <span class="hljs-title class_">ActiveXObject</span>(<span class="hljs-string">&quot;Microsoft.XMLHTTP&quot;</span>);</span><br><span class="language-javascript">                &#125; <span class="hljs-keyword">catch</span> (e) &#123;</span><br><span class="language-javascript">                    <span class="hljs-comment">// Nothing to do.</span></span><br><span class="language-javascript">                &#125;</span><br><span class="language-javascript">            &#125;</span><br><span class="language-javascript">        &#125;</span><br><span class="language-javascript">        <span class="hljs-keyword">return</span> xmlHttp;</span><br><span class="language-javascript">    &#125;</span><br><span class="language-javascript">    <span class="hljs-keyword">var</span> xhr = <span class="hljs-title function_">createXMLHttpRequest</span>();</span><br><span class="language-javascript">    <span class="hljs-comment">// 2. 监听异步请求对象的状态改变 (当异步请求对象状态发生改变就会执行本方法)</span></span><br><span class="language-javascript">    xhr.<span class="hljs-property">onreadystatechange</span> = <span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) &#123;</span><br><span class="language-javascript">        <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&quot;服务器响应码status = &quot;</span>+xhr.<span class="hljs-property">status</span>+<span class="hljs-string">&quot;, 服务器响应完成状态readyState = &quot;</span>+xhr.<span class="hljs-property">readyState</span>);</span><br><span class="language-javascript">        <span class="hljs-comment">// 判断服务器响应状态码 status &amp;&amp; 判断服务器响应完成状态 readyState</span></span><br><span class="language-javascript">        <span class="hljs-keyword">if</span> (xhr.<span class="hljs-property">status</span> === <span class="hljs-number">200</span> &amp;&amp; xhr.<span class="hljs-property">readyState</span> === <span class="hljs-number">4</span>) &#123;</span><br><span class="language-javascript">            <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&quot;请求成功，读取响应完成...&quot;</span>);</span><br><span class="language-javascript">            <span class="hljs-keyword">var</span> responseText = xhr.<span class="hljs-property">responseText</span>;</span><br><span class="language-javascript">            <span class="hljs-comment">// json字符串 &gt;&gt; js对象</span></span><br><span class="language-javascript">            <span class="hljs-keyword">var</span> jsObj = <span class="hljs-built_in">eval</span>(<span class="hljs-string">&quot;(&quot;</span> + responseText + <span class="hljs-string">&quot;)&quot;</span>);</span><br><span class="language-javascript">            <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(jsObj.<span class="hljs-property">flag</span> + <span class="hljs-string">&quot;:&quot;</span> + jsObj.<span class="hljs-property">msg</span>);</span><br><span class="language-javascript">        &#125;</span><br><span class="language-javascript">    &#125;;</span><br><span class="language-javascript">    <span class="hljs-comment">// 3. 打开链接</span></span><br><span class="language-javascript">    xhr.<span class="hljs-title function_">open</span>(<span class="hljs-string">&quot;get&quot;</span>, <span class="hljs-string">&quot;$&#123;pageContext.request.contextPath&#125;/ajax?username=root&amp;password=1234&quot;</span>, <span class="hljs-literal">true</span>);</span><br><span class="language-javascript">    <span class="hljs-comment">// 4. 发送数据（GET请求的参数必须拼接在请求链接中）</span></span><br><span class="language-javascript">    xhr.<span class="hljs-title function_">send</span>();</span><br><span class="language-javascript"></span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span><br></code></pre></td></tr></table></figure>
+
+<h4 id="3-2-Ajax-POST-请求"><a href="#3-2-Ajax-POST-请求" class="headerlink" title="3.2 Ajax POST 请求"></a>3.2 Ajax POST 请求</h4><figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br></pre></td><td class="code"><pre><code class="hljs html"><span class="hljs-tag">&lt;<span class="hljs-name">title</span>&gt;</span>ajax-post请求<span class="hljs-tag">&lt;/<span class="hljs-name">title</span>&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">script</span>&gt;</span><span class="language-javascript"></span><br><span class="language-javascript">    <span class="hljs-comment">// 1.创建异步请求对象</span></span><br><span class="language-javascript">    <span class="hljs-keyword">function</span> <span class="hljs-title function_">createXMLHttpRequest</span>(<span class="hljs-params"></span>) &#123;</span><br><span class="language-javascript">        <span class="hljs-keyword">var</span> xmlHttp;</span><br><span class="language-javascript">        <span class="hljs-keyword">try</span> &#123;</span><br><span class="language-javascript">            <span class="hljs-comment">// IE7+, Chrome, Firefox, Opera 8.0+, Safari 主流浏览器</span></span><br><span class="language-javascript">            xmlHttp = <span class="hljs-keyword">new</span> <span class="hljs-title class_">XMLHttpRequest</span>();</span><br><span class="language-javascript">        &#125; <span class="hljs-keyword">catch</span> (e) &#123;</span><br><span class="language-javascript">            <span class="hljs-keyword">try</span> &#123;</span><br><span class="language-javascript">                <span class="hljs-comment">// IE6, IE5 浏览器</span></span><br><span class="language-javascript">                xmlHttp = <span class="hljs-keyword">new</span> <span class="hljs-title class_">ActiveXObject</span>(<span class="hljs-string">&quot;Msxml2.XMLHTTP&quot;</span>);</span><br><span class="language-javascript">            &#125; <span class="hljs-keyword">catch</span> (e) &#123;</span><br><span class="language-javascript">                <span class="hljs-keyword">try</span> &#123;</span><br><span class="language-javascript">                    <span class="hljs-comment">// 其他浏览器</span></span><br><span class="language-javascript">                    xmlHttp = <span class="hljs-keyword">new</span> <span class="hljs-title class_">ActiveXObject</span>(<span class="hljs-string">&quot;Microsoft.XMLHTTP&quot;</span>);</span><br><span class="language-javascript">                &#125; <span class="hljs-keyword">catch</span> (e) &#123;</span><br><span class="language-javascript">                    <span class="hljs-comment">// Nothing to do.</span></span><br><span class="language-javascript">                &#125;</span><br><span class="language-javascript">            &#125;</span><br><span class="language-javascript">        &#125;</span><br><span class="language-javascript">        <span class="hljs-keyword">return</span> xmlHttp;</span><br><span class="language-javascript">    &#125;</span><br><span class="language-javascript">    <span class="hljs-keyword">var</span> xhr = <span class="hljs-title function_">createXMLHttpRequest</span>();</span><br><span class="language-javascript">    <span class="hljs-comment">// 2. 监听异步请求对象的状态改变 (当异步请求对象状态发生改变就会执行本方法)</span></span><br><span class="language-javascript">    xhr.<span class="hljs-property">onreadystatechange</span> = <span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) &#123;</span><br><span class="language-javascript">        <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&quot;服务器响应码status = &quot;</span>+xhr.<span class="hljs-property">status</span>+<span class="hljs-string">&quot;, 服务器响应完成状态readyState = &quot;</span>+xhr.<span class="hljs-property">readyState</span>);</span><br><span class="language-javascript">        <span class="hljs-comment">// 判断服务器响应状态码 status &amp;&amp; 判断服务器响应完成状态 readyState</span></span><br><span class="language-javascript">        <span class="hljs-keyword">if</span> (xhr.<span class="hljs-property">status</span> === <span class="hljs-number">200</span> &amp;&amp; xhr.<span class="hljs-property">readyState</span> === <span class="hljs-number">4</span>) &#123;</span><br><span class="language-javascript">            <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&quot;请求成功，读取响应完成...&quot;</span>);</span><br><span class="language-javascript">            <span class="hljs-keyword">var</span> responseText = xhr.<span class="hljs-property">responseText</span>;</span><br><span class="language-javascript">            <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(responseText);</span><br><span class="language-javascript">            <span class="hljs-comment">// json字符串 &gt;&gt; js对象</span></span><br><span class="language-javascript">            <span class="hljs-keyword">var</span> jsObj = <span class="hljs-built_in">eval</span>(<span class="hljs-string">&quot;(&quot;</span> + responseText + <span class="hljs-string">&quot;)&quot;</span>);</span><br><span class="language-javascript">            <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(jsObj.<span class="hljs-property">flag</span>);</span><br><span class="language-javascript">            <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(jsObj.<span class="hljs-property">msg</span>);</span><br><span class="language-javascript">        &#125;</span><br><span class="language-javascript">    &#125;;</span><br><span class="language-javascript">    <span class="hljs-comment">// 3.打开链接</span></span><br><span class="language-javascript">    xhr.<span class="hljs-title function_">open</span>(<span class="hljs-string">&quot;post&quot;</span>, <span class="hljs-string">&quot;$&#123;pageContext.request.contextPath&#125;/ajax&quot;</span>, <span class="hljs-literal">true</span>);</span><br><span class="language-javascript">    <span class="hljs-comment">// 4.设置请求头(模拟 form 表单)</span></span><br><span class="language-javascript">    xhr.<span class="hljs-title function_">setRequestHeader</span>(<span class="hljs-string">&quot;Content-Type&quot;</span>, <span class="hljs-string">&quot;application/x-www-form-urlencoded&quot;</span>);</span><br><span class="language-javascript">    <span class="hljs-comment">// 5.发送参数</span></span><br><span class="language-javascript">    xhr.<span class="hljs-title function_">send</span>(<span class="hljs-string">&quot;username=root&amp;password=1234&quot;</span>);</span><br><span class="language-javascript"></span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span><br></code></pre></td></tr></table></figure>
+
+<blockquote>
+<p>【注意事项】在以下情况中<code>请使用 POST 请求</code>：</p>
+<ul>
+<li>无法使用缓存文件（更新服务器上的文件或数据库）</li>
+<li>向服务器发送大量数据（POST 没有数据量限制）</li>
+<li>发送包含未知字符的用户输入时，POST 比 GET 更稳定也更可靠</li>
+</ul>
+</blockquote>
+<h3 id="4-异步请求无法正确获取返回值"><a href="#4-异步请求无法正确获取返回值" class="headerlink" title="4. 异步请求无法正确获取返回值"></a>4. 异步请求无法正确获取返回值</h3><h4 id="4-1-问题现象"><a href="#4-1-问题现象" class="headerlink" title="4.1 问题现象"></a>4.1 问题现象</h4><p><img src="https://img-blog.csdnimg.cn/20200606142921842.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3NpbmF0XzM2MTg0MDc1,size_16,color_FFFFFF,t_70" srcset="/img/loading.gif" lazyload alt="在这里插入图片描述"><br>普通的 ajax 校验会出现的问题：<code>无法正确返回 boolean 值 false，因此无法正确拦截表单提交！！！</code></p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><code class="hljs js"><span class="hljs-comment">// 普通的 ajax 异步请求（校验用户名是否与数据库中重复）</span><br>$.<span class="hljs-title function_">ajax</span>(&#123;<br>	type : <span class="hljs-string">&quot;post&quot;</span>,<br>	<span class="hljs-keyword">async</span> : <span class="hljs-literal">true</span>,<br>	url : <span class="hljs-string">&quot;&lt;%=request.getContextPath()%&gt;/validateLogin&quot;</span>, <span class="hljs-comment">// 查重 Servlet</span><br>	data : &#123;<br>		<span class="hljs-string">&quot;username&quot;</span> : name<br>	&#125;,<br>	success : <span class="hljs-keyword">function</span>(<span class="hljs-params">data</span>) &#123;<br>		<span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&quot;data:&quot;</span> + data + <span class="hljs-string">&quot;, type:&quot;</span> + (<span class="hljs-keyword">typeof</span> data));<br>		<span class="hljs-comment">// 与 登陆逻辑正好相反，false 用户不存在, true 用户存在（不能注册） </span><br>		<span class="hljs-keyword">if</span> (data == <span class="hljs-literal">false</span>) &#123;<br>			nameSpan.<span class="hljs-property">innerHTML</span> = <span class="hljs-string">&quot;√&quot;</span>.<span class="hljs-title function_">fontcolor</span>(<span class="hljs-string">&quot;green&quot;</span>);<br>			<span class="hljs-keyword">return</span> <span class="hljs-literal">true</span>;<br>		&#125; <span class="hljs-keyword">else</span> &#123;<br>			nameSpan.<span class="hljs-property">innerHTML</span> = <span class="hljs-string">&quot;用户名已存在&quot;</span>.<span class="hljs-title function_">fontcolor</span>(<span class="hljs-string">&quot;red&quot;</span>);<br>			<span class="hljs-keyword">return</span> <span class="hljs-literal">false</span>;<br>		&#125;<br>	&#125;,<br>	<span class="hljs-attr">dataType</span>: <span class="hljs-string">&quot;json&quot;</span>,<br>&#125;);<br></code></pre></td></tr></table></figure>
+
+<p>因此，当下的需求非常明确：<br>如何在 ajax 异步请求回调函数 function(data) 中正确获取一个返回值，用于表单的提交 &#x2F; 拦截。</p>
+<p>进一步研究验证，解决方案有 两种：</p>
+<ul>
+<li>方式1：<code>将 ajax 作为临时同步的校验事件，可正确赋值需要的返回值</code></li>
+<li>方式2：<code>使用自定义 get/set 方法确保操作的是永远是同一个 变量</code> (即需要正确赋值的返回值)</li>
+</ul>
+<h4 id="4-2-解决方案-1：改变-async-为临时同步-变量赋值"><a href="#4-2-解决方案-1：改变-async-为临时同步-变量赋值" class="headerlink" title="4.2 解决方案 1：改变 async 为临时同步 + 变量赋值"></a>4.2 解决方案 1：改变 async 为临时同步 + 变量赋值</h4><p>jQuery.ajax() 参数：<code>async</code></p>
+<ul>
+<li>类型：Boolean</li>
+<li>默认值: true。默认不带 async 参数时，所有请求均为异步请求。显式设置为 false 则为同步请求。</li>
+<li>注意，同步请求将锁住浏览器，用户其它操作必须等待请求完成才可以执行。</li>
+</ul>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><code class="hljs js"><span class="hljs-comment">// 方式1：将 ajax 作为临时同步的校验事件，可正确赋值需要的返回值 result</span><br><span class="hljs-keyword">function</span> <span class="hljs-title function_">checkStuName1</span>(<span class="hljs-params"></span>) &#123;<br>	<span class="hljs-comment">// 如果 id 标签不存在，id === undefined，且不能直接操作 .value</span><br>	<span class="hljs-keyword">var</span> id = <span class="hljs-variable language_">document</span>.<span class="hljs-title function_">getElementsByName</span>(<span class="hljs-string">&quot;stuId&quot;</span>)[<span class="hljs-number">0</span>];<br>	<span class="hljs-keyword">var</span> name = <span class="hljs-variable language_">document</span>.<span class="hljs-title function_">getElementsByName</span>(<span class="hljs-string">&quot;username&quot;</span>)[<span class="hljs-number">0</span>].<span class="hljs-property">value</span>;<br>	<span class="hljs-keyword">var</span> nameSpan = <span class="hljs-variable language_">document</span>.<span class="hljs-title function_">getElementById</span>(<span class="hljs-string">&quot;nameSpan&quot;</span>);<br>	<br>	<span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&quot;id:&quot;</span> + id + <span class="hljs-string">&quot;, &quot;</span> + <span class="hljs-string">&quot;name:&quot;</span> + name);<br>	<span class="hljs-keyword">if</span> (<span class="hljs-literal">null</span> === name || <span class="hljs-string">&quot;&quot;</span> === name) &#123;<br>		nameSpan.<span class="hljs-property">innerHTML</span> = <span class="hljs-string">&quot;* 用户名不能为空&quot;</span>.<span class="hljs-title function_">fontcolor</span>(<span class="hljs-string">&quot;red&quot;</span>);<br>		<span class="hljs-keyword">return</span> <span class="hljs-literal">false</span>;<br>	&#125;<br><br>	<span class="hljs-keyword">var</span> result;<br>	<span class="hljs-keyword">if</span> (<span class="hljs-literal">undefined</span> === id || <span class="hljs-literal">null</span> === id || <span class="hljs-string">&quot;&quot;</span> === id) &#123;<br>		<span class="hljs-comment">// 注册</span><br>		$.<span class="hljs-title function_">ajax</span>(&#123;<br>			type : <span class="hljs-string">&quot;post&quot;</span>,<br>			<span class="hljs-keyword">async</span> : <span class="hljs-literal">false</span>, <span class="hljs-comment">// 转为同步请求 + result变量</span><br>			url : <span class="hljs-string">&quot;&lt;%=request.getContextPath()%&gt;/validateLogin&quot;</span>,<br>			data : &#123;<br>				<span class="hljs-string">&quot;username&quot;</span> : name<br>			&#125;,<br>			success : <span class="hljs-keyword">function</span>(<span class="hljs-params">data</span>) &#123;<br>				<span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&quot;data:&quot;</span> + data + <span class="hljs-string">&quot;, type:&quot;</span> + (<span class="hljs-keyword">typeof</span> data));<br>				<span class="hljs-comment">// 与 登陆逻辑正好相反，false 用户不存在, true 用户存在（不能注册） </span><br>				<span class="hljs-keyword">if</span> (data == <span class="hljs-literal">false</span>) &#123;<br>					nameSpan.<span class="hljs-property">innerHTML</span> = <span class="hljs-string">&quot;√&quot;</span>.<span class="hljs-title function_">fontcolor</span>(<span class="hljs-string">&quot;green&quot;</span>);<br>					result = <span class="hljs-literal">true</span>;<br>				&#125; <span class="hljs-keyword">else</span> &#123;<br>					nameSpan.<span class="hljs-property">innerHTML</span> = <span class="hljs-string">&quot;用户名已存在&quot;</span>.<span class="hljs-title function_">fontcolor</span>(<span class="hljs-string">&quot;red&quot;</span>);<br>					result = <span class="hljs-literal">false</span>;<br>				&#125;<br>			&#125;,<br>			<span class="hljs-attr">dataType</span>: <span class="hljs-string">&quot;json&quot;</span>,<br>		&#125;);<br>	&#125; <span class="hljs-keyword">else</span> &#123;<br>		<span class="hljs-comment">// id 不为空：修改操作</span><br>		<span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&quot;修改操作&quot;</span>);<br>		result = <span class="hljs-literal">false</span>;<br>	&#125;<br>	<span class="hljs-keyword">return</span> result;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<h4 id="4-3-解决方案-2：使用全局变量-写-get-x2F-set-方法"><a href="#4-3-解决方案-2：使用全局变量-写-get-x2F-set-方法" class="headerlink" title="4.3 解决方案 2：使用全局变量 + 写 get&#x2F;set 方法"></a>4.3 解决方案 2：使用全局变量 + 写 get&#x2F;set 方法</h4><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br></pre></td><td class="code"><pre><code class="hljs js"><span class="hljs-comment">// 方式2：使用自定义 get/set 方法确保操作的是永远是同一个 flag (即需要正确赋值的返回值)</span><br><span class="hljs-keyword">var</span> flag = <span class="hljs-literal">false</span>;<br><span class="hljs-keyword">function</span> <span class="hljs-title function_">getFlag</span>(<span class="hljs-params"></span>) &#123;<br>	<span class="hljs-keyword">return</span> flag;<br>&#125;<br><span class="hljs-keyword">function</span> <span class="hljs-title function_">setFlag</span>(<span class="hljs-params">b</span>) &#123;<br>	flag = b;<br>&#125;<br><span class="hljs-keyword">function</span> <span class="hljs-title function_">checkStuName2</span>(<span class="hljs-params"></span>) &#123;<br>	<span class="hljs-comment">// 如果 id 标签不存在，id === undefined，且不能直接操作 .value</span><br>	<span class="hljs-keyword">var</span> id = <span class="hljs-variable language_">document</span>.<span class="hljs-title function_">getElementsByName</span>(<span class="hljs-string">&quot;stuId&quot;</span>)[<span class="hljs-number">0</span>];<br>	<span class="hljs-keyword">var</span> name = <span class="hljs-variable language_">document</span>.<span class="hljs-title function_">getElementsByName</span>(<span class="hljs-string">&quot;username&quot;</span>)[<span class="hljs-number">0</span>].<span class="hljs-property">value</span>;<br>	<span class="hljs-keyword">var</span> nameSpan = <span class="hljs-variable language_">document</span>.<span class="hljs-title function_">getElementById</span>(<span class="hljs-string">&quot;nameSpan&quot;</span>);<br>	<br>	<span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&quot;id:&quot;</span> + id + <span class="hljs-string">&quot;, &quot;</span> + <span class="hljs-string">&quot;name:&quot;</span> + name);<br>	<span class="hljs-keyword">if</span> (<span class="hljs-literal">null</span> === name || <span class="hljs-string">&quot;&quot;</span> === name) &#123;<br>		nameSpan.<span class="hljs-property">innerHTML</span> = <span class="hljs-string">&quot;* 用户名不能为空&quot;</span>.<span class="hljs-title function_">fontcolor</span>(<span class="hljs-string">&quot;red&quot;</span>);<br>		<span class="hljs-keyword">return</span> <span class="hljs-literal">false</span>;<br>	&#125;<br><br>	<span class="hljs-keyword">if</span> (<span class="hljs-literal">undefined</span> === id || <span class="hljs-literal">null</span> === id || <span class="hljs-string">&quot;&quot;</span> === id) &#123;<br>		<span class="hljs-comment">// 注册</span><br>		$.<span class="hljs-title function_">post</span>(<span class="hljs-string">&quot;&lt;%=request.getContextPath()%&gt;/validateLogin&quot;</span>, &#123;<br>			<span class="hljs-string">&quot;username&quot;</span>: name<br>		&#125;, <span class="hljs-keyword">function</span>(<span class="hljs-params">data</span>) &#123;<br>			<span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&quot;data:&quot;</span> + data + <span class="hljs-string">&quot;, type:&quot;</span> + (<span class="hljs-keyword">typeof</span> data));<br>			<span class="hljs-comment">// 与 登陆逻辑正好相反，true 用户存在 false 用户不存在</span><br>			<span class="hljs-keyword">if</span> (data == <span class="hljs-literal">true</span>) &#123;<br>				nameSpan.<span class="hljs-property">innerHTML</span> = <span class="hljs-string">&quot;用户名已存在&quot;</span>.<span class="hljs-title function_">fontcolor</span>(<span class="hljs-string">&quot;red&quot;</span>);<br>				<span class="hljs-title function_">setFlag</span>(<span class="hljs-literal">false</span>);<br>			&#125; <span class="hljs-keyword">else</span> &#123;<br>				nameSpan.<span class="hljs-property">innerHTML</span> = <span class="hljs-string">&quot;√&quot;</span>.<span class="hljs-title function_">fontcolor</span>(<span class="hljs-string">&quot;green&quot;</span>);<br>				<span class="hljs-title function_">setFlag</span>(<span class="hljs-literal">true</span>);<br>			&#125;<br>		&#125;, <span class="hljs-string">&quot;json&quot;</span>);<br>	&#125; <span class="hljs-keyword">else</span> &#123;<br>		<span class="hljs-comment">// 修改</span><br>		<span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&quot;修改操作&quot;</span>);<br>	&#125;<br>	<span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&quot;最终flag=&quot;</span> + <span class="hljs-title function_">getFlag</span>());<br>	<span class="hljs-keyword">return</span> <span class="hljs-title function_">getFlag</span>();<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<h4 id="4-4-demo-源码"><a href="#4-4-demo-源码" class="headerlink" title="4.4 demo 源码"></a>4.4 demo 源码</h4><figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br><span class="line">169</span><br><span class="line">170</span><br><span class="line">171</span><br><span class="line">172</span><br><span class="line">173</span><br><span class="line">174</span><br><span class="line">175</span><br><span class="line">176</span><br><span class="line">177</span><br><span class="line">178</span><br><span class="line">179</span><br><span class="line">180</span><br><span class="line">181</span><br><span class="line">182</span><br><span class="line">183</span><br><span class="line">184</span><br><span class="line">185</span><br><span class="line">186</span><br><span class="line">187</span><br><span class="line">188</span><br><span class="line">189</span><br><span class="line">190</span><br><span class="line">191</span><br><span class="line">192</span><br><span class="line">193</span><br><span class="line">194</span><br><span class="line">195</span><br><span class="line">196</span><br></pre></td><td class="code"><pre><code class="hljs html">&lt;%@ page language=&quot;java&quot; contentType=&quot;text/html; charset=UTF-8&quot;<br>    pageEncoding=&quot;UTF-8&quot;%&gt;<br>&lt;%@ taglib uri=&quot;http://java.sun.com/jsp/jstl/core&quot;  prefix=&quot;c&quot;%&gt;<br><span class="hljs-meta">&lt;!DOCTYPE <span class="hljs-keyword">html</span>&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">html</span>&gt;</span><br>	<span class="hljs-tag">&lt;<span class="hljs-name">head</span>&gt;</span><br>		<span class="hljs-tag">&lt;<span class="hljs-name">meta</span> <span class="hljs-attr">charset</span>=<span class="hljs-string">&quot;UTF-8&quot;</span>&gt;</span><br>		<span class="hljs-tag">&lt;<span class="hljs-name">title</span>&gt;</span>注册/修改页<span class="hljs-tag">&lt;/<span class="hljs-name">title</span>&gt;</span><br>		<span class="hljs-tag">&lt;<span class="hljs-name">script</span> <span class="hljs-attr">src</span>=<span class="hljs-string">&quot;$&#123;pageContext.request.contextPath&#125;/js/jquery-3.5.1.min.js&quot;</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span><br>		<span class="hljs-tag">&lt;<span class="hljs-name">script</span> <span class="hljs-attr">type</span>=<span class="hljs-string">&quot;text/javascript&quot;</span>&gt;</span><span class="language-javascript"></span><br><span class="language-javascript">			<span class="hljs-keyword">function</span> <span class="hljs-title function_">show</span>(<span class="hljs-params">file</span>) &#123;</span><br><span class="language-javascript">				<span class="hljs-keyword">var</span> reader = <span class="hljs-keyword">new</span> <span class="hljs-title class_">FileReader</span>(); <span class="hljs-comment">// 实例化一个FileReader对象，用于读取文件</span></span><br><span class="language-javascript">				<span class="hljs-keyword">var</span> img = <span class="hljs-variable language_">document</span>.<span class="hljs-title function_">getElementById</span>(<span class="hljs-string">&#x27;img&#x27;</span>); <span class="hljs-comment">// 获取要显示图片的标签</span></span><br><span class="language-javascript">				<span class="hljs-comment">//读取File对象的数据</span></span><br><span class="language-javascript">				reader.<span class="hljs-property">onload</span> = <span class="hljs-keyword">function</span>(<span class="hljs-params">evt</span>) &#123;</span><br><span class="language-javascript">					img.<span class="hljs-property">width</span> = <span class="hljs-string">&quot;50&quot;</span>;</span><br><span class="language-javascript">					img.<span class="hljs-property">height</span> = <span class="hljs-string">&quot;50&quot;</span>;</span><br><span class="language-javascript">					img.<span class="hljs-property">src</span> = evt.<span class="hljs-property">target</span>.<span class="hljs-property">result</span>;</span><br><span class="language-javascript">				&#125;</span><br><span class="language-javascript">				reader.<span class="hljs-title function_">readAsDataURL</span>(file.<span class="hljs-property">files</span>[<span class="hljs-number">0</span>]);</span><br><span class="language-javascript">			&#125;</span><br><span class="language-javascript"></span><br><span class="language-javascript">			<span class="hljs-comment">// 方式1：将 ajax 作为临时同步的校验事件，可正确赋值需要的返回值 result</span></span><br><span class="language-javascript">			<span class="hljs-keyword">function</span> <span class="hljs-title function_">checkStuName1</span>(<span class="hljs-params"></span>) &#123;</span><br><span class="language-javascript">				<span class="hljs-comment">// 如果 id 标签不存在，id === undefined，且不能直接操作 .value</span></span><br><span class="language-javascript">				<span class="hljs-keyword">var</span> id = <span class="hljs-variable language_">document</span>.<span class="hljs-title function_">getElementsByName</span>(<span class="hljs-string">&quot;stuId&quot;</span>)[<span class="hljs-number">0</span>];</span><br><span class="language-javascript">				<span class="hljs-keyword">var</span> name = <span class="hljs-variable language_">document</span>.<span class="hljs-title function_">getElementsByName</span>(<span class="hljs-string">&quot;username&quot;</span>)[<span class="hljs-number">0</span>].<span class="hljs-property">value</span>;</span><br><span class="language-javascript">				<span class="hljs-keyword">var</span> nameSpan = <span class="hljs-variable language_">document</span>.<span class="hljs-title function_">getElementById</span>(<span class="hljs-string">&quot;nameSpan&quot;</span>);</span><br><span class="language-javascript">				</span><br><span class="language-javascript">				<span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&quot;id:&quot;</span> + id + <span class="hljs-string">&quot;, &quot;</span> + <span class="hljs-string">&quot;name:&quot;</span> + name);</span><br><span class="language-javascript">				<span class="hljs-keyword">if</span> (<span class="hljs-literal">null</span> === name || <span class="hljs-string">&quot;&quot;</span> === name) &#123;</span><br><span class="language-javascript">					nameSpan.<span class="hljs-property">innerHTML</span> = <span class="hljs-string">&quot;* 用户名不能为空&quot;</span>.<span class="hljs-title function_">fontcolor</span>(<span class="hljs-string">&quot;red&quot;</span>);</span><br><span class="language-javascript">					<span class="hljs-keyword">return</span> <span class="hljs-literal">false</span>;</span><br><span class="language-javascript">				&#125;</span><br><span class="language-javascript"></span><br><span class="language-javascript">				<span class="hljs-keyword">var</span> result;</span><br><span class="language-javascript">				<span class="hljs-keyword">if</span> (<span class="hljs-literal">undefined</span> === id || <span class="hljs-literal">null</span> === id || <span class="hljs-string">&quot;&quot;</span> === id) &#123;</span><br><span class="language-javascript">					<span class="hljs-comment">// 注册</span></span><br><span class="language-javascript">					$.<span class="hljs-title function_">ajax</span>(&#123;</span><br><span class="language-javascript">						type : <span class="hljs-string">&quot;post&quot;</span>,</span><br><span class="language-javascript">						<span class="hljs-keyword">async</span> : <span class="hljs-literal">false</span>, <span class="hljs-comment">// 转为同步请求 + result变量</span></span><br><span class="language-javascript">						url : <span class="hljs-string">&quot;&lt;%=request.getContextPath()%&gt;/validateLogin&quot;</span>,</span><br><span class="language-javascript">						data : &#123;</span><br><span class="language-javascript">							<span class="hljs-string">&quot;username&quot;</span> : name</span><br><span class="language-javascript">						&#125;,</span><br><span class="language-javascript">						success : <span class="hljs-keyword">function</span>(<span class="hljs-params">data</span>) &#123;</span><br><span class="language-javascript">							<span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&quot;data:&quot;</span> + data + <span class="hljs-string">&quot;, type:&quot;</span> + (<span class="hljs-keyword">typeof</span> data));</span><br><span class="language-javascript">							<span class="hljs-comment">// 与 登陆逻辑正好相反，false 用户不存在, true 用户存在（不能注册） </span></span><br><span class="language-javascript">							<span class="hljs-keyword">if</span> (data == <span class="hljs-literal">false</span>) &#123;</span><br><span class="language-javascript">								nameSpan.<span class="hljs-property">innerHTML</span> = <span class="hljs-string">&quot;√&quot;</span>.<span class="hljs-title function_">fontcolor</span>(<span class="hljs-string">&quot;green&quot;</span>);</span><br><span class="language-javascript">								result = <span class="hljs-literal">true</span>;</span><br><span class="language-javascript">							&#125; <span class="hljs-keyword">else</span> &#123;</span><br><span class="language-javascript">								nameSpan.<span class="hljs-property">innerHTML</span> = <span class="hljs-string">&quot;用户名已存在&quot;</span>.<span class="hljs-title function_">fontcolor</span>(<span class="hljs-string">&quot;red&quot;</span>);</span><br><span class="language-javascript">								result = <span class="hljs-literal">false</span>;</span><br><span class="language-javascript">							&#125;</span><br><span class="language-javascript">						&#125;,</span><br><span class="language-javascript">						<span class="hljs-attr">dataType</span>: <span class="hljs-string">&quot;json&quot;</span>,</span><br><span class="language-javascript">					&#125;);</span><br><span class="language-javascript">				&#125; <span class="hljs-keyword">else</span> &#123;</span><br><span class="language-javascript">					<span class="hljs-comment">// id 不为空：修改操作</span></span><br><span class="language-javascript">					<span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&quot;修改操作&quot;</span>);</span><br><span class="language-javascript">					result = <span class="hljs-literal">false</span>;</span><br><span class="language-javascript">				&#125;</span><br><span class="language-javascript">				<span class="hljs-keyword">return</span> result;</span><br><span class="language-javascript">			&#125;</span><br><span class="language-javascript"></span><br><span class="language-javascript">			<span class="hljs-comment">// 方式2：使用自定义 get/set 方法确保操作的是永远是同一个 flag (即需要正确赋值的返回值)</span></span><br><span class="language-javascript">			<span class="hljs-keyword">var</span> flag = <span class="hljs-literal">false</span>;</span><br><span class="language-javascript">			<span class="hljs-keyword">function</span> <span class="hljs-title function_">getFlag</span>(<span class="hljs-params"></span>) &#123;</span><br><span class="language-javascript">				<span class="hljs-keyword">return</span> flag;</span><br><span class="language-javascript">			&#125;</span><br><span class="language-javascript">			<span class="hljs-keyword">function</span> <span class="hljs-title function_">setFlag</span>(<span class="hljs-params">b</span>) &#123;</span><br><span class="language-javascript">				flag = b;</span><br><span class="language-javascript">			&#125;</span><br><span class="language-javascript">			<span class="hljs-keyword">function</span> <span class="hljs-title function_">checkStuName2</span>(<span class="hljs-params"></span>) &#123;</span><br><span class="language-javascript">				<span class="hljs-comment">// 如果 id 标签不存在，id === undefined，且不能直接操作 .value</span></span><br><span class="language-javascript">				<span class="hljs-keyword">var</span> id = <span class="hljs-variable language_">document</span>.<span class="hljs-title function_">getElementsByName</span>(<span class="hljs-string">&quot;stuId&quot;</span>)[<span class="hljs-number">0</span>];</span><br><span class="language-javascript">				<span class="hljs-keyword">var</span> name = <span class="hljs-variable language_">document</span>.<span class="hljs-title function_">getElementsByName</span>(<span class="hljs-string">&quot;username&quot;</span>)[<span class="hljs-number">0</span>].<span class="hljs-property">value</span>;</span><br><span class="language-javascript">				<span class="hljs-keyword">var</span> nameSpan = <span class="hljs-variable language_">document</span>.<span class="hljs-title function_">getElementById</span>(<span class="hljs-string">&quot;nameSpan&quot;</span>);</span><br><span class="language-javascript">				</span><br><span class="language-javascript">				<span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&quot;id:&quot;</span> + id + <span class="hljs-string">&quot;, &quot;</span> + <span class="hljs-string">&quot;name:&quot;</span> + name);</span><br><span class="language-javascript">				<span class="hljs-keyword">if</span> (<span class="hljs-literal">null</span> === name || <span class="hljs-string">&quot;&quot;</span> === name) &#123;</span><br><span class="language-javascript">					nameSpan.<span class="hljs-property">innerHTML</span> = <span class="hljs-string">&quot;* 用户名不能为空&quot;</span>.<span class="hljs-title function_">fontcolor</span>(<span class="hljs-string">&quot;red&quot;</span>);</span><br><span class="language-javascript">					<span class="hljs-keyword">return</span> <span class="hljs-literal">false</span>;</span><br><span class="language-javascript">				&#125;</span><br><span class="language-javascript"></span><br><span class="language-javascript">				<span class="hljs-keyword">if</span> (<span class="hljs-literal">undefined</span> === id || <span class="hljs-literal">null</span> === id || <span class="hljs-string">&quot;&quot;</span> === id) &#123;</span><br><span class="language-javascript">					<span class="hljs-comment">// 注册</span></span><br><span class="language-javascript">					$.<span class="hljs-title function_">post</span>(<span class="hljs-string">&quot;&lt;%=request.getContextPath()%&gt;/validateLogin&quot;</span>, &#123;</span><br><span class="language-javascript">						<span class="hljs-string">&quot;username&quot;</span>: name</span><br><span class="language-javascript">					&#125;, <span class="hljs-keyword">function</span>(<span class="hljs-params">data</span>) &#123;</span><br><span class="language-javascript">						<span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&quot;data:&quot;</span> + data + <span class="hljs-string">&quot;, type:&quot;</span> + (<span class="hljs-keyword">typeof</span> data));</span><br><span class="language-javascript">						<span class="hljs-comment">// 与 登陆逻辑正好相反，true 用户存在 false 用户不存在</span></span><br><span class="language-javascript">						<span class="hljs-keyword">if</span> (data == <span class="hljs-literal">true</span>) &#123;</span><br><span class="language-javascript">							nameSpan.<span class="hljs-property">innerHTML</span> = <span class="hljs-string">&quot;用户名已存在&quot;</span>.<span class="hljs-title function_">fontcolor</span>(<span class="hljs-string">&quot;red&quot;</span>);</span><br><span class="language-javascript">							<span class="hljs-title function_">setFlag</span>(<span class="hljs-literal">false</span>);</span><br><span class="language-javascript">						&#125; <span class="hljs-keyword">else</span> &#123;</span><br><span class="language-javascript">							nameSpan.<span class="hljs-property">innerHTML</span> = <span class="hljs-string">&quot;√&quot;</span>.<span class="hljs-title function_">fontcolor</span>(<span class="hljs-string">&quot;green&quot;</span>);</span><br><span class="language-javascript">							<span class="hljs-title function_">setFlag</span>(<span class="hljs-literal">true</span>);</span><br><span class="language-javascript">						&#125;</span><br><span class="language-javascript">					&#125;, <span class="hljs-string">&quot;json&quot;</span>);</span><br><span class="language-javascript">				&#125; <span class="hljs-keyword">else</span> &#123;</span><br><span class="language-javascript">					<span class="hljs-comment">// 修改</span></span><br><span class="language-javascript">					<span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&quot;修改操作&quot;</span>);</span><br><span class="language-javascript">				&#125;</span><br><span class="language-javascript">				<span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&quot;最终flag=&quot;</span> + <span class="hljs-title function_">getFlag</span>());</span><br><span class="language-javascript">				<span class="hljs-keyword">return</span> <span class="hljs-title function_">getFlag</span>();</span><br><span class="language-javascript">			&#125;</span><br><span class="language-javascript"></span><br><span class="language-javascript">			<span class="hljs-comment">// 校验返回</span></span><br><span class="language-javascript">			<span class="hljs-keyword">function</span> <span class="hljs-title function_">checkAll</span>(<span class="hljs-params"></span>) &#123;</span><br><span class="language-javascript">				<span class="hljs-comment">//return checkStuName1();</span></span><br><span class="language-javascript">				<span class="hljs-keyword">return</span> <span class="hljs-title function_">checkStuName2</span>();</span><br><span class="language-javascript">			&#125;</span><br><span class="language-javascript">		</span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span><br>	<span class="hljs-tag">&lt;/<span class="hljs-name">head</span>&gt;</span><br>	<span class="hljs-tag">&lt;<span class="hljs-name">body</span>&gt;</span><br>		<span class="hljs-tag">&lt;<span class="hljs-name">form</span> <span class="hljs-attr">action</span>=<span class="hljs-string">&quot;&lt;%=request.getContextPath()%&gt;/addOrUpdate&quot;</span> <span class="hljs-attr">method</span>=<span class="hljs-string">&quot;post&quot;</span> <span class="hljs-attr">enctype</span>=<span class="hljs-string">&quot;multipart/form-data&quot;</span> <span class="hljs-attr">onsubmit</span>=<span class="hljs-string">&quot;return checkAll()&quot;</span>&gt;</span><br>			<span class="hljs-tag">&lt;<span class="hljs-name">table</span>&gt;</span><br>				<span class="hljs-tag">&lt;<span class="hljs-name">c:if</span> <span class="hljs-attr">test</span>=<span class="hljs-string">&quot;$&#123;null != stuData.stuId&#125;&quot;</span>&gt;</span><br>					<span class="hljs-tag">&lt;<span class="hljs-name">tr</span>&gt;</span><br>						<span class="hljs-tag">&lt;<span class="hljs-name">td</span>&gt;</span>编号<span class="hljs-tag">&lt;/<span class="hljs-name">td</span>&gt;</span><br>						<span class="hljs-tag">&lt;<span class="hljs-name">td</span>&gt;</span><br>							<span class="hljs-tag">&lt;<span class="hljs-name">input</span> <span class="hljs-attr">type</span>=<span class="hljs-string">&quot;text&quot;</span> <span class="hljs-attr">name</span>=<span class="hljs-string">&quot;stuId&quot;</span> <span class="hljs-attr">readonly</span>=<span class="hljs-string">&quot;readonly&quot;</span> <span class="hljs-attr">value</span>=<span class="hljs-string">&quot;$&#123;stuData.stuId&#125;&quot;</span>&gt;</span><br>						<span class="hljs-tag">&lt;/<span class="hljs-name">td</span>&gt;</span><br>						<span class="hljs-tag">&lt;<span class="hljs-name">td</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">td</span>&gt;</span><br>					<span class="hljs-tag">&lt;/<span class="hljs-name">tr</span>&gt;</span><br>				<span class="hljs-tag">&lt;/<span class="hljs-name">c:if</span>&gt;</span><br><br>				<span class="hljs-tag">&lt;<span class="hljs-name">tr</span>&gt;</span><br>					<span class="hljs-tag">&lt;<span class="hljs-name">td</span>&gt;</span>姓名<span class="hljs-tag">&lt;/<span class="hljs-name">td</span>&gt;</span><br>					<span class="hljs-tag">&lt;<span class="hljs-name">td</span>&gt;</span><br>						<span class="hljs-tag">&lt;<span class="hljs-name">input</span> <span class="hljs-attr">type</span>=<span class="hljs-string">&quot;text&quot;</span> <span class="hljs-attr">name</span>=<span class="hljs-string">&quot;username&quot;</span> <span class="hljs-attr">value</span>=<span class="hljs-string">&quot;$&#123;stuData.stuName&#125;&quot;</span> <span class="hljs-attr">onblur</span>=<span class="hljs-string">&quot;checkStuName2()&quot;</span>&gt;</span><br>					<span class="hljs-tag">&lt;/<span class="hljs-name">td</span>&gt;</span><br>					<span class="hljs-tag">&lt;<span class="hljs-name">td</span>&gt;</span><span class="hljs-tag">&lt;<span class="hljs-name">span</span> <span class="hljs-attr">id</span>=<span class="hljs-string">&quot;nameSpan&quot;</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">span</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">td</span>&gt;</span><br>				<span class="hljs-tag">&lt;/<span class="hljs-name">tr</span>&gt;</span><br>				<span class="hljs-tag">&lt;<span class="hljs-name">tr</span>&gt;</span><br>					<span class="hljs-tag">&lt;<span class="hljs-name">td</span>&gt;</span>年龄<span class="hljs-tag">&lt;/<span class="hljs-name">td</span>&gt;</span><br>					<span class="hljs-tag">&lt;<span class="hljs-name">td</span>&gt;</span><br>						<span class="hljs-tag">&lt;<span class="hljs-name">input</span> <span class="hljs-attr">type</span>=<span class="hljs-string">&quot;text&quot;</span> <span class="hljs-attr">name</span>=<span class="hljs-string">&quot;age&quot;</span> <span class="hljs-attr">value</span>=<span class="hljs-string">&quot;$&#123;stuData.stuAge&#125;&quot;</span>&gt;</span><br>					<span class="hljs-tag">&lt;/<span class="hljs-name">td</span>&gt;</span><br>					<span class="hljs-tag">&lt;<span class="hljs-name">td</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">td</span>&gt;</span><br>				<span class="hljs-tag">&lt;/<span class="hljs-name">tr</span>&gt;</span><br>				<span class="hljs-tag">&lt;<span class="hljs-name">tr</span>&gt;</span><br>					<span class="hljs-tag">&lt;<span class="hljs-name">td</span>&gt;</span>爱好<span class="hljs-tag">&lt;/<span class="hljs-name">td</span>&gt;</span><br>					<span class="hljs-tag">&lt;<span class="hljs-name">td</span>&gt;</span><br>						<span class="hljs-tag">&lt;<span class="hljs-name">input</span> <span class="hljs-attr">type</span>=<span class="hljs-string">&quot;text&quot;</span> <span class="hljs-attr">name</span>=<span class="hljs-string">&quot;hobby&quot;</span> <span class="hljs-attr">value</span>=<span class="hljs-string">&quot;$&#123;stuData.stuHobby&#125;&quot;</span>&gt;</span><br>					<span class="hljs-tag">&lt;/<span class="hljs-name">td</span>&gt;</span><br>					<span class="hljs-tag">&lt;<span class="hljs-name">td</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">td</span>&gt;</span><br>				<span class="hljs-tag">&lt;/<span class="hljs-name">tr</span>&gt;</span><br>				<span class="hljs-tag">&lt;<span class="hljs-name">tr</span>&gt;</span><br>					<span class="hljs-tag">&lt;<span class="hljs-name">td</span>&gt;</span>班级<span class="hljs-tag">&lt;/<span class="hljs-name">td</span>&gt;</span><br>					<span class="hljs-tag">&lt;<span class="hljs-name">td</span>&gt;</span><br>						<span class="hljs-tag">&lt;<span class="hljs-name">select</span> <span class="hljs-attr">name</span>=<span class="hljs-string">&quot;grade&quot;</span>&gt;</span><br>							<span class="hljs-tag">&lt;<span class="hljs-name">option</span> <span class="hljs-attr">value</span>=<span class="hljs-string">&quot;1&quot;</span> &lt;<span class="hljs-attr">c:if</span> <span class="hljs-attr">test</span>=<span class="hljs-string">&quot;$&#123;stuData.gId==1&#125;&quot;</span>&gt;</span>selected<span class="hljs-tag">&lt;/<span class="hljs-name">c:if</span>&gt;</span>&gt;zz2001<span class="hljs-tag">&lt;/<span class="hljs-name">option</span>&gt;</span><br>							<span class="hljs-tag">&lt;<span class="hljs-name">option</span> <span class="hljs-attr">value</span>=<span class="hljs-string">&quot;2&quot;</span> &lt;<span class="hljs-attr">c:if</span> <span class="hljs-attr">test</span>=<span class="hljs-string">&quot;$&#123;stuData.gId==2&#125;&quot;</span>&gt;</span>selected<span class="hljs-tag">&lt;/<span class="hljs-name">c:if</span>&gt;</span>&gt;zz2002<span class="hljs-tag">&lt;/<span class="hljs-name">option</span>&gt;</span><br>							<span class="hljs-tag">&lt;<span class="hljs-name">option</span> <span class="hljs-attr">value</span>=<span class="hljs-string">&quot;3&quot;</span> &lt;<span class="hljs-attr">c:if</span> <span class="hljs-attr">test</span>=<span class="hljs-string">&quot;$&#123;stuData.gId==3&#125;&quot;</span>&gt;</span>selected<span class="hljs-tag">&lt;/<span class="hljs-name">c:if</span>&gt;</span>&gt;zz2003<span class="hljs-tag">&lt;/<span class="hljs-name">option</span>&gt;</span><br>							<span class="hljs-tag">&lt;<span class="hljs-name">option</span> <span class="hljs-attr">value</span>=<span class="hljs-string">&quot;4&quot;</span> &lt;<span class="hljs-attr">c:if</span> <span class="hljs-attr">test</span>=<span class="hljs-string">&quot;$&#123;stuData.gId==4&#125;&quot;</span>&gt;</span>selected<span class="hljs-tag">&lt;/<span class="hljs-name">c:if</span>&gt;</span>&gt;zz2004<span class="hljs-tag">&lt;/<span class="hljs-name">option</span>&gt;</span><br>							<span class="hljs-tag">&lt;<span class="hljs-name">option</span> <span class="hljs-attr">value</span>=<span class="hljs-string">&quot;5&quot;</span> &lt;<span class="hljs-attr">c:if</span> <span class="hljs-attr">test</span>=<span class="hljs-string">&quot;$&#123;stuData.gId==5&#125;&quot;</span>&gt;</span>selected<span class="hljs-tag">&lt;/<span class="hljs-name">c:if</span>&gt;</span>&gt;zz2005<span class="hljs-tag">&lt;/<span class="hljs-name">option</span>&gt;</span><br>						<span class="hljs-tag">&lt;/<span class="hljs-name">select</span>&gt;</span><br>					<span class="hljs-tag">&lt;/<span class="hljs-name">td</span>&gt;</span><br>					<span class="hljs-tag">&lt;<span class="hljs-name">td</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">td</span>&gt;</span><br>				<span class="hljs-tag">&lt;/<span class="hljs-name">tr</span>&gt;</span><br>				<span class="hljs-tag">&lt;<span class="hljs-name">tr</span>&gt;</span><br>					<span class="hljs-tag">&lt;<span class="hljs-name">td</span>&gt;</span>密码<span class="hljs-tag">&lt;/<span class="hljs-name">td</span>&gt;</span><br>					<span class="hljs-tag">&lt;<span class="hljs-name">td</span>&gt;</span><span class="hljs-tag">&lt;<span class="hljs-name">input</span> <span class="hljs-attr">type</span>=<span class="hljs-string">&quot;password&quot;</span> <span class="hljs-attr">name</span>=<span class="hljs-string">&quot;password&quot;</span> <span class="hljs-attr">value</span>=<span class="hljs-string">&quot;$&#123;stuData.pwd&#125;&quot;</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">td</span>&gt;</span><br>					<span class="hljs-tag">&lt;<span class="hljs-name">td</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">td</span>&gt;</span><br>				<span class="hljs-tag">&lt;/<span class="hljs-name">tr</span>&gt;</span><br>				<span class="hljs-tag">&lt;<span class="hljs-name">tr</span>&gt;</span><br>					<span class="hljs-tag">&lt;<span class="hljs-name">td</span>&gt;</span>生日<span class="hljs-tag">&lt;/<span class="hljs-name">td</span>&gt;</span><br>					<span class="hljs-tag">&lt;<span class="hljs-name">td</span>&gt;</span><span class="hljs-tag">&lt;<span class="hljs-name">input</span> <span class="hljs-attr">type</span>=<span class="hljs-string">&quot;date&quot;</span> <span class="hljs-attr">name</span>=<span class="hljs-string">&quot;birthday&quot;</span> <span class="hljs-attr">value</span>=<span class="hljs-string">&quot;$&#123;stuData.stuBirthday&#125;&quot;</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">td</span>&gt;</span><br>					<span class="hljs-tag">&lt;<span class="hljs-name">td</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">td</span>&gt;</span><br>				<span class="hljs-tag">&lt;/<span class="hljs-name">tr</span>&gt;</span><br>				<span class="hljs-tag">&lt;<span class="hljs-name">tr</span>&gt;</span><br>					<span class="hljs-tag">&lt;<span class="hljs-name">td</span>&gt;</span>头像<span class="hljs-tag">&lt;/<span class="hljs-name">td</span>&gt;</span><br>					<span class="hljs-tag">&lt;<span class="hljs-name">td</span>&gt;</span><br>						<span class="hljs-tag">&lt;<span class="hljs-name">c:choose</span>&gt;</span><br>							<span class="hljs-tag">&lt;<span class="hljs-name">c:when</span> <span class="hljs-attr">test</span>=<span class="hljs-string">&quot;$&#123;not empty stuData.imgPath&#125;&quot;</span>&gt;</span><br>								<span class="hljs-tag">&lt;<span class="hljs-name">img</span> <span class="hljs-attr">id</span>=<span class="hljs-string">&quot;img&quot;</span> <span class="hljs-attr">height</span>=<span class="hljs-string">&quot;50px&quot;</span> <span class="hljs-attr">width</span>=<span class="hljs-string">&quot;50px&quot;</span> <span class="hljs-attr">alt</span>=<span class="hljs-string">&quot;有头像&quot;</span> <span class="hljs-attr">src</span>=<span class="hljs-string">&quot;http://localhost:8081/uploadfile/images/$&#123;stuData.imgPath&#125;&quot;</span>&gt;</span><br>							<span class="hljs-tag">&lt;/<span class="hljs-name">c:when</span>&gt;</span><br>							<span class="hljs-tag">&lt;<span class="hljs-name">c:otherwise</span>&gt;</span><br>								<span class="hljs-tag">&lt;<span class="hljs-name">img</span> <span class="hljs-attr">id</span>=<span class="hljs-string">&quot;img&quot;</span> <span class="hljs-attr">height</span>=<span class="hljs-string">&quot;50px&quot;</span> <span class="hljs-attr">width</span>=<span class="hljs-string">&quot;50px&quot;</span> <span class="hljs-attr">alt</span>=<span class="hljs-string">&quot;有头像&quot;</span> <span class="hljs-attr">src</span>=<span class="hljs-string">&quot;&lt;%=request.getContextPath()%&gt;/img/default.png&quot;</span>&gt;</span><br>							<span class="hljs-tag">&lt;/<span class="hljs-name">c:otherwise</span>&gt;</span><br>						<span class="hljs-tag">&lt;/<span class="hljs-name">c:choose</span>&gt;</span><br>					<span class="hljs-tag">&lt;/<span class="hljs-name">td</span>&gt;</span><br>					<span class="hljs-tag">&lt;<span class="hljs-name">td</span>&gt;</span><br>						<span class="hljs-tag">&lt;<span class="hljs-name">input</span> <span class="hljs-attr">type</span>=<span class="hljs-string">&quot;file&quot;</span> <span class="hljs-attr">name</span>=<span class="hljs-string">&quot;imgPath&quot;</span> <span class="hljs-attr">onchange</span>=<span class="hljs-string">&quot;show(this)&quot;</span>&gt;</span><br>					<span class="hljs-tag">&lt;/<span class="hljs-name">td</span>&gt;</span><br>				<span class="hljs-tag">&lt;/<span class="hljs-name">tr</span>&gt;</span><br>			<span class="hljs-tag">&lt;/<span class="hljs-name">table</span>&gt;</span><br>			<span class="hljs-tag">&lt;<span class="hljs-name">input</span> <span class="hljs-attr">type</span>=<span class="hljs-string">&quot;submit&quot;</span> <span class="hljs-attr">value</span>=<span class="hljs-string">&quot;注册&quot;</span>&gt;</span><br>			<span class="hljs-tag">&lt;<span class="hljs-name">input</span> <span class="hljs-attr">type</span>=<span class="hljs-string">&quot;reset&quot;</span> <span class="hljs-attr">value</span>=<span class="hljs-string">&quot;重置&quot;</span>&gt;</span><br>		<span class="hljs-tag">&lt;/<span class="hljs-name">form</span>&gt;</span><br><br>	<span class="hljs-tag">&lt;/<span class="hljs-name">body</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">html</span>&gt;</span><br></code></pre></td></tr></table></figure>
+              
+            </div>
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/04-%E7%BD%91%E9%A1%B5%E6%8A%80%E6%9C%AF/" class="category-chain-item">04_网页技术</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/04-%E7%BD%91%E9%A1%B5%E6%8A%80%E6%9C%AF/06-JavaScript/" class="category-chain-item">06_JavaScript</a>
+  
+  
+
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/JavaScript/">#JavaScript</a>
+      
+        <a href="/tags/Ajax/">#Ajax</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>03-JS Ajax异步请求</div>
+      <div>https://janycode.github.io/2018/05/10/04_网页技术/06_JavaScript/03-JS Ajax异步请求/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Jerry(姜源)</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2018年5月10日</div>
+        </div>
+      
+      
+      <div class="license-meta-item">
+        <div>许可协议</div>
+        <div>
+          
+            
+            
+              <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+              <span class="hint--top hint--rounded" aria-label="BY - 姜源">
+                <i class="iconfont icon-by"></i>
+              </span>
+              </a>
+            
+          
+        </div>
+      </div>
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2018/05/12/04_%E7%BD%91%E9%A1%B5%E6%8A%80%E6%9C%AF/06_JavaScript/05-JS%20jQuery%20Ajax%E5%BC%82%E6%AD%A5%E8%AF%B7%E6%B1%82/" title="05-JS jQuery Ajax异步请求">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">05-JS jQuery Ajax异步请求</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2018/05/07/02_%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/04_%E6%AD%A3%E5%88%99%E8%A1%A8%E8%BE%BE%E5%BC%8F/01-%E6%AD%A3%E5%88%99%E8%A1%A8%E8%BE%BE%E5%BC%8F%E8%AF%AD%E6%B3%95/" title="01-正则表达式语法">
+                        <span class="hidden-mobile">01-正则表达式语法</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+  <article id="comments" lazyload>
+    
+  <div id="SOHUCS" sid='https://janycode.github.io/2018/05/10/04_%E7%BD%91%E9%A1%B5%E6%8A%80%E6%9C%AF/06_JavaScript/03-JS%20Ajax%E5%BC%82%E6%AD%A5%E8%AF%B7%E6%B1%82/'></div>
+  <script type="text/javascript">
+    Fluid.utils.loadComments('#SOHUCS', function() {
+      Fluid.utils.createScript("https://changyan.sohu.com/upload/changyan.js", function() {
+        window.changyan.api.config({"appid":"cyw5OHIcO","appkey":"fea3446b3df4b3f129f34da4cbc87e51"})
+      });
+    });
+  </script>
+  <noscript>Please enable JavaScript to view the comments</noscript>
+
+
+  </article>
+
+
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://simple.blog.csdn.net" target="_blank" rel="nofollow noopener"><span>CSDN</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/janycode" target="_blank" rel="nofollow noopener"><span>GitHub</span></a> <i class="iconfont icon-love"></i> <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="busuanzi_container_site_pv" style="display: none">
+        总访问量(PV) 
+        <span id="busuanzi_value_site_pv"></span>
+         次，
+      </span>
+    
+    
+      <span id="busuanzi_container_site_uv" style="display: none">
+        总访客数(UV) 
+        <span id="busuanzi_value_site_uv"></span>
+         人
+      </span>
+    
+    
+  
+</div>
+
+  
+  
+  
+</div>
+
+<!-- live2d 动画 -->
+<script src="https://eqcn.ajz.miesnfu.com/wp-content/plugins/wp-3d-pony/live2dw/lib/L2Dwidget.min.js"></script>
+<script>
+    L2Dwidget.init({
+        "model": {
+            jsonPath: "https://unpkg.com/live2d-widget-model-haruto@1.0.5/assets/haruto.model.json",
+            "scale": 1
+        },
+        "display": {
+            "position": "right",
+            "width": 100,
+            "height": 200,
+            "hOffset": 35,
+            "vOffset": -85
+        },
+        "mobile": {
+            "show": false,
+            "scale": 0.1
+        },
+        "react": {
+            "opacityDefault": 0.75,
+            "opacityOnHover": 0.2
+        }
+    });
+</script>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <!-- Baidu Analytics -->
+    <script defer>
+      if (!Fluid.ctx.dnt) {
+        var _hmt = _hmt || [];
+        (function() {
+          var hm = document.createElement("script");
+          hm.src = "https://hm.baidu.com/hm.js?bfff735c897eb60ea49b735096b20e47";
+          var s = document.getElementsByTagName("script")[0];
+          s.parentNode.insertBefore(hm, s);
+        })();
+      }
+    </script>
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.0/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      headingSelector : CONFIG.toc.headingSelector || 'h1,h2,h3,h4,h5,h6',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      collapseDepth   : CONFIG.toc.collapseDepth || 0,
+      scrollSmooth    : true,
+      headingsOffset  : -boardTop
+    });
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+  });
+</script>
+
+
+  <script>
+  (function() {
+    var enableLang = CONFIG.code_language.enable && CONFIG.code_language.default;
+    var enableCopy = CONFIG.copy_btn;
+    if (!enableLang && !enableCopy) {
+      return;
+    }
+
+    function getBgClass(ele) {
+      return Fluid.utils.getBackgroundLightness(ele) >= 0 ? 'code-widget-light' : 'code-widget-dark';
+    }
+
+    var copyTmpl = '';
+    copyTmpl += '<div class="code-widget">';
+    copyTmpl += 'LANG';
+    copyTmpl += '</div>';
+    jQuery('.markdown-body pre').each(function() {
+      var $pre = jQuery(this);
+      if ($pre.find('code.mermaid').length > 0) {
+        return;
+      }
+      if ($pre.find('span.line').length > 0) {
+        return;
+      }
+
+      var lang = '';
+
+      if (enableLang) {
+        lang = CONFIG.code_language.default;
+        if ($pre[0].children.length > 0 && $pre[0].children[0].classList.length >= 2 && $pre.children().hasClass('hljs')) {
+          lang = $pre[0].children[0].classList[1];
+        } else if ($pre[0].getAttribute('data-language')) {
+          lang = $pre[0].getAttribute('data-language');
+        } else if ($pre.parent().hasClass('sourceCode') && $pre[0].children.length > 0 && $pre[0].children[0].classList.length >= 2) {
+          lang = $pre[0].children[0].classList[1];
+          $pre.parent().addClass('code-wrapper');
+        } else if ($pre.parent().hasClass('markdown-body') && $pre[0].classList.length === 0) {
+          $pre.wrap('<div class="code-wrapper"></div>');
+        }
+        lang = lang.toUpperCase().replace('NONE', CONFIG.code_language.default);
+      }
+      $pre.append(copyTmpl.replace('LANG', lang).replace('code-widget">',
+        getBgClass($pre[0]) + (enableCopy ? ' code-widget copy-btn" data-clipboard-snippet><i class="iconfont icon-copy"></i>' : ' code-widget">')));
+
+      if (enableCopy) {
+        Fluid.utils.createScript('https://lib.baomitu.com/clipboard.js/2.0.10/clipboard.min.js', function() {
+          var clipboard = new window.ClipboardJS('.copy-btn', {
+            target: function(trigger) {
+              var nodes = trigger.parentNode.childNodes;
+              for (var i = 0; i < nodes.length; i++) {
+                if (nodes[i].tagName === 'CODE') {
+                  return nodes[i];
+                }
+              }
+            }
+          });
+          clipboard.on('success', function(e) {
+            e.clearSelection();
+            e.trigger.innerHTML = e.trigger.innerHTML.replace('icon-copy', 'icon-success');
+            setTimeout(function() {
+              e.trigger.innerHTML = e.trigger.innerHTML.replace('icon-success', 'icon-copy');
+            }, 2000);
+          });
+        });
+      }
+    });
+  })();
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script  src="/js/local-search.js" ></script>
+
+  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

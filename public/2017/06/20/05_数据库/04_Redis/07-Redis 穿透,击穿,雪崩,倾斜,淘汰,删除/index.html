@@ -1,0 +1,984 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=light>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Jerry(姜源)">
+  <meta name="keywords" content="Java,Html,CSS,JavaScript,Python,C,Linux,shell编程经验分享、技术总结、心得体会">
+  
+    <meta name="description" content="1. 缓存穿透 概念  查不到，缓存层+持久层都压力增大  当用户去查询数据的时候，发现 redis 内存数据库中没有，于是向持久层数据库查询，发现也没有，于是查询失败，当用户过多时，缓存都没有查到，于是都去查持久层数据库，这会给持久层数据库造成很大的压力，此时相当于出现了缓存穿透。   解决方案 × 2   布隆过滤器(★)：是一种数据结构，将所有可能存在的数据哈希到一个足够大的 bitmap">
+<meta property="og:type" content="article">
+<meta property="og:title" content="07-Redis 穿透,击穿,雪崩,倾斜,淘汰,删除">
+<meta property="og:url" content="https://janycode.github.io/2017/06/20/05_%E6%95%B0%E6%8D%AE%E5%BA%93/04_Redis/07-Redis%20%E7%A9%BF%E9%80%8F,%E5%87%BB%E7%A9%BF,%E9%9B%AA%E5%B4%A9,%E5%80%BE%E6%96%9C,%E6%B7%98%E6%B1%B0,%E5%88%A0%E9%99%A4/index.html">
+<meta property="og:site_name" content="姜源の云笔记">
+<meta property="og:description" content="1. 缓存穿透 概念  查不到，缓存层+持久层都压力增大  当用户去查询数据的时候，发现 redis 内存数据库中没有，于是向持久层数据库查询，发现也没有，于是查询失败，当用户过多时，缓存都没有查到，于是都去查持久层数据库，这会给持久层数据库造成很大的压力，此时相当于出现了缓存穿透。   解决方案 × 2   布隆过滤器(★)：是一种数据结构，将所有可能存在的数据哈希到一个足够大的 bitmap">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20200815230440.png">
+<meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20200708130243.png">
+<meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20200708130401.png">
+<meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20200708130430.png">
+<meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20200708131019.png">
+<meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20200708131759.png">
+<meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20200708131804.png">
+<meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20200708131955.png">
+<meta property="article:published_time" content="2017-06-20T15:04:05.000Z">
+<meta property="article:modified_time" content="2022-05-28T03:23:52.011Z">
+<meta property="article:author" content="Jerry(姜源)">
+<meta property="article:tag" content="Redis">
+<meta property="article:tag" content="穿透">
+<meta property="article:tag" content="击穿">
+<meta property="article:tag" content="雪崩">
+<meta property="article:tag" content="倾斜">
+<meta property="article:tag" content="淘汰">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20200815230440.png">
+  
+  
+    <meta name="referrer" content="no-referrer-when-downgrade">
+  
+  
+  <title>07-Redis 穿透,击穿,雪崩,倾斜,淘汰,删除 - 姜源の云笔记</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"janycode.github.io","root":"/","version":"1.9.0","typing":{"enable":true,"typeSpeed":50,"cursorChar":"|","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":false},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":"bfff735c897eb60ea49b735096b20e47","google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+
+  
+<meta name="generator" content="Hexo 6.2.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 50vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>姜源の云笔记</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tools/">
+                <i class="iconfont icon-slack-fill"></i>
+                工具
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="07-Redis 穿透,击穿,雪崩,倾斜,淘汰,删除"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-author" aria-hidden="true"></i>
+        Jerry(姜源)
+      </span>
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2017-06-20 23:04" pubdate>
+          星期二, 2017/06/20 23:04:05
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          <!-- compatible with older versions-->
+          4.6k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          <!-- compatible with older versions-->
+          39 分钟
+        
+      </span>
+    
+
+    
+    
+      
+        <span id="busuanzi_container_page_pv" style="display: none">
+          <i class="iconfont icon-eye" aria-hidden="true"></i>
+          <span id="busuanzi_value_page_pv"></span> 次
+        </span>
+        
+      
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">07-Redis 穿透,击穿,雪崩,倾斜,淘汰,删除</h1>
+            
+            <div class="markdown-body">
+              
+              <p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20200815230440.png" srcset="/img/loading.gif" lazyload alt="image-20200815230439632"></p>
+<h3 id="1-缓存穿透"><a href="#1-缓存穿透" class="headerlink" title="1. 缓存穿透"></a>1. 缓存穿透</h3><ul>
+<li><strong>概念</strong>  <code>查不到，缓存层+持久层都压力增大</code></li>
+</ul>
+<p>当用户去查询数据的时候，发现 redis 内存数据库中没有，于是向持久层数据库查询，发现也没有，于是查询失败，当用户过多时，缓存都没有查到，于是都去查持久层数据库，这会给持久层数据库造成很大的压力，此时相当于出现了缓存穿透。</p>
+<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20200708130243.png" srcset="/img/loading.gif" lazyload alt="img"></p>
+<ul>
+<li><strong>解决方案 × 2</strong></li>
+</ul>
+<ol>
+<li><code>布隆过滤器</code>(★)：是一种数据结构，将所有可能存在的数据哈希到一个足够大的 bitmap 中，一个一定不存在的数据会被这个 bitmap 拦截掉，从而避免了对底层存储系统的查询压力。</li>
+</ol>
+<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20200708130401.png" srcset="/img/loading.gif" lazyload alt="img"></p>
+<blockquote>
+<p><strong>5TB的硬盘上放满了数据，请写一个算法将这些数据进行排重。如果这些数据是一些32bit大小的数据该如何解决？如果是64bit的呢？</strong><br>对于空间的利用到达了一种极致，那就是Bitmap和布隆过滤器(Bloom Filter)。</p>
+<ul>
+<li>Bitmap： 典型的就是哈希表<br>  缺点是，Bitmap对于每个元素只能记录1bit信息，如果还想完成额外的功能，恐怕只能靠牺牲更多的空间、时间来完成了。</li>
+<li>布隆过滤器<br>  就是引入了k(k&gt;1)k(k&gt;1)个相互独立的哈希函数，保证在给定的空间、误判率下，完成元素判重的过程。<br>  它的优点是空间效率和查询时间都远远超过一般的算法，缺点是有一定的误识别率和删除困难。<br>  Bloom-Filter算法的核心思想就是利用多个不同的Hash函数来解决“冲突”。<br>  Hash存在一个冲突（碰撞）的问题，用同一个Hash得到的两个URL的值有可能相同。为了减少冲突，可以多引入几个Hash，如果通过其中的一个Hash值得出某元素不在集合中，那么该元素肯定不在集合中。只有在所有的Hash函数告诉该元素在集合中时，才能确定该元素存在于集合中。这便是Bloom-Filter的基本思想。<br>  Bloom-Filter一般用于在大数据量的集合中判定某元素是否存在。</li>
+</ul>
+</blockquote>
+<ul>
+<li><strong><code>布隆过滤器基本使用</code></strong></li>
+</ul>
+<p>　　布隆过滤器有二个基本指令，<code>bf.add</code> 添加元素，<code>bf.exists</code> 查询元素是否存在，如果想要一次添加多个，就需要用到 <code>bf.madd</code> 指令。同样如果需要一次查询多个元素是否存在，就需要用到 <code>bf.mexists</code> 指令。</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><code class="hljs sh">127.0.0.1:6379&gt; bf.add codehole user1<br>(<span class="hljs-built_in">integer</span>) 1<br>127.0.0.1:6379&gt; bf.add codehole user2<br>(<span class="hljs-built_in">integer</span>) 1<br>127.0.0.1:6379&gt; bf.add codehole user3<br>(<span class="hljs-built_in">integer</span>) 1<br>127.0.0.1:6379&gt; bf.exists codehole user1<br>(<span class="hljs-built_in">integer</span>) 1<br>127.0.0.1:6379&gt; bf.exists codehole user2<br>(<span class="hljs-built_in">integer</span>) 1<br>127.0.0.1:6379&gt; bf.exists codehole user3<br>(<span class="hljs-built_in">integer</span>) 1<br>127.0.0.1:6379&gt; bf.exists codehole user4<br>(<span class="hljs-built_in">integer</span>) 0<br>127.0.0.1:6379&gt; bf.madd codehole user4 user5 user6<br>1) (<span class="hljs-built_in">integer</span>) 1<br>2) (<span class="hljs-built_in">integer</span>) 1<br>3) (<span class="hljs-built_in">integer</span>) 1<br>127.0.0.1:6379&gt; bf.mexists codehole user4 user5 user6 user7<br>1) (<span class="hljs-built_in">integer</span>) 1<br>2) (<span class="hljs-built_in">integer</span>) 1<br>3) (<span class="hljs-built_in">integer</span>) 1<br>4) (<span class="hljs-built_in">integer</span>) 0<br></code></pre></td></tr></table></figure>
+
+
+
+<ol start="2">
+<li><code>缓存空对象</code>：当存储层查不到时，即使返回的空对象也将其缓存起来，同时设置一个过期时间，之后再访问这个数据将会从缓存中获取，保护后端数据。</li>
+</ol>
+<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20200708130430.png" srcset="/img/loading.gif" lazyload alt="img"></p>
+<p>但会有两个问题：</p>
+<ol>
+<li><p>如果空值被缓存起来，就意味着需要更多的空间存储更多的键，会有很多空值的键。</p>
+</li>
+<li><p>即使对空值设置了过期时间，还是会存在缓存层和存储层会有一段时间窗口不一致，这对于需要保持一致性的业务会有影响。</p>
+</li>
+</ol>
+<h3 id="2-缓存击穿"><a href="#2-缓存击穿" class="headerlink" title="2. 缓存击穿"></a>2. 缓存击穿</h3><ul>
+<li><strong>概念</strong> <code>访问量大，缓存过期瞬间并发穿过缓存层，直接访问持久层</code></li>
+</ul>
+<p>指对某一个 key 的频繁访问，在不停的扛着大并发，大并发集中对这一个点进行访问，当这个key在失效的瞬间，持续的大并发就会直接请求数据库，就像在一个屏障上凿开了一个洞，例如微博由于某个热搜导致宕机。</p>
+<p>其实就是：当某个 key 在过期的瞬间，有大量的请求并发访问，这类数据一段是热点数据，由于缓存过期，会同时访问数据库来查询最新数据，并回写缓存，导致数据库瞬间压力过大。</p>
+<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20200708131019.png" srcset="/img/loading.gif" lazyload alt="img"></p>
+<ul>
+<li><strong>解决方案 × 2</strong></li>
+</ul>
+<ol>
+<li><p><code>设置热点数据永不过期</code>：从缓存层面上来说，不设置过期时间，就不会出现热点 key 过期后产生的问题。</p>
+</li>
+<li><p><code>添加互斥锁</code>(★)：使用<code>分布式锁</code>，保证对每个 key 同时只有一个线程去查询后端服务，其他线程没有获得分布式锁的权限，因此只需要等待即可，这种方式将高并发的压力转移到了分布式锁上，对分布式锁也是一种极大的考验。</p>
+</li>
+</ol>
+<h3 id="3-缓存雪崩"><a href="#3-缓存雪崩" class="headerlink" title="3. 缓存雪崩"></a>3. 缓存雪崩</h3><ul>
+<li><strong>概念</strong> <code>缓存过期，大量并发导致缓存层+持久层宕机</code></li>
+</ul>
+<p>指在某一个时间段，缓存集中过期失效或 Redis 宕机导致的，例如双十一抢购热门商品，这些商品都会放在缓存中，假设缓存时间为一个小时，一个小时之后，这些商品的缓存都过期了，访问压力瞬间都来到了数据库上，此时数据库会产生周期性的压力波峰，所有的请求都会到达存储层，存储层的调用量暴增，造成存储层挂掉的情况。</p>
+<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20200708131759.png" srcset="/img/loading.gif" lazyload alt="img"></p>
+<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20200708131804.png" srcset="/img/loading.gif" lazyload alt="img"></p>
+<p>其实比较致命的缓存雪崩，是缓存服务器某个节点宕机或断网，因为自然形成的缓存雪崩，一定是在某个时间段集中创建缓存，此时的数据库还是可以顶住压力的，而缓存服务节点的宕机，对数据库服务器造成的压力是不可预知的，有可能瞬间就把服务器压垮。</p>
+<ul>
+<li><strong>解决方案 × 3</strong></li>
+</ul>
+<ol>
+<li><p><code>配置 Redis 高可用</code>：其实就是<code>搭建集群</code>环境，有更多的备用机。</p>
+<blockquote>
+<p>Redis 搭建集群参考：<a href="https://janycode.github.io/2017/06/20/05_%E6%95%B0%E6%8D%AE%E5%BA%93/03_Redis/05-Redis%20%E9%9B%86%E7%BE%A4%E6%90%AD%E5%BB%BA/index.html">Redis 搭建集群步骤</a></p>
+</blockquote>
+</li>
+<li><p><code>限流降级</code>：在缓存失效后，通过加锁或者队列来控制读服务器以及写缓存的线程数量，比如对某个 key 只允许一个线程查询数据和写缓存，其他线程等待。</p>
+<blockquote>
+<p>降级的最终目的是保证核心服务可用，即使是有损的。而且有些服务是无法降级的（如加入购物车、结算）。<br>以参考日志级别设置预案：<br>（1）<strong>一般</strong>：比如有些服务偶尔因为网络抖动或者服务正在上线而超时，可以自动降级；<br>（2）<strong>警告</strong>：有些服务在一段时间内成功率有波动（如在95~100%之间），可以自动降级或人工降级，并发送告警；<br>（3）<strong>错误</strong>：比如可用率低于90%，或者数据库连接池被打爆了，或者访问量突然猛增到系统能承受的最大阀值，此时可以根据情况自动降级或者人工降级；<br>（4）<strong>严重错误</strong>：比如因为特殊原因数据错误了，此时需要紧急人工降级。服务降级的目的，是为了防止Redis服务故障，导致数据库跟着一起发生雪崩问题。因此，对于不重要的缓存数据，可以采取服务降级策略，例如一个比较常见的做法就是，Redis出现问题，不去数据库查询，而是直接返回默认值给用户。</p>
+</blockquote>
+</li>
+<li><p><code>数据预热</code>：在项目正式部署之前，把可能用的数据预先访问一边，这样可以把一些数据加载到缓存中，在即将发生大并发访问之前手动触发加载缓存中不同的key，设置不同的过期时间，让缓存失效的时间尽量均衡。</p>
+<blockquote>
+<p>解决思路：<br>1、直接写个缓存刷新页面，上线时手工操作下；<br>2、数据量不大，可以在项目启动的时候自动进行加载；<br>3、定时刷新缓存。</p>
+</blockquote>
+</li>
+</ol>
+<h3 id="4-缓存倾斜"><a href="#4-缓存倾斜" class="headerlink" title="4. 缓存倾斜"></a>4. 缓存倾斜</h3><ul>
+<li><strong>概念</strong> <code>某个缓存服务器压力过大而宕机</code></li>
+</ul>
+<p>指某一台 redis 服务器压力过大而导致该服务器宕机。</p>
+<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20200708131955.png" srcset="/img/loading.gif" lazyload alt="img"></p>
+<ul>
+<li><strong>解决方案</strong></li>
+</ul>
+<ol>
+<li><p><code>配置 Redis 高可用</code>：其实就是<code>搭建集群</code>环境，有更多的备用机。</p>
+<blockquote>
+<p>Redis 搭建集群参考：<a href="https://janycode.github.io/2017/06/20/05_%E6%95%B0%E6%8D%AE%E5%BA%93/03_Redis/05-Redis%20%E9%9B%86%E7%BE%A4%E6%90%AD%E5%BB%BA/index.html">Redis 搭建集群步骤</a></p>
+</blockquote>
+</li>
+</ol>
+<h3 id="5-淘汰机制"><a href="#5-淘汰机制" class="headerlink" title="5. 淘汰机制"></a>5. 淘汰机制</h3><p>在 Redis 内存已经满的时候，添加了一个新的数据，执行淘汰机制。(redis.conf 中配置)</p>
+<ol>
+<li><p>volatile-lru：在内存不足时，Redis 会再设置过了生存时间的key中干掉一个最近最少使用的key。</p>
+</li>
+<li><p>allkeys-lru：在内存不足时，Redis 会再全部的key中干掉一个最近最少使用的key。</p>
+</li>
+<li><p>volatile-lfu：在内存不足时，Redis 会再设置过了生存时间的key中干掉一个最近最少频次使用的key。</p>
+</li>
+<li><p>allkeys-lfu：在内存不足时，Redis 会再全部的key中干掉一个最近最少频次使用的key。</p>
+</li>
+<li><p>volatile-random：在内存不足时，Redis 会再设置过了生存时间的key中随机干掉一个。</p>
+</li>
+<li><p>allkeys-random：在内存不足时，Redis 会再全部的key中随机干掉一个。</p>
+</li>
+<li><p>volatile-ttl：在内存不足时，Redis 会再设置过了生存时间的key中干掉一个剩余生存时间最少的key。</p>
+</li>
+<li><p>noeviction：（默认）在内存不足时，直接报错。</p>
+</li>
+</ol>
+<p><strong>淘汰方案</strong>：</p>
+<ul>
+<li>指定淘汰机制的方式：maxmemory-policy 具体策略</li>
+<li>设置Redis的最大内存：maxmemory 字节大小</li>
+</ul>
+<p>redis 内存数据集大小上升到一定大小的时候，就会进行数据淘汰策略。</p>
+<h4 id="5-1-如何配置"><a href="#5-1-如何配置" class="headerlink" title="5.1 如何配置"></a>5.1 如何配置</h4><p>通过配置 redis.conf 中的 <code>maxmemory</code> 这个值来<code>开启内存淘汰功能</code>。</p>
+<figure class="highlight 1c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs 1c"><span class="hljs-meta"># maxmemory</span><br></code></pre></td></tr></table></figure>
+
+<p>值得注意的是，maxmemory 为 0 的时候表示对 Redis 的内存使用没有限制。</p>
+<p>根据应用场景，选择淘汰策略：</p>
+<figure class="highlight 1c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs 1c"><span class="hljs-meta"># maxmemory-policy noeviction</span><br></code></pre></td></tr></table></figure>
+
+<h4 id="5-2-内存淘汰的过程"><a href="#5-2-内存淘汰的过程" class="headerlink" title="5.2 内存淘汰的过程"></a>5.2 内存淘汰的过程</h4><p>首先，客户端发起了需要申请更多内存的命令（如set）。</p>
+<p>然后，Redis检查内存使用情况，如果已使用的内存大于maxmemory则开始根据用户配置的不同淘汰策略来淘汰内存（key），从而换取一定的内存。</p>
+<p>最后，如果上面都没问题，则这个命令执行成功。</p>
+<h4 id="5-3-动态改配置命令"><a href="#5-3-动态改配置命令" class="headerlink" title="5.3 动态改配置命令"></a>5.3 动态改配置命令</h4><p>此外，redis 支持动态改配置，无需重启。</p>
+<p>设置最大内存</p>
+<figure class="highlight arduino"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs arduino">config set maxmemory <span class="hljs-number">100000</span><br></code></pre></td></tr></table></figure>
+
+<p>设置淘汰策略</p>
+<figure class="highlight arduino"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs arduino">config set maxmemory-policy noeviction<br></code></pre></td></tr></table></figure>
+
+<h4 id="5-4-如何选择淘汰策略"><a href="#5-4-如何选择淘汰策略" class="headerlink" title="5.4 如何选择淘汰策略"></a>5.4 如何选择淘汰策略</h4><p>allkeys-lru：如果应用对缓存的访问符合幂律分布，也就是存在相对热点数据，或者不太清楚应用的缓存访问分布状况，可以选择allkeys-lru策略。</p>
+<p>allkeys-random：如果应用对于缓存key的访问概率相等，则可以使用这个策略。</p>
+<p>volatile-ttl：这种策略使得可以向Redis提示哪些key更适合被eviction。</p>
+<p>另外，volatile-lru策略和volatile-random策略适合将一个Redis实例既应用于缓存和又应用于持久化存储的时候，然而也可以通过使用两个Redis实例来达到相同的效果，值得一提的是将key设置过期时间实际上会消耗更多的内存，因此建议使用allkeys-lru策略从而更有效率的使用内存。</p>
+<h3 id="6-生存时间到了删除"><a href="#6-生存时间到了删除" class="headerlink" title="6. 生存时间到了删除?"></a>6. 生存时间到了删除?</h3><p>key的生存时间到了，Redis 会立即删除吗？答：<code>不会立即删除</code>。</p>
+<ol>
+<li><p><strong>定期删除</strong>：Redis每隔一段时间就去会去查看Redis设置了过期时间的key，会再100ms的间隔中默认查看3个key。</p>
+</li>
+<li><p><strong>惰性删除</strong>：如果当你去查询一个已经过了生存时间的key时，Redis会先查看当前key的生存时间，是否已经到了，直接删除当前key，并且给用户返回一个空值。</p>
+</li>
+</ol>
+<p> 总结：</p>
+<p>定期删除：默认100ms查看3个过期的key，定期删除<br>惰性删除：查询时，redis检查是否过期，过期则删除key，返回空值</p>
+<blockquote>
+<ul>
+<li><strong>采用定期删除+惰性删除就没其他问题了么?</strong></li>
+</ul>
+<p>不是的，如果定期删除没删除key。然后你也没即时去请求key，也就是说惰性删除也没生效。这样，redis的<code>内存会越来越高</code>。那么就应该采用<code>内存淘汰机制</code>。在redis.conf中有一行配置</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs sh">maxmemory-policy volatile-lru<br></code></pre></td></tr></table></figure>
+</blockquote>
+
+              
+            </div>
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/05-%E6%95%B0%E6%8D%AE%E5%BA%93/" class="category-chain-item">05_数据库</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/05-%E6%95%B0%E6%8D%AE%E5%BA%93/03-Redis/" class="category-chain-item">03_Redis</a>
+  
+  
+
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/Redis/">#Redis</a>
+      
+        <a href="/tags/%E7%A9%BF%E9%80%8F/">#穿透</a>
+      
+        <a href="/tags/%E5%87%BB%E7%A9%BF/">#击穿</a>
+      
+        <a href="/tags/%E9%9B%AA%E5%B4%A9/">#雪崩</a>
+      
+        <a href="/tags/%E5%80%BE%E6%96%9C/">#倾斜</a>
+      
+        <a href="/tags/%E6%B7%98%E6%B1%B0/">#淘汰</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>07-Redis 穿透,击穿,雪崩,倾斜,淘汰,删除</div>
+      <div>https://janycode.github.io/2017/06/20/05_数据库/04_Redis/07-Redis 穿透,击穿,雪崩,倾斜,淘汰,删除/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Jerry(姜源)</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2017年6月20日</div>
+        </div>
+      
+      
+      <div class="license-meta-item">
+        <div>许可协议</div>
+        <div>
+          
+            
+            
+              <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+              <span class="hint--top hint--rounded" aria-label="BY - 姜源">
+                <i class="iconfont icon-by"></i>
+              </span>
+              </a>
+            
+          
+        </div>
+      </div>
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2017/06/20/05_%E6%95%B0%E6%8D%AE%E5%BA%93/04_Redis/04-Redis%20%E4%BA%8B%E5%8A%A1+%E6%8C%81%E4%B9%85%E5%8C%96+%E8%AE%A2%E9%98%85/" title="04-Redis 事务+持久化+订阅">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">04-Redis 事务+持久化+订阅</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2017/06/20/05_%E6%95%B0%E6%8D%AE%E5%BA%93/04_Redis/06-Redis%20%E9%9B%86%E7%BE%A4%E6%90%AD%E5%BB%BA/" title="06-Redis 集群搭建">
+                        <span class="hidden-mobile">06-Redis 集群搭建</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+  <article id="comments" lazyload>
+    
+  <div id="SOHUCS" sid='https://janycode.github.io/2017/06/20/05_%E6%95%B0%E6%8D%AE%E5%BA%93/04_Redis/07-Redis%20%E7%A9%BF%E9%80%8F,%E5%87%BB%E7%A9%BF,%E9%9B%AA%E5%B4%A9,%E5%80%BE%E6%96%9C,%E6%B7%98%E6%B1%B0,%E5%88%A0%E9%99%A4/'></div>
+  <script type="text/javascript">
+    Fluid.utils.loadComments('#SOHUCS', function() {
+      Fluid.utils.createScript("https://changyan.sohu.com/upload/changyan.js", function() {
+        window.changyan.api.config({"appid":"cyw5OHIcO","appkey":"fea3446b3df4b3f129f34da4cbc87e51"})
+      });
+    });
+  </script>
+  <noscript>Please enable JavaScript to view the comments</noscript>
+
+
+  </article>
+
+
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://simple.blog.csdn.net" target="_blank" rel="nofollow noopener"><span>CSDN</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/janycode" target="_blank" rel="nofollow noopener"><span>GitHub</span></a> <i class="iconfont icon-love"></i> <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="busuanzi_container_site_pv" style="display: none">
+        总访问量(PV) 
+        <span id="busuanzi_value_site_pv"></span>
+         次，
+      </span>
+    
+    
+      <span id="busuanzi_container_site_uv" style="display: none">
+        总访客数(UV) 
+        <span id="busuanzi_value_site_uv"></span>
+         人
+      </span>
+    
+    
+  
+</div>
+
+  
+  
+  
+</div>
+
+<!-- live2d 动画 -->
+<script src="https://eqcn.ajz.miesnfu.com/wp-content/plugins/wp-3d-pony/live2dw/lib/L2Dwidget.min.js"></script>
+<script>
+    L2Dwidget.init({
+        "model": {
+            jsonPath: "https://unpkg.com/live2d-widget-model-haruto@1.0.5/assets/haruto.model.json",
+            "scale": 1
+        },
+        "display": {
+            "position": "right",
+            "width": 100,
+            "height": 200,
+            "hOffset": 35,
+            "vOffset": -85
+        },
+        "mobile": {
+            "show": false,
+            "scale": 0.1
+        },
+        "react": {
+            "opacityDefault": 0.75,
+            "opacityOnHover": 0.2
+        }
+    });
+</script>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <!-- Baidu Analytics -->
+    <script defer>
+      if (!Fluid.ctx.dnt) {
+        var _hmt = _hmt || [];
+        (function() {
+          var hm = document.createElement("script");
+          hm.src = "https://hm.baidu.com/hm.js?bfff735c897eb60ea49b735096b20e47";
+          var s = document.getElementsByTagName("script")[0];
+          s.parentNode.insertBefore(hm, s);
+        })();
+      }
+    </script>
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.0/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      headingSelector : CONFIG.toc.headingSelector || 'h1,h2,h3,h4,h5,h6',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      collapseDepth   : CONFIG.toc.collapseDepth || 0,
+      scrollSmooth    : true,
+      headingsOffset  : -boardTop
+    });
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+  });
+</script>
+
+
+  <script>
+  (function() {
+    var enableLang = CONFIG.code_language.enable && CONFIG.code_language.default;
+    var enableCopy = CONFIG.copy_btn;
+    if (!enableLang && !enableCopy) {
+      return;
+    }
+
+    function getBgClass(ele) {
+      return Fluid.utils.getBackgroundLightness(ele) >= 0 ? 'code-widget-light' : 'code-widget-dark';
+    }
+
+    var copyTmpl = '';
+    copyTmpl += '<div class="code-widget">';
+    copyTmpl += 'LANG';
+    copyTmpl += '</div>';
+    jQuery('.markdown-body pre').each(function() {
+      var $pre = jQuery(this);
+      if ($pre.find('code.mermaid').length > 0) {
+        return;
+      }
+      if ($pre.find('span.line').length > 0) {
+        return;
+      }
+
+      var lang = '';
+
+      if (enableLang) {
+        lang = CONFIG.code_language.default;
+        if ($pre[0].children.length > 0 && $pre[0].children[0].classList.length >= 2 && $pre.children().hasClass('hljs')) {
+          lang = $pre[0].children[0].classList[1];
+        } else if ($pre[0].getAttribute('data-language')) {
+          lang = $pre[0].getAttribute('data-language');
+        } else if ($pre.parent().hasClass('sourceCode') && $pre[0].children.length > 0 && $pre[0].children[0].classList.length >= 2) {
+          lang = $pre[0].children[0].classList[1];
+          $pre.parent().addClass('code-wrapper');
+        } else if ($pre.parent().hasClass('markdown-body') && $pre[0].classList.length === 0) {
+          $pre.wrap('<div class="code-wrapper"></div>');
+        }
+        lang = lang.toUpperCase().replace('NONE', CONFIG.code_language.default);
+      }
+      $pre.append(copyTmpl.replace('LANG', lang).replace('code-widget">',
+        getBgClass($pre[0]) + (enableCopy ? ' code-widget copy-btn" data-clipboard-snippet><i class="iconfont icon-copy"></i>' : ' code-widget">')));
+
+      if (enableCopy) {
+        Fluid.utils.createScript('https://lib.baomitu.com/clipboard.js/2.0.10/clipboard.min.js', function() {
+          var clipboard = new window.ClipboardJS('.copy-btn', {
+            target: function(trigger) {
+              var nodes = trigger.parentNode.childNodes;
+              for (var i = 0; i < nodes.length; i++) {
+                if (nodes[i].tagName === 'CODE') {
+                  return nodes[i];
+                }
+              }
+            }
+          });
+          clipboard.on('success', function(e) {
+            e.clearSelection();
+            e.trigger.innerHTML = e.trigger.innerHTML.replace('icon-copy', 'icon-success');
+            setTimeout(function() {
+              e.trigger.innerHTML = e.trigger.innerHTML.replace('icon-success', 'icon-copy');
+            }, 2000);
+          });
+        });
+      }
+    });
+  })();
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script  src="/js/local-search.js" ></script>
+
+  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

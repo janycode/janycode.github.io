@@ -1,0 +1,987 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=light>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Jerry(姜源)">
+  <meta name="keywords" content="Java,Html,CSS,JavaScript,Python,C,Linux,shell编程经验分享、技术总结、心得体会">
+  
+    <meta name="description" content="参考资料：  菜鸟教程：https:&#x2F;&#x2F;www.runoob.com&#x2F;maven&#x2F;maven-tutorial.html 极客学院：https:&#x2F;&#x2F;wiki.jikexueyuan.com&#x2F;project&#x2F;maven&#x2F;  1.1 概念私服是架设在局域网的一种特殊的远程仓库，目的是代理远程仓库及部署第三方构件。 有了私服之后，当 Maven 需要下载依赖时，直接请求私服，私服上存在则下载到本地仓库">
+<meta property="og:type" content="article">
+<meta property="og:title" content="03-Maven私服Nexus">
+<meta property="og:url" content="https://janycode.github.io/2018/05/23/12_%E9%A1%B9%E7%9B%AE%E7%AE%A1%E7%90%86/03_Maven/03-Maven%E7%A7%81%E6%9C%8DNexus/index.html">
+<meta property="og:site_name" content="姜源の云笔记">
+<meta property="og:description" content="参考资料：  菜鸟教程：https:&#x2F;&#x2F;www.runoob.com&#x2F;maven&#x2F;maven-tutorial.html 极客学院：https:&#x2F;&#x2F;wiki.jikexueyuan.com&#x2F;project&#x2F;maven&#x2F;  1.1 概念私服是架设在局域网的一种特殊的远程仓库，目的是代理远程仓库及部署第三方构件。 有了私服之后，当 Maven 需要下载依赖时，直接请求私服，私服上存在则下载到本地仓库">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/maven.jpg">
+<meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/maven%E6%8C%87%E4%BB%A43.jpg">
+<meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/%E7%A7%81%E6%9C%8D2.png">
+<meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/%E7%A7%81%E6%9C%8D3.jpg">
+<meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/image-20200611114202879.png">
+<meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/%E7%A7%81%E6%9C%8D_login.jpg">
+<meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/%E7%A7%81%E6%9C%8D_login2.jpg">
+<meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/%E7%A7%81%E6%9C%8D_list.jpg">
+<meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/%E7%A7%81%E6%9C%8D_deploy2.jpg">
+<meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/image-20200611113345254.png">
+<meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/2020-6-11-Nexus%E7%A7%81%E6%9C%8D%E4%BB%93%E5%BA%93%E6%9C%AC%E5%9C%B0%E7%89%A9%E7%90%86%E8%B7%AF%E5%BE%84.png">
+<meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/image-20200611133435674.png">
+<meta property="article:published_time" content="2018-05-23T14:18:03.000Z">
+<meta property="article:modified_time" content="2022-05-28T09:06:57.805Z">
+<meta property="article:author" content="Jerry(姜源)">
+<meta property="article:tag" content="Maven">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/maven.jpg">
+  
+  
+    <meta name="referrer" content="no-referrer-when-downgrade">
+  
+  
+  <title>03-Maven私服Nexus - 姜源の云笔记</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"janycode.github.io","root":"/","version":"1.9.0","typing":{"enable":true,"typeSpeed":50,"cursorChar":"|","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":false},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":"bfff735c897eb60ea49b735096b20e47","google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+
+  
+<meta name="generator" content="Hexo 6.2.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 50vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>姜源の云笔记</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tools/">
+                <i class="iconfont icon-slack-fill"></i>
+                工具
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="03-Maven私服Nexus"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-author" aria-hidden="true"></i>
+        Jerry(姜源)
+      </span>
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2018-05-23 22:18" pubdate>
+          星期三, 2018/05/23 22:18:03
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          <!-- compatible with older versions-->
+          3.9k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          <!-- compatible with older versions-->
+          33 分钟
+        
+      </span>
+    
+
+    
+    
+      
+        <span id="busuanzi_container_page_pv" style="display: none">
+          <i class="iconfont icon-eye" aria-hidden="true"></i>
+          <span id="busuanzi_value_page_pv"></span> 次
+        </span>
+        
+      
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">03-Maven私服Nexus</h1>
+            
+            <div class="markdown-body">
+              
+              <p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/maven.jpg" srcset="/img/loading.gif" lazyload alt="maven"></p>
+<p>参考资料：</p>
+<ul>
+<li>菜鸟教程：<a target="_blank" rel="noopener" href="https://www.runoob.com/maven/maven-tutorial.html">https://www.runoob.com/maven/maven-tutorial.html</a></li>
+<li>极客学院：<a target="_blank" rel="noopener" href="https://wiki.jikexueyuan.com/project/maven/">https://wiki.jikexueyuan.com/project/maven/</a></li>
+</ul>
+<h3 id="1-1-概念"><a href="#1-1-概念" class="headerlink" title="1.1 概念"></a>1.1 概念</h3><p>私服是架设在局域网的一种特殊的远程仓库，目的是代理远程仓库及部署第三方构件。</p>
+<p>有了私服之后，<code>当 Maven 需要下载依赖时，直接请求私服，私服上存在则下载到本地仓库；否则，私服请求外部的远程仓库，将构件/依赖下载到私服，再提供给本地仓库下载</code>。私服可以解决在企业做开发时每次需要的 jar 包都要在中央仓库下载，且每次下载完只能被自己使用，不能被其他开发人员使用的问题。</p>
+<p>所谓私服就是一个服务器，但是不是本地层面的，是<code>公司层面</code>的，<strong>公司中所有的开发人员都在使用同一个私服</strong>。</p>
+<h3 id="1-2-架构"><a href="#1-2-架构" class="headerlink" title="1.2 架构"></a>1.2 架构</h3><table>
+<thead>
+<tr>
+<th align="center">无私服</th>
+<th align="center">有私服</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center"><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/maven%E6%8C%87%E4%BB%A43.jpg" srcset="/img/loading.gif" lazyload alt="私服1"></td>
+<td align="center"><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/%E7%A7%81%E6%9C%8D2.png" srcset="/img/loading.gif" lazyload alt="私服2"></td>
+</tr>
+</tbody></table>
+<p>可以使用专门的 Maven 仓库管理软件来搭建私服，比如：Apache Archiva，Artifactory，Sonatype Nexus。如测试使用 Sonatype Nexus 安装配置私服仓库。</p>
+<h3 id="1-3-Nexus安装【☆】"><a href="#1-3-Nexus安装【☆】" class="headerlink" title="1.3 Nexus安装【☆】"></a>1.3 Nexus安装【☆】</h3><h4 id="1-3-1-下载"><a href="#1-3-1-下载" class="headerlink" title="1.3.1 下载"></a>1.3.1 下载</h4><ul>
+<li><p>官网：<a target="_blank" rel="noopener" href="https://blog.sonatype.com/">https://blog.sonatype.com/</a></p>
+</li>
+<li><p>下载地址：<a target="_blank" rel="noopener" href="https://help.sonatype.com/repomanager2/download/download-archives---repository-manager-oss">https://help.sonatype.com/repomanager2/download/download-archives---repository-manager-oss</a></p>
+</li>
+</ul>
+<h4 id="1-3-2-安装"><a href="#1-3-2-安装" class="headerlink" title="1.3.2 安装"></a>1.3.2 安装</h4><p>下载 <code>nexus-2.x-bundle.zip</code> 解压即可。</p>
+<table>
+<thead>
+<tr>
+<th align="center">nexus安装目录</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center"><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/%E7%A7%81%E6%9C%8D3.jpg" srcset="/img/loading.gif" lazyload alt="私服3"></td>
+</tr>
+</tbody></table>
+<h3 id="1-4-启动【☆】"><a href="#1-4-启动【☆】" class="headerlink" title="1.4 启动【☆】"></a>1.4 启动【☆】</h3><p>解压后在 bin 目录中执行 cmd（需要以管理员权限执行）：</p>
+<ul>
+<li><code>nexus install</code>  在系统中安装nexus服务</li>
+<li>nexus uninstall 卸载nexus服务</li>
+<li><code>nexus start</code>    启动服务</li>
+<li>nexus stop    停止服务</li>
+</ul>
+<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/image-20200611114202879.png" srcset="/img/loading.gif" lazyload alt="image-20200611114202879"></p>
+<blockquote>
+<p>注意：</p>
+<ol>
+<li>私服启动后，为了方便后面验证测试，该 cmd 窗口<code>不要关闭</code>！（实测为一直windows后台自启）</li>
+<li>Nexus 私服使用的是 <code>8081</code> 端口，需要确保该端口没有被占用；</li>
+<li>8081 端口占用问题，可通过 电脑管家 中扫描开启启动项中，把 Nexus 服务开机自启禁用。</li>
+</ol>
+</blockquote>
+<h3 id="1-5-Nexus登录【☆】"><a href="#1-5-Nexus登录【☆】" class="headerlink" title="1.5 Nexus登录【☆】"></a>1.5 Nexus登录【☆】</h3><p>访问私服：<a target="_blank" rel="noopener" href="http://localhost:8081/nexus/">http://localhost:8081/nexus/</a></p>
+<p>右上角 <strong>login in</strong> 默认登陆账号 <code>admin</code> 密码 <code>admin123</code></p>
+<table>
+<thead>
+<tr>
+<th align="center">登录 Nexus 才可以使用 Nexus 管理功能</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center"><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/%E7%A7%81%E6%9C%8D_login.jpg" srcset="/img/loading.gif" lazyload alt="私服_list"> <img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/%E7%A7%81%E6%9C%8D_login2.jpg" srcset="/img/loading.gif" lazyload alt="私服_login"></td>
+</tr>
+</tbody></table>
+<h3 id="1-6-仓库列表【☆】"><a href="#1-6-仓库列表【☆】" class="headerlink" title="1.6 仓库列表【☆】"></a>1.6 仓库列表【☆】</h3><table>
+<thead>
+<tr>
+<th>仓库类型</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>group</td>
+<td>包含多个仓库，通过group库的地址可以从包含的多个仓库中查找构件</td>
+</tr>
+<tr>
+<td>hosted</td>
+<td>私服 服务器本地的仓库，其中存储诸多构件</td>
+</tr>
+<tr>
+<td>proxy</td>
+<td>代理仓库，其会关联一个远程仓库, 比如中央仓库，aliyun仓库，向该仓库查找构件时，如果没有会从其关联的仓库中下载</td>
+</tr>
+</tbody></table>
+<table>
+<thead>
+<tr>
+<th>仓库名</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Releases</td>
+<td>存放项目的稳定发布版本，一个模块做完后如果需要共享给他人，可以上传到私服的该库</td>
+</tr>
+<tr>
+<td>Snapshots</td>
+<td>对应不稳定的发布版本</td>
+</tr>
+<tr>
+<td>3rd party</td>
+<td>存放中央仓库没有的 ，如ojdbc.jar，可以上传到私服的该库中</td>
+</tr>
+</tbody></table>
+<table>
+<thead>
+<tr>
+<th align="center">仓库列表</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center"><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/%E7%A7%81%E6%9C%8D_list.jpg" srcset="/img/loading.gif" lazyload alt="私服_login2"></td>
+</tr>
+</tbody></table>
+<h3 id="1-7-Maven配置私服-【★】"><a href="#1-7-Maven配置私服-【★】" class="headerlink" title="1.7 Maven配置私服 【★】"></a>1.7 Maven配置私服 【★】</h3><p>在maven中配置私服，使得maven可以从私服上获取构件&#x2F;依赖。</p>
+<h4 id="1-7-1-仓库组"><a href="#1-7-1-仓库组" class="headerlink" title="1.7.1 仓库组"></a>1.7.1 仓库组</h4><p>私服中有一个仓库组，组中包含多个仓库，可以指定仓库组的url，即可从多个仓库中获取构件&#x2F;依赖。</p>
+<table>
+<thead>
+<tr>
+<th align="center">仓库组 注意：proxy的仓库排序在最后</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center"><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/%E7%A7%81%E6%9C%8D_deploy2.jpg" srcset="/img/loading.gif" lazyload alt="私服_deploy2"></td>
+</tr>
+</tbody></table>
+<table>
+<thead>
+<tr>
+<th align="center">设置 中央仓库 从远程地址下载，如 aliyun 中央仓库<br />地址：<a target="_blank" rel="noopener" href="http://maven.aliyun.com/nexus/content/groups/public">http://maven.aliyun.com/nexus/content/groups/public</a></th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center"><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/image-20200611113345254.png" srcset="/img/loading.gif" lazyload alt="image-20200611113345254"></td>
+</tr>
+</tbody></table>
+<table>
+<thead>
+<tr>
+<th align="center">Nexus 私服本地存储物理存储位置</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center"><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/2020-6-11-Nexus%E7%A7%81%E6%9C%8D%E4%BB%93%E5%BA%93%E6%9C%AC%E5%9C%B0%E7%89%A9%E7%90%86%E8%B7%AF%E5%BE%84.png" srcset="/img/loading.gif" lazyload alt="2020-6-11-Nexus私服仓库本地物理路径"></td>
+</tr>
+</tbody></table>
+<h4 id="1-7-2-Maven关联私服"><a href="#1-7-2-Maven关联私服" class="headerlink" title="1.7.2 Maven关联私服"></a>1.7.2 Maven关联私服</h4><ul>
+<li>配置<code>settings.xml</code>，设置私服地址、认证等信息</li>
+</ul>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><code class="hljs xml"><span class="hljs-tag">&lt;<span class="hljs-name">servers</span>&gt;</span><br>	<span class="hljs-tag">&lt;<span class="hljs-name">server</span>&gt;</span> <br>		<span class="hljs-tag">&lt;<span class="hljs-name">id</span>&gt;</span>nexus-public<span class="hljs-tag">&lt;/<span class="hljs-name">id</span>&gt;</span> <span class="hljs-comment">&lt;!-- nexus的认证id --&gt;</span><br>		<span class="hljs-tag">&lt;<span class="hljs-name">username</span>&gt;</span>admin<span class="hljs-tag">&lt;/<span class="hljs-name">username</span>&gt;</span> <span class="hljs-comment">&lt;!--nexus中的用户名密码--&gt;</span><br>		<span class="hljs-tag">&lt;<span class="hljs-name">password</span>&gt;</span>admin123<span class="hljs-tag">&lt;/<span class="hljs-name">password</span>&gt;</span> <br>	<span class="hljs-tag">&lt;/<span class="hljs-name">server</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">servers</span>&gt;</span><br><br><span class="hljs-tag">&lt;<span class="hljs-name">profiles</span>&gt;</span><br>    ...<span class="hljs-comment">&lt;!-- 其他 profile 如 JDK --&gt;</span><br>	<span class="hljs-tag">&lt;<span class="hljs-name">profile</span>&gt;</span> <br>        <span class="hljs-tag">&lt;<span class="hljs-name">id</span>&gt;</span>nexus<span class="hljs-tag">&lt;/<span class="hljs-name">id</span>&gt;</span> <br>        <span class="hljs-tag">&lt;<span class="hljs-name">repositories</span>&gt;</span> <br>            <span class="hljs-tag">&lt;<span class="hljs-name">repository</span>&gt;</span> <br>                <span class="hljs-tag">&lt;<span class="hljs-name">id</span>&gt;</span>nexus-public<span class="hljs-tag">&lt;/<span class="hljs-name">id</span>&gt;</span> <span class="hljs-comment">&lt;!--nexus认证id 【此处的repository的id要和 &lt;server&gt;的id保持一致】--&gt;</span><br>                <span class="hljs-comment">&lt;!--name随便--&gt;</span><br>                <span class="hljs-tag">&lt;<span class="hljs-name">name</span>&gt;</span>Nexus Release Snapshot Repository<span class="hljs-tag">&lt;/<span class="hljs-name">name</span>&gt;</span> <br>                <span class="hljs-comment">&lt;!--地址是 nexus 中仓库组对应的地址--&gt;</span><br>                <span class="hljs-tag">&lt;<span class="hljs-name">url</span>&gt;</span>http://localhost:8081/nexus/content/groups/public/<span class="hljs-tag">&lt;/<span class="hljs-name">url</span>&gt;</span><br>                <span class="hljs-tag">&lt;<span class="hljs-name">releases</span>&gt;</span><span class="hljs-tag">&lt;<span class="hljs-name">enabled</span>&gt;</span>true<span class="hljs-tag">&lt;/<span class="hljs-name">enabled</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">releases</span>&gt;</span> <br>                <span class="hljs-tag">&lt;<span class="hljs-name">snapshots</span>&gt;</span><span class="hljs-tag">&lt;<span class="hljs-name">enabled</span>&gt;</span>true<span class="hljs-tag">&lt;/<span class="hljs-name">enabled</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">snapshots</span>&gt;</span> <br>            <span class="hljs-tag">&lt;/<span class="hljs-name">repository</span>&gt;</span><br>        <span class="hljs-tag">&lt;/<span class="hljs-name">repositories</span>&gt;</span> <br>        <span class="hljs-tag">&lt;<span class="hljs-name">pluginRepositories</span>&gt;</span> <span class="hljs-comment">&lt;!--插件仓库地址，各节点的含义和上面是一样的--&gt;</span><br>            <span class="hljs-tag">&lt;<span class="hljs-name">pluginRepository</span>&gt;</span> <br>                <span class="hljs-tag">&lt;<span class="hljs-name">id</span>&gt;</span>nexus-public<span class="hljs-tag">&lt;/<span class="hljs-name">id</span>&gt;</span> <span class="hljs-comment">&lt;!--nexus认证id 【此处的repository的id要和 &lt;server&gt;的id保持一致】--&gt;</span><br>                <span class="hljs-comment">&lt;!--地址是nexus中仓库组对应的地址--&gt;</span><br>                <span class="hljs-tag">&lt;<span class="hljs-name">url</span>&gt;</span>http://localhost:8081/nexus/content/groups/public/<span class="hljs-tag">&lt;/<span class="hljs-name">url</span>&gt;</span><br>                <span class="hljs-tag">&lt;<span class="hljs-name">releases</span>&gt;</span><span class="hljs-tag">&lt;<span class="hljs-name">enabled</span>&gt;</span>true<span class="hljs-tag">&lt;/<span class="hljs-name">enabled</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">releases</span>&gt;</span> <br>                <span class="hljs-tag">&lt;<span class="hljs-name">snapshots</span>&gt;</span><span class="hljs-tag">&lt;<span class="hljs-name">enabled</span>&gt;</span>true<span class="hljs-tag">&lt;/<span class="hljs-name">enabled</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">snapshots</span>&gt;</span> <br>            <span class="hljs-tag">&lt;/<span class="hljs-name">pluginRepository</span>&gt;</span> <br>        <span class="hljs-tag">&lt;/<span class="hljs-name">pluginRepositories</span>&gt;</span> <br>    <span class="hljs-tag">&lt;/<span class="hljs-name">profile</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">profiles</span>&gt;</span><br><br><span class="hljs-tag">&lt;<span class="hljs-name">activeProfiles</span>&gt;</span><br>	...<br>    <span class="hljs-comment">&lt;!-- 使私服配置生效 --&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">activeProfile</span>&gt;</span>nexus<span class="hljs-tag">&lt;/<span class="hljs-name">activeProfile</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">activeProfiles</span>&gt;</span><br></code></pre></td></tr></table></figure>
+
+<p>至此，Maven 项目中需要依赖时，Maven 会从私服中下载</p>
+<blockquote>
+<p>注意：</p>
+<p>为了测试，可以将 maven 中的本地仓库中的 依赖 全删除，然后通过 IDEA 的 自动导入包的设置进行自动下载，此时会将依赖全部下载到私服中。</p>
+<p>验证私服中是否下载成功，访问 <code>settings.xml</code> 中配置的 profile 标签中的 仓库对应地址：</p>
+<p><a target="_blank" rel="noopener" href="http://localhost:8081/nexus/content/groups/public/">http://localhost:8081/nexus/content/groups/public/</a></p>
+</blockquote>
+<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/image-20200611133435674.png" srcset="/img/loading.gif" lazyload alt="image-20200611133435674"></p>
+<h3 id="1-8-Maven项目部署到私服"><a href="#1-8-Maven项目部署到私服" class="headerlink" title="1.8 Maven项目部署到私服"></a>1.8 Maven项目部署到私服</h3><ul>
+<li>执行 ：<code>mvn deploy</code>  即可将项目部署到私服对应的仓库中，此时项目中的打包方式多为 jar</li>
+</ul>
+<p>但需要提前在项目的<code>pom.xml</code>中配置部署私服仓库位置，如下：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><code class="hljs xml">    ...<br>	<span class="hljs-tag">&lt;<span class="hljs-name">dependencies</span>&gt;</span><br>		.....<br>	<span class="hljs-tag">&lt;/<span class="hljs-name">dependencies</span>&gt;</span><br>	<br>	<span class="hljs-comment">&lt;!-- 在项目的 pom.xml 中 配置私服的仓库地址，可以将项目打 jar 包部署到私服 --&gt;</span><br>	<span class="hljs-tag">&lt;<span class="hljs-name">distributionManagement</span>&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">repository</span>&gt;</span><br>            <span class="hljs-tag">&lt;<span class="hljs-name">id</span>&gt;</span>nexus-public<span class="hljs-tag">&lt;/<span class="hljs-name">id</span>&gt;</span> <span class="hljs-comment">&lt;!-- nexus认证id --&gt;</span><br>            <span class="hljs-tag">&lt;<span class="hljs-name">url</span>&gt;</span>http://localhost:8081/nexus/content/repositories/releases<span class="hljs-tag">&lt;/<span class="hljs-name">url</span>&gt;</span><br>        <span class="hljs-tag">&lt;/<span class="hljs-name">repository</span>&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">snapshotRepository</span>&gt;</span><br>            <span class="hljs-tag">&lt;<span class="hljs-name">id</span>&gt;</span>nexus-public<span class="hljs-tag">&lt;/<span class="hljs-name">id</span>&gt;</span> <span class="hljs-comment">&lt;!-- nexus认证id --&gt;</span><br>            <span class="hljs-tag">&lt;<span class="hljs-name">url</span>&gt;</span>http://localhost:8081/nexus/content/repositories/snapshots<span class="hljs-tag">&lt;/<span class="hljs-name">url</span>&gt;</span><br>        <span class="hljs-tag">&lt;/<span class="hljs-name">snapshotRepository</span>&gt;</span><br>	<span class="hljs-tag">&lt;/<span class="hljs-name">distributionManagement</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">project</span>&gt;</span><br></code></pre></td></tr></table></figure>
+
+<blockquote>
+<p>注意：</p>
+<p>如上的 repository的 id 依然是要和 settings.xml 中配置的 server 中的 id 一致，才能通过私服的认证。</p>
+</blockquote>
+
+              
+            </div>
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/12-%E9%A1%B9%E7%9B%AE%E7%AE%A1%E7%90%86/" class="category-chain-item">12_项目管理</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/12-%E9%A1%B9%E7%9B%AE%E7%AE%A1%E7%90%86/03-Maven/" class="category-chain-item">03_Maven</a>
+  
+  
+
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/Maven/">#Maven</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>03-Maven私服Nexus</div>
+      <div>https://janycode.github.io/2018/05/23/12_项目管理/03_Maven/03-Maven私服Nexus/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Jerry(姜源)</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2018年5月23日</div>
+        </div>
+      
+      
+      <div class="license-meta-item">
+        <div>许可协议</div>
+        <div>
+          
+            
+            
+              <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+              <span class="hint--top hint--rounded" aria-label="BY - 姜源">
+                <i class="iconfont icon-by"></i>
+              </span>
+              </a>
+            
+          
+        </div>
+      </div>
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2018/05/23/12_%E9%A1%B9%E7%9B%AE%E7%AE%A1%E7%90%86/03_Maven/02-IDEA%E5%88%9B%E5%BB%BAMaven%E9%A1%B9%E7%9B%AE/" title="02-IDEA创建Maven项目">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">02-IDEA创建Maven项目</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2018/05/23/12_%E9%A1%B9%E7%9B%AE%E7%AE%A1%E7%90%86/03_Maven/04-Maven%E5%BF%BD%E7%95%A5%E6%B5%8B%E8%AF%95%E4%BB%A3%E7%A0%81/" title="04-Maven忽略测试代码">
+                        <span class="hidden-mobile">04-Maven忽略测试代码</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+  <article id="comments" lazyload>
+    
+  <div id="SOHUCS" sid='https://janycode.github.io/2018/05/23/12_%E9%A1%B9%E7%9B%AE%E7%AE%A1%E7%90%86/03_Maven/03-Maven%E7%A7%81%E6%9C%8DNexus/'></div>
+  <script type="text/javascript">
+    Fluid.utils.loadComments('#SOHUCS', function() {
+      Fluid.utils.createScript("https://changyan.sohu.com/upload/changyan.js", function() {
+        window.changyan.api.config({"appid":"cyw5OHIcO","appkey":"fea3446b3df4b3f129f34da4cbc87e51"})
+      });
+    });
+  </script>
+  <noscript>Please enable JavaScript to view the comments</noscript>
+
+
+  </article>
+
+
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://simple.blog.csdn.net" target="_blank" rel="nofollow noopener"><span>CSDN</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/janycode" target="_blank" rel="nofollow noopener"><span>GitHub</span></a> <i class="iconfont icon-love"></i> <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="busuanzi_container_site_pv" style="display: none">
+        总访问量(PV) 
+        <span id="busuanzi_value_site_pv"></span>
+         次，
+      </span>
+    
+    
+      <span id="busuanzi_container_site_uv" style="display: none">
+        总访客数(UV) 
+        <span id="busuanzi_value_site_uv"></span>
+         人
+      </span>
+    
+    
+  
+</div>
+
+  
+  
+  
+</div>
+
+<!-- live2d 动画 -->
+<script src="https://eqcn.ajz.miesnfu.com/wp-content/plugins/wp-3d-pony/live2dw/lib/L2Dwidget.min.js"></script>
+<script>
+    L2Dwidget.init({
+        "model": {
+            jsonPath: "https://unpkg.com/live2d-widget-model-haruto@1.0.5/assets/haruto.model.json",
+            "scale": 1
+        },
+        "display": {
+            "position": "right",
+            "width": 100,
+            "height": 200,
+            "hOffset": 35,
+            "vOffset": -85
+        },
+        "mobile": {
+            "show": false,
+            "scale": 0.1
+        },
+        "react": {
+            "opacityDefault": 0.75,
+            "opacityOnHover": 0.2
+        }
+    });
+</script>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <!-- Baidu Analytics -->
+    <script defer>
+      if (!Fluid.ctx.dnt) {
+        var _hmt = _hmt || [];
+        (function() {
+          var hm = document.createElement("script");
+          hm.src = "https://hm.baidu.com/hm.js?bfff735c897eb60ea49b735096b20e47";
+          var s = document.getElementsByTagName("script")[0];
+          s.parentNode.insertBefore(hm, s);
+        })();
+      }
+    </script>
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.0/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      headingSelector : CONFIG.toc.headingSelector || 'h1,h2,h3,h4,h5,h6',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      collapseDepth   : CONFIG.toc.collapseDepth || 0,
+      scrollSmooth    : true,
+      headingsOffset  : -boardTop
+    });
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+  });
+</script>
+
+
+  <script>
+  (function() {
+    var enableLang = CONFIG.code_language.enable && CONFIG.code_language.default;
+    var enableCopy = CONFIG.copy_btn;
+    if (!enableLang && !enableCopy) {
+      return;
+    }
+
+    function getBgClass(ele) {
+      return Fluid.utils.getBackgroundLightness(ele) >= 0 ? 'code-widget-light' : 'code-widget-dark';
+    }
+
+    var copyTmpl = '';
+    copyTmpl += '<div class="code-widget">';
+    copyTmpl += 'LANG';
+    copyTmpl += '</div>';
+    jQuery('.markdown-body pre').each(function() {
+      var $pre = jQuery(this);
+      if ($pre.find('code.mermaid').length > 0) {
+        return;
+      }
+      if ($pre.find('span.line').length > 0) {
+        return;
+      }
+
+      var lang = '';
+
+      if (enableLang) {
+        lang = CONFIG.code_language.default;
+        if ($pre[0].children.length > 0 && $pre[0].children[0].classList.length >= 2 && $pre.children().hasClass('hljs')) {
+          lang = $pre[0].children[0].classList[1];
+        } else if ($pre[0].getAttribute('data-language')) {
+          lang = $pre[0].getAttribute('data-language');
+        } else if ($pre.parent().hasClass('sourceCode') && $pre[0].children.length > 0 && $pre[0].children[0].classList.length >= 2) {
+          lang = $pre[0].children[0].classList[1];
+          $pre.parent().addClass('code-wrapper');
+        } else if ($pre.parent().hasClass('markdown-body') && $pre[0].classList.length === 0) {
+          $pre.wrap('<div class="code-wrapper"></div>');
+        }
+        lang = lang.toUpperCase().replace('NONE', CONFIG.code_language.default);
+      }
+      $pre.append(copyTmpl.replace('LANG', lang).replace('code-widget">',
+        getBgClass($pre[0]) + (enableCopy ? ' code-widget copy-btn" data-clipboard-snippet><i class="iconfont icon-copy"></i>' : ' code-widget">')));
+
+      if (enableCopy) {
+        Fluid.utils.createScript('https://lib.baomitu.com/clipboard.js/2.0.10/clipboard.min.js', function() {
+          var clipboard = new window.ClipboardJS('.copy-btn', {
+            target: function(trigger) {
+              var nodes = trigger.parentNode.childNodes;
+              for (var i = 0; i < nodes.length; i++) {
+                if (nodes[i].tagName === 'CODE') {
+                  return nodes[i];
+                }
+              }
+            }
+          });
+          clipboard.on('success', function(e) {
+            e.clearSelection();
+            e.trigger.innerHTML = e.trigger.innerHTML.replace('icon-copy', 'icon-success');
+            setTimeout(function() {
+              e.trigger.innerHTML = e.trigger.innerHTML.replace('icon-success', 'icon-copy');
+            }, 2000);
+          });
+        });
+      }
+    });
+  })();
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script  src="/js/local-search.js" ></script>
+
+  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>
