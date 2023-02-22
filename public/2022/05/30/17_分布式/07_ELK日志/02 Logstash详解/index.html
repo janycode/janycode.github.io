@@ -1,0 +1,970 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=light>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Jerry(姜源)">
+  <meta name="keywords" content="Java,Html,CSS,JavaScript,Python,C,Linux,shell编程经验分享、技术总结、心得体会">
+  
+    <meta name="description" content="Logstash是一个开源数据收集引擎，具有实时管道功能。Logstash可以动态地将来自不同数据源的数据统一起来，并将数据标准化到你所选择的目的地。  集中、转换和存储你的数据 Logstash是一个开源的服务器端数据处理管道，可以同时从多个数据源获取数据，并对其进行转换，然后将其发送到你最喜欢的“存储”。（当然，我们最喜欢的是Elasticsearch） 输入：****采集各种样式、大小和来源">
+<meta property="og:type" content="article">
+<meta property="og:title" content="02 Logstash详解">
+<meta property="og:url" content="https://janycode.github.io/2022/05/30/17_%E5%88%86%E5%B8%83%E5%BC%8F/07_ELK%E6%97%A5%E5%BF%97/02%20Logstash%E8%AF%A6%E8%A7%A3/index.html">
+<meta property="og:site_name" content="姜源の云笔记">
+<meta property="og:description" content="Logstash是一个开源数据收集引擎，具有实时管道功能。Logstash可以动态地将来自不同数据源的数据统一起来，并将数据标准化到你所选择的目的地。  集中、转换和存储你的数据 Logstash是一个开源的服务器端数据处理管道，可以同时从多个数据源获取数据，并对其进行转换，然后将其发送到你最喜欢的“存储”。（当然，我们最喜欢的是Elasticsearch） 输入：****采集各种样式、大小和来源">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20220612222044.png">
+<meta property="article:published_time" content="2022-05-30T14:36:51.000Z">
+<meta property="article:modified_time" content="2023-02-22T14:42:45.086Z">
+<meta property="article:author" content="Jerry(姜源)">
+<meta property="article:tag" content="架构">
+<meta property="article:tag" content="分布式">
+<meta property="article:tag" content="ELK">
+<meta property="article:tag" content="Logstash">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20220612222044.png">
+  
+  
+    <meta name="referrer" content="no-referrer-when-downgrade">
+  
+  
+  <title>02 Logstash详解 - 姜源の云笔记</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"janycode.github.io","root":"/","version":"1.9.0","typing":{"enable":true,"typeSpeed":50,"cursorChar":"|","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":false},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":"bfff735c897eb60ea49b735096b20e47","google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+
+  
+<meta name="generator" content="Hexo 6.2.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 50vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>姜源の云笔记</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tools/">
+                <i class="iconfont icon-slack-fill"></i>
+                工具
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="02 Logstash详解"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-author" aria-hidden="true"></i>
+        Jerry(姜源)
+      </span>
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2022-05-30 22:36" pubdate>
+          星期一, 2022/05/30 22:36:51
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          <!-- compatible with older versions-->
+          11k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          <!-- compatible with older versions-->
+          94 分钟
+        
+      </span>
+    
+
+    
+    
+      
+        <span id="busuanzi_container_page_pv" style="display: none">
+          <i class="iconfont icon-eye" aria-hidden="true"></i>
+          <span id="busuanzi_value_page_pv"></span> 次
+        </span>
+        
+      
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">02 Logstash详解</h1>
+            
+            <div class="markdown-body">
+              
+              <p>Logstash是一个开源数据收集引擎，具有实时管道功能。Logstash可以动态地将来自不同数据源的数据统一起来，并将数据标准化到你所选择的目的地。</p>
+<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20220612222044.png" srcset="/img/loading.gif" lazyload alt="image-20220612222043491"></p>
+<h3 id="集中、转换和存储你的数据"><a href="#集中、转换和存储你的数据" class="headerlink" title="集中、转换和存储你的数据"></a>集中、转换和存储你的数据</h3><p> Logstash是一个开源的服务器端数据处理管道，可以同时从多个数据源获取数据，并对其进行转换，然后将其发送到你最喜欢的“存储”。（当然，我们最喜欢的是Elasticsearch）</p>
+<p><strong>输入：****采集各种样式、大小和来源的数据</strong></p>
+<p>数据往往以各种各样的形式，或分散或集中地存在于很多系统中。Logstash 支持各种输入选择 ，可以在同一时间从众多常用来源捕捉事件。能够以连续的流式传输方式，轻松地从您的日志、指标、Web 应用、数据存储以及各种 AWS 服务采集数据。</p>
+<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20220612222056.png" srcset="/img/loading.gif" lazyload alt="image-20220612222055771"></p>
+<p><strong>过滤器：实时解析和转换数据</strong></p>
+<p>数据从源传输到存储库的过程中，Logstash 过滤器能够解析各个事件，识别已命名的字段以构建结构，并将它们转换成通用格式，以便更轻松、更快速地分析和实现商业价值。</p>
+<p>Logstash 能够动态地转换和解析数据，不受格式或复杂度的影响：</p>
+<ul>
+<li>利用 Grok 从非结构化数据中派生出结构</li>
+<li>从 IP 地址破译出地理坐标</li>
+<li>将 PII 数据匿名化，完全排除敏感字段</li>
+<li>整体处理不受数据源、格式或架构的影响</li>
+</ul>
+<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20220612222108.png" srcset="/img/loading.gif" lazyload alt="image-20220612222107923"></p>
+<p><strong>输出：选择你的存储，导出你的数据</strong></p>
+<p>尽管 Elasticsearch 是我们的首选输出方向，能够为我们的搜索和分析带来无限可能，但它并非唯一选择。</p>
+<p>Logstash 提供众多输出选择，您可以将数据发送到您要指定的地方，并且能够灵活地解锁众多下游用例。</p>
+<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20220612222120.png" srcset="/img/loading.gif" lazyload alt="image-20220612222119174"></p>
+<p><strong>安装Logstash</strong></p>
+<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20220612222131.png" srcset="/img/loading.gif" lazyload alt="image-20220612222130175"></p>
+<p>首先，让我们通过最基本的Logstash管道来测试一下刚才安装的Logstash</p>
+<p>Logstash管道有两个必需的元素，输入和输出，以及一个可选元素过滤器。输入插件从数据源那里消费数据，过滤器插件根据你的期望修改数据，输出插件将数据写入目的地。</p>
+<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20220612222143.png" srcset="/img/loading.gif" lazyload alt="image-20220612222142523"></p>
+<p>接下来，允许Logstash最基本的管道，例如：</p>
+<figure class="highlight fsharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs fsharp">bin<span class="hljs-operator">/</span>logstash <span class="hljs-operator">-</span>e <span class="hljs-symbol">&#x27;input</span> &#123; <span class="hljs-keyword">stdin</span> &#123;&#125; &#125; <span class="hljs-keyword">output</span> &#123; <span class="hljs-keyword">stdout</span> &#123;&#125; &#125;&#x27;<br></code></pre></td></tr></table></figure>
+
+<p>（画外音：选项 -e 的意思是允许你从命令行指定配置）</p>
+<p>启动以后，下面我们在命令行下输入”hello world”</p>
+<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20220612222155.png" srcset="/img/loading.gif" lazyload alt="image-20220612222154450"></p>
+<p><strong>用Logstash解析日志</strong></p>
+<p> 在上一小节中，你已经创建了一个基本的Logstash管道来测试你的Logstash设置。在现实世界中，一个Logstash管理会稍微复杂一些：它通常有一个或多个<strong>input</strong>, <strong>filter</strong> 和 <strong>output</strong> 插件。</p>
+<p>在这一小节中，你将创建一个Logstash管道，并且使用Filebeat将Apache Web日志作为input，解析这些日志，然后将解析的数据写到一个Elasticsearch集群中。你将在配置文件中定义管道，而不是在命令行中定义管道配置。</p>
+<p>在开始之前，请先<a target="_blank" rel="noopener" href="https://download.elastic.co/demos/logstash/gettingstarted/logstash-tutorial.log.gz">下载示例数据</a>。</p>
+<p><strong>配置Filebeat来发送日志行到Logstash</strong></p>
+<p>在你创建Logstash管道之前，你需要先配置Filebeat来发送日志行到Logstash。Filebeat客户端是一个轻量级的、资源友好的工具，它从服务器上的文件中收集日志，并将这些日志转发到你的Logstash实例以进行处理。Filebeat设计就是为了可靠性和低延迟。Filebeat在主机上占用的资源很少，而且Beats input插件将对Logstash实例的资源需求降到最低。</p>
+<p>（画外音：注意，在一个典型的用例中，Filebeat和Logstash实例是分开的，它们分别运行在不同的机器上。在本教程中，Logstash和Filebeat在同一台机器上运行。）</p>
+<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20220612222217.png" srcset="/img/loading.gif" lazyload alt="image-20220612222216643"></p>
+<h3 id="第1步：配置filebeat-yml"><a href="#第1步：配置filebeat-yml" class="headerlink" title="第1步：配置filebeat.yml"></a>第1步：配置filebeat.yml</h3><figure class="highlight lua"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs lua">filebeat.inputs:<br>- <span class="hljs-built_in">type</span>: <span class="hljs-built_in">log</span><br>  paths:<br>    - /usr/<span class="hljs-keyword">local</span>/programs/logstash/logstash-tutorial.<span class="hljs-built_in">log</span><br><br><span class="hljs-built_in">output</span>.logstash:<br>  hosts: [<span class="hljs-string">&quot;localhost:5044&quot;</span>]<br></code></pre></td></tr></table></figure>
+
+
+
+<h3 id="第2步：在logstash安装目录下新建一个文件first-pipeline-conf"><a href="#第2步：在logstash安装目录下新建一个文件first-pipeline-conf" class="headerlink" title="第2步：在logstash安装目录下新建一个文件first-pipeline.conf"></a>第2步：在logstash安装目录下新建一个文件first-pipeline.conf</h3><p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20220612222232.png" srcset="/img/loading.gif" lazyload alt="image-20220612222231494"></p>
+<p>（画外音：刚才说过了通常Logstash管理有三部分（输入、过滤器、输出），这里input下面beats { port &#x3D;&gt; “5044” }的意思是用Beats输入插件，而stdout { codec &#x3D;&gt; rubydebug }的意思是输出到控制台）</p>
+<h3 id="第3步：检查配置并启动Logstash"><a href="#第3步：检查配置并启动Logstash" class="headerlink" title="第3步：检查配置并启动Logstash"></a>第3步：检查配置并启动Logstash</h3><figure class="highlight applescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs applescript">bin/logstash -f <span class="hljs-keyword">first</span>-pipeline.conf <span class="hljs-comment">--config.test_and_exit</span><br></code></pre></td></tr></table></figure>
+
+<p>（画外音：–config.test_and_exit选项的意思是解析配置文件并报告任何错误）</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs stylus">bin/logstash -f first-pipeline<span class="hljs-selector-class">.conf</span> <span class="hljs-attr">--config</span><span class="hljs-selector-class">.reload</span>.automatic<br></code></pre></td></tr></table></figure>
+
+<p>（画外音：–config.reload.automatic选项的意思是启用自动配置加载，以至于每次你修改完配置文件以后无需停止然后重启Logstash）</p>
+<h3 id="第4步：启动filebeat"><a href="#第4步：启动filebeat" class="headerlink" title="第4步：启动filebeat"></a>第4步：启动filebeat</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">./filebeat -e -c filebeat.yml -d <span class="hljs-string">&quot;publish&quot;</span><br></code></pre></td></tr></table></figure>
+
+<p>如果一切正常，你将会在Logstash控制台下看到类似这样的输出：</p>
+<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20220612222246.png" srcset="/img/loading.gif" lazyload alt="image-20220612222245897"></p>
+<h4 id="用Grok过滤器插件解析日志"><a href="#用Grok过滤器插件解析日志" class="headerlink" title="用Grok过滤器插件解析日志"></a>用Grok过滤器插件解析日志</h4><p>现在你有了一个工作管道，可以从Filebeat读取日志行。但是你可能已经注意到日志消息的格式并不理想。你想要解析日志消息，以便从日志中创建特定的、命名的字段。为此，您将使用grok filter插件。</p>
+<p>grok 过滤器插件是Logstash中默认可用的几个插件之一。</p>
+<p>grok 过滤器插件允许你将非结构化日志数据解析为结构化和可查询的数据。</p>
+<p>因为 grok 过滤器插件在传入的日志数据中查找模式</p>
+<p>为了解析数据，你可以用 %{COMBINEDAPACHELOG} grok pattern ，这种模式（或者说格式）的schema如下：</p>
+<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20220612222255.png" srcset="/img/loading.gif" lazyload alt="image-20220612222255046"></p>
+<p>接下来，编辑first-pipeline.conf文件，加入grok filter，在你修改完以后这个文件看起来应该是这样的：</p>
+<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20220612222308.png" srcset="/img/loading.gif" lazyload alt="image-20220612222307480"></p>
+<p>在你保存完以后，因为你已经启动了自动加载配置，所以你不需要重启Logstash来应用你的修改。但是，你确实需要强制Filebeat从头读取日志文件。为了这样做，你需要在终端先按下Ctrl+C停掉Filebeat，然后删除Filebeat注册文件。例如：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-built_in">rm</span> data/registr<br></code></pre></td></tr></table></figure>
+
+<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20220612222320.png" srcset="/img/loading.gif" lazyload alt="image-20220612222319945"></p>
+<p>然后重启Filebeat</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">./filebeat -e -c filebeat.yml -d <span class="hljs-string">&quot;publish&quot;</span><br></code></pre></td></tr></table></figure>
+
+<p>此时，再看Logstash控制台，输出可能是这样的：</p>
+<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20220612222331.png" srcset="/img/loading.gif" lazyload alt="image-20220612222330351"></p>
+<p><strong>用 Geoip 过滤器插件增强你的数据</strong></p>
+<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20220612222341.png" srcset="/img/loading.gif" lazyload alt="image-20220612222341121"></p>
+<p>然后，同样地，重启Filebeat</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs bash">Ctrl+C<br><br><span class="hljs-built_in">rm</span> data/registry<br><br>./filebeat -e -c filebeat.yml -d <span class="hljs-string">&quot;publish&quot;</span><br></code></pre></td></tr></table></figure>
+
+<p>再次查看Logstash控制台，我们会发现多了地理位置信息：</p>
+<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20220612222357.png" srcset="/img/loading.gif" lazyload alt="image-20220612222356706"></p>
+<h4 id="索引你的数据到Elasticsearch"><a href="#索引你的数据到Elasticsearch" class="headerlink" title="索引你的数据到Elasticsearch"></a>索引你的数据到Elasticsearch</h4><p>在之前的配置中，我们配置了Logstash输出到控制台，现在我们让它输出到Elasticsearch集群。</p>
+<p>编辑first-pipeline.conf文件，替换output区域为：</p>
+<figure class="highlight puppet"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs puppet"><span class="hljs-keyword">output</span> &#123;<br>    elasticsearch &#123;<br>        <span class="hljs-attr">hosts</span> =&gt; [ <span class="hljs-string">&quot;localhost:9200&quot;</span> ]<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>在这段配置中，Logstash用http协议连接到Elasticsearch，而且假设Logstash和Elasticsearch允许在同一台机器上。你也可以指定一个远程的Elasticsearch实例，比如host&#x3D;&gt;[“es-machine:9092”]</p>
+<p>现在，first-pipeline.conf文件是这样的：</p>
+<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20220612222408.png" srcset="/img/loading.gif" lazyload alt="image-20220612222408040"></p>
+<p>同样，保存改变以后，重启Filebeat</p>
+<p>（画外音：首先，Ctrl+C终止Filebeat；接着rm data&#x2F;registry删除注册文件；最后，.&#x2F;filebeat -e -c filebeat.yml -d “publish” 启动Filebeat）</p>
+<p>好了，接下来启动Elasticsearch</p>
+<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20220612222426.png" srcset="/img/loading.gif" lazyload alt="image-20220612222425850"></p>
+<p>（画外音：查看Elasticsearch索引，如果没有看到logstash的索引，那么重启Filebeat和Logstash，重启之后应该就可以看到了）</p>
+<p>如果一切正常的话，可以在Elasticsearch的控制台日志中看到这样的输出：</p>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs css"><span class="hljs-selector-attr">[2018-08-11T17:35:27,871]</span><span class="hljs-selector-attr">[INFO ]</span><span class="hljs-selector-attr">[o.e.c.m.MetaDataIndexTemplateService]</span> <span class="hljs-selector-attr">[Px524Ts]</span> adding template <span class="hljs-selector-attr">[logstash]</span> for index patterns <span class="hljs-selector-attr">[logstash-*]</span><br><span class="hljs-selector-attr">[2018-08-11T17:46:13,311]</span><span class="hljs-selector-attr">[INFO ]</span><span class="hljs-selector-attr">[o.e.c.m.MetaDataCreateIndexService]</span> <span class="hljs-selector-attr">[Px524Ts]</span> <span class="hljs-selector-attr">[logstash-2018.08.11]</span> creating index, cause <span class="hljs-selector-attr">[auto(bulk api)]</span>, templates <span class="hljs-selector-attr">[logstash]</span>, shards <span class="hljs-selector-attr">[5]</span>/<span class="hljs-selector-attr">[1]</span>, mappings <span class="hljs-selector-attr">[_default_]</span><br><span class="hljs-selector-attr">[2018-08-11T17:46:13,549]</span><span class="hljs-selector-attr">[INFO ]</span><span class="hljs-selector-attr">[o.e.c.m.MetaDataMappingService]</span> <span class="hljs-selector-attr">[Px524Ts]</span> <span class="hljs-selector-attr">[logstash-2018.08.11/pzcVdNxSSjGzaaM9Ib_G_w]</span> create_mapping <span class="hljs-selector-attr">[doc]</span><br><span class="hljs-selector-attr">[2018-08-11T17:46:13,722]</span><span class="hljs-selector-attr">[INFO ]</span><span class="hljs-selector-attr">[o.e.c.m.MetaDataMappingService]</span> <span class="hljs-selector-attr">[Px524Ts]</span> <span class="hljs-selector-attr">[logstash-2018.08.11/pzcVdNxSSjGzaaM9Ib_G_w]</span> update_mapping <span class="hljs-selector-attr">[doc]</span><br></code></pre></td></tr></table></figure>
+
+<p>这个时候，我们再查看Elasticsearch的索引</p>
+<p>请求：</p>
+<figure class="highlight 1c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs 1c">curl &#x27;localhost:<span class="hljs-number">9200</span>/_cat/indices?v&#x27;<br></code></pre></td></tr></table></figure>
+
+<p>响应：</p>
+<figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs apache"><span class="hljs-attribute">health</span> status index                     uuid                   pri rep docs.count docs.deleted store.size pri.store.size<br><span class="hljs-attribute">yellow</span> open   bank                      <span class="hljs-number">59</span>jD3B4FR8iifWWjrdMzUg   <span class="hljs-number">5</span>   <span class="hljs-number">1</span>       <span class="hljs-number">1000</span>            <span class="hljs-number">0</span>    <span class="hljs-number">475</span>.<span class="hljs-number">1</span>kb        <span class="hljs-number">475</span>.<span class="hljs-number">1</span>kb<br><span class="hljs-attribute">green</span>  open   .kibana                   DzGTSDo9SHSHcNH6rxYHHA   <span class="hljs-number">1</span>   <span class="hljs-number">0</span>        <span class="hljs-number">153</span>           <span class="hljs-number">23</span>    <span class="hljs-number">216</span>.<span class="hljs-number">8</span>kb        <span class="hljs-number">216</span>.<span class="hljs-number">8</span>kb<br><span class="hljs-attribute">yellow</span> open   filebeat-<span class="hljs-number">6</span>.<span class="hljs-number">3</span>.<span class="hljs-number">2</span>-<span class="hljs-number">2018</span>.<span class="hljs-number">08</span>.<span class="hljs-number">08</span> otgYPvsgR3Ot-<span class="hljs-number">2</span>GDcw_Upg   <span class="hljs-number">3</span>   <span class="hljs-number">1</span>        <span class="hljs-number">255</span>            <span class="hljs-number">0</span>     <span class="hljs-number">63</span>.<span class="hljs-number">7</span>kb         <span class="hljs-number">63</span>.<span class="hljs-number">7</span>kb<br><span class="hljs-attribute">yellow</span> open   customer                  DoM-O7QmRk-<span class="hljs-number">6</span>f3Iuls7X6Q   <span class="hljs-number">5</span>   <span class="hljs-number">1</span>          <span class="hljs-number">1</span>            <span class="hljs-number">0</span>      <span class="hljs-number">4</span>.<span class="hljs-number">5</span>kb          <span class="hljs-number">4</span>.<span class="hljs-number">5</span>kb<br><span class="hljs-attribute">yellow</span> open   logstash-<span class="hljs-number">2018</span>.<span class="hljs-number">08</span>.<span class="hljs-number">11</span>       pzcVdNxSSjGzaaM9Ib_G_w   <span class="hljs-number">5</span>   <span class="hljs-number">1</span>        <span class="hljs-number">100</span>            <span class="hljs-number">0</span>    <span class="hljs-number">251</span>.<span class="hljs-number">8</span>kb        <span class="hljs-number">251</span>.<span class="hljs-number">8</span>kb<br></code></pre></td></tr></table></figure>
+
+<p>可以看到有一个名字叫”logstash-2018.08.11”的索引，其它的索引都是之前建的不用管</p>
+<p>接下来，查看这个索引下的文档</p>
+<p>请求：</p>
+<figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs apache"><span class="hljs-attribute">curl</span> -X GET &#x27;localhost:<span class="hljs-number">9200</span>/logstash-<span class="hljs-number">2018</span>.<span class="hljs-number">08</span>.<span class="hljs-number">11</span>/_search?pretty&amp;q=response=<span class="hljs-number">200</span>&#x27;<br></code></pre></td></tr></table></figure>
+
+<p>响应大概是这样的：</p>
+<p>（画外音：由于输出太长了，这里截取部分）</p>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br></pre></td><td class="code"><pre><code class="hljs swift">&#123;<br>    <span class="hljs-string">&quot;_index&quot;</span> : <span class="hljs-string">&quot;logstash-2018.08.11&quot;</span>,<br>    <span class="hljs-string">&quot;_type&quot;</span> : <span class="hljs-string">&quot;doc&quot;</span>,<br>    <span class="hljs-string">&quot;_id&quot;</span> : <span class="hljs-string">&quot;D_JhKGUBOuOlYJNtDfwl&quot;</span>,<br>    <span class="hljs-string">&quot;_score&quot;</span> : <span class="hljs-number">0.070617564</span>,<br>    <span class="hljs-string">&quot;_source&quot;</span> : &#123;<br>      <span class="hljs-string">&quot;host&quot;</span> : &#123;<br>        <span class="hljs-string">&quot;name&quot;</span> : <span class="hljs-string">&quot;localhost.localdomain&quot;</span><br>      &#125;,<br>      <span class="hljs-string">&quot;httpversion&quot;</span> : <span class="hljs-string">&quot;1.1&quot;</span>,<br>      <span class="hljs-string">&quot;ident&quot;</span> : <span class="hljs-string">&quot;-&quot;</span>,<br>      <span class="hljs-string">&quot;message&quot;</span> : <span class="hljs-string">&quot;83.149.9.216 - - [04/Jan/2015:05:13:42 +0000] <span class="hljs-subst">\&quot;</span>GET /presentations/logstash-monitorama-2013/images/kibana-search.png HTTP/1.1<span class="hljs-subst">\&quot;</span> 200 203023 <span class="hljs-subst">\&quot;</span>http://semicomplete.com/presentations/logstash-monitorama-2013/<span class="hljs-subst">\&quot;</span> <span class="hljs-subst">\&quot;</span>Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/32.0.1700.77 Safari/537.36<span class="hljs-subst">\&quot;</span>&quot;</span>,<br>      <span class="hljs-string">&quot;auth&quot;</span> : <span class="hljs-string">&quot;-&quot;</span>,<br>      <span class="hljs-string">&quot;timestamp&quot;</span> : <span class="hljs-string">&quot;04/Jan/2015:05:13:42 +0000&quot;</span>,<br>      <span class="hljs-string">&quot;input&quot;</span> : &#123;<br>        <span class="hljs-string">&quot;type&quot;</span> : <span class="hljs-string">&quot;log&quot;</span><br>      &#125;,<br>      <span class="hljs-string">&quot;geoip&quot;</span> : &#123;<br>        <span class="hljs-string">&quot;postal_code&quot;</span> : <span class="hljs-string">&quot;101194&quot;</span>,<br>        <span class="hljs-string">&quot;region_name&quot;</span> : <span class="hljs-string">&quot;Moscow&quot;</span>,<br>        <span class="hljs-string">&quot;timezone&quot;</span> : <span class="hljs-string">&quot;Europe/Moscow&quot;</span>,<br>        <span class="hljs-string">&quot;continent_code&quot;</span> : <span class="hljs-string">&quot;EU&quot;</span>,<br>        <span class="hljs-string">&quot;city_name&quot;</span> : <span class="hljs-string">&quot;Moscow&quot;</span>,<br>        <span class="hljs-string">&quot;country_code3&quot;</span> : <span class="hljs-string">&quot;RU&quot;</span>,<br>        <span class="hljs-string">&quot;country_name&quot;</span> : <span class="hljs-string">&quot;Russia&quot;</span>,<br>        <span class="hljs-string">&quot;ip&quot;</span> : <span class="hljs-string">&quot;83.149.9.216&quot;</span>,<br>        <span class="hljs-string">&quot;country_code2&quot;</span> : <span class="hljs-string">&quot;RU&quot;</span>,<br>        <span class="hljs-string">&quot;region_code&quot;</span> : <span class="hljs-string">&quot;MOW&quot;</span>,<br>        <span class="hljs-string">&quot;latitude&quot;</span> : <span class="hljs-number">55.7485</span>,<br>        <span class="hljs-string">&quot;longitude&quot;</span> : <span class="hljs-number">37.6184</span>,<br>        <span class="hljs-string">&quot;location&quot;</span> : &#123;<br>          <span class="hljs-string">&quot;lon&quot;</span> : <span class="hljs-number">37.6184</span>,<br>          <span class="hljs-string">&quot;lat&quot;</span> : <span class="hljs-number">55.7485</span><br>        &#125;<br>      &#125;,<br>      <span class="hljs-string">&quot;@timestamp&quot;</span> : <span class="hljs-string">&quot;2018-08-11T09:46:10.209Z&quot;</span>,<br>      <span class="hljs-string">&quot;offset&quot;</span> : <span class="hljs-number">0</span>,<br>      <span class="hljs-string">&quot;tags&quot;</span> : [<br>        <span class="hljs-string">&quot;beats_input_codec_plain_applied&quot;</span><br>      ],<br>      <span class="hljs-string">&quot;beat&quot;</span> : &#123;<br>        <span class="hljs-string">&quot;version&quot;</span> : <span class="hljs-string">&quot;6.3.2&quot;</span>,<br>        <span class="hljs-string">&quot;hostname&quot;</span> : <span class="hljs-string">&quot;localhost.localdomain&quot;</span>,<br>        <span class="hljs-string">&quot;name&quot;</span> : <span class="hljs-string">&quot;localhost.localdomain&quot;</span><br>      &#125;,<br>      <span class="hljs-string">&quot;clientip&quot;</span> : <span class="hljs-string">&quot;83.149.9.216&quot;</span>,<br>      <span class="hljs-string">&quot;@version&quot;</span> : <span class="hljs-string">&quot;1&quot;</span>,<br>      <span class="hljs-string">&quot;verb&quot;</span> : <span class="hljs-string">&quot;GET&quot;</span>,<br>      <span class="hljs-string">&quot;request&quot;</span> : <span class="hljs-string">&quot;/presentations/logstash-monitorama-2013/images/kibana-search.png&quot;</span>,<br>      <span class="hljs-string">&quot;prospector&quot;</span> : &#123;<br>        <span class="hljs-string">&quot;type&quot;</span> : <span class="hljs-string">&quot;log&quot;</span><br>      &#125;,<br>      <span class="hljs-string">&quot;referrer&quot;</span> : <span class="hljs-string">&quot;<span class="hljs-subst">\&quot;</span>http://semicomplete.com/presentations/logstash-monitorama-2013/<span class="hljs-subst">\&quot;</span>&quot;</span>,<br>      <span class="hljs-string">&quot;response&quot;</span> : <span class="hljs-string">&quot;200&quot;</span>,<br>      <span class="hljs-string">&quot;bytes&quot;</span> : <span class="hljs-string">&quot;203023&quot;</span>,<br>      <span class="hljs-string">&quot;source&quot;</span> : <span class="hljs-string">&quot;/usr/local/programs/logstash/logstash-tutorial.log&quot;</span>,<br>      <span class="hljs-string">&quot;agent&quot;</span> : <span class="hljs-string">&quot;<span class="hljs-subst">\&quot;</span>Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/32.0.1700.77 Safari/537.36<span class="hljs-subst">\&quot;</span>&quot;</span><br>    &#125;<br>  &#125;<br></code></pre></td></tr></table></figure>
+
+
+
+<p>再来一个</p>
+<p>请求：</p>
+<figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs apache"><span class="hljs-attribute">curl</span> -XGET &#x27;localhost:<span class="hljs-number">9200</span>/logstash-<span class="hljs-number">2018</span>.<span class="hljs-number">08</span>.<span class="hljs-number">11</span>/_search?pretty&amp;q=geoip.city_name=Buffalo&#x27;<br></code></pre></td></tr></table></figure>
+
+<p>响应：</p>
+<figure class="highlight ada"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br></pre></td><td class="code"><pre><code class="hljs ada">&#123;<br>  <span class="hljs-string">&quot;took&quot;</span> : 37,<br>  <span class="hljs-string">&quot;timed_out&quot;</span> : <span class="hljs-type">false</span>,<br>  <span class="hljs-string">&quot;_shards&quot;</span> : &#123;<br>    <span class="hljs-string">&quot;total&quot;</span> : 5,<br>    <span class="hljs-string">&quot;successful&quot;</span> : 5,<br>    <span class="hljs-string">&quot;skipped&quot;</span> : 0,<br>    <span class="hljs-string">&quot;failed&quot;</span> : 0<br>  &#125;,<br>  <span class="hljs-string">&quot;hits&quot;</span> : &#123;<br>    <span class="hljs-string">&quot;total&quot;</span> : 2,<br>    <span class="hljs-string">&quot;max_score&quot;</span> : 2.6855774,<br>    <span class="hljs-string">&quot;hits&quot;</span> : [<br>      &#123;<br>        <span class="hljs-string">&quot;_index&quot;</span> : &quot;<span class="hljs-type">logstash</span>-<span class="hljs-number">2018.08</span>.<span class="hljs-number">11</span><span class="hljs-string">&quot;,</span><br><span class="hljs-string">        &quot;</span>_type<span class="hljs-string">&quot; : &quot;</span>doc<span class="hljs-string">&quot;,</span><br><span class="hljs-string">        &quot;</span>_id<span class="hljs-string">&quot; : &quot;</span>DvJhKGUBOuOlYJNtDPw7<span class="hljs-string">&quot;,</span><br><span class="hljs-string">        &quot;</span>_score<span class="hljs-string">&quot; : 2.6855774,</span><br><span class="hljs-string">        &quot;</span>_source<span class="hljs-string">&quot; : &#123;</span><br><span class="hljs-string">          &quot;</span>host<span class="hljs-string">&quot; : &#123;</span><br><span class="hljs-string">            &quot;</span>name<span class="hljs-string">&quot; : &quot;</span>localhost.localdomain<span class="hljs-string">&quot;</span><br><span class="hljs-string">          &#125;,</span><br><span class="hljs-string">          &quot;</span>httpversion<span class="hljs-string">&quot; : &quot;</span><span class="hljs-number">1.1</span><span class="hljs-string">&quot;,</span><br><span class="hljs-string">          &quot;</span>ident<span class="hljs-string">&quot; : &quot;</span>-<span class="hljs-string">&quot;,</span><br><span class="hljs-string">          &quot;</span>message<span class="hljs-string">&quot; : &quot;</span><span class="hljs-number">198.46</span>.<span class="hljs-number">149.143</span> - - [<span class="hljs-number">04</span>/Jan/<span class="hljs-number">2015</span>:<span class="hljs-number">05</span>:<span class="hljs-number">29</span>:<span class="hljs-number">13</span> +<span class="hljs-number">0000</span>] \<span class="hljs-string">&quot;GET /blog/geekery/solving-good-or-bad-problems.html?utm_source=feedburner&amp;utm_medium=feed&amp;utm_campaign=Feed%3A+semicomplete%2Fmain+%28semicomplete.com+-+Jordan+Sissel%29 HTTP/1.1\&quot;</span> <span class="hljs-number">200</span> <span class="hljs-number">10756</span> \<span class="hljs-string">&quot;-\&quot;</span> \<span class="hljs-string">&quot;Tiny Tiny RSS/1.11 (http://tt-rss.org/)\&quot;&quot;,</span><br><span class="hljs-string">          &quot;</span>auth<span class="hljs-string">&quot; : &quot;</span>-<span class="hljs-string">&quot;,</span><br><span class="hljs-string">          &quot;</span>timestamp<span class="hljs-string">&quot; : &quot;</span><span class="hljs-number">04</span>/Jan/<span class="hljs-number">2015</span>:<span class="hljs-number">05</span>:<span class="hljs-number">29</span>:<span class="hljs-number">13</span> +<span class="hljs-number">0000</span><span class="hljs-string">&quot;,</span><br><span class="hljs-string">          &quot;</span>input<span class="hljs-string">&quot; : &#123;</span><br><span class="hljs-string">            &quot;</span><span class="hljs-keyword">type</span><span class="hljs-string">&quot; : &quot;</span>log<span class="hljs-string">&quot;</span><br><span class="hljs-string">          &#125;,</span><br><span class="hljs-string">          &quot;</span>geoip<span class="hljs-string">&quot; : &#123;</span><br><span class="hljs-string">            &quot;</span>postal_code<span class="hljs-string">&quot; : &quot;</span><span class="hljs-number">14202</span><span class="hljs-string">&quot;,</span><br><span class="hljs-string">            &quot;</span>region_name<span class="hljs-string">&quot; : &quot;</span><span class="hljs-keyword">New</span> York<span class="hljs-string">&quot;,</span><br><span class="hljs-string">            &quot;</span>timezone<span class="hljs-string">&quot; : &quot;</span>America/New_York<span class="hljs-string">&quot;,</span><br><span class="hljs-string">            &quot;</span>continent_code<span class="hljs-string">&quot; : &quot;</span>NA<span class="hljs-string">&quot;,</span><br><span class="hljs-string">            &quot;</span>city_name<span class="hljs-string">&quot; : &quot;</span>Buffalo<span class="hljs-string">&quot;,</span><br><span class="hljs-string">            &quot;</span>country_code3<span class="hljs-string">&quot; : &quot;</span>US<span class="hljs-string">&quot;,</span><br><span class="hljs-string">            &quot;</span>country_name<span class="hljs-string">&quot; : &quot;</span>United States<span class="hljs-string">&quot;,</span><br><span class="hljs-string">            &quot;</span>ip<span class="hljs-string">&quot; : &quot;</span><span class="hljs-number">198.46</span>.<span class="hljs-number">149.143</span><span class="hljs-string">&quot;,</span><br><span class="hljs-string">            &quot;</span>dma_code<span class="hljs-string">&quot; : 514,</span><br><span class="hljs-string">            &quot;</span>country_code2<span class="hljs-string">&quot; : &quot;</span>US<span class="hljs-string">&quot;,</span><br><span class="hljs-string">            &quot;</span>region_code<span class="hljs-string">&quot; : &quot;</span>NY<span class="hljs-string">&quot;,</span><br><span class="hljs-string">            &quot;</span>latitude<span class="hljs-string">&quot; : 42.8864,</span><br><span class="hljs-string">            &quot;</span>longitude<span class="hljs-string">&quot; : -78.8781,</span><br><span class="hljs-string">            &quot;</span>location<span class="hljs-string">&quot; : &#123;</span><br><span class="hljs-string">              &quot;</span>lon<span class="hljs-string">&quot; : -78.8781,</span><br><span class="hljs-string">              &quot;</span>lat<span class="hljs-string">&quot; : 42.8864</span><br><span class="hljs-string">            &#125;</span><br><span class="hljs-string">          &#125;,</span><br><span class="hljs-string">          &quot;</span>@timestamp<span class="hljs-string">&quot; : &quot;</span><span class="hljs-number">2018</span>-<span class="hljs-number">08</span>-<span class="hljs-number">11</span>T09:<span class="hljs-number">46</span>:<span class="hljs-number">10.254</span>Z<span class="hljs-string">&quot;,</span><br><span class="hljs-string">          &quot;</span>offset<span class="hljs-string">&quot; : 22795,</span><br><span class="hljs-string">          &quot;</span>tags<span class="hljs-string">&quot; : [</span><br><span class="hljs-string">            &quot;</span>beats_input_codec_plain_applied<span class="hljs-string">&quot;</span><br><span class="hljs-string">          ],</span><br><span class="hljs-string">          &quot;</span>beat<span class="hljs-string">&quot; : &#123;</span><br><span class="hljs-string">            &quot;</span>version<span class="hljs-string">&quot; : &quot;</span><span class="hljs-number">6.3</span>.<span class="hljs-number">2</span><span class="hljs-string">&quot;,</span><br><span class="hljs-string">            &quot;</span>hostname<span class="hljs-string">&quot; : &quot;</span>localhost.localdomain<span class="hljs-string">&quot;,</span><br><span class="hljs-string">            &quot;</span>name<span class="hljs-string">&quot; : &quot;</span>localhost.localdomain<span class="hljs-string">&quot;</span><br><span class="hljs-string">          &#125;,</span><br><span class="hljs-string">          &quot;</span>clientip<span class="hljs-string">&quot; : &quot;</span><span class="hljs-number">198.46</span>.<span class="hljs-number">149.143</span><span class="hljs-string">&quot;,</span><br><span class="hljs-string">          &quot;</span>@version<span class="hljs-string">&quot; : &quot;</span><span class="hljs-number">1</span><span class="hljs-string">&quot;,</span><br><span class="hljs-string">          &quot;</span>verb<span class="hljs-string">&quot; : &quot;</span>GET<span class="hljs-string">&quot;,</span><br><span class="hljs-string">          &quot;</span>request<span class="hljs-string">&quot; : &quot;</span>/blog/geekery/solving-good-<span class="hljs-keyword">or</span>-bad-problems.html?utm_source=feedburner&amp;utm_medium=feed&amp;utm_campaign=Feed%<span class="hljs-number">3</span>A+semicomplete%<span class="hljs-number">2</span>Fmain+%<span class="hljs-number">28</span>semicomplete.com+-+Jordan+Sissel%<span class="hljs-number">29</span><span class="hljs-string">&quot;,</span><br><span class="hljs-string">          &quot;</span>prospector<span class="hljs-string">&quot; : &#123;</span><br><span class="hljs-string">            &quot;</span><span class="hljs-keyword">type</span><span class="hljs-string">&quot; : &quot;</span>log<span class="hljs-string">&quot;</span><br><span class="hljs-string">          &#125;,</span><br><span class="hljs-string">          &quot;</span>referrer<span class="hljs-string">&quot; : &quot;</span>\<span class="hljs-string">&quot;-\&quot;&quot;,</span><br><span class="hljs-string">          &quot;</span>response<span class="hljs-string">&quot; : &quot;</span><span class="hljs-number">200</span><span class="hljs-string">&quot;,</span><br><span class="hljs-string">          &quot;</span>bytes<span class="hljs-string">&quot; : &quot;</span><span class="hljs-number">10756</span><span class="hljs-string">&quot;,</span><br><span class="hljs-string">          &quot;</span>source<span class="hljs-string">&quot; : &quot;</span>/usr/local/programs/logstash/logstash-tutorial.log<span class="hljs-string">&quot;,</span><br><span class="hljs-string">          &quot;</span>agent<span class="hljs-string">&quot; : &quot;</span>\<span class="hljs-string">&quot;Tiny Tiny RSS/1.11 (http://tt-rss.org/)\&quot;&quot;</span><br><span class="hljs-string">        &#125;</span><br><span class="hljs-string">      &#125;,</span><br><span class="hljs-string">。。。</span><br></code></pre></td></tr></table></figure>
+
+
+
+<h3 id="命令行启动Logstash"><a href="#命令行启动Logstash" class="headerlink" title="命令行启动Logstash"></a>命令行启动Logstash</h3><p>为了从命令行启动Logstash，用下面的命令：</p>
+<figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs apache"><span class="hljs-attribute">bin</span>/logstash<span class="hljs-meta"> [options]</span><br></code></pre></td></tr></table></figure>
+
+<p>下面的例子展示了启动Logstash，并制定配置定义在mypipeline.conf文件中：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">bin/logstash -f mypipeline.conf<br></code></pre></td></tr></table></figure>
+
+<p>在命令行中设置的任何标志都会覆盖<strong>logstash.yml</strong>中的相应设置。但是文件本身的内容没有改变。</p>
+<p><strong>Command-Line Flags</strong></p>
+<p><strong>–node.name NAME</strong></p>
+<p>　　指定Logstash实例的名字。如果没有指定的话，默认是当前主机名。</p>
+<p><strong>-f, –path.config CONFIG_PATH</strong></p>
+<p>　　从指定的文件或者目录加载Logstash配置。如果给定的是一个目录，则该目录中的所有文件将以字典顺序连接，然后作为一个配置文件进行解析。</p>
+<p><strong>-e, –config.string CONFIG_STRING</strong></p>
+<p>用给定的字符串作为配置数据，语法和配置文件中是一样的。</p>
+<p><strong>–modules</strong></p>
+<p>运行的模块名字</p>
+<p><strong>-l, –path.logs PATH</strong></p>
+<p>Logstash内部日志输出目录</p>
+<p><strong>–log.level LEVEL</strong></p>
+<p>日志级别</p>
+<p><strong>-t, –config.test_and_exit</strong></p>
+<p>检查配置语法是否正确并退出</p>
+<p><strong>-r, –config.reload.automatic</strong></p>
+<p>监视配置文件的改变，并且当配置文件被修改以后自动重新加载配置文件。</p>
+<p><strong>-config.reload.interval RELOAD_INTERVAL</strong></p>
+<p>为了检查配置文件是否改变，而拉去配置文件的频率。默认3秒。</p>
+<p><strong>–http.host HTTP_HOST</strong></p>
+<p>Web API绑定的主机。REST端点绑定的地址。默认是”127.0.0.1”</p>
+<p><strong>–http.port HTTP_PORT</strong></p>
+<p>Web API http端口。REST端点绑定的端口。默认是9600-9700之间。</p>
+<p><strong>–log.format FORMAT</strong></p>
+<p>指定Logstash写它自身的使用JSON格式还是文本格式。默认是”plain”。</p>
+<p><strong>–path.settings SETTINGS_DIR</strong></p>
+<p>设置包含logstash.yml配置文件的目录，比如log4j日志配置。也可以设置LS_SETTINGS_DIR环境变量。默认的配置目录是在Logstash home目录下。</p>
+<p><strong>-h, –help</strong></p>
+<p>打印帮助。</p>
+
+              
+            </div>
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/17-%E5%88%86%E5%B8%83%E5%BC%8F/" class="category-chain-item">17_分布式</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/17-%E5%88%86%E5%B8%83%E5%BC%8F/07-ELK%E6%97%A5%E5%BF%97/" class="category-chain-item">07_ELK日志</a>
+  
+  
+
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/%E6%9E%B6%E6%9E%84/">#架构</a>
+      
+        <a href="/tags/%E5%88%86%E5%B8%83%E5%BC%8F/">#分布式</a>
+      
+        <a href="/tags/ELK/">#ELK</a>
+      
+        <a href="/tags/Logstash/">#Logstash</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>02 Logstash详解</div>
+      <div>https://janycode.github.io/2022/05/30/17_分布式/07_ELK日志/02 Logstash详解/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Jerry(姜源)</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2022年5月30日</div>
+        </div>
+      
+      
+      <div class="license-meta-item">
+        <div>许可协议</div>
+        <div>
+          
+            
+            
+              <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+              <span class="hint--top hint--rounded" aria-label="BY - 姜源">
+                <i class="iconfont icon-by"></i>
+              </span>
+              </a>
+            
+          
+        </div>
+      </div>
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2022/06/15/20_%E6%94%B6%E8%97%8F%E6%95%B4%E7%90%86/04_%E9%85%8D%E7%BD%AE%E7%B1%BB/01-%E4%BD%BF@Value%E6%9C%AA%E9%85%8D%E7%BD%AE%E4%B8%8D%E6%8A%A5%E9%94%99%E7%9A%84%E9%85%8D%E7%BD%AE%E7%B1%BB/" title="01-@Value未配置不报错的配置类">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">01-@Value未配置不报错的配置类</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2022/05/30/17_%E5%88%86%E5%B8%83%E5%BC%8F/07_ELK%E6%97%A5%E5%BF%97/01%20Kibana%E8%AF%A6%E8%A7%A3/" title="01 Kibana详解">
+                        <span class="hidden-mobile">01 Kibana详解</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+  <article id="comments" lazyload>
+    
+  <div id="SOHUCS" sid='https://janycode.github.io/2022/05/30/17_%E5%88%86%E5%B8%83%E5%BC%8F/07_ELK%E6%97%A5%E5%BF%97/02%20Logstash%E8%AF%A6%E8%A7%A3/'></div>
+  <script type="text/javascript">
+    Fluid.utils.loadComments('#SOHUCS', function() {
+      Fluid.utils.createScript("https://changyan.sohu.com/upload/changyan.js", function() {
+        window.changyan.api.config({"appid":"cyw5OHIcO","appkey":"fea3446b3df4b3f129f34da4cbc87e51"})
+      });
+    });
+  </script>
+  <noscript>Please enable JavaScript to view the comments</noscript>
+
+
+  </article>
+
+
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://simple.blog.csdn.net" target="_blank" rel="nofollow noopener"><span>CSDN</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/janycode" target="_blank" rel="nofollow noopener"><span>GitHub</span></a> <i class="iconfont icon-love"></i> <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="busuanzi_container_site_pv" style="display: none">
+        总访问量(PV) 
+        <span id="busuanzi_value_site_pv"></span>
+         次，
+      </span>
+    
+    
+      <span id="busuanzi_container_site_uv" style="display: none">
+        总访客数(UV) 
+        <span id="busuanzi_value_site_uv"></span>
+         人
+      </span>
+    
+    
+  
+</div>
+
+  
+  
+  
+</div>
+
+<!-- live2d 动画 -->
+<script src="https://eqcn.ajz.miesnfu.com/wp-content/plugins/wp-3d-pony/live2dw/lib/L2Dwidget.min.js"></script>
+<script>
+    L2Dwidget.init({
+        "model": {
+            jsonPath: "https://unpkg.com/live2d-widget-model-haruto@1.0.5/assets/haruto.model.json",
+            "scale": 1
+        },
+        "display": {
+            "position": "right",
+            "width": 100,
+            "height": 200,
+            "hOffset": 35,
+            "vOffset": -85
+        },
+        "mobile": {
+            "show": false,
+            "scale": 0.1
+        },
+        "react": {
+            "opacityDefault": 0.75,
+            "opacityOnHover": 0.2
+        }
+    });
+</script>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <!-- Baidu Analytics -->
+    <script defer>
+      if (!Fluid.ctx.dnt) {
+        var _hmt = _hmt || [];
+        (function() {
+          var hm = document.createElement("script");
+          hm.src = "https://hm.baidu.com/hm.js?bfff735c897eb60ea49b735096b20e47";
+          var s = document.getElementsByTagName("script")[0];
+          s.parentNode.insertBefore(hm, s);
+        })();
+      }
+    </script>
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.0/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      headingSelector : CONFIG.toc.headingSelector || 'h1,h2,h3,h4,h5,h6',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      collapseDepth   : CONFIG.toc.collapseDepth || 0,
+      scrollSmooth    : true,
+      headingsOffset  : -boardTop
+    });
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+  });
+</script>
+
+
+  <script>
+  (function() {
+    var enableLang = CONFIG.code_language.enable && CONFIG.code_language.default;
+    var enableCopy = CONFIG.copy_btn;
+    if (!enableLang && !enableCopy) {
+      return;
+    }
+
+    function getBgClass(ele) {
+      return Fluid.utils.getBackgroundLightness(ele) >= 0 ? 'code-widget-light' : 'code-widget-dark';
+    }
+
+    var copyTmpl = '';
+    copyTmpl += '<div class="code-widget">';
+    copyTmpl += 'LANG';
+    copyTmpl += '</div>';
+    jQuery('.markdown-body pre').each(function() {
+      var $pre = jQuery(this);
+      if ($pre.find('code.mermaid').length > 0) {
+        return;
+      }
+      if ($pre.find('span.line').length > 0) {
+        return;
+      }
+
+      var lang = '';
+
+      if (enableLang) {
+        lang = CONFIG.code_language.default;
+        if ($pre[0].children.length > 0 && $pre[0].children[0].classList.length >= 2 && $pre.children().hasClass('hljs')) {
+          lang = $pre[0].children[0].classList[1];
+        } else if ($pre[0].getAttribute('data-language')) {
+          lang = $pre[0].getAttribute('data-language');
+        } else if ($pre.parent().hasClass('sourceCode') && $pre[0].children.length > 0 && $pre[0].children[0].classList.length >= 2) {
+          lang = $pre[0].children[0].classList[1];
+          $pre.parent().addClass('code-wrapper');
+        } else if ($pre.parent().hasClass('markdown-body') && $pre[0].classList.length === 0) {
+          $pre.wrap('<div class="code-wrapper"></div>');
+        }
+        lang = lang.toUpperCase().replace('NONE', CONFIG.code_language.default);
+      }
+      $pre.append(copyTmpl.replace('LANG', lang).replace('code-widget">',
+        getBgClass($pre[0]) + (enableCopy ? ' code-widget copy-btn" data-clipboard-snippet><i class="iconfont icon-copy"></i>' : ' code-widget">')));
+
+      if (enableCopy) {
+        Fluid.utils.createScript('https://lib.baomitu.com/clipboard.js/2.0.10/clipboard.min.js', function() {
+          var clipboard = new window.ClipboardJS('.copy-btn', {
+            target: function(trigger) {
+              var nodes = trigger.parentNode.childNodes;
+              for (var i = 0; i < nodes.length; i++) {
+                if (nodes[i].tagName === 'CODE') {
+                  return nodes[i];
+                }
+              }
+            }
+          });
+          clipboard.on('success', function(e) {
+            e.clearSelection();
+            e.trigger.innerHTML = e.trigger.innerHTML.replace('icon-copy', 'icon-success');
+            setTimeout(function() {
+              e.trigger.innerHTML = e.trigger.innerHTML.replace('icon-success', 'icon-copy');
+            }, 2000);
+          });
+        });
+      }
+    });
+  })();
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script  src="/js/local-search.js" ></script>
+
+  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>
