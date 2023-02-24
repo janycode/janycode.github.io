@@ -26,7 +26,7 @@ Monitoring and Managing JavaSE 6 Applications: http://www.oracle.com/technetwork
 
 ### 1. jps
 
-(Java Virtual Machine Process Status Tool)      
+(Java Virtual Machine Process Status Tool)
 
 jps主要用来输出JVM中运行的进程状态信息。语法格式如下：
 

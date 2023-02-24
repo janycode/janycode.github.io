@@ -208,7 +208,11 @@ rpl_semi_sync_master_wait_point = AFTER_SYNC（默认）
 
 # 二、MySQL读写分离
 
-> [扩展阅读]使用Sharding-JDBC 实现Mysql读写分离：[https://developer.aliyun.com/article/1136722](https://developer.aliyun.com/article/1136722)
+> 扩展阅读：
+>
+> 使用Sharding-JDBC 实现Mysql读写分离：[https://developer.aliyun.com/article/1136722](https://developer.aliyun.com/article/1136722)
+>
+> Centos 7使用MyCat搭建 MySQL-读写分离：[https://developer.aliyun.com/article/1143556](https://developer.aliyun.com/article/1143556)
 
 ## 2.1什么是读写分离
 
