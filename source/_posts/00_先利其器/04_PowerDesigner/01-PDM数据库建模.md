@@ -82,10 +82,10 @@ Sybase公司的软件，几乎包括了数据库模型设计的全过程，利�
 
 * 设置数据库表的字符集：（`将这三行拷贝到末尾`）
 
-    ```
+    ```vb
     ENGINE = %s : list = BDB | HEAP | ISAM | InnoDB | MERGE | MRG_MYISAM | MYISAM, default = InnoDB
-    DEFAULT CHARACTER SET = %s : list = utf8 | gbk, default = utf8
-    COLLATE = %s : list = utf8_bin | utf8_general_ci | gbk_bin | gbk_chinese_ci, default = utf8_bin
+    DEFAULT CHARACTER SET = %s : list = utf8 | utf8mb4 | gbk, default = utf8mb4
+    COLLATE = %s : list = utf8_bin | utf8_general_ci | utf8mb4 | utf8mb4_general_ci | gbk_bin | gbk_chinese_ci, default = utf8mb4_general_ci
     ```
 
 ![image-20200819155843081](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20200819155847.png)
@@ -321,5 +321,59 @@ Sub ShowTableList(mdl, SheetList)
      SheetList.Columns(4).ColumnWidth = 60 
    output "end"
 End Sub
+```
+
+### 8. comment2name 显示
+
+将sql中的中文注释COMMENT字段复制给Name。
+
+![image-20210418171352731](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20210418171354.png)
+
+```vbscript
+Option   Explicit 
+ValidationMode   =   True 
+InteractiveMode   =   im_Batch
+ 
+Dim   mdl   '   the   current   model
+'   get   the   current   active   model 
+Set   mdl   =   ActiveModel 
+If   (mdl   Is   Nothing)   Then 
+  MsgBox   "There   is   no   current   Model " 
+ElseIf   Not   mdl.IsKindOf(PdPDM.cls_Model)   Then 
+  MsgBox   "The   current   model   is   not   an   Physical   Data   model. " 
+Else 
+  ProcessFolder   mdl 
+End   If
+ 
+Private   sub   ProcessFolder(folder) 
+On Error Resume Next
+  Dim   Tab   'running table 
+  for   each   Tab   in   folder.tables 
+if   not   tab.isShortcut   then 
+  tab.name   =   tab.comment
+  Dim   col   '   running   column 
+  for   each   col   in   tab.columns 
+  if col.comment="" then
+  else
+col.name=   col.comment 
+  end if
+  next 
+end   if 
+  next
+ 
+  Dim   view   'running   view 
+  for   each   view   in   folder.Views 
+if   not   view.isShortcut   then 
+  view.name   =   view.comment 
+end   if 
+  next
+  '   go   into   the   sub-packages 
+  Dim   f   '   running   folder 
+  For   Each   f   In   folder.Packages 
+if   not   f.IsShortcut   then 
+  ProcessFolder   f 
+end   if 
+  Next 
+end   sub
 ```
 
