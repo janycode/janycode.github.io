@@ -744,7 +744,7 @@ public Object listAll() {
 
 无论是多套源还是动态数据源，相对来说还是固定的数据源（如一主一从，一主多从等），即在编码时已经确定的数据库数量，只是在具体使用哪一个时进行动态处理。如果数据源本身并不确定，或者说需要根据用户输入来连接数据库，这时，如何处理呢？可以想象现在有一个需求，需要对数据库进行连接管理，用户可以输入对应的数据库连接信息，然后可以查看数据库有哪些表。这就跟平时使用的数据库管理软件有点类似了，如 MySQL Workbench、Navicat、SQLyog，下图是SQLyog截图：
 
-![SQLyog](https://gitee.com/mianshenglee/datastorage/raw/master/md-photo/multi-datasource/connect.png)
+![image-20230307103209018](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230307103210.png)
 
 ```java
 #tables-master.sql
