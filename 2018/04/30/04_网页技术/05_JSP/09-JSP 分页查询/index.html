@@ -23,15 +23,15 @@
 <meta property="og:site_name" content="姜源の云笔记">
 <meta property="og:description" content="1. 分页查询准备工作采用物理查询：页面查询一页，就从数据库里查询一页数量的数据。优：减少单次查询数据库的时间缺：增加了操作数据库的次数 所需的关于 页数 的数据：请求：当前页数 currentPage响应：PageBean 类封装● 当前页数 currentPage● 总页数 totalPage● 总记录数 totalSize● 每页记录数 pageSize● 当前页数据 pageList">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://img-blog.csdnimg.cn/20200430192123160.png">
-<meta property="og:image" content="https://img-blog.csdnimg.cn/20200430195257492.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3NpbmF0XzM2MTg0MDc1,size_16,color_FFFFFF,t_70">
+<meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230316143012.png">
+<meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230316143021.png">
 <meta property="article:published_time" content="2018-04-30T11:19:22.000Z">
-<meta property="article:modified_time" content="2023-03-08T08:06:34.865Z">
+<meta property="article:modified_time" content="2023-03-16T09:38:27.438Z">
 <meta property="article:author" content="Jerry(姜源)">
 <meta property="article:tag" content="JSP">
 <meta property="article:tag" content="分页">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="https://img-blog.csdnimg.cn/20200430192123160.png">
+<meta name="twitter:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230316143012.png">
   
   
     <meta name="referrer" content="no-referrer-when-downgrade">
@@ -303,13 +303,13 @@
             
             <div class="markdown-body">
               
-              <p><img src="https://img-blog.csdnimg.cn/20200430192123160.png" srcset="/img/loading.gif" lazyload alt="分页查询"></p>
+              <p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230316143012.png" srcset="/img/loading.gif" lazyload alt="分页查询"></p>
 <h3 id="1-分页查询准备工作"><a href="#1-分页查询准备工作" class="headerlink" title="1. 分页查询准备工作"></a>1. 分页查询准备工作</h3><p>采用物理查询：页面查询一页，就从数据库里查询一页数量的数据。<br>优：减少单次查询数据库的时间<br>缺：增加了操作数据库的次数</p>
 <p>所需的关于 <code>页数</code> 的数据：<br>请求：当前页数 <code>currentPage</code><br>响应：PageBean 类封装<br>● 当前页数 <code>currentPage</code><br>● 总页数 <code>totalPage</code><br>● 总记录数 <code>totalSize</code><br>● 每页记录数 <code>pageSize</code><br>● 当前页数据 <code>pageList</code></p>
 <blockquote>
 <p><strong>总页数</strong> &#x3D; <code>(总记录数 % 每页记录数 == 0) ? (总记录数 / 每页记录数) : (总记录数 / 每页记录数 + 1)</code>;<br><strong>当前页数据</strong> list &#x3D; query( <code>select * from limit 每页记录数*(当前页数-1), 每页记录数</code> );</p>
 </blockquote>
-<h3 id="2-分页查询逻辑实现"><a href="#2-分页查询逻辑实现" class="headerlink" title="2. 分页查询逻辑实现"></a>2. 分页查询逻辑实现</h3><p>效果图：<br><img src="https://img-blog.csdnimg.cn/20200430195257492.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3NpbmF0XzM2MTg0MDc1,size_16,color_FFFFFF,t_70" srcset="/img/loading.gif" lazyload alt="分页查询效果图"></p>
+<h3 id="2-分页查询逻辑实现"><a href="#2-分页查询逻辑实现" class="headerlink" title="2. 分页查询逻辑实现"></a>2. 分页查询逻辑实现</h3><p>效果图：<br><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230316143021.png" srcset="/img/loading.gif" lazyload alt="分页查询效果图"></p>
 <p>数据层封装 Employee.java(属性+生成即可) 和 <code>PageBean.java</code>：</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">PageBean</span>&lt;T&gt; &#123;<br>    <span class="hljs-keyword">private</span> Integer currentPage; <span class="hljs-comment">// 当前页数</span><br>    <span class="hljs-keyword">private</span> Integer totalPage; <span class="hljs-comment">// 总页数</span><br>    <span class="hljs-keyword">private</span> Integer totalSize; <span class="hljs-comment">// 总记录数</span><br>    <span class="hljs-keyword">private</span> Integer pageSize; <span class="hljs-comment">// 每页记录数</span><br>    <span class="hljs-keyword">private</span> List&lt;T&gt; list; <span class="hljs-comment">// 当前页数据 &lt;T&gt; 针对哪种数据</span><br>    ...<br>&#125;<br></code></pre></td></tr></table></figure>
 <p>显示层：<code>userList.jsp</code></p>
@@ -426,8 +426,8 @@
                   <article class="post-next col-6">
                     
                     
-                      <a href="/2018/04/29/10_%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/00-MVC%E5%BC%80%E5%8F%91%E6%A8%A1%E5%BC%8F/" title="02-MVC开发模式">
-                        <span class="hidden-mobile">02-MVC开发模式</span>
+                      <a href="/2018/04/29/10_%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/00-MVC%E5%BC%80%E5%8F%91%E6%A8%A1%E5%BC%8F/" title="">
+                        <span class="hidden-mobile"></span>
                         <span class="visible-mobile">下一篇</span>
                         <i class="iconfont icon-arrowright"></i>
                       </a>

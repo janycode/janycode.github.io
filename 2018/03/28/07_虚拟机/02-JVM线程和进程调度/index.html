@@ -23,13 +23,13 @@
 <meta property="og:site_name" content="姜源の云笔记">
 <meta property="og:description" content="0.一个单核CPU如何执行多线程？原理？(1）单核cpu同一时间，cpu只能处理1个线程，只有1个线程在执行；(2）多线程同时执行，是cpu快速的在多个线程之间的切换；(3）cpu调度线程的时间足够快，就造成了多线程的“同时”执行；(4）如果线程数非常多，cpu会在多个线程之间切换，也会消耗大量的cpu资源；(5）如果线程数非常多，每个线程被调度的次数会降低，线程的执行效率也会降低。  单核CPU">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://img-blog.csdnimg.cn/20200311201352528.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3NpbmF0XzM2MTg0MDc1,size_16,color_FFFFFF,t_70">
+<meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230316150444.png">
 <meta property="article:published_time" content="2018-03-28T15:07:15.000Z">
-<meta property="article:modified_time" content="2023-03-08T08:06:35.589Z">
+<meta property="article:modified_time" content="2023-03-16T09:38:27.704Z">
 <meta property="article:author" content="Jerry(姜源)">
 <meta property="article:tag" content="JVM">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="https://img-blog.csdnimg.cn/20200311201352528.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3NpbmF0XzM2MTg0MDc1,size_16,color_FFFFFF,t_70">
+<meta name="twitter:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230316150444.png">
   
   
     <meta name="referrer" content="no-referrer-when-downgrade">
@@ -307,7 +307,7 @@
 </blockquote>
 <h3 id="1-Java线程调度的方式"><a href="#1-Java线程调度的方式" class="headerlink" title="1. Java线程调度的方式"></a>1. Java线程调度的方式</h3><h4 id="1-1-抢占式调度"><a href="#1-1-抢占式调度" class="headerlink" title="1.1 抢占式调度"></a>1.1 抢占式调度</h4><p>抢占式调度指的是<strong>每条线程执行的时间、线程的切换都由系统控制</strong>。<br>系统控制指的是在系统某种运行机制下，可能每条线程都分同样的执行时间片，也可能是某些线程执行的时间片较长，甚至某些线程得不到执行的时间片。在这种机制下，一个线程的堵塞不会导致整个进程堵塞。</p>
 <h4 id="1-2-协同式调度"><a href="#1-2-协同式调度" class="headerlink" title="1.2 协同式调度"></a>1.2 协同式调度</h4><p>协同式调度指<strong>某一线程执行完后主动通知系统切换到另一线程上执行</strong>。<br>这种模式就像接力赛一样，一个人跑完自己的路程就把接力棒交接给下一个人，下个人继续往下跑。线程的执行时间由线程本身控制，线程切换可以预知，不存在多线程同步问题，但它有一个致命弱点：如果一个线程编写有问题，运行到一半就一直堵塞，那么可能导致整个系统崩溃。</p>
-<p><img src="https://img-blog.csdnimg.cn/20200311201352528.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3NpbmF0XzM2MTg0MDc1,size_16,color_FFFFFF,t_70" srcset="/img/loading.gif" lazyload alt="Java中JVM线程调度"></p>
+<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230316150444.png" srcset="/img/loading.gif" lazyload alt="Java中JVM线程调度"></p>
 <h3 id="2-JVM线程调度实现（抢占式）"><a href="#2-JVM线程调度实现（抢占式）" class="headerlink" title="2. JVM线程调度实现（抢占式）"></a>2. JVM线程调度实现（抢占式）</h3><p>Java 使用的线程调使用<strong>抢占式调度</strong>，Java 中线程会<strong>按优先级分配 CPU 时间片</strong>运行，且优先级越高越优先执行，但优先级高并不代表能独自占用执行时间片，可能是优先级高得到越多的执行时间片，反之，优先级低的分到的执行时间少但不会分配不到执行时间。</p>
 <p>线程让出 cpu 的情况：</p>
 <ol>
