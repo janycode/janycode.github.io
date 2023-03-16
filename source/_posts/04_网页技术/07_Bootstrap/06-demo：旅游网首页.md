@@ -10,7 +10,7 @@ categories:
 
 ### 效果图：
 效果图：
-![Bootstrap框架使用及可视化布局demo](https://img-blog.csdnimg.cn/20200517130629205.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3NpbmF0XzM2MTg0MDc1,size_16,color_FFFFFF,t_70#pic_center)
+![Bootstrap框架使用及可视化布局demo](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230316145051.png)
 
 
 
@@ -415,7 +415,7 @@ categories:
 
 ### 源码 - 优化：
 
-```2018html
+```html
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <html>
 <head>

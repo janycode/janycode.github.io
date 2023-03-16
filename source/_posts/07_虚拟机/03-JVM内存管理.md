@@ -12,7 +12,7 @@ categories:
 
 ![Image](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20220130104712.png)
 
-([点击查看大图](https://img-blog.csdnimg.cn/815071f2f94e4fffb15222c65d04dfb8.png))
+
 
 ### 1. 物理内存与虚拟内存
 

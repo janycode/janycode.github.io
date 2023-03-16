@@ -56,7 +56,7 @@ categories:
 </html>
 ```
 预览结果：
-![在这里插入图片描述](https://img-blog.csdnimg.cn/20200407184816409.png)
+![在这里插入图片描述](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230316141710.png)
 
 > 注意事项：
 >
@@ -101,7 +101,7 @@ frame属性：
 </html>
 ```
 T 字形分割。
-![在这里插入图片描述](https://img-blog.csdnimg.cn/20200407184903962.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3NpbmF0XzM2MTg0MDc1,size_16,color_FFFFFF,t_70)
+![在这里插入图片描述](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230316141721.png)
 
 ### 3. meta 网页元数据
 ```html

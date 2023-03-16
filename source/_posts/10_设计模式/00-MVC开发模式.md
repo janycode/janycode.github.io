@@ -1,5 +1,5 @@
 ---
-title: 02-MVC开发模式
+itle: 02-MVC开发模式
 date: 2018-4-29 23:51:24
 tags:
 - 开发模式
@@ -11,7 +11,7 @@ categories:
 #### 1.1 MVC 模式
 
 MVC 设计模式核心概念：
-![MVC设计模式](https://img-blog.csdnimg.cn/20200429215117983.jpg#pic_center)
+![MVC设计模式](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230316153653.jpg)
 ● Model  模型层，数据封装
 ● View  视图层，数据可视
 ● Controller  控制层，请求处理 + 业务处理 + 数据库操作
@@ -22,7 +22,7 @@ MVC 设计模式核心概念：
 ● Service  业务层，只处理业务
 ● Dao  持久层，只处理数据库操作
 
-![MVC 设计模式](https://img-blog.csdnimg.cn/20200429215012660.jpg?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3NpbmF0XzM2MTg0MDc1,size_16,color_FFFFFF,t_70#pic_center)
+![MVC 设计模式](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230316153717.jpg)
 
 
 
@@ -35,13 +35,13 @@ MVC 设计模式核心概念：
 ### 2. 案例：用户管理实现
 
 **主界面**：
-![JSP+MVC+三层架构设计](https://img-blog.csdnimg.cn/20200429222110631.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3NpbmF0XzM2MTg0MDc1,size_16,color_FFFFFF,t_70#pic_center)
+![JSP+MVC+三层架构设计](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230316153727.png)
 
 **核心功能**：
 JSP + MVC + 三层架构设计实现，用户信息(id/username/password)的注册、删除、修改、查询展示所有、登陆、登出。
 
 **核心流程图**(点击/拖动均可放大)：
-![JSP+MVC+三层架构设计](https://img-blog.csdnimg.cn/20200429234030500.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3NpbmF0XzM2MTg0MDc1,size_16,color_FFFFFF,t_70#pic_center)
+![JSP+MVC+三层架构设计](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230316153735.png)
 User.java
 
 ```java

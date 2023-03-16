@@ -78,7 +78,7 @@ JUnit Vintage 本身由两个模块组成：
 - junit：junit 是用于 JUnit 3 和 JUnit 4 的 API。
 - junit-vintage-engine：是在 JUnit Platform 上运行 JUnit 3 和 JUnit 4 测试的测试引擎。
 
-![JUnit](https://img-blog.csdnimg.cn/20200429130117536.jpg?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3NpbmF0XzM2MTg0MDc1,size_16,color_FFFFFF,t_70#pic_center)
+![JUnit](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230316151246.jpg)
 
 
 

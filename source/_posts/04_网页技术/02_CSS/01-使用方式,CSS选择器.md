@@ -46,7 +46,7 @@ categories:
 
 ### 2. CSS 选择器
 #### 2.1 标签选择器
-![在这里插入图片描述](https://img-blog.csdnimg.cn/20200407190923462.png)
+![在这里插入图片描述](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230316141738.png)
 ```html
 <!DOCTYPE html>
 <html>
@@ -65,7 +65,7 @@ categories:
 </html>
 ```
 #### 2.2 id选择器
-![在这里插入图片描述](https://img-blog.csdnimg.cn/20200407191019841.png)
+![在这里插入图片描述](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230316141744.png)
 ```html
 <!DOCTYPE html>
 <html>
@@ -89,7 +89,7 @@ categories:
 </html>
 ```
 #### 2.3 class选择器
-![在这里插入图片描述](https://img-blog.csdnimg.cn/20200407191103462.png)
+![在这里插入图片描述](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230316141750.png)
 ```html
 <!DOCTYPE html>
 <html>
@@ -114,7 +114,7 @@ categories:
 </html>
 ```
 #### 2.4 属性选择器
-![在这里插入图片描述](https://img-blog.csdnimg.cn/20200407191149209.png)
+![在这里插入图片描述](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230316141759.png)
 ```html
 <!DOCTYPE html>
 <html>
@@ -139,9 +139,9 @@ categories:
 	</body>
 </html>
 ```
-![在这里插入图片描述](https://img-blog.csdnimg.cn/20200407191548794.png)
+![在这里插入图片描述](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230316141806.png)
 #### 2.5 层级选择器（子代、后代、相邻兄弟、通用兄弟）
-![在这里插入图片描述](https://img-blog.csdnimg.cn/20200407191720589.png)
+![在这里插入图片描述](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230316141813.png)
 ```html
 <!DOCTYPE html>
 <html>
@@ -179,10 +179,10 @@ categories:
     </body>
 </html>
 ```
-![在这里插入图片描述](https://img-blog.csdnimg.cn/20200407195147634.png)
+![在这里插入图片描述](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230316141819.png)
 
 #### 2.6 分组选择器
-![在这里插入图片描述](https://img-blog.csdnimg.cn/20200407195221481.png)
+![在这里插入图片描述](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230316141825.png)
 ```html
 <!DOCTYPE html>
 <html>
@@ -203,4 +203,4 @@ categories:
 	</body>
 </html>
 ```
-![在这里插入图片描述](https://img-blog.csdnimg.cn/20200407195323884.png)
+![在这里插入图片描述](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230316141832.png)

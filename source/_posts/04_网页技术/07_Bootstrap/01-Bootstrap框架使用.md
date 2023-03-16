@@ -25,7 +25,7 @@ Bootstrap 是最受欢迎的 HTML、CSS 和 JS 框架，用于开发响应式布
 
 2. 创建 bootstrap 目录，拷贝 `css/` `fonts/` `js/` 三个目录：
 
-  ![Bootstrap 环境配置](https://img-blog.csdnimg.cn/20200517003823174.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3NpbmF0XzM2MTg0MDc1,size_16,color_FFFFFF,t_70)
+  ![Bootstrap 环境配置](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230316144750.png)
 3. 导入 jQuery 库：bootstrap/js/**jquery-3.5.1.min.js**
 
 4. 将资源导入到页面：
@@ -89,9 +89,6 @@ Bootstrap 是最受欢迎的 HTML、CSS 和 JS 框架，用于开发响应式布
 * 列
   * col(col-lg-?、col-md-?、col-sm-?、col-xs-?)
 
-* 栅格参数
-
-  * ![image-20200516152941758](https://qiuzhiwei.oss-cn-beijing.aliyuncs.com/typora/20200516152946.png)
 
 
 需求：

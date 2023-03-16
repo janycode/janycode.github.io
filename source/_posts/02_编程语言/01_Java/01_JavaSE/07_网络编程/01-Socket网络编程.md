@@ -82,9 +82,10 @@ class MyClass {
 ```
 
 ### 2. Socket类 & ServerSocket类
-![Socket类](https://img-blog.csdnimg.cn/20200318203755501.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3NpbmF0XzM2MTg0MDc1,size_16,color_FFFFFF,t_70)
+![image-20230316140646555](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230316140647.png)
 网络通信步骤：
 ① 建立通信连接（会话）
+
 * 创建ServerSocket，指定端口号；
 * 调用accept等待客户端接入；
 ② 客户端请求服务器

@@ -26,7 +26,7 @@ categories:
 协同式调度指**某一线程执行完后主动通知系统切换到另一线程上执行**。
 这种模式就像接力赛一样，一个人跑完自己的路程就把接力棒交接给下一个人，下个人继续往下跑。线程的执行时间由线程本身控制，线程切换可以预知，不存在多线程同步问题，但它有一个致命弱点：如果一个线程编写有问题，运行到一半就一直堵塞，那么可能导致整个系统崩溃。
 
-![Java中JVM线程调度](https://img-blog.csdnimg.cn/20200311201352528.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3NpbmF0XzM2MTg0MDc1,size_16,color_FFFFFF,t_70)
+![Java中JVM线程调度](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230316150444.png)
 
 ### 2. JVM线程调度实现（抢占式）
 Java 使用的线程调使用**抢占式调度**，Java 中线程会**按优先级分配 CPU 时间片**运行，且优先级越高越优先执行，但优先级高并不代表能独自占用执行时间片，可能是优先级高得到越多的执行时间片，反之，优先级低的分到的执行时间少但不会分配不到执行时间。

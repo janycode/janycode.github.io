@@ -124,13 +124,14 @@ window.xxx() 访问，也可省略 window.直接调用方法名。
 </body>
 </html>
 ```
-![BOM+DOM](https://img-blog.csdnimg.cn/20200512221717734.png)
+![BOM+DOM](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230316143325.png)
 
 
 
 #### 1.2 location
 
 **属性**
+
 - **hash**	设置或返回从井号 (#) 开始的 URL（锚）。
 - **host**	设置或返回主机名和当前 URL 的端口号。
 - **hostname**	设置或返回当前 URL 的主机名。
@@ -256,13 +257,14 @@ Screen 对象是由 JavaScript runtime engine 自动创建的，包含有关客�
 参考资料：[https://www.w3school.com.cn/xmldom/xmldom_reference.asp](https://www.w3school.com.cn/xmldom/xmldom_reference.asp)
 
 **树形结构图**
-![在这里插入图片描述](https://img-blog.csdnimg.cn/20200512100554968.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3NpbmF0XzM2MTg0MDc1,size_16,color_FFFFFF,t_70)
+![在这里插入图片描述](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230316144034.png)
 
 #### 2.1 document 文档对象
 一棵xml文档树的根，访问文档对象最顶层的入口。
 包含：元素节点、文本节点、属性节点、注释。
 
 **常用方法**
+
 - document.`createElement`()	创建元素节点。
 - document.`createTextNode`()	创建文本节点。
 - document.`getElementById`()	查找具有指定的唯一 ID 的元素。
@@ -328,7 +330,7 @@ demo(获取子节点类型)：
 ```
 > 注意：从父节点获取子节点的 nodeObjects 时，其中包含了 #text 换行符。
 
-![BOM+DOM 换行符#text](https://img-blog.csdnimg.cn/2020051221444423.png)
+![BOM+DOM 换行符#text](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230316144051.png)
 
 
 
@@ -406,7 +408,8 @@ demo(移除父div中首尾子div)：
 XML DOM 的文档访问和操作对象，同样可以访问和操作HTML文档，HTML DOM 定义了访问和操作 HTML 文档的标准方法，HTML DOM 把 HTML 文档呈现为带有元素、属性和文本的树结构(节点树)。
 
 **树形结构图**
-![在这里插入图片描述](https://img-blog.csdnimg.cn/20200512100532602.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3NpbmF0XzM2MTg0MDc1,size_16,color_FFFFFF,t_70)
+![在这里插入图片描述](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230316144146.png)
+
 #### 3.1 document 文档对象
 **常用方法**
 - document.`getElementById`()	获取具有指定的唯一 id 的元素。
@@ -537,7 +540,7 @@ demo(获取输入框里的内容)：
 
 ### 4. 元素标签CRUD
 
-![在这里插入图片描述](https://img-blog.csdnimg.cn/20200514221451804.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3NpbmF0XzM2MTg0MDc1,size_16,color_FFFFFF,t_70)
+![在这里插入图片描述](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230316144201.png)
 
 ### 5. BOM + DOM 使用案例 × 5
 
@@ -593,7 +596,7 @@ demo(获取输入框里的内容)：
 <br> <br>
 <button onclick="addOption()">增加选项</button>
 ```
-![BOM+DOM](https://img-blog.csdnimg.cn/20200512235552163.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3NpbmF0XzM2MTg0MDc1,size_16,color_FFFFFF,t_70)
+![BOM+DOM](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230316144212.png)
 
 #### 5.4 全选 & 全不选 & 反选
 ```html
@@ -637,7 +640,7 @@ demo(获取输入框里的内容)：
 <button onclick="fn2()">全不选</button>
 <button onclick="fn3()">反选</button>
 ```
-![BOM+DOM](https://img-blog.csdnimg.cn/20200512212332296.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3NpbmF0XzM2MTg0MDc1,size_16,color_FFFFFF,t_70)
+![BOM+DOM](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230316144221.png)
 
 #### 5.5 注册表单的校验
 ```html
@@ -761,4 +764,4 @@ demo(获取输入框里的内容)：
     </table>
 </form>
 ```
-![BOM+DOM](https://img-blog.csdnimg.cn/2020051311551780.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3NpbmF0XzM2MTg0MDc1,size_16,color_FFFFFF,t_70)
+![BOM+DOM](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230316144231.png)

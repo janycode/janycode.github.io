@@ -13,7 +13,7 @@ categories:
 
 ### 1. ".properties"配置文件介绍
 
-![Java.properties配置文件示例](https://img-blog.csdnimg.cn/20200315150719652.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3NpbmF0XzM2MTg0MDc1,size_16,color_FFFFFF,t_70)
+![image-20230316140420688](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230316140421.png)
 后缀名为.properties是一种属性配置文件。
 这种文件以key=value格式存储内容，Java中可以使用Properties类来读取这个文件
 String value=p.getProperty(key);
@@ -28,9 +28,9 @@ String value=p.getProperty(key);
 
 ### 2. Eclipse中怎么创建properties文件
 通用【新建】快捷键：Ctrl + N
-![Eclipse中创建properties文件 - 第一步](https://img-blog.csdnimg.cn/20200315152026597.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3NpbmF0XzM2MTg0MDc1,size_16,color_FFFFFF,t_70)
-![Eclipse中创建properties文件 - 第二步](https://img-blog.csdnimg.cn/20200315152108273.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3NpbmF0XzM2MTg0MDc1,size_16,color_FFFFFF,t_70)
-![Eclipse中创建properties文件 - 第三步](https://img-blog.csdnimg.cn/20200315152128511.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3NpbmF0XzM2MTg0MDc1,size_16,color_FFFFFF,t_70)
+![image-20230316140429767](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230316140430.png)
+![image-20230316140441641](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230316140442.png)
+![image-20230316140452903](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230316140453.png)
 写它，写它，写它，OMG！！！
 
 ### 3. Properties 类的特点
@@ -138,4 +138,4 @@ public class TestProperties {
 }
 ```
 运行结果：
-![properties](https://img-blog.csdnimg.cn/20200319000203149.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3NpbmF0XzM2MTg0MDc1,size_16,color_FFFFFF,t_70)
+![image-20230316140509300](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230316140510.png)

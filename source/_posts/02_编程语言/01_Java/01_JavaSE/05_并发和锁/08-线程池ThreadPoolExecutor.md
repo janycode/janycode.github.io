@@ -37,7 +37,7 @@ categories:
 
 整个过程就像下面这个有趣的动画：
 
-![img](https://img-blog.csdnimg.cn/img_convert/d38d89315298edf89732cd931ad145b9.gif)
+![d38d89315298edf89732cd931ad145b9](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230316140045.gif)
 
 > ![image-20200818082017332](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20200818082018.png)
 >

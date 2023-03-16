@@ -121,7 +121,7 @@ SQL优化和移植性
 
 在学习 MyBatis 程序之前，需要了解一下 MyBatis 工作原理，以便于理解程序。MyBatis 的工作原理如下图
 
-![在这里插入图片描述](https://img-blog.csdnimg.cn/20200504160204288.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3NpbmF0XzM2MTg0MDc1,size_16,color_FFFFFF,t_70)
+![在这里插入图片描述](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230316152943.png)
 
 1）**读取 MyBatis 配置文件**：mybatis-config.xml 为 MyBatis 的全局配置文件，配置了 MyBatis 的运行环境等信息，例如数据库连接信息。
 
@@ -141,7 +141,7 @@ SQL优化和移植性
 
 #### MyBatis的功能架构是怎样的
 
-![在这里插入图片描述](https://img-blog.csdnimg.cn/20200504160250252.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3NpbmF0XzM2MTg0MDc1,size_16,color_FFFFFF,t_70)
+![在这里插入图片描述](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230316152952.png)
 
 我们把Mybatis的功能架构分为三层：
 
@@ -151,7 +151,7 @@ SQL优化和移植性
 
 #### MyBatis的框架架构设计是怎么样的
 
-![在这里插入图片描述](https://img-blog.csdnimg.cn/20200504160336544.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3NpbmF0XzM2MTg0MDc1,size_16,color_FFFFFF,t_70)
+![在这里插入图片描述](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230316153000.png)
 
 这张图从上往下看。MyBatis的初始化，会从mybatis-config.xml配置文件，解析构造成Configuration这个类，就是图中的红框。
 
@@ -389,8 +389,6 @@ public interface EmployeeMapper {
         values(#{lastName},#{email},#{gender})
     </insert>
 </mapper>
-```
-
 <mapper namespace="com.jourwon.mapper.EmployeeMapper"
      <!--批量保存员工 -->
     <insert id="addEmp">
@@ -398,13 +396,10 @@ public interface EmployeeMapper {
         values(#{lastName},#{email},#{gender})
     </insert>
 </mapper>
-1
-2
-3
-4
-5
-6
-7
+```
+
+
+
 
 #### 如何获取生成的主键
 
@@ -485,6 +480,8 @@ keyColumn	匹配属性的返回结果集中的列名称。如果希望得到多�
 resultType	结果的类型，MyBatis 通常可以推算出来。MyBatis 允许任何简单类型用作主键的类型，包括字符串。如果希望作用于多个生成的列，则可以使用一个包含期望属性的 Object 或一个 Map。
 order	值可为BEFORE 或 AFTER。如果是 BEFORE，那么它会先执行selectKey设置 keyProperty 然后执行插入语句。如果为AFTER则相反。
 statementType	使用何种语句类型，默认PREPARED。 有STATEMENT，PREPARED 和 CALLABLE 语句的映射类型。
+
+```
 <insert id="insertUser" >
 	<selectKey keyColumn="id" resultType="long" keyProperty="userId" order="BEFORE">
 		SELECT USER_ID.nextval as id from dual 
@@ -493,14 +490,9 @@ statementType	使用何种语句类型，默认PREPARED。 有STATEMENT，PREPAR
 	user_id,user_name, user_password, create_time) 
 	values(#{userId},#{userName}, #{userPassword} , #{createTime, jdbcType= TIMESTAMP})
 </insert>
-1
-2
-3
-4
-5
-6
-7
-8
+```
+
+
 此时会将Oracle生成的主键值赋予userId变量。这个userId 就是USER对象的属性，这样就可以将生成的主键值返回了。如果仅仅是在insert语句中使用但是不返回，此时keyProperty=“任意自定义变量名”，resultType 可以不写。
 Oracle 数据库中的值要设置为 BEFORE ，这是因为 Oracle中需要先从序列获取值，然后将值作为主键插入到数据库中。
 

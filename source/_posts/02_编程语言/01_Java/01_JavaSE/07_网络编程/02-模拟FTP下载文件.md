@@ -95,4 +95,4 @@ try {
 ```
 
 ### 运行结果示例
-![Java实现FTP下载功能的IO流逻辑](https://img-blog.csdnimg.cn/20200322120220755.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3NpbmF0XzM2MTg0MDc1,size_16,color_FFFFFF,t_70#pic_center)
+![image-20230316140703409](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230316140704.png)

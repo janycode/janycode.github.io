@@ -12,7 +12,7 @@ categories:
 
 #### 说一下 JVM 的主要组成部分及其作用？
 
-![在这里插入图片描述](https://img-blog.csdnimg.cn/2020050414325647.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3NpbmF0XzM2MTg0MDc1,size_16,color_FFFFFF,t_70)
+![在这里插入图片描述](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230316152315.png)
 
 JVM包含两个子系统和两个组件，两个子系统为`Class loader(类装载)`、`Execution engine(执行引擎)`；两个组件为`Runtime data area(运行时数据区)`、`Native Interface(本地接口)`。
 
@@ -34,7 +34,7 @@ JVM包含两个子系统和两个组件，两个子系统为`Class loader(类装
 - 再利用编译器(javac命令)将源代码编译成字节码文件，字节码文件的后缀名为.class；
 - 运行字节码的工作是由解释器(java命令)来完成的。
 
-![在这里插入图片描述](https://img-blog.csdnimg.cn/20200504143324260.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3NpbmF0XzM2MTg0MDc1,size_16,color_FFFFFF,t_70)
+![在这里插入图片描述](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230316152324.png)
 
 从上图可以看，java文件通过编译器变成了.class文件，接下来类加载器又将这些.class文件加载到JVM中。
 其实可以一句话来解释：类的加载指的是将类的.class文件中的二进制数据读入到内存中，将其放在运行时数据区的方法区内，然后在堆区创建一个 java.lang.Class对象，用来封装类在方法区内的数据结构。
@@ -43,7 +43,7 @@ JVM包含两个子系统和两个组件，两个子系统为`Class loader(类装
 
 **Java 虚拟机在执行 Java 程序的过程中会把它所管理的内存区域划分为若干个不同的数据区域**。这些区域都有各自的用途，以及创建和销毁的时间，有些区域随着虚拟机进程的启动而存在，有些区域则是依赖线程的启动和结束而建立和销毁。Java 虚拟机所管理的内存被划分为如下几个区域：
 
-![在这里插入图片描述](https://img-blog.csdnimg.cn/20200504143441446.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3NpbmF0XzM2MTg0MDc1,size_16,color_FFFFFF,t_70)
+![在这里插入图片描述](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230316152331.png)
 
 
 不同虚拟机的运行时数据区可能略微有所不同，但都会遵从 Java 虚拟机规范， Java 虚拟机规范规定的区域分为以下 5 个部分：
@@ -110,10 +110,10 @@ PS：
 
 说到对象的创建，首先让我们看看 Java 中提供的几种对象创建方式：
 
-![在这里插入图片描述](https://img-blog.csdnimg.cn/20200504143546854.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3NpbmF0XzM2MTg0MDc1,size_16,color_FFFFFF,t_70)
+![在这里插入图片描述](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230316152343.png)
 下面是对象创建的主要流程:
 
-![在这里插入图片描述](https://img-blog.csdnimg.cn/20200504143621901.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3NpbmF0XzM2MTg0MDc1,size_16,color_FFFFFF,t_70)
+![在这里插入图片描述](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230316152350.png)
 
 虚拟机遇到一条new指令时，先检查常量池是否已经加载相应的类，如果没有，必须先执行相应的类加载。类加载通过后，接下来分配内存。若Java堆中内存是绝对规整的，使用“指针碰撞“方式分配内存；如果不是规整的，就从空闲列表中分配，叫做”空闲列表“方式。划分内存时还需要考虑一个问题-并发，也有两种方式: CAS同步处理，或者本地线程分配缓冲(Thread Local Allocation Buffer, TLAB)。然后内存空间初始化操作，接着是做一些必要的对象设置(元信息、哈希码…)，最后执行`<init>`方法。
 
@@ -125,7 +125,7 @@ PS：
 - 空闲列表：如果Java堆的内存不是规整的，则需要由虚拟机维护一个列表来记录那些内存是可用的，这样在分配的时候可以从列表中查询到足够大的内存分配给对象，并在分配后更新列表记录。
   选择哪种分配方式是由 Java 堆是否规整来决定的，而 Java 堆是否规整又由所采用的垃圾收集器是否带有压缩整理功能决定。
 
-![在这里插入图片描述](https://img-blog.csdnimg.cn/20200504164239891.png)
+![在这里插入图片描述](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230316152356.png)
 
 #### 处理并发安全问题
 
@@ -134,7 +134,7 @@ PS：
 - 对分配内存空间的动作进行同步处理（采用 CAS + 失败重试来保障更新操作的原子性）；
 - 把内存分配的动作按照线程划分在不同的空间之中进行，即每个线程在 Java 堆中预先分配一小块内存，称为本地线程分配缓冲（Thread Local Allocation Buffer, TLAB）。哪个线程要分配内存，就在哪个线程的 TLAB 上分配。只有 TLAB 用完并分配新的 TLAB 时，才需要同步锁。通过-XX:+/-UserTLAB参数来设定虚拟机是否使用TLAB。
 
-![在这里插入图片描述](https://img-blog.csdnimg.cn/2020050414373072.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3NpbmF0XzM2MTg0MDc1,size_16,color_FFFFFF,t_70)
+![在这里插入图片描述](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230316152404.png)
 
 #### 对象的访问定位
 
@@ -147,14 +147,14 @@ Java程序需要通过 JVM 栈上的引用访问堆中的具体对象。对象�
 **句柄访问**
 Java堆中划分出一块内存来作为句柄池，引用中存储对象的句柄地址，而句柄中包含了对象实例数据与对象类型数据各自的具体地址信息，具体构造如下图所示：
 
-![在这里插入图片描述](https://img-blog.csdnimg.cn/20200504143848726.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3NpbmF0XzM2MTg0MDc1,size_16,color_FFFFFF,t_70)
+![在这里插入图片描述](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230316152413.png)
 
 优势：引用中存储的是稳定的句柄地址，在对象被移动（垃圾收集时移动对象是非常普遍的行为）时只会改变句柄中的实例数据指针，而引用本身不需要修改。
 
 **直接指针**
 如果使用直接指针访问，引用 中存储的直接就是对象地址，那么Java堆对象内部的布局中就必须考虑如何放置访问类型数据的相关信息。
 
-![在这里插入图片描述](https://img-blog.csdnimg.cn/2020050414391358.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3NpbmF0XzM2MTg0MDc1,size_16,color_FFFFFF,t_70)
+![在这里插入图片描述](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230316152422.png)
 
 优势：速度更快，节省了一次指针定位的时间开销。由于对象的访问在Java中非常频繁，因此这类开销积少成多后也是非常可观的执行成本。HotSpot 中采用的就是这种方式。
 
@@ -251,7 +251,7 @@ java语言最显著的特点就是引入了垃圾回收机制，它使java程序
 
 标记-清除算法的执行的过程如下图所示
 
-![在这里插入图片描述](https://img-blog.csdnimg.cn/20200504143944294.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3NpbmF0XzM2MTg0MDc1,size_16,color_FFFFFF,t_70)
+![在这里插入图片描述](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230316152432.png)
 
 **复制算法**
 为了解决标记-清除算法的效率不高的问题，产生了复制算法。它把内存空间划为两个相等的区域，每次只使用其中一个区域。垃圾收集时，遍历当前使用的区域，把存活对象复制到另外一个区域中，最后将当前使用的区域的可回收的对象进行回收。
@@ -262,7 +262,7 @@ java语言最显著的特点就是引入了垃圾回收机制，它使java程序
 
 复制算法的执行过程如下图所示
 
-![在这里插入图片描述](https://img-blog.csdnimg.cn/20200504144016313.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3NpbmF0XzM2MTg0MDc1,size_16,color_FFFFFF,t_70)
+![在这里插入图片描述](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230316152440.png)
 
 **标记-整理算法**
 在新生代中可以使用复制算法，但是在老年代就不能选择复制算法了，因为老年代的对象存活率会较高，这样会有较多的复制操作，导致效率变低。标记-清除算法可以应用在老年代中，但是它效率不高，在内存回收后容易产生大量内存碎片。因此就出现了一种标记-整理算法（Mark-Compact）算法，与标记-整理算法不同的是，在标记可回收的对象后将所有存活的对象压缩到内存的一端，使他们紧凑的排列在一起，然后对端边界以外的内存进行回收。回收后，已用和未用的内存都各自一边。
@@ -273,18 +273,18 @@ java语言最显著的特点就是引入了垃圾回收机制，它使java程序
 
 标记-整理算法的执行过程如下图所示
 
-![在这里插入图片描述](https://img-blog.csdnimg.cn/20200504144038344.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3NpbmF0XzM2MTg0MDc1,size_16,color_FFFFFF,t_70)
+![在这里插入图片描述](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230316152448.png)
 
 **分代收集算法**
 当前商业虚拟机都采用分代收集的垃圾收集算法。分代收集算法，顾名思义是根据对象的存活周期将内存划分为几块。一般包括年轻代、老年代 和 永久代，如图所示：
 
-![在这里插入图片描述](https://img-blog.csdnimg.cn/20200504164325124.png)
+![在这里插入图片描述](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230316152453.png)
 
 #### 说一下 JVM 有哪些垃圾回收器？
 
 如果说垃圾收集算法是内存回收的方法论，那么垃圾收集器就是内存回收的具体实现。下图展示了7种作用于不同分代的收集器，其中用于回收新生代的收集器包括Serial、PraNew、Parallel Scavenge，回收老年代的收集器包括Serial Old、Parallel Old、CMS，还有用于回收整个Java堆的G1收集器。不同收集器之间的连线表示它们可以搭配使用。
 
-![在这里插入图片描述](https://img-blog.csdnimg.cn/20200504144159400.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3NpbmF0XzM2MTg0MDc1,size_16,color_FFFFFF,t_70)
+![在这里插入图片描述](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230316152501.png)
 
 - Serial收集器（复制算法): 新生代单线程收集器，标记和清理都是单线程，优点是简单高效；
 - ParNew收集器 (复制算法): 新生代收并行集器，实际上是Serial收集器的多线程版本，在多核CPU环境下有着比Serial更好的表现；
@@ -389,7 +389,7 @@ Java类的加载是动态的，它并不会一次性将所有类全部加载后�
 
 在介绍双亲委派模型之前先说下类加载器。对于任意一个类，都需要由加载它的类加载器和这个类本身一同确立在 JVM 中的唯一性，每一个类加载器，都有一个独立的类名称空间。类加载器就是根据指定全限定名称将 class 文件加载到 JVM 内存，然后再转化为 class 对象。
 
-![在这里插入图片描述](https://img-blog.csdnimg.cn/20200504144239669.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3NpbmF0XzM2MTg0MDc1,size_16,color_FFFFFF,t_70)
+![在这里插入图片描述](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230316152511.png)
 
 类加载器分类：
 

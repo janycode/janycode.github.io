@@ -71,7 +71,7 @@ Servlet3.0 规范可通过 Annotation 来配置管理Web组件，极大简化了
 ### 2. 注解配置：@WebServlet
 @WebServlet 的属性列表：
 
-![在这里插入图片描述](https://img-blog.csdnimg.cn/20200424224221529.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3NpbmF0XzM2MTg0MDc1,size_16,color_FFFFFF,t_70)
+![在这里插入图片描述](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230316142429.png)
 
 注解配置代码示例：
 ```java

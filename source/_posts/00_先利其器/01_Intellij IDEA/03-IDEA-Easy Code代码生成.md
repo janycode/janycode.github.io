@@ -13,7 +13,7 @@ categories:
 Easycode是idea的一个插件，可以直接对数据的表生成entity,controller,service,dao,mapper,无需任何编码，简单而强大。
 ### 1. 安装(EasyCode)
 我这里的话是已经装好了。
-![在这里插入图片描述](https://img-blog.csdnimg.cn/20200428124920832.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3NpbmF0XzM2MTg0MDc1,size_16,color_FFFFFF,t_70)
+![image-20230316112535426](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230316112536.png)
 
 
 建议再安装一个插件，叫做`Lombok`。  
@@ -38,24 +38,24 @@ SET FOREIGN_KEY_CHECKS = 1;
 在这个之前，新建一个Spring Boot项目，这个应该是比较简单的。
 
 建好Spring Boot项目之后，如下图所示，找到这个Database
-![在这里插入图片描述](https://img-blog.csdnimg.cn/2020042812393044.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3NpbmF0XzM2MTg0MDc1,size_16,color_FFFFFF,t_70)
+![image-20230316112736674](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230316112737.png)
 
 按照如下图所示进行操作：
-![在这里插入图片描述](https://img-blog.csdnimg.cn/20200428123950553.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3NpbmF0XzM2MTg0MDc1,size_16,color_FFFFFF,t_70)
+![image-20230316112749488](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230316112750.png)
 
 然后填写数据库名字，用户名，密码。点击OK即可。这样的话，IDEA连接数据库就完事了。
-![在这里插入图片描述](https://img-blog.csdnimg.cn/20200428124020215.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3NpbmF0XzM2MTg0MDc1,size_16,color_FFFFFF,t_70)
+![image-20230316112802344](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230316112803.png)
 
 ### 4. 开始生成代码
-![在这里插入图片描述](https://img-blog.csdnimg.cn/20200428124058404.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3NpbmF0XzM2MTg0MDc1,size_16,color_FFFFFF,t_70)
+![image-20230316112813421](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230316112814.png)
 
 在这个里面找到你想生成的表，然后右键，就会出现如下所示的截面。
 
-![在这里插入图片描述](https://img-blog.csdnimg.cn/20200428124223348.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3NpbmF0XzM2MTg0MDc1,size_16,color_FFFFFF,t_70)
+![image-20230316112840137](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230316112840.png)
 
 勾选你需要生成的代码，点击OK。
 这样的话就完成了代码的生成了，生成的代码如下图所示：
-![在这里插入图片描述](https://img-blog.csdnimg.cn/20200428124305218.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3NpbmF0XzM2MTg0MDc1,size_16,color_FFFFFF,t_70)
+![image-20230316112852694](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230316112853.png)
 
 ### 5. 配置文件：pom.xml
 ```xml
@@ -125,11 +125,11 @@ mybatis:
 
 在启动项目之前，我们需要先修改两个地方。
 在dao层加上@mapper注解：
-![在这里插入图片描述](https://img-blog.csdnimg.cn/2020042812461274.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3NpbmF0XzM2MTg0MDc1,size_16,color_FFFFFF,t_70)
+![image-20230316112909030](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230316112909.png)
 在启动类里面加上@MapperScan("com.vue.demo.dao")注解：
-![在这里插入图片描述](https://img-blog.csdnimg.cn/20200428124648791.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3NpbmF0XzM2MTg0MDc1,size_16,color_FFFFFF,t_70)
+![image-20230316112920707](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230316112921.png)
 启动项目：
-![在这里插入图片描述](https://img-blog.csdnimg.cn/20200428124714495.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3NpbmF0XzM2MTg0MDc1,size_16,color_FFFFFF,t_70)
+![image-20230316112930140](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230316112931.png)
 
 测试一下：
-![在这里插入图片描述](https://img-blog.csdnimg.cn/20200428124754686.png)
+![image-20230316112942459](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230316112943.png)

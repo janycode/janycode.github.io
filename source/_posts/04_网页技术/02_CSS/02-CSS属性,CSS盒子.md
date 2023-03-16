@@ -102,7 +102,7 @@ inherit 继承父元素
 > 注意：body有默认的margin(`8px`)
 
 ### 2. CSS 盒子模型
-![CSS 盒子模型](https://img-blog.csdnimg.cn/20200409004218369.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3NpbmF0XzM2MTg0MDc1,size_16,color_FFFFFF,t_70#pic_center)
+![CSS 盒子模型](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230316141849.png)
 1. 边框 `border`
 - border-style:边框样式，值有以下情况：
     solid:实线

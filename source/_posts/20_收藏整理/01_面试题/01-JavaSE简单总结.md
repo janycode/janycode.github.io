@@ -13,7 +13,7 @@ categories:
 >据说是常见面试题。
 
 #### 1. 语法区别
-![抽象类与接口](https://img-blog.csdnimg.cn/2020030111021226.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3NpbmF0XzM2MTg0MDc1,size_16,color_FFFFFF,t_70)
+![抽象类与接口](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230316151743.png)
 1. **构造方法**：抽象类可以有构造方法，接口中不能有构造方法
 2. **成员变量**：抽象类和接口中都可以包含静态成员变量，抽象类中的静态成员变量的访问类型可以任意，但接口中定义的变量只能是public static final类型，并且默认即为public static final类型。
 3. **普通成员变量**：抽象类中可以有普通成员变量，接口中没有普通成员变量
@@ -51,14 +51,14 @@ categories:
 * 包装类中实际上就是持有了一个基本类型的数据，作为数据的存储空间（Byte中有一个byte的value属性），还提供了常用的转型方法，以及常量。既可以存储值，又具备了一系列功能。
 * 包装类型中提供了若干转型的方法，可以让自身类型与其他包装类型、基本类型、字符串相互之间进行转换。
 
-![8种基本数据类型](https://imgconvert.csdnimg.cn/aHR0cHM6Ly91cGxvYWQtaW1hZ2VzLmppYW5zaHUuaW8vdXBsb2FkX2ltYWdlcy8yMTQ3NTc3My1mMjQ3ODc4N2E1NDVhZDI4LnBuZw?x-oss-process=image/format,png)
+![image-20230316151806690](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230316151807.png)
 
 
 #### 2.转型方法
 
 8种包装类型中，有6种是数字型（Byte、Short、Integer、Long、Float、Double），均继承自 java.lang.Number 父类。
 
-![JDK1.8-API文档](https://imgconvert.csdnimg.cn/aHR0cHM6Ly91cGxvYWQtaW1hZ2VzLmppYW5zaHUuaW8vdXBsb2FkX2ltYWdlcy8yMTQ3NTc3My1mZThkMzdhYjhmY2RlNWMzLnBuZw?x-oss-process=image/format,png)
+![image-20230316151819936](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230316151820.png)
 
 #####  ① 包装→基本：xxxValue()
 **成员转型方法**，java.lang.Number 父类为所有子类分别提供了6种对应类型互相转型的方法，将自身类型转换成其他数字型；
@@ -181,7 +181,7 @@ valueOf() 的静态成员方法 和 ShortCache的私有静态内部类两者的�
 > Byte/Short/Integer/Long, 4 种整数型包装类都有其静态缓冲区，提前创建了256个常用对象，存了-128~127之间的常用整数。
 
 #####  3.3 为什么可以节约内存？
-![整型包装类的256个常用数缓冲机制](https://imgconvert.csdnimg.cn/aHR0cHM6Ly91cGxvYWQtaW1hZ2VzLmppYW5zaHUuaW8vdXBsb2FkX2ltYWdlcy8yMTQ3NTc3My1iYjI2Njg3MTdmZjdmMWFmLnBuZw?x-oss-process=image/format,png)
+![image-20230316151838979](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230316151839.png)
 
 如上图所示：
 static final Short cache[] 的静态cache缓冲区存储了256个地址值，类加载时就会被JVM生成，整型包装类一旦赋值的是在-128~127之间的整数值时，valueOf()方法中的判断会自动去通过cache的下标索引到地址值，通过地址值取到整数值，return出去，完成赋值。
@@ -229,7 +229,7 @@ public class TestBasicString {
 #### 2. 常量池与字符串池
 JVM内存管理中：栈、堆、方法区（方法区中有常量池，常量池中嵌套了字符串池）
 
-![常量池中嵌套了字符串池](https://imgconvert.csdnimg.cn/aHR0cHM6Ly91cGxvYWQtaW1hZ2VzLmppYW5zaHUuaW8vdXBsb2FkX2ltYWdlcy8yMTQ3NTc3My01MWJlMzc4OWRjMmQ2MjY2LnBuZw?x-oss-process=image/format,png)
+![image-20230316151854242](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230316151855.png)
 
 因为== 为引用的地址的比较，加上图的示意后，不明觉厉。
 
@@ -268,6 +268,7 @@ public class TestStringCompare {
 输出结果：
 **false
 false**
+
 >【原因】
 >s2和s4指向同一个对象，为JVM优化后的，字符串通过引用变量追加则会使用StringBuilder在堆区new一块空间进行append完成追加；
 >s3指向字符串常量，保存在方法区的常量池中的字符串池中，为方法区的地址信息保存在s3；
@@ -356,7 +357,7 @@ String类型的引用比较时：
 #### 0. Set集合去重原理
 
 Set集合中**元素不重复**的基本逻辑判断示意图：
-![重写hashCode和equals方法](https://img-blog.csdnimg.cn/2020030618314671.png)
+![重写hashCode和equals方法](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230316151915.png)
 
 #### 1. 如何重写hashCode()方法
 ##### 1.1 基本数据类型 - hashCode固定算法
@@ -467,7 +468,7 @@ class TestHashCodeAutoCreate {
 	}
 }
 ```
-![验证hashCode()方法重写](https://imgconvert.csdnimg.cn/aHR0cHM6Ly91cGxvYWQtaW1hZ2VzLmppYW5zaHUuaW8vdXBsb2FkX2ltYWdlcy8yMTQ3NTc3My0yZjkzYzBhYTRmMjJkYmIzLnBuZw?x-oss-process=image/format,png)
+![image-20230316151935130](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230316151935.png)
 
 #### 2. 如何重写equals()方法
 码来：
@@ -565,7 +566,7 @@ class TestClass {
     }
 }
 ```
-![Java测试finally](https://img-blog.csdnimg.cn/20200310183330695.png)
+![Java测试finally](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230316151945.png)
 
 #### finally 与 return 对比
 finally与return测试例子1：
@@ -661,8 +662,9 @@ public class TestFinally3 {
 Why？？？或者说，如何解释呢？
 
 此问题不能通过应用层的语法逻辑来解释，通过反编译对JVM执行的字节码指令进行分析：
-![Java反编译](https://img-blog.csdnimg.cn/20200310192853457.png)
-![Java中finally关键字使用分析](https://img-blog.csdnimg.cn/20200310190450621.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3NpbmF0XzM2MTg0MDc1,size_16,color_FFFFFF,t_70)
+![Java反编译](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230316154045.png)
+![Java中finally关键字使用分析](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230316151959.png)
+
 >【结论】
 >在产生了异常时，异常代码块与finally代码块中都对局部变量修改的情况下，**异常代码块return了，而finally代码块中对局部变量的修改则不会作为最终的返回值**。
 >原因：**通过反编译的字节码分析，方法的返回值在实际执行的return语句时，取的是栈顶的值进行返回。而finally的赋值在局部变量表中，不会成为最终返回值**。
@@ -791,7 +793,7 @@ class Teacher implements Comparable<Teacher> { // java.lang.Comparable
 }
 ```
 输出：
-![Comparable](https://img-blog.csdnimg.cn/2020032318263788.png)
+![Comparable](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230316152010.png)
 
 #### 2. Comparator 定制排序比较
 ```java
@@ -851,7 +853,7 @@ public class TestComparator {
 }
 ```
 输出结果：
-![输出结果](https://img-blog.csdnimg.cn/20200323194847186.png)
+![输出结果](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230316152017.png)
 
 #### 3. 两者的比较总结
 对于**已定义好的普通包装数据类型**（比如 String, Integer, Double…），它们默认实现了Comparable 接口，实现了 compareTo 方法，我们可以**直接使用**。
@@ -1002,94 +1004,94 @@ public class TestStringBuilder2 {
 
 #### 9.1. private、default、protected、public 访问范围
 
-![四个访问修饰符的访问范围](https://img-blog.csdnimg.cn/20200322125121600.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3NpbmF0XzM2MTg0MDc1,size_16,color_FFFFFF,t_70)
+![四个访问修饰符的访问范围](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230316152030.png)
 
 
 
 #### 9.2. abstract、static、final 作用和混用
-![三大关键字的修饰和作用](https://img-blog.csdnimg.cn/20200322125127525.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3NpbmF0XzM2MTg0MDc1,size_16,color_FFFFFF,t_70)
+![三大关键字的修饰和作用](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230316152038.png)
 
 
 
 #### 9.3. 成员内部类、静态内部类、局部内部类、匿名内部类 区别
 
-![四种内部类的区别和特点](https://img-blog.csdnimg.cn/2020032212513244.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3NpbmF0XzM2MTg0MDc1,size_16,color_FFFFFF,t_70)
+![四种内部类的区别和特点](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230316152045.png)
 
 
 
 #### 9.4. abstract 抽象类、interface 接口 区别
 
-![abstract 抽象类与interface 接口](https://img-blog.csdnimg.cn/20200322125136606.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3NpbmF0XzM2MTg0MDc1,size_16,color_FFFFFF,t_70)
+![abstract 抽象类与interface 接口](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230316152053.png)
 
 
 
 #### 9.5. hashCode() 、 equals() 比较 问题
 
 用Set集合元素不重复的基本逻辑，最能解释两者本质：
-![hashCode() 与 equals()](https://img-blog.csdnimg.cn/2020032212514022.png)
+![hashCode() 与 equals()](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230316152058.png)
 
 
 
 #### 9.6. 八种包装类、256个整数的缓冲区 问题
 
-![八种包装类](https://img-blog.csdnimg.cn/20200322130325211.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3NpbmF0XzM2MTg0MDc1,size_16,color_FFFFFF,t_70)
+![八种包装类](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230316152105.png)
 Byte/Short/Integer/Long, 4 种整数型包装类都有其静态缓冲区，提前创建了256个常用对象，存了-128~127之间的常用整数。
 （非这256个数的范围的会重新再堆中new一个新的对象，注意地址的比较运算）
-![包装类缓冲区问题](https://img-blog.csdnimg.cn/20200322125144284.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3NpbmF0XzM2MTg0MDc1,size_16,color_FFFFFF,t_70)
+![包装类缓冲区问题](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230316152113.png)
 
 
 
 #### 9.7. Throwable 异常处理基本架构 分支
 
-![异常处理基本架构类型](https://img-blog.csdnimg.cn/20200322125147523.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3NpbmF0XzM2MTg0MDc1,size_16,color_FFFFFF,t_70)
-![异常处理基本架构类型](https://img-blog.csdnimg.cn/20200322125150378.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3NpbmF0XzM2MTg0MDc1,size_16,color_FFFFFF,t_70)
+![异常处理基本架构类型](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230316152121.png)
+![异常处理基本架构类型](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230316152128.png)
 
 
 
 #### 9.8. List、Set、Queue、Map 常用数据集合体系 汇总
 
-![常用数据集合体系汇总](https://img-blog.csdnimg.cn/20200322125154682.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3NpbmF0XzM2MTg0MDc1,size_16,color_FFFFFF,t_70)
-![常用数据集合体系汇总](https://img-blog.csdnimg.cn/20200322125201270.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3NpbmF0XzM2MTg0MDc1,size_16,color_FFFFFF,t_70)
-![常用数据集合体系汇总](https://img-blog.csdnimg.cn/20200322130139598.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3NpbmF0XzM2MTg0MDc1,size_16,color_FFFFFF,t_70)
+![常用数据集合体系汇总](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230316152135.png)
+![常用数据集合体系汇总](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230316152143.png)
+![常用数据集合体系汇总](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230316152152.png)
 
 
 
 #### 9.9. synchronized同步锁、ReentrantLock重入锁 区别
 
-![synchronized同步锁与ReentrantLock重入锁](https://img-blog.csdnimg.cn/2020032213014523.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3NpbmF0XzM2MTg0MDc1,size_16,color_FFFFFF,t_70)
+![synchronized同步锁与ReentrantLock重入锁](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230316152200.png)
 
 
 
 #### 9.10. 字节流、字符流 区别
 
-![字节流与字符流](https://img-blog.csdnimg.cn/20200322130151393.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3NpbmF0XzM2MTg0MDc1,size_16,color_FFFFFF,t_70)
-![字节流与字符流](https://img-blog.csdnimg.cn/20200322130155582.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3NpbmF0XzM2MTg0MDc1,size_16,color_FFFFFF,t_70)
-![字节流与字符流](https://img-blog.csdnimg.cn/20200322130159248.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3NpbmF0XzM2MTg0MDc1,size_16,color_FFFFFF,t_70)
+![字节流与字符流](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230316152208.png)
+![字节流与字符流](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230316152216.png)
+![字节流与字符流](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230316152224.png)
 
 
 
 #### 9.11. 方法重载(Overload)、方法重写(Override) 区别
 
-![方法重载(Overload)、方法重写(Override)](https://img-blog.csdnimg.cn/20200322235114587.png)
+![方法重载(Overload)、方法重写(Override)](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230316152229.png)
 
 
 
 #### 9.12. final、finally、finalize() 区别
 
-![final、finally、finalize()](https://img-blog.csdnimg.cn/20200322235130651.png)
+![final、finally、finalize()](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230316152239.png)
 
 
 
 #### 9.13. Comparable接口、Comparator接口 区别
 
 详情参考：[【Java】Comparable和Comparator两接口区别总结](https://simple.blog.csdn.net/article/details/105054054)
-![Comparable接口、Comparator接口](https://img-blog.csdnimg.cn/2020032319523769.png)
+![Comparable接口、Comparator接口](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230316154014.png)
 
 
 
 #### 9.14. 构造方法、静态代码块、动态代码块 执行顺序
 
-![构造方法、静态代码块、动态代码块 执行顺序](https://img-blog.csdnimg.cn/20200323234428272.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3NpbmF0XzM2MTg0MDc1,size_16,color_FFFFFF,t_70#pic_center)
+![构造方法、静态代码块、动态代码块 执行顺序](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230316152253.png)
 
 
 

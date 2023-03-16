@@ -11,7 +11,7 @@ categories:
 
 ### 0. 环境准备
 #### 0.1 依赖包 + jQuery库
-![环境准备：依赖包](https://img-blog.csdnimg.cn/20200516083836203.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3NpbmF0XzM2MTg0MDc1,size_16,color_FFFFFF,t_70)
+![环境准备：依赖包](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230316144717.png)
 
 
 
@@ -797,7 +797,7 @@ UserServlet.java
     }
 ```
 
-![在这里插入图片描述](https://img-blog.csdnimg.cn/20200516091751367.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3NpbmF0XzM2MTg0MDc1,size_16,color_FFFFFF,t_70)
+![在这里插入图片描述](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230316144733.png)
 
 
 

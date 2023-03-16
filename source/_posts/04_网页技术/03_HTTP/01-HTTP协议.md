@@ -12,24 +12,25 @@ categories:
 协议：两个设备进行数据交换的约定。
 HTTP协议：超文本(字符/音频/视频/图片)传输协议，`基于TCP协议`。
 
-![在这里插入图片描述](https://img-blog.csdnimg.cn/20200410182706829.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3NpbmF0XzM2MTg0MDc1,size_16,color_FFFFFF,t_70#pic_center)
-![在这里插入图片描述](https://img-blog.csdnimg.cn/20200410182554492.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3NpbmF0XzM2MTg0MDc1,size_16,color_FFFFFF,t_70#pic_center)
-![在这里插入图片描述](https://img-blog.csdnimg.cn/20200410182610383.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3NpbmF0XzM2MTg0MDc1,size_16,color_FFFFFF,t_70#pic_center)
+![在这里插入图片描述](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230316142315.png)
+![在这里插入图片描述](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230316142321.png)
+![在这里插入图片描述](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230316142326.png)
 
 ![20190703104551896-HTTP协议](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20200807083038.png)
 
 ### 1. HTTP 请求报文(图)
 
 HTTP `请求数据` - 抓包中核心内容：
-![在这里插入图片描述](https://img-blog.csdnimg.cn/20200410182808397.png#pic_center)
+![在这里插入图片描述](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230316142334.png)
 HTTP `请求报文`的原始细节：
-![在这里插入图片描述](https://img-blog.csdnimg.cn/20200410182841182.jpg#pic_center)
+![在这里插入图片描述](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230316142339.jpg)
 
 ### 2. HTTP 响应报文(图)
 HTTP `响应数据` - 抓包中的核心内容：
-![在这里插入图片描述](https://img-blog.csdnimg.cn/20200410183014720.png#pic_center)
+![在这里插入图片描述](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230316142345.png)
 HTTP `响应报文`的原始细节：
-![在这里插入图片描述](https://img-blog.csdnimg.cn/20200410183027484.jpg#pic_center)
+![在这里插入图片描述](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230316142352.jpg)
+
 ### 3. HTTP 请求-响应执行流程
 1. 发起请求（`GET`/`POST`）
 2. 域名解析
@@ -89,4 +90,4 @@ GET 方法主要用于获取信息。而 POST 方法主要用于更新数据。
 `304`：页面无变化，无需重新请求服务器
 `404`：没有对应的服务器资源
 `500`：服务器内部错误
-![在这里插入图片描述](https://img-blog.csdnimg.cn/20200410183518730.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3NpbmF0XzM2MTg0MDc1,size_16,color_FFFFFF,t_70#pic_center)
+![在这里插入图片描述](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230316142359.png)

@@ -9,7 +9,7 @@ categories:
 - 05_JSP
 ---
 
-![分页查询](https://img-blog.csdnimg.cn/20200430192123160.png)
+![分页查询](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230316143012.png)
 
 ### 1. 分页查询准备工作
 采用物理查询：页面查询一页，就从数据库里查询一页数量的数据。
@@ -31,7 +31,7 @@ categories:
 
 ### 2. 分页查询逻辑实现
 效果图：
-![分页查询效果图](https://img-blog.csdnimg.cn/20200430195257492.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3NpbmF0XzM2MTg0MDc1,size_16,color_FFFFFF,t_70)
+![分页查询效果图](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230316143021.png)
 
 
 数据层封装 Employee.java(属性+生成即可) 和 `PageBean.java`：

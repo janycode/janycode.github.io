@@ -38,8 +38,9 @@ ThreadLocal.ThreadLocalMap threadLocals = null;
 > 2. public T `get`(); // 返回当前线程绑定的对象
 > 3. public void `remove`(); // 移除当前线程的绑定对象
 
-![在这里插入图片描述](https://img-blog.csdnimg.cn/20200401185837774.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3NpbmF0XzM2MTg0MDc1,size_16,color_FFFFFF,t_70)
+![image-20230316140834818](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230316140835.png)
 代码示例：
+
 ```java
 /**
  * JDBC工具类：读取配置文件，连接数据库
@@ -101,7 +102,7 @@ public class DBUtils {
 }
 ```
 ### 2. 转账中的事务流程体现
-![在这里插入图片描述](https://img-blog.csdnimg.cn/20200401191254409.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3NpbmF0XzM2MTg0MDc1,size_16,color_FFFFFF,t_70)
+![image-20230316140850726](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230316140851.png)
 代码示例：
 ```java
 public class T_AccountServiceImpl {

@@ -55,7 +55,7 @@ ECharts 兼容当前绝大部分浏览器（IE8/9/10/11，Chrome，Firefox，Saf
 
 ### 3. ECharts 官方示例
 柱状图：
-![ECharts数据可视化图表](https://img-blog.csdnimg.cn/20200518221128797.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3NpbmF0XzM2MTg0MDc1,size_16,color_FFFFFF,t_70)
+![ECharts数据可视化图表](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230316145011.png)
 
 柱状图示例源码：
 ```html
@@ -102,7 +102,7 @@ ECharts 兼容当前绝大部分浏览器（IE8/9/10/11，Chrome，Firefox，Saf
 ```
 
 饼状图：
-![ECharts数据可视化图表](https://img-blog.csdnimg.cn/20200518221209204.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3NpbmF0XzM2MTg0MDc1,size_16,color_FFFFFF,t_70)
+![ECharts数据可视化图表](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230316145022.png)
 
 饼状图示例源码：
 ```html
@@ -144,8 +144,9 @@ ECharts 兼容当前绝大部分浏览器（IE8/9/10/11，Chrome，Firefox，Saf
 
 ### 4. ECharts 异步请求
 官网教程和示例：[https://echarts.apache.org/zh/tutorial.html#异步数据加载和更新](https://echarts.apache.org/zh/tutorial.html#%E5%BC%82%E6%AD%A5%E6%95%B0%E6%8D%AE%E5%8A%A0%E8%BD%BD%E5%92%8C%E6%9B%B4%E6%96%B0)
-![ECharts 数据可视化图表](https://img-blog.csdnimg.cn/20200518222112267.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3NpbmF0XzM2MTg0MDc1,size_16,color_FFFFFF,t_70)
+![ECharts 数据可视化图表](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230316145032.png)
 echarts1.jsp
+
 ```html
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <html>

@@ -25,7 +25,7 @@ Bootstrap Validator 数据校验，就是表单验证，友好的错误提示可
 ### 2. 环境配置
 1. **导入组件库**
 目录结构：
-![Bootstrap Validator](https://img-blog.csdnimg.cn/2020051821345999.jpg#pic_center)
+![Bootstrap Validator](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230316144940.jpg)
 
 
 2. **代码中引入**
@@ -251,4 +251,4 @@ Bootstrap Validator 数据校验，就是表单验证，友好的错误提示可
 </html>
 ```
 
-![Bootstrap Validator](https://img-blog.csdnimg.cn/20200518215544828.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3NpbmF0XzM2MTg0MDc1,size_16,color_FFFFFF,t_70)
+![Bootstrap Validator](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230316144951.png)

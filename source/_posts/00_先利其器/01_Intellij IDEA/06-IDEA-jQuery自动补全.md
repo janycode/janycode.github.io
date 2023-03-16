@@ -20,7 +20,7 @@ categories:
 
 把这段代码嵌入到html中，移到上面Alt+Enter 选择 下载，这个时候就会自动下载jQuery文件。
 
-![在这里插入图片描述](https://img-blog.csdnimg.cn/20200515174112507.png)
+![在这里插入图片描述](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230316153409.png)
 
 
 
@@ -34,4 +34,4 @@ categories:
 
 之后就能使用了，如果后面显示有several xxx，意思是你的库 有重复的，比如jQuery和jdk9 就有重复的，我用的是 jdk1.8的没有重复问题。
 
-![在这里插入图片描述](https://img-blog.csdnimg.cn/20200515175209114.png)
+![在这里插入图片描述](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230316153424.png)

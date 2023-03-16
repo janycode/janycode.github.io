@@ -35,11 +35,12 @@ XMLHttpRequest 异步请求对象提供了对 HTTP 协议的完全的访问,包�
 3. send 一些数据；
 4. 对服务器的响应过程进行监听，来知道服务器是否正确得做出了响应，接着就可以做一些事情。比如获取服务器响应的内容，在页面上进行呈现。
 
-![在这里插入图片描述](https://img-blog.csdnimg.cn/20200510093132594.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3NpbmF0XzM2MTg0MDc1,size_16,color_FFFFFF,t_70#pic_center)
+![在这里插入图片描述](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230316144319.png)
 
 #### 2.2 xhr 属性、句柄、方法
 按照建立 Ajax 流程：
 ① **创建**
+
 - `new XMLHttpRequest()` 创建一个 XMLHttpRequest 对象
 
 ② **事件句柄**
@@ -221,8 +222,9 @@ public class TestAjaxServlet extends HttpServlet {
 ### 4. 异步请求无法正确获取返回值
 
 #### 4.1 问题现象
-![在这里插入图片描述](https://img-blog.csdnimg.cn/20200606142921842.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3NpbmF0XzM2MTg0MDc1,size_16,color_FFFFFF,t_70)
+![在这里插入图片描述](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230316144335.png)
 普通的 ajax 校验会出现的问题：`无法正确返回 boolean 值 false，因此无法正确拦截表单提交！！！`
+
 ```js
 	// 普通的 ajax 异步请求（校验用户名是否与数据库中重复）
 	$.ajax({

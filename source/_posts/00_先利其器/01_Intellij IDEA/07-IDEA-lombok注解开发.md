@@ -18,10 +18,10 @@ Lombok是一个Java库，它会自动插入编辑器和构建工具中，Lombok�
 3. IDEA 打开注解开发：**Settings** >> **Build** >> **Compiler** >> `☑`**Enable annotation processing**
 
 
-![IDEA插件Lombok](https://img-blog.csdnimg.cn/20200516171215172.png)
+![image-20230316133931471](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230316133932.png)
 
 ### 2. Lombok 基本用法
-![IDEA插件Lombok](https://img-blog.csdnimg.cn/20200516142546163.png)
+![image-20230316133941838](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230316133942.png)
 
 **@Getter / @Setter** 源码
 
@@ -92,7 +92,7 @@ public class User {
 }
 ```
 
-![IDEA插件Lombok](https://img-blog.csdnimg.cn/20200516171809129.png)
+![image-20230316133958878](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230316133959.png)
 
 
 

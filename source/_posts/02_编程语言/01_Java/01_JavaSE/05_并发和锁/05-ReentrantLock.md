@@ -457,7 +457,7 @@ class MyService {
 }
 ```
 
-![Java-ReentrantLock重入锁](https://img-blog.csdnimg.cn/20200315130908393.png)
+![image-20230316140006365](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230316140007.png)
 
 ##### 补充：Condition 类和 Object 类锁方法区别
 

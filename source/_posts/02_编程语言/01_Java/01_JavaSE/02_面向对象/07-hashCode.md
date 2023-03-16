@@ -18,9 +18,8 @@ categories:
 （3）两个对象的HashCode相同，并不一定表示两个对象就相同，即equals()不一定为true，只能够说明这两个对象在一个散列存储结构中。
 （4）如果对象的**equals方法被重写**，那么对象的**HashCode也尽量重写**，以保证equals方法相等时两个对象hashcode返回相同的值（eg：Set集合中确保自定义类的成功去重）。
 
-
 Set集合中**元素不重复**的基本逻辑判断示意图：
-![重写hashCode和equals方法](https://img-blog.csdnimg.cn/2020030618314671.png)
+![image-20230316135310477](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230316135311.png)
 
 ### 2. hashCode的算法
 1. 对象类型的数据，返回的一串字符；
@@ -29,8 +28,6 @@ Set集合中**元素不重复**的基本逻辑判断示意图：
 
 * Object对hashCode()的方法实现：
 
-
-
 ```java
  public native int hashCode();
 ```
@@ -38,8 +35,6 @@ Set集合中**元素不重复**的基本逻辑判断示意图：
 哈希算法根据对象的地址或者字符串或者数字计算出来的int类型的数值。而且哈希码并不唯一，可保证相同对象返回相同的哈希码，只能尽量保证不同对象返回不同的哈希码值。
 
 * String 对hashCode()的方法实现：
-
-
 
 ```java
     public int hashCode() {
@@ -61,8 +56,6 @@ Set集合中**元素不重复**的基本逻辑判断示意图：
 >使用 int 算法，这里 s[i] 是字符串的第 i 个字符，n 是字符串的长度，^ 表示求幂。空字符串的哈希值为 0。
 
 * Integer对hashCode()的实现：
-
-
 
 ```java
     @Override

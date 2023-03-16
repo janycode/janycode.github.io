@@ -14,7 +14,7 @@ categories:
 ### MySQL 中 Date 转换
 
 看我一张图，胜写10行码！
-![String、java.util.Date、java.sql.Date 之间的转换](https://img-blog.csdnimg.cn/2020040100395964.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3NpbmF0XzM2MTg0MDc1,size_16,color_FFFFFF,t_70)
+![image-20230316141139130](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230316141139.png)
 
 
 

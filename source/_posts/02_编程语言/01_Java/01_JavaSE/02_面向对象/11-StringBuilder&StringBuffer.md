@@ -46,12 +46,10 @@ public class TestString {
 * \> 重定向符号，将命令的输出全部重定向到文件中保存
 * .bytecode 后缀名无所谓，使用.txt也一样，我们只需要查看内容
 
-
-
-![Java反编译](https://img-blog.csdnimg.cn/20200303130941701.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3NpbmF0XzM2MTg0MDc1,size_16,color_FFFFFF,t_70)
+![image-20230316135342283](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230316135343.png)
 
 查看和分析反编译信息：
-![反编译内容分析](https://img-blog.csdnimg.cn/20200303131014515.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3NpbmF0XzM2MTg0MDc1,size_16,color_FFFFFF,t_70)
+![image-20230316135357523](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230316135358.png)
 
 进而得出结论：
 str += i; // 被JVM自动优化了，实际不会产生中间变量
@@ -190,8 +188,6 @@ public class TestStringBuilder2 {
       }
 }
 ```
-
-
 
 【结论】
 不论字符串被保存在堆中，还是常量池中字符串池里，只要内容一样，hashCode()也一样；

@@ -35,9 +35,9 @@ F913BE58 42FEA319 F954EFDD AE881E0B
 
 ### 3. 示例jsp自动补全插件安装
 ① 先安装 Package Control：
-![在这里插入图片描述](https://img-blog.csdnimg.cn/20200427124959266.png)
+![image-20230316134307092](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230316134308.png)
 ② Ctrl+Shift+P 打开pacakges列表界面，搜索packages:install packages
-![在这里插入图片描述](https://img-blog.csdnimg.cn/20200427125358384.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3NpbmF0XzM2MTg0MDc1,size_16,color_FFFFFF,t_70)
+![image-20230316134233919](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230316134234.png)
 
 > Ctrl+`,打开控制台console，可以看到安装过程信息。
 

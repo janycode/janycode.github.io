@@ -16,11 +16,11 @@ PowerDesigner 软件设计：
 
 * 酒店、房间、套餐、酒店信息、图片
 
-![image-20200520105159408](https://imgconvert.csdnimg.cn/aHR0cHM6Ly9xaXV6aGl3ZWkub3NzLWNuLWJlaWppbmcuYWxpeXVuY3MuY29tL3R5cG9yYS8yMDIwMDUyMDEwNTIxNy5wbmc?x-oss-process=image/format,png)
+![image-20230316145134731](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230316145135.png)
 
 * 用户、购物车
 
-![image-20200520105233153](https://imgconvert.csdnimg.cn/aHR0cHM6Ly9xaXV6aGl3ZWkub3NzLWNuLWJlaWppbmcuYWxpeXVuY3MuY29tL3R5cG9yYS8yMDIwMDUyMDEwNTIzNC5wbmc?x-oss-process=image/format,png)
+![image-20230316145148272](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230316145149.png)
 
 
 
@@ -50,7 +50,7 @@ PowerDesigner 软件设计：
 
 ### 3. 功能流程说明
 
-![image-20200520110016507](https://imgconvert.csdnimg.cn/aHR0cHM6Ly9xaXV6aGl3ZWkub3NzLWNuLWJlaWppbmcuYWxpeXVuY3MuY29tL3R5cG9yYS8yMDIwMDUyMDExMDAxOC5wbmc?x-oss-process=image/format,png)
+![image-20230316145230361](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230316145231.png)
 
 
 
@@ -58,7 +58,7 @@ PowerDesigner 软件设计：
 
 #### 4.1 导入 jar 包
 
-- ![image-20200520204138266](https://imgconvert.csdnimg.cn/aHR0cHM6Ly9qeS1pbWdzLm9zcy1jbi1iZWlqaW5nLmFsaXl1bmNzLmNvbS9pbWcvaW1hZ2UtMjAyMDA1MjAyMDQxMzgyNjYucG5n?x-oss-process=image/format,png)
+- ![image-20230316145242988](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230316145243.png)
 
 #### 4.2 导入工具类
 
@@ -129,7 +129,7 @@ c3p0.password=123456
 
 * 建立三层架构
 
-  * ![image-20200520205619299](https://imgconvert.csdnimg.cn/aHR0cHM6Ly9qeS1pbWdzLm9zcy1jbi1iZWlqaW5nLmFsaXl1bmNzLmNvbS9pbWcvaW1hZ2UtMjAyMDA1MjAyMDU2MTkyOTkucG5n?x-oss-process=image/format,png)
+  * ![image-20230316145258806](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230316145259.png)
 * 通用Servlet
 * 引入页面资源
 
@@ -386,7 +386,7 @@ public class UserServlet extends BaseServlet {
 
 ### 7. 注册
 
-![在这里插入图片描述](https://img-blog.csdnimg.cn/20200522225925366.png)
+![在这里插入图片描述](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230316145311.png)
 
 #### 7.1 表单校验
 
@@ -576,7 +576,7 @@ public class UserServlet extends BaseServlet {
     * `签名`
     * `短信模板`
   * 导入jar包
-    * ![image-20200520170722402](https://imgconvert.csdnimg.cn/aHR0cHM6Ly9xaXV6aGl3ZWkub3NzLWNuLWJlaWppbmcuYWxpeXVuY3MuY29tL3R5cG9yYS8yMDIwMDUyMDE3MDcyNS5wbmc?x-oss-process=image/format,png)
+    * ![image-20230316145329154](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230316145330.png)
 
   * 使用SMSUtils工具类
 * **SMSUtils.java** 代码实现
@@ -741,7 +741,7 @@ public String regist(HttpServletRequest request,HttpServletResponse response){
 
 首页导航 >> 酒店列表 >> HotelServlet (selectHotelListByPage) >> toHotelList (session存储list) >> hotelList.jsp
 
-![在这里插入图片描述](https://img-blog.csdnimg.cn/20200522225732832.png)
+![在这里插入图片描述](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230316145339.png)
 
 #### 8.1 Java 后端
 
@@ -1214,11 +1214,11 @@ public class PackageServlet extends BaseServlet {
 
 ### 10. 商品详情
 
-![在这里插入图片描述](https://img-blog.csdnimg.cn/20200522230636398.png)
+![在这里插入图片描述](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230316145408.png)
 
 #### 10.1 选择套餐类型
 
-![在这里插入图片描述](https://img-blog.csdnimg.cn/20200522224607870.png)
+![在这里插入图片描述](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230316145416.png)
 
 ```html
 <script>
@@ -1252,7 +1252,7 @@ public class PackageServlet extends BaseServlet {
 
 #### 10.2 选择房间类型
 
-![在这里插入图片描述](https://img-blog.csdnimg.cn/20200522224839804.png)
+![在这里插入图片描述](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230316145422.png)
 
 ```html
 <script>
@@ -1323,7 +1323,7 @@ public class PackageServlet extends BaseServlet {
 
 #### 10.4 加入购物车
 
-![在这里插入图片描述](https://img-blog.csdnimg.cn/20200522225155790.png)
+![在这里插入图片描述](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230316145432.png)
 
 ```html
 <script>
@@ -1419,9 +1419,9 @@ public class CartDaoImpl implements CartDao {
 
 ### 11. 我的购物车
 
-![在这里插入图片描述](https://img-blog.csdnimg.cn/20200522230620110.png)
+![在这里插入图片描述](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230316145441.png)
 
-![在这里插入图片描述](https://img-blog.csdnimg.cn/20200522225645568.png)
+![在这里插入图片描述](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230316145447.png)
 
 ```html
 <html>
@@ -1605,8 +1605,4 @@ public class CartDaoImpl implements CartDao {
 
 ### 20. 页面效果
 
-![在这里插入图片描述](https://img-blog.csdnimg.cn/20200521231036322.jpg?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3NpbmF0XzM2MTg0MDc1,size_16,color_FFFFFF,t_70)
-![在这里插入图片描述](https://img-blog.csdnimg.cn/20200521231035282.jpg?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3NpbmF0XzM2MTg0MDc1,size_16,color_FFFFFF,t_70)
-![在这里插入图片描述](https://img-blog.csdnimg.cn/20200521231035271.jpg?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3NpbmF0XzM2MTg0MDc1,size_16,color_FFFFFF,t_70)
-![在这里插入图片描述](https://img-blog.csdnimg.cn/20200521231035142.jpg?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3NpbmF0XzM2MTg0MDc1,size_16,color_FFFFFF,t_70)
-![在这里插入图片描述](https://img-blog.csdnimg.cn/20200521231035137.jpg?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3NpbmF0XzM2MTg0MDc1,size_16,color_FFFFFF,t_70)
+![在这里插入图片描述](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230316145512.jpg)

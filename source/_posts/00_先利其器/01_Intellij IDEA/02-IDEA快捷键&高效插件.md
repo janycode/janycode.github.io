@@ -11,7 +11,7 @@ categories:
 ---
 
 ### IDEA 生成 war 包
-![IDEA](https://img-blog.csdnimg.cn/20200504163015612.png)
+![image-20230316112703789](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230316112704.png)
 1. 配置：
 **Project Structure**图标 >> **Artifacts** >> `+` 新增**Web Application: Arichive**选择当前项目**xxx:war** >> OK
 2. 生成：
@@ -21,15 +21,10 @@ categories:
 
 ### IDEA 生成 UML 类图
 
-![在这里插入图片描述](https://img-blog.csdnimg.cn/20200504163224310.png)
+![image-20230316111906745](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230316111907.png)
 
 ### IDEA 常用 快捷键
-![在这里插入图片描述](https://img-blog.csdnimg.cn/20200504163318533.png)
-
-![在这里插入图片描述](https://img-blog.csdnimg.cn/20200504163256266.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3NpbmF0XzM2MTg0MDc1,size_16,color_FFFFFF,t_70)
-![在这里插入图片描述](https://img-blog.csdnimg.cn/20200504163335325.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3NpbmF0XzM2MTg0MDc1,size_16,color_FFFFFF,t_70)
-![在这里插入图片描述](https://img-blog.csdnimg.cn/20200504163347714.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3NpbmF0XzM2MTg0MDc1,size_16,color_FFFFFF,t_70)
-![在这里插入图片描述](https://img-blog.csdnimg.cn/20200504163404431.png)
+![image-20230316111922215](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230316111923.png)
 
 快速单元测试快捷键: **`Ctrl+Shift+T` --> create new test ** 然后选择对应的方法进行测试就好了。
 
@@ -37,7 +32,7 @@ categories:
 
 
 ### IDEA 高效 插件
-![在这里插入图片描述](https://img-blog.csdnimg.cn/20200504163422665.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3NpbmF0XzM2MTg0MDc1,size_16,color_FFFFFF,t_70)
+![image-20230316112440714](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230316112441.png)
 
 > 自用存留最久的插件列表：
 >
@@ -54,6 +49,7 @@ categories:
 > * SequenceDiagram 类的关系或方法调用关系图
 > * SpotBugs 本地代码检查工具
 > * Translation 翻译工具，Ctrl+Q 的时候可以自动翻译 或 Ctrl+Shift+Y 对选定内容翻译
+> * Easy Javadoc 一键生成java代码注释，包含类、属性、方法
 
 
 
@@ -78,5 +74,22 @@ PARAM变量：
 
 ```java
 groovyScript("def result = '';def params = \"${_1}\".replaceAll('[\\\\[|\\\\]|\\\\s]', '').split(',').toList(); for(i = 0; i < params.size(); i++) {if(params[i] != '')result+='* @param ' + params[i] + ((i < params.size() - 1) ? '\\r\\n ' : '')}; return result == '' ? null : '\\r\\n ' + result", methodParameters())
+```
+
+> 最好的方式使用插件：Easy Javadoc 一键生成java代码注释，包含类、属性、方法
+
+![image-20230316112335649](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230316112336.png)
+
+Method Template:
+
+```
+/**
+ * $DOC$
+ *
+ * $PARAMS$
+ * $RETURN$
+ * @author $author$
+ * @date $date$
+ */
 ```
 

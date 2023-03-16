@@ -18,7 +18,7 @@ categories:
 浏览器一般只允许存放`300`个Cookie，每个站点最多存放`20`个Cookie，每个大小限制为`4kb`。
 
 ### 1.2 Cookie 工作原理
-![Cookie工作原理](https://img-blog.csdnimg.cn/202004202212361.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3NpbmF0XzM2MTg0MDc1,size_16,color_FFFFFF,t_70#pic_center)
+![Cookie工作原理](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230316142547.png)
 执行流程：
 1. 浏览器向服务器发送请求，服务器需要创建cookie，服务器会通过响应携带cookie，在产生响应时会产生Set-Cookie响应头，从而将cookie信息传递给了浏览器；
 2. 当浏览器再次向服务器发送请求时，会产生cookie请求头，将之前服务器的cookie信息再次发送给了服务器，然后服务器根据cookie信息跟踪客户端状态。

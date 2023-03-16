@@ -42,18 +42,18 @@ Sybase公司的软件，几乎包括了数据库模型设计的全过程，利�
 
 
 #### 2.2 E-R 实体-联系图
-![概念数据模型的关系分类](https://img-blog.csdnimg.cn/20200520001107319.png)
+![image-20230316134346825](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230316134347.png)
 **① 一对一**
 如 1个公司 对应 1个地址。
-![在这里插入图片描述](https://img-blog.csdnimg.cn/20200519235444287.jpg#pic_center)
+![image-20230316134406324](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230316134407.png)
 
 **① 一对多**
 如 1个校长 对应 多个学生。
-![在这里插入图片描述](https://img-blog.csdnimg.cn/20200519235503820.jpg#pic_center)
+![image-20230316134421548](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230316134422.png)
 
 **① 多对多**
 如 多个学生 对应 多个课程。
-![在这里插入图片描述](https://img-blog.csdnimg.cn/20200519235528617.jpg#pic_center)
+![image-20230316134432928](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230316134433.png)
 
 
 ### 3. 物理数据模型 - 常用
@@ -68,15 +68,15 @@ Sybase公司的软件，几乎包括了数据库模型设计的全过程，利�
 #### 3.2 E-R 实体-联系图
 **① 一对一**
 如 1个公司 对应 1个地址。
-![在这里插入图片描述](https://img-blog.csdnimg.cn/20200520000012151.jpg#pic_center)
+![image-20230316134448118](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230316134448.png)
 
 **① 一对多**
 如 1个校长 对应 多个学生。
-![在这里插入图片描述](https://img-blog.csdnimg.cn/20200520000019472.jpg#pic_center)
+![image-20230316134500831](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230316134501.png)
 
 **① 多对多**
 如 多个学生 对应 多个课程。
-![在这里插入图片描述](https://img-blog.csdnimg.cn/20200520000026863.jpg#pic_center)
+![image-20230316134515752](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230316134516.png)
 
 #### 3.3 常用操作设置
 
@@ -134,11 +134,9 @@ Sybase公司的软件，几乎包括了数据库模型设计的全过程，利�
 如SQLyog中：
 
 第一步：创建一个数据库，取个数据库名
-![在这里插入图片描述](https://img-blog.csdnimg.cn/20200520001325470.png)
+![image-20230316134541975](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230316134542.png)
 第二步：右键数据库名 >> 导入 >> 执行SQL脚本... >> 选择SQL脚本文件的目录 >> [执行]，即可生成数据库中的表。
-![在这里插入图片描述](https://img-blog.csdnimg.cn/20200520001359986.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3NpbmF0XzM2MTg0MDc1,size_16,color_FFFFFF,t_70)
-
-
+![image-20230316134603148](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230316134604.png)
 
 
 

@@ -396,7 +396,7 @@ Innodb：更新（删除）操作频率也高，或者要保证数据的完整�
 
 where
 
-![img](https://imgconvert.csdnimg.cn/aHR0cHM6Ly91c2VyLWdvbGQtY2RuLnhpdHUuaW8vMjAxOS8yLzE5LzE2OTA0NTk2ZTFiNTU4YjI?x-oss-process=image/format,png)
+![image-20230316152543045](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230316152543.png)
 
 
 
@@ -409,7 +409,7 @@ alter table innodb1 add sex char(1);
 EXPLAIN SELECT * from innodb1 where sex='男';
 ```
 
-![img](https://imgconvert.csdnimg.cn/aHR0cHM6Ly91c2VyLWdvbGQtY2RuLnhpdHUuaW8vMjAxOS8yLzE5LzE2OTA0NTk2Zjk1YTdmOTk?x-oss-process=image/format,png)
+![image-20230316152554691](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230316152555.png)
 
 > 可以尝试在一个字段未建立索引时，根据该字段查询的效率，然后对该字段建立索引（alter table 表名 add index(字段名)），同样的SQL执行的效率，你会发现查询效率会有明显的提升（数据量越大越明显）。
 
@@ -457,7 +457,7 @@ join
 
 mysql通过存储引擎取数据，基本上90%的人用的就是InnoDB了，按照实现方式分，InnoDB的索引类型目前只有两种：BTREE（B树）索引和HASH索引。B树索引是Mysql数据库中使用最频繁的索引类型，基本所有存储引擎都支持BTree索引。通常我们说的索引不出意外指的就是（B树）索引（实际是用B+树实现的，因为在查看表索引时，mysql一律打印BTREE，所以简称为B树索引）
 
-![img](https://imgconvert.csdnimg.cn/aHR0cHM6Ly91c2VyLWdvbGQtY2RuLnhpdHUuaW8vMjAxOC85LzI0LzE2NjBjMGYxNGRhY2Y2ZjU?x-oss-process=image/format,png)
+![image-20230316152616624](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230316152617.png)
 
 查询方式：
 
@@ -481,7 +481,7 @@ B+tree性质：
 
 简要说下，类似于数据结构中简单实现的HASH表（散列表）一样，当我们在mysql中用哈希索引时，主要就是通过Hash算法（常见的Hash算法有直接定址法、平方取中法、折叠法、除数取余法、随机数法），将数据库字段数据转换成定长的Hash值，与这条数据的行指针一并存入Hash表的对应位置；如果发生Hash碰撞（两个不同关键字的Hash值相同），则在对应Hash键下以链表形式存储。当然这只是简略模拟图。
 
-![img](https://imgconvert.csdnimg.cn/aHR0cHM6Ly91c2VyLWdvbGQtY2RuLnhpdHUuaW8vMjAxOC85LzI0LzE2NjBjMGYxNThhNzZmOTQ?x-oss-process=image/format,png)
+![image-20230316152631214](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230316152632.png)
 
 #### 索引的基本原理
 
@@ -599,7 +599,7 @@ alter table user_index drop KEY information;
 
 删除主键索引：`alter table 表名 drop primary key`（因为主键只有一个）。这里值得注意的是，如果主键自增长，那么不能直接执行此操作（自增长依赖于主键索引）：
 
-![img](https://imgconvert.csdnimg.cn/aHR0cHM6Ly91c2VyLWdvbGQtY2RuLnhpdHUuaW8vMjAxOS8yLzE5LzE2OTA0NTk2YjIxZTIwOWM?x-oss-process=image/format,png)
+![image-20230316152646237](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230316152647.png)
 
 需要取消自增长再行删除：
 
@@ -658,7 +658,7 @@ drop PRIMARY KEY
 
 B+树的叶子节点有一条链相连，而B树的叶子节点各自独立。
 
-![在这里插入图片描述](https://img-blog.csdnimg.cn/20200504151646155.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3NpbmF0XzM2MTg0MDc1,size_16,color_FFFFFF,t_70)
+![在这里插入图片描述](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230316152659.png)
 
 #### 使用B树的好处
 
@@ -707,7 +707,7 @@ B+树在满足聚簇索引和覆盖索引的时候不需要回表查询数据，
 
 何时使用聚簇索引与非聚簇索引
 
-![在这里插入图片描述](https://img-blog.csdnimg.cn/20200504151829863.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3NpbmF0XzM2MTg0MDc1,size_16,color_FFFFFF,t_70)
+![在这里插入图片描述](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230316152708.png)
 
 #### 非聚簇索引一定会回表查询吗？
 
@@ -739,7 +739,7 @@ MySQL使用索引时需要索引有序，假设现在建立了"name，age，scho
 
 关系性数据库需要遵循ACID规则，具体内容如下：
 
-![在这里插入图片描述](https://img-blog.csdnimg.cn/20200504151918977.png)
+![在这里插入图片描述](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230316152714.png)
 
 1. `原子性`： 事务是最小的执行单位，不允许分割。事务的原子性确保动作要么全部完成，要么完全不起作用；
 2. `一致性`： 执行事务前后，数据保持一致，多个事务对同一个数据读取的结果是相同的；
@@ -1543,7 +1543,7 @@ DOUBLE类型数据可以存储至多18位十进制数，并在内存中占8字�
 
 对于低性能的SQL语句的定位，最重要也是最有效的方法就是使用执行计划，MySQL提供了explain命令来查看语句的执行计划。 我们知道，不管是哪种数据库，或者是哪种数据库引擎，在对一条SQL语句进行执行的过程中都会做很多相关的优化，对于查询语句，最重要的优化方式就是使用索引。 而执行计划，就是显示数据库引擎对于SQL语句的执行的详细情况，其中包含了是否使用索引，使用什么索引，使用的索引的相关信息等。
 
-![在这里插入图片描述](https://img-blog.csdnimg.cn/20200504153418856.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3NpbmF0XzM2MTg0MDc1,size_16,color_FFFFFF,t_70)
+![在这里插入图片描述](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230316152747.png)
 
 执行计划包含的信息 id 有一组数字组成。表示一个查询中各个子查询的执行顺序;
 
@@ -1659,7 +1659,7 @@ TIPS:查询中若使用了覆盖索引(覆盖索引：索引的数据覆盖了�
 
 关掉连接，释放资源
 
-![在这里插入图片描述](https://img-blog.csdnimg.cn/2020050415364789.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3NpbmF0XzM2MTg0MDc1,size_16,color_FFFFFF,t_70)
+![在这里插入图片描述](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230316152759.png)
 
 #### 大表数据查询，怎么优化
 
@@ -1959,7 +1959,7 @@ select id from t where name like ‘abc%’
 
 简单来说垂直拆分是指数据表列的拆分，把一张列比较多的表拆分为多张表。 如下图所示，这样来说大家应该就更容易理解了。
 
-![在这里插入图片描述](https://img-blog.csdnimg.cn/20200504154849615.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3NpbmF0XzM2MTg0MDc1,size_16,color_FFFFFF,t_70)
+![在这里插入图片描述](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230316152812.png)
 
 垂直拆分的优点： 可以使得行数据变小，在查询时减少读取的Block数，减少I/O次数。此外，垂直分区可以简化表的结构，易于维护。
 
@@ -1968,7 +1968,7 @@ select id from t where name like ‘abc%’
 `垂直分区`
 把主键和一些列放在一个表，然后把主键和另外的列放在另一个表中
 
-![在这里插入图片描述](https://img-blog.csdnimg.cn/20200504154909147.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3NpbmF0XzM2MTg0MDc1,size_16,color_FFFFFF,t_70)
+![在这里插入图片描述](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230316152821.png)
 
 **适用场景**
 1、如果一个表中某些列常用，另外一些列不常用
@@ -1984,7 +1984,7 @@ select id from t where name like ‘abc%’
 
 水平拆分是指数据表行的拆分，表的行数超过200万行时，就会变慢，这时可以把一张的表的数据拆成多张表来存放。举个例子：我们可以将用户信息表拆分成多个用户信息表，这样就可以避免单一表数据量过大对性能造成影响。
 
-![img](https://imgconvert.csdnimg.cn/aHR0cHM6Ly91c2VyLWdvbGQtY2RuLnhpdHUuaW8vMjAxOC82LzE2LzE2NDA4NGI3ZTllNDIzZTM?x-oss-process=image/format,png)
+![image-20230316152836706](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230316152838.png)
 
 水品拆分可以支持非常大的数据量。需要注意的一点是:分表仅仅是解决了单一表数据过大的问题，但由于表的数据还是在同一台机器上，其实对于提升MySQL并发能力没有什么意义，所以 水平拆分最好分库 。
 
@@ -1995,7 +1995,7 @@ select id from t where name like ‘abc%’
 水平分表：
 表很大，分割后可以降低在查询时需要读的数据和索引的页数，同时也降低了索引的层数，提高查询次数
 
-![img](https://imgconvert.csdnimg.cn/aHR0cHM6Ly9tbWJpei5xcGljLmNuL21tYml6X2pwZy90dVNhS2M2U2ZQcjh0NFBaVVFJVUszVHl0aWF3T0VRa2dkQVpyU1Y3M2liMWZkRENYS2M3QUd6Wmhid3FjS0ZVWkpGWThwMFZkVXRPM3JNYzZ2eDFBdzVBLzY0MA?x-oss-process=image/format,png)
+![image-20230316152855738](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230316152856.png)
 
 **适用场景**
 1、表中的数据本身就有独立性，例如表中分表记录各个地区的数据或者不同时期的数据，特别是有些数据常用，有些不常用。
@@ -2030,7 +2030,7 @@ UUID 使用UUID作主键是最简单的方案，但是缺点也是非常明显�
 
 般来讲，分页时需要按照指定字段进行排序。当排序字段就是分片字段的时候，我们通过分片规则可以比较容易定位到指定的分片，而当排序字段非分片字段的时候，情况就会变得比较复杂了。为了最终结果的准确性，我们需要在不同的分片节点中将数据进行排序并返回，并将不同分片返回的结果集进行汇总和再次排序，最后再返回给用户。如下图所示：
 
-![在这里插入图片描述](https://img-blog.csdnimg.cn/20200504155156348.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3NpbmF0XzM2MTg0MDc1,size_16,color_FFFFFF,t_70)
+![在这里插入图片描述](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230316152906.png)
 
 #### MySQL的复制原理以及流程
 
@@ -2065,7 +2065,7 @@ UUID 使用UUID作主键是最简单的方案，但是缺点也是非常明显�
 
 复制过程
 
-![在这里插入图片描述](https://img-blog.csdnimg.cn/20200504155245814.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3NpbmF0XzM2MTg0MDc1,size_16,color_FFFFFF,t_70)
+![在这里插入图片描述](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230316152920.png)
 
 Binary log：主数据库的二进制日志
 

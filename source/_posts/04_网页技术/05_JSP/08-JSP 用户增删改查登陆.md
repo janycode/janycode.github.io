@@ -11,13 +11,13 @@ categories:
 ### 1.0 核心流程
 
 **主界面**：
-![JSP+MVC+三层架构设计](https://img-blog.csdnimg.cn/20200429222110631.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3NpbmF0XzM2MTg0MDc1,size_16,color_FFFFFF,t_70#pic_center)
+![JSP+MVC+三层架构设计](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230316142946.png)
 
 **核心功能**：
 JSP + MVC + 三层架构设计实现，用户信息(id/username/password)的注册、删除、修改、查询展示所有、登陆、登出。
 
 **核心流程图**(点击/拖动均可放大)：
-![JSP+MVC+三层架构设计](https://img-blog.csdnimg.cn/20200429234030500.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3NpbmF0XzM2MTg0MDc1,size_16,color_FFFFFF,t_70#pic_center)
+![JSP+MVC+三层架构设计](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230316142951.png)
 User.java
 
 ```java
@@ -464,3 +464,4 @@ public int deleteUsersByIds(List<Integer> idList) {
     return numLines;
 }
 ```
+

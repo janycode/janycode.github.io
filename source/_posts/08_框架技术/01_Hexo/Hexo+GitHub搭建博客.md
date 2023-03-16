@@ -29,12 +29,12 @@ Hexo 博客框架中文官网+文档：https://hexo.bootcss.com/
 
 ## 1. GitHub 准备工作
 #### 1.1 GitHub 账号注册
-![在这里插入图片描述](https://img-blog.csdnimg.cn/20200421212833902.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3NpbmF0XzM2MTg0MDc1,size_16,color_FFFFFF,t_70)
+![在这里插入图片描述](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230316150551.png)
 #### 1.2 GitBash 下载安装
 下载地址：[https://gitforwindows.org/](https://gitforwindows.org/)
-![在这里插入图片描述](https://img-blog.csdnimg.cn/20200421212955598.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3NpbmF0XzM2MTg0MDc1,size_16,color_FFFFFF,t_70)
-![在这里插入图片描述](https://img-blog.csdnimg.cn/20200421213018111.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3NpbmF0XzM2MTg0MDc1,size_16,color_FFFFFF,t_70)
-![在这里插入图片描述](https://img-blog.csdnimg.cn/20200421213127974.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3NpbmF0XzM2MTg0MDc1,size_16,color_FFFFFF,t_70)
+![在这里插入图片描述](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230316150653.png)
+![在这里插入图片描述](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230316150737.png)
+![在这里插入图片描述](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230316150746.png)
 剩下的，一路默认就行（安装路径根据自己需要更改）。
 
 
@@ -51,31 +51,32 @@ GitHub 的桌面版，为部署到 github.io 公网路径时使用。
 
 #### 1.4 Node.js 下载安装
 下载地址：[https://nodejs.org/zh-cn/](https://nodejs.org/zh-cn/)
-![在这里插入图片描述](https://img-blog.csdnimg.cn/20200421213512545.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3NpbmF0XzM2MTg0MDc1,size_16,color_FFFFFF,t_70)
+![在这里插入图片描述](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230316150755.png)
 一路默认就行（安装路径根据自己需要更改）。
+
 ## 2. Hexo 准备工作
 #### 2.1 Hexo 下载安装
 ① 在任意位置点击鼠标右键，选择Git Bash
-![在这里插入图片描述](https://img-blog.csdnimg.cn/20200421214056510.png)
+![在这里插入图片描述](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230316150805.png)
 ② 安装Hexo命令：`npm install -g hexo`
-![在这里插入图片描述](https://img-blog.csdnimg.cn/2020042121420960.png)
+![在这里插入图片描述](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230316150812.png)
 
 #### 2.2 Hexo 初始化配置
 1. 创建文件夹（我的是在D盘创建的Hexo）
-![在这里插入图片描述](https://img-blog.csdnimg.cn/20200421214322325.png)
+![在这里插入图片描述](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230316150816.png)
 2. 在Hexo文件下，右键运行Git Bash，输入命令：`hexo init`
-![在这里插入图片描述](https://img-blog.csdnimg.cn/20200421214352172.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3NpbmF0XzM2MTg0MDc1,size_16,color_FFFFFF,t_70)
+![在这里插入图片描述](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230316150829.png)
 3. 在`_config.yml`,进行基础配置
-![在这里插入图片描述](https://img-blog.csdnimg.cn/20200421214553612.png)
-![在这里插入图片描述](https://img-blog.csdnimg.cn/20200421214608786.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3NpbmF0XzM2MTg0MDc1,size_16,color_FFFFFF,t_70)
+![在这里插入图片描述](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230316150834.png)
+![在这里插入图片描述](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230316150842.png)
 4、主题选择（博客整体外观哦）
 Hexo的主题分享页：[https://hexo.io/themes/](https://hexo.io/themes/)
 该页面里点击图片是预览，点击主题的名字则是进入git中，获取其git主题路径，然后在Hexo文件夹下使用 Git Bash。
 输入命令(注意空格)：`git clone 主题的git链接 themes/目录名`
 eg: **git clone https://github.com/wujun234/hexo-theme-tree.git themes/tree**
-![在这里插入图片描述](https://img-blog.csdnimg.cn/20200421220145611.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3NpbmF0XzM2MTg0MDc1,size_16,color_FFFFFF,t_70)
-![在这里插入图片描述](https://img-blog.csdnimg.cn/20200421214736505.png)
-![在这里插入图片描述](https://img-blog.csdnimg.cn/20200421214832967.png)
+![在这里插入图片描述](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230316150852.png)
+![在这里插入图片描述](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230316150903.png)
+![在这里插入图片描述](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230316150907.png)
 
 ## 3. 博客更新、预览、部署(外网访问)
 #### 3.1 文章更新
@@ -85,32 +86,32 @@ eg: **git clone https://github.com/wujun234/hexo-theme-tree.git themes/tree**
 
 > 最佳搭档：`markdown语法` + `Typora工具`
 
-![在这里插入图片描述](https://img-blog.csdnimg.cn/20200421215001116.png)
+![在这里插入图片描述](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230316150913.png)
 
 #### 3.2 博客本地浏览方式
 ① Git Bash 输入命令：`hexo g && hexo s`
-![在这里插入图片描述](https://img-blog.csdnimg.cn/20200421215039349.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3NpbmF0XzM2MTg0MDc1,size_16,color_FFFFFF,t_70)
+![在这里插入图片描述](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230316150921.png)
 ② 在浏览器输入：`http://localhost:4000` ，就可以进行访问
-![在这里插入图片描述](https://img-blog.csdnimg.cn/20200421215146873.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3NpbmF0XzM2MTg0MDc1,size_16,color_FFFFFF,t_70)
+![在这里插入图片描述](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230316151003.png)
 
 #### 3.2 博客部署到 GitHub 上
 ① 登陆 github 账号，`new repository`创建仓库、获取同名的`https 仓库源地址`：
-![在这里插入图片描述](https://img-blog.csdnimg.cn/20200421171618433.png)
-![在这里插入图片描述](https://img-blog.csdnimg.cn/20200421172106569.png)
-![在这里插入图片描述](https://img-blog.csdnimg.cn/20200421172134617.png)
-![在这里插入图片描述](https://img-blog.csdnimg.cn/20200421172245529.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3NpbmF0XzM2MTg0MDc1,size_16,color_FFFFFF,t_70)
+![在这里插入图片描述](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230316153556.png)
+![在这里插入图片描述](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230316151019.png)
+![在这里插入图片描述](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230316153606.png)
+![在这里插入图片描述](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230316151029.png)
 
 ② 在 `_config.yml` 进行配置：
-![在这里插入图片描述](https://img-blog.csdnimg.cn/20200421171729148.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3NpbmF0XzM2MTg0MDc1,size_16,color_FFFFFF,t_70)
+![在这里插入图片描述](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230316151037.png)
 ③ 安装 hexo-deployer-git 自动部署发布工具：
 安装命令(注意路径)：`npm install hexo-deployer-git  --save`
-![在这里插入图片描述](https://img-blog.csdnimg.cn/2020042117181819.png)
+![在这里插入图片描述](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230316151043.png)
 ④ 一键发布到 GitHub：
 发布命令(注意路径)：`hexo clean && hexo g && hexo d`
 第一次发布会需要填入 github 账号密码，正确填入即可。
-![在这里插入图片描述](https://img-blog.csdnimg.cn/20200421171915701.png)
-![在这里插入图片描述](https://img-blog.csdnimg.cn/20200421171928437.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3NpbmF0XzM2MTg0MDc1,size_16,color_FFFFFF,t_70)
-![在这里插入图片描述](https://img-blog.csdnimg.cn/20200421172008990.png)
+![在这里插入图片描述](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230316151049.png)
+![在这里插入图片描述](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230316151059.png)
+![在这里插入图片描述](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230316151111.png)
 ⑤ 测试访问：
 在浏览器输入：[https://janycode.github.io/](https://janycode.github.io/)
 
@@ -127,13 +128,13 @@ eg: **git clone https://github.com/wujun234/hexo-theme-tree.git themes/tree**
 `hexo clean && hexo g && hexo d`
 完美！
 所有涉及到的命令统一使用右键里的 `Git Bash`，规避各种神坑，你懂的。
-![在这里插入图片描述](https://img-blog.csdnimg.cn/20200422004618401.png#pic_center)
+![在这里插入图片描述](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230316151137.png)
 
 ## 4. 遇到的问题 & 解决方案
 #### 4.1 _config.yml 中文乱码问题
 _config.yml 配置(我只改了这一部分，用记事本修改好像会出问题。
 在 localhost:4000 上运行,标题和副标题都出现乱码。
-![在这里插入图片描述](https://img-blog.csdnimg.cn/20200421233209511.png)
+![在这里插入图片描述](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230316151143.png)
 为什么设置了zh-CN还会乱码呢？
 解决方案：
 1.不要用记事本打开，因为记事本不会utf8转码，`用sublime text编辑`。
@@ -145,9 +146,10 @@ _config.yml 配置(我只改了这一部分，用记事本修改好像会出问�
 [https://github.com/Microsoft/Git-Credential-Manager-for-Windows/releases/tag/v1.14.0](https://github.com/Microsoft/Git-Credential-Manager-for-Windows/releases/tag/v1.14.0)
  点击下载安装 `GCMW-1.14.0.exe` ，测试远程push还是不行，灵机一动，万能的重启电脑，问题就解决了。ORZ...
 此处切记一点，更新到远程git仓库时`使用 Git Bash 的命令行操作`。
-![在这里插入图片描述](https://img-blog.csdnimg.cn/20200422004251889.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3NpbmF0XzM2MTg0MDc1,size_16,color_FFFFFF,t_70)
+![在这里插入图片描述](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230316151151.png)
+
 #### 4.3 每次部署到远程 github 总是需要输入账号密码
-![在这里插入图片描述](https://img-blog.csdnimg.cn/2020042200525939.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3NpbmF0XzM2MTg0MDc1,size_16,color_FFFFFF,t_70)
+![在这里插入图片描述](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230316151159.png)
 解决方案：
 **配置SSH key**
 ① 在任意文件夹下，右键git bash，配置生成公钥：

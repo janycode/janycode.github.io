@@ -15,8 +15,9 @@ categories:
 服务器状态管理技术，将状态信息保存在服务器端。
 是sun公司定义的一个接口。
 ### 1.2 Session 工作原理
-![在这里插入图片描述](https://img-blog.csdnimg.cn/20200422094415521.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3NpbmF0XzM2MTg0MDc1,size_16,color_FFFFFF,t_70#pic_center)
+![在这里插入图片描述](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230316142643.png)
 执行流程：
+
 1. 第一次请求，请求头中没有jsessionid的cookie，当访问到对应的servlet资源时，执行到getSession()会创建HttpSession对象；进而响应时就将session的id作为cookie的value，响应到浏览器 Set-cookie:jsessionid=xxxx;
 2. 再一次请求时，http请求中就有一个cookie:jsessionid=xxxx信息，那么该servlet就可以通过getSession()获取到jsessionid在服务器内查找对应的session对象，有就使用，无就创建。
 
@@ -54,6 +55,6 @@ Session生命周期结束时机：
 * session销毁：主动调用 session.invalidate() 方法后，立即将session对象销毁，再次访问时会创建新的session。
 
 ### 1.6 HTTP请求中 4 大共享数据方式对比
-![在这里插入图片描述](https://img-blog.csdnimg.cn/20200422094347432.png)
+![在这里插入图片描述](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230316142650.png)
 
-![在这里插入图片描述](https://img-blog.csdnimg.cn/20200422094322438.png)
+![在这里插入图片描述](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230316142656.png)

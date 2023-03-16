@@ -23,8 +23,9 @@ Filter和Listener都属于Servlet中的高级部分，`Filter是最为实用的�
 > 遵从原则：先过滤，后放行。
 
 ### 1.3 Filter 工作原理
-![在这里插入图片描述](https://img-blog.csdnimg.cn/20200422221955558.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3NpbmF0XzM2MTg0MDc1,size_16,color_FFFFFF,t_70#pic_center)
+![在这里插入图片描述](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230316142712.png)
 执行流程：
+
 1. 浏览器发起请求
 2. 服务器会根据这个请求，创建 request 对象及 response 对象
 3. 过滤器会持有 request 对象及 response 对象
