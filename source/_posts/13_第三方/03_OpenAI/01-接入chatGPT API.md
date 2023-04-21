@@ -2,10 +2,11 @@
 title: 01-接入chatGPT API
 date: 2023-04-20 14:48:37
 tags:
-- Aliyun
+- OpenAI
+- chatGPT
 categories: 
 - 13_第三方
-- 02_Aliyun
+- 03_OpenAI
 ---
 
 ![image-20230420144823328](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230420144824.png)
