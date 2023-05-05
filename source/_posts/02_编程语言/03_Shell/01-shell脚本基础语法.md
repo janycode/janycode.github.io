@@ -401,7 +401,7 @@ nohup 脚本名 &
 
 
 
-### 查找指定文件转移位置
+### 查找指定文件并转移位置
 
 如创建MP4文件夹，查找当前目录(递归子目录)下的.mp4文件，并拷贝到创建的MP4文件夹：
 
@@ -411,10 +411,11 @@ mkdir ./MP4/ && find . -name "*.mp4" |xargs -i cp {} ./MP4/
 
 
 
-### Hexo循环部署脚本
+### 脚本：Hexo循环部署
 
 ```bash
 #! /bin/bash
+#Author: Jerry(姜源)
 
 #生成一次最新需要部署的页面
 echo "生成一次最新需要部署的页面..."
@@ -427,8 +428,9 @@ while [ $MYNUM -ne 0 ]
 do
     echo "尝试第 $MYNUM 次部署，正在部署(请勿退出程序)..."
 	RESULT=`hexo d`
-	echo $RESULT
-	FLAG=`echo $RESULT | grep "Deploy done: git"`
+	echo
+	echo "[JERRY]RESULT="$RESULT
+	FLAG=`echo $RESULT | grep "done"`
 	#判断执行结果中是否包含执行成功的字符串
 	if [[ "$FLAG" != "" ]]
 	then
@@ -440,6 +442,175 @@ do
 	fi
 done
 
+echo
 echo "部署成功！！！"
+echo
+#echo "开始更新 local-search.xml 到阿里云OSS..."
+#echo
+#./oss.sh ./public/local-search.xml local-search.xml
+#echo
+#echo "更新成功！！！"
+```
+
+
+
+### 脚本：一键发布两个博客
+
+> 背景1：访问慢，github 有时访问时快时慢，同时发了 gitee (使用 gitee pages + docsify 搭建)
+>
+> 背景2：搜索慢，使用 Hexo + Fluid 搭建的博客，搜索功能依赖一个很大的 local-search.xml，太慢
+>
+> 背景3：导航慢，左侧快速导航 + 全文搜索 + 国内访问速度，这三条让人欲罢不能
+
+目录结构：
+
+```
+E:
+├── janycode.blog
+│   ├── markdown
+│   │   ├── 00_先利其器
+│   │   ├── 01_...
+│   ├── gen2blogs.sh
+├── janycode.gitee.io
+│   ├── .git
+│   ├── docs
+│   │   ├── 00_先利其器
+│   │   ├── 01_...
+│   ├── ...
+├── janycode.github.io
+│   ├── .git
+│   ├── source
+│   │   ├── _posts
+│   │   │   ├── 00_先利其器
+│   │   │   ├── 01_...
+│   ├── deploy.sh
+│   ├── ...
+└── ...
+```
+
+`gen2blogs.sh`
+
+```bash
+#! /bin/bash
+#Author: Jerry(姜源)
+
+SOURCE_MARKDOWN_PATH=./markdown
+GITHUB_BLOG_PATH=../janycode.github.io/source/_posts
+GITEE_BLOG_PATH=../janycode.gitee.io/docs
+CURRENT_DIR=`pwd`
+echo "当前执行脚本目录："$CURRENT_DIR
+
+GITHUB_BLOG_PATH_ALL=$GITHUB_BLOG_PATH/*_*
+GITEE_BLOG_PATH_ALL=$GITEE_BLOG_PATH/*_*
+
+function dealGithub() {
+	echo ">>> 开始处理github.io:"
+	for dir in $GITHUB_BLOG_PATH_ALL
+	do
+		echo "The dir is: $dir"
+		currDirName=`basename $dir`
+		echo currDirName=$currDirName
+		toDelDir=$GITHUB_BLOG_PATH/$currDirName
+		#如果目录存在则清理，不存在无需处理
+		if [ -d $toDelDir ]; then
+			echo "待清理的目录: toDelDir="$toDelDir
+			rm -rf $toDelDir
+			echo $toDelDir" 目录清理成功！"
+		else
+			echo $toDelDir" 目录已清理！"
+		fi
+	done
+	
+	#Github：
+	#拷贝目录文件到目录 - 递归拷贝
+	cp $SOURCE_MARKDOWN_PATH/* $GITHUB_BLOG_PATH -r
+	echo "目录拷贝成功！"
+	ls -l $GITHUB_BLOG_PATH
+	#cd 进入目录
+	cd $GITHUB_BLOG_PATH
+	pwd
+	GITHUB_PATH=`dirname $(dirname $GITHUB_BLOG_PATH)`
+	echo "进入目录："$GITHUB_PATH
+	cd ../../
+	echo "当前目录："
+	pwd
+	echo "github: 开始>>>"
+	./deploy.sh
+	echo "github 部署成功！！！"
+	#gitee 提交和推送代码
+	pushGitee
+	cd $CURRENT_DIR
+	echo "cd "$CURRENT_DIR
+}
+
+
+function dealGitee() {
+	echo ">>> 开始处理gitee.io:"
+	for dir in $GITEE_BLOG_PATH_ALL
+	do
+		echo "The dir is: $dir"
+		currDirName=`basename $dir`
+		echo currDirName=$currDirName
+		#跳过以_开头的文件或目录
+		if [[ "$currDirName" =~ ^_.* ]]; then
+			continue
+		else
+			toDelDir=$GITEE_BLOG_PATH/$currDirName
+			#如果目录存在则清理，不存在无需处理
+			if [ -d $toDelDir ]; then
+				echo "待清理的目录: toDelDir="$toDelDir
+				rm -rf $toDelDir
+				echo $toDelDir" 目录清理成功！"
+			else
+				echo $toDelDir" 目录已清理！"
+			fi
+		fi
+	done
+
+	#Gitee：
+	#拷贝目录文件到目录 - 递归拷贝
+	cp $SOURCE_MARKDOWN_PATH/* $GITEE_BLOG_PATH -r
+	echo "目录拷贝成功！"
+	ls -l $GITEE_BLOG_PATH
+	#cd 进入目录
+	cd $GITEE_BLOG_PATH
+	pwd
+	echo "进入目录："$GITEE_BLOG_PATH
+	#js 生成目录.md
+	echo "生成页面侧边目录开始 >>>"
+	node gensidebar.js
+	echo "生成页面侧边目录成功！！！"
+	cd ..
+	echo "回到上一级目录："
+	pwd
+	#gitee 提交和推送代码
+	pushGitee
+	echo -e "\033[35mgitee 部署还需手动更新pages: https://gitee.com/janycode/janycode/pages\033[0m"
+	cd $CURRENT_DIR
+	echo "cd "$CURRENT_DIR
+}
+
+function pushGitee() {
+	echo "git: 检查变动的文件1 git status ."
+	git status .
+	echo "git: 加入本地缓存 git add ."
+	git add .
+	echo "git: 检查变动的文件2 git status ."
+	git status .
+	echo "git: 提交并添加备注 git commit -m ..."
+	todayTime=`date -d "now" +"%Y年%m月%d日%H:%M:%S"`
+	git commit -m "更新博客，时间: "$todayTime
+	echo "git: 推送到远程仓库 git push"
+	git push
+	echo "gitee 推送成功！！！"
+
+}
+
+dealGithub
+
+dealGitee
+
+echo -e "\033[32mAll Work Finished！！！\033[0m"
+echo ""
 ```
 
