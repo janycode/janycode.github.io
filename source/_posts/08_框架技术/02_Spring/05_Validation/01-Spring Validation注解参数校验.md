@@ -250,9 +250,11 @@ public CreateProjectRespVO createProject(@Valid CreateProjectReqVO reqVO) {}
 
 ### 4. 进阶用法提示
 
-1. 校验规则是可以自己定义的，也就是说可以自己写注解类。具体写法本文略
+1. 校验规则是可以自己定义的，也就是说可以自己写注解类。
+   具体写法参考：[Java Bean Validation 2.0 (二): 自定义校验规则](https://zhuanlan.zhihu.com/p/261020040)
 
-2. 约束规则可以“分组”（group），比如在A场景下只需要一部分规则生效，B场景下需要全部生效，那么直接在注解上指定生效范围即可。具体写法本文略
+2. 约束规则可以“分组”（group），比如在A场景下只需要一部分规则生效，B场景下需要全部生效，那么直接在注解上指定生效范围即可。
+   具体写法参考：[@Valid分组校验](https://www.cnblogs.com/pengyifeng/p/15215939.html)
 
 3. 方法的返回值也是可以校验的，在方法前面追加约束规则即可：
 
@@ -272,7 +274,7 @@ public CreateProjectRespVO createProject(@Valid CreateProjectReqVO reqVO) {}
    member.id.null=用户编号不能为空
    ```
 
-5. 约束规则支持正则表达式。具体写法本文略
+5. 约束规则支持正则表达式。
 
 6. 支持跨参数校验（即通过直接写注解的方式验证多个参数之间的逻辑关系）
 
