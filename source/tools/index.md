@@ -19,7 +19,7 @@ comment: 'changyan'
 |  Tomcat 环境  |           **Tomcat**           |            [官方下载](http://tomcat.apache.org/)             |                        下载解压文件夹                        |
 |  Maven 环境   |           **Maven**            |            [官方下载](https://mvnrepository.com/)            |                        下载解压文件夹                        |
 |  Jmeter 压测  |           **Jmeter**           |  [官方下载](https://jmeter.apache.org/download_jmeter.cgi)   |                        下载解压文件夹                        |
-|   Java IDE    |   **Intellij IDEA 2020.1.1**   | [百度网盘](https://pan.baidu.com/s/1Ko350OspVBX3W_Xe9Ga2CQ)  |                         提取码: h343                         |
+|   Java IDE    | **Intellij IDEA 2023.1(new)**  | [百度网盘](https://pan.baidu.com/s/1td5tmXFJUMt3obVDs2x20A?pwd=frvn) |                         提取码: frvn                         |
 |  数据库建模   |     **PowerDesigner 16.5**     | [百度网盘](https://pan.baidu.com/s/1ChK0u4tS9qQQBYLUklngNQ)  |                         提取码: mgut                         |
 | MySQL 客户端  |    **Navicat  Premium 15**     | [百度网盘](https://pan.baidu.com/s/1nLYd8LcC4jDSFrbhxZZnfw)  | 提取码: 1zmt, 候选[DBeaver](https://dbeaver.io/download/)，都比Navicat强 |
 | Redis 客户端  | **AnotherRedisDesktopManager** | [Gitee下载](https://gitee.com/qishibo/AnotherRedisDesktopManager/releases) |                  开源免费，功能比普通的强大                  |
