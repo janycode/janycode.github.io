@@ -211,12 +211,13 @@ Typora软件中【段落】-【YAML Front Matter】生成顶部标识。
 
 ```
 title: 标题
-categories: 
-- 一级分类
-- 二级分类
+index_img: https://xxxxxx.png
 tags:
 - 关键词1
 - 关键词2
+categories: 
+- 一级分类
+- 二级分类
 ```
 
 
