@@ -13,11 +13,21 @@ categories:
 
 网络上的ChatGPT应用体验：
 
+国内无需魔法的chatGPT: https://chat.gpt.bz/gpt
+
 openAI apikey: https://platform.openai.com/docs/guides/chat/introduction
 
 ChatPDF文献阅读: https://www.chatpdf.com/
 
 ChatDoc文档分析: https://chatdoc.com/
+
+Chat2Doc：https://chat2doc.cn 
+
+OpenAITranslator：插件在谷歌商店搜索下载，软件在GitHub下载：https://github.com/yetone/openai-translator 
+
+hotokeAI：https://hotoke.ai/ 
+
+ChatExcel：https://chatexcel.com/
 
 researchGPT科研学术: https://github.com/mukulpatnaik/researchgpt
 

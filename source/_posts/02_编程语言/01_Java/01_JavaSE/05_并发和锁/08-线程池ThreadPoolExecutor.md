@@ -142,86 +142,22 @@ Runtime.getRuntime().availableProcessors();
 ![image-20220320094550957](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20220320094552.png)
 
 * CPU密集型任务
+  
   任务需要大量的运算，而没有阻塞，CPU一直全速运行，CPU密集型任务配置尽可能的少的线程数量，来尽可能压榨CPU的运算能力。
+  
   公式：`CPU核数 + 1` 个线程的线程池。
+  
 * IO密集型任务
+  
   数据库交互，文件上传下载，网络传输等。
+  
   方法一：由于IO密集型任务线程并不是一直在执行任务，可以多分配一点线程数，如`CPU核数*2`。
+  
   方法二：任务需要大量的IO，即大量的阻塞。在单线程上运IO密集型的任务会导致浪费大量的CPU运算能力浪费在等待。所以在IO密集型任务中使用多线程可以大大的加速程序运行，即使在单核CPU上，这种加速主要就是利用了被浪费掉的阻塞时间。
+  
   公式：`CPU核数/(1-阻塞系数)`，其中阻塞系数在0.8-0.9之间(比如8核CPU：8/(1 - 0.9)=80个线程数)。
 
 > 《Java并发编程实战》的作者 Brain Goetz 推荐的计算方法：
 >
 > * 线程数 = `CPU核数 * (1 + 平均等待时间 / 平均工作时间)`
 
-
-
-### ThreadPoolTaskExecutor
-
-参考资料: [Java ThreadPoolTaskExecutor.setQueueCapacity方法代码示例](https://vimsky.com/examples/detail/java-method-org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor.setQueueCapacity.html)
-
-```java
-@Configuration
-@EnableAsync
-public class ThreadPoolTaskConfig {
-
-    /**
-     * 当前机器的核数
-     */
-    private static final int CPU_NUM = Runtime.getRuntime().availableProcessors();
-    private static final int KEEP_ALIVE_TIME = 10;
-    private static final int QUEUE_CAPACITY = 100;
-    private static final int AWAIT_TERMINATION = 60;
-    private static final String THREAD_NAME_PREFIX = "XXX-THREAD-";
-
-    @Bean("threadPoolTaskExecutor")
-    public ThreadPoolTaskExecutor taskExecutor() {
-        ThreadPoolTaskExecutor taskExecutor = new ThreadPoolTaskExecutor();
-        //核心线程大小
-        taskExecutor.setCorePoolSize(CPU_NUM);
-        //最大线程大小
-        taskExecutor.setMaxPoolSize(CPU_NUM * 2 + 1);
-        //允许线程的空闲时间(秒)：当超过了核心线程出之外的线程在空闲时间到达之后会被销毁
-        taskExecutor.setKeepAliveSeconds(KEEP_ALIVE_TIME);
-        //缓冲队列最大容量，QueueCapacity默认值是: Integer.MAX_VALUE (可查看上述参考资料)
-        taskExecutor.setQueueCapacity(QUEUE_CAPACITY);
-        //设置线程池关闭的时候等待所有任务都完成再继续销毁其他的Bean, 默认值为“false”
-        taskExecutor.setWaitForTasksToCompleteOnShutdown(true);
-        //设置true时线程池中corePoolSize线程空闲时间达到keepAliveTime也将关闭
-        taskExecutor.setAllowCoreThreadTimeOut(true);
-        //线程池中任务的等待时间，如果超过这个时候还没有销毁就强制销毁
-        taskExecutor.setAwaitTerminationSeconds(AWAIT_TERMINATION);
-        //eg: CallerRunsPolicy只用调用者所在的线程来运行任务，会降低新任务的提交速度，影响程序的整体性能。
-        taskExecutor.setRejectedExecutionHandler(new ThreadPoolExecutor.CallerRunsPolicy());
-        //线程池名的前缀：设置好了之后可以方便定位处理任务所在的线程池
-        taskExecutor.setThreadNamePrefix(THREAD_NAME_PREFIX);
-        //手动创建线程池实例
-        taskExecutor.initialize();
-        return taskExecutor;
-    }
-}
-```
-
-```java
-//使用方式一：注入、调用方法
-@Autowired
-private ThreadPoolTaskExecutor threadPoolTaskExecutor;
-...
-Future<Result<XxxDTO>> xxxDTOFuture = threadPoolTaskExecutor.submit(() -> {
-    // 查询用户和当前人的好友关系
-    return 方法调用;
-});
-Result<XxxDTO> xxxDTOResult =  xxxDTOFuture.get();
-
-//使用方式二：注解  依赖注解@EnableAsync --参考SpringBoot异步任务
-@Async("threadPoolTaskExecutor")
-public XXX method() {
-    //TODO
-}
-```
-
-测试调用：
-
-![image-20220324221640949](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20220324221642.png)
-
-![image-20220324221655243](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20220324221656.png)

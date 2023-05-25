@@ -1,0 +1,996 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=light>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Jerry(姜源)">
+  <meta name="keywords" content="Java,Html,CSS,JavaScript,Python,C,Linux,shell编程经验分享、技术总结、心得体会">
+  
+    <meta name="description" content="一、数据库   数据库 类型 MySQL兼容 事务支持 计算资源扩容能力 存储资源扩容能力    MySQL 单机DB；OLTP - - 单机DB不支持扩容。可以通过分表分库，挂载只读实例来实现 单机DB不支持扩容。可以通过分表分库，挂载只读实例来实现   PolarDB 一主多从DB；OLTP 100%兼容，无需修改代码 ACID。支持READ_UNCOMMITTED、READ_COMMITTE">
+<meta property="og:type" content="article">
+<meta property="og:title" content="02-数据库含中间件选型">
+<meta property="og:url" content="https://janycode.github.io/2020/06/13/19_%E6%8A%80%E6%9C%AF%E9%80%89%E5%9E%8B/02-%E6%95%B0%E6%8D%AE%E5%BA%93%E5%90%AB%E4%B8%AD%E9%97%B4%E4%BB%B6%E9%80%89%E5%9E%8B/index.html">
+<meta property="og:site_name" content="姜源の云笔记">
+<meta property="og:description" content="一、数据库   数据库 类型 MySQL兼容 事务支持 计算资源扩容能力 存储资源扩容能力    MySQL 单机DB；OLTP - - 单机DB不支持扩容。可以通过分表分库，挂载只读实例来实现 单机DB不支持扩容。可以通过分表分库，挂载只读实例来实现   PolarDB 一主多从DB；OLTP 100%兼容，无需修改代码 ACID。支持READ_UNCOMMITTED、READ_COMMITTE">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230525163757.png">
+<meta property="article:published_time" content="2020-06-13T15:18:32.000Z">
+<meta property="article:modified_time" content="2023-05-25T11:53:21.639Z">
+<meta property="article:author" content="Jerry(姜源)">
+<meta property="article:tag" content="框架">
+<meta property="article:tag" content="选型">
+<meta property="article:tag" content="数据库">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230525163757.png">
+  
+  
+    <meta name="referrer" content="no-referrer-when-downgrade">
+  
+  
+  <title>02-数据库含中间件选型 - 姜源の云笔记</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"janycode.github.io","root":"/","version":"1.9.0","typing":{"enable":true,"typeSpeed":50,"cursorChar":"|","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":false},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":"bfff735c897eb60ea49b735096b20e47","google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+
+  
+<meta name="generator" content="Hexo 6.2.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 50vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>姜源の云笔记</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tools/">
+                <i class="iconfont icon-slack-fill"></i>
+                工具
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" target="_blank" rel="noopener" href="https://janycode.gitee.io/">
+                <i class="iconfont icon-gitee-fill"></i>
+                Gitee
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="02-数据库含中间件选型"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-author" aria-hidden="true"></i>
+        Jerry(姜源)
+      </span>
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2020-06-13 23:18" pubdate>
+          星期六, 2020/06/13 23:18:32
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          <!-- compatible with older versions-->
+          4k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          <!-- compatible with older versions-->
+          34 分钟
+        
+      </span>
+    
+
+    
+    
+      
+        <span id="busuanzi_container_page_pv" style="display: none">
+          <i class="iconfont icon-eye" aria-hidden="true"></i>
+          <span id="busuanzi_value_page_pv"></span> 次
+        </span>
+        
+      
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">02-数据库含中间件选型</h1>
+            
+            <div class="markdown-body">
+              
+              <h2 id="一、数据库"><a href="#一、数据库" class="headerlink" title="一、数据库"></a>一、数据库</h2><table>
+<thead>
+<tr>
+<th>数据库</th>
+<th>类型</th>
+<th>MySQL兼容</th>
+<th>事务支持</th>
+<th>计算资源扩容能力</th>
+<th>存储资源扩容能力</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>MySQL</code></td>
+<td>单机DB；OLTP</td>
+<td>-</td>
+<td>-</td>
+<td>单机DB不支持扩容。可以通过分表分库，挂载只读实例来实现</td>
+<td>单机DB不支持扩容。可以通过分表分库，挂载只读实例来实现</td>
+</tr>
+<tr>
+<td><code>PolarDB</code></td>
+<td>一主多从DB；OLTP</td>
+<td>100%兼容，无需修改代码</td>
+<td>ACID。支持READ_UNCOMMITTED、READ_COMMITTED（默认）、REPEATABLE_READ。不支持SERIALIZABLE</td>
+<td>一主节点（可读可写），多从节点（只读），最多可扩容至16个节点。可在线扩容</td>
+<td>使用PolarFS共享文件系统，多个节点使用相同的存储，容量最大支持200TB。自动扩容</td>
+</tr>
+<tr>
+<td><strong>PolarDB-X</strong></td>
+<td>分布式DB；HTAP</td>
+<td>兼容MySQL协议。兼容绝大多数MySQL的各种DML、DAL、DDL语法</td>
+<td>ACID。默认采用可重复读（Repeatable Read）隔离级别</td>
+<td>CN节点可以动态扩容</td>
+<td>CN节点可以动态扩容</td>
+</tr>
+<tr>
+<td>TableStore</td>
+<td>NoSQL</td>
+<td>不支持</td>
+<td>不支持</td>
+<td>自动扩容</td>
+<td>自动扩容</td>
+</tr>
+<tr>
+<td><code>MongoDB</code></td>
+<td>NoSQL</td>
+<td>不支持</td>
+<td>单个文档支持原子性，多个文档需要4.2版本后的分布式事务</td>
+<td>可以增加节点</td>
+<td>可以增加节点</td>
+</tr>
+<tr>
+<td><strong>TiDB</strong></td>
+<td>NewSQL; HTAP</td>
+<td>TiDB 高度兼容 MySQL 5.7 协议、MySQL 5.7 常用的功能及语法</td>
+<td>ACID。支持READ_COMMITTED、REPEATABLE_READ</td>
+<td>TiDB可动态扩容</td>
+<td>TiKV可动态扩容</td>
+</tr>
+<tr>
+<td><strong>ClickHouse</strong></td>
+<td>OLAP</td>
+<td>不支持MySQL协议；支持SQL，许多情况下与ANSI SQL标准一致</td>
+<td>-</td>
+<td>可以增加节点</td>
+<td>可以增加节点</td>
+</tr>
+</tbody></table>
+<h3 id="1-PolarDB"><a href="#1-PolarDB" class="headerlink" title="1.PolarDB"></a><strong>1.PolarDB</strong></h3><p>PolarDB是对MySQL主从架构的深度优化。MySQL主从架构本质上依然是单机DB，存在单机计算资源及存储资源的限制。PolarDB将计算资源及存储资源分离为DBServer及DataServer，而DataServer是一个分布式共享文件系统，使得存储空间可以<strong>突破单机存储限制</strong>。</p>
+<ul>
+<li>PolarDB的DBServer同样分为主从节点，主节点只有一个负责数据读写，从节点可以最多有15个，只能进行读操作。所有DBServer节点共享存储在底层DataServer中的数据。</li>
+<li>计算及存储的分离使得增加从节点时不再像MySQL加从库时，需要进行数据同步。<strong>从节点的增加是瞬时的</strong>。</li>
+<li>MySQL的Binlog主从同步是逻辑层的数据同步，同样的SQL需要在从库再执行一遍，使得主从延迟有时会比较明显。而PolarDB主从同步使用Redo Log，Redo Log记录了在数据的物理层面修改的信息，从库可以按照Log直接对数据页进行修改，从而<strong>提高了主从同步的速度</strong>。</li>
+<li><strong>会话一致性</strong>，PolarDB使用会话一致性解决主从不同步问题。</li>
+<li>DataServer使用三副本及分布式一致性协议Raft保证数据的可靠性。DataServer<strong>自动进行扩容管理</strong>。</li>
+<li><a target="_blank" rel="noopener" href="https://developer.aliyun.com/article/221020">阿里云官方PolarDB深度解读</a></li>
+</ul>
+<p><strong>从MySQL迁移至PolarDB的理由：</strong></p>
+<ol>
+<li>无法拒绝的理由：PolarDB 100%兼容MySQL协议及SQL语法及函数。</li>
+<li>容量可以突破单机磁盘限制，目前上限为200TB。是大表业务的福音。</li>
+<li>从节点增加更快。对于经常性有并发高峰的业务，可以快速增加从节点。</li>
+</ol>
+<p><strong>迁移成本：</strong></p>
+<ol>
+<li>由于PolarDB 100%兼容MySQL协议及SQL语法及函数，已有的数据库客户端不需要改动，在代码层面没有任何代价。</li>
+<li>学习成本几乎为零。 PolarDB Server 设计上，采用 MySQL 完全兼容的思路，完全拥抱开源生态，从 SQL 的编译、性能优化器和执行计划等等都保留了传统关系型数据库的特色。</li>
+<li>由云完全托管，没有新的运维成本开销。</li>
+<li>阿里云的MySQL的RDS可以一键升级至PolarDB，也可以通过相关迁移工具做数据同步</li>
+</ol>
+<h3 id="2-PolarDB-X"><a href="#2-PolarDB-X" class="headerlink" title="2.PolarDB-X"></a><strong>2.PolarDB-X</strong></h3><p>与PolarDB不同，PolarDB-X是一个真正的分布式服务。他的计算节点CN，数据节点DN都是可以进行扩容的。</p>
+<ul>
+<li>相较与MySQL的服务架构，PolarDB的DBServer可以认为就是MySQL本身，而DataServer则是文件服务。而PolarDB-X的CN节点可以认为是MySQL的Server部分，DN节点为MySQL的InnoDB部分。</li>
+<li>与PolarDB的主从架构不同，PolarDB-X的计算节点是<strong>完全分布式</strong>的。</li>
+<li>DN节点基于Paxos提供数据<strong>高可靠、强一致</strong>保障。同时通过MVCC维护分布式事务可见性。且DN支持PB级别的数据量</li>
+<li>PolarDB-X将数据表以水平分区的方式，分布在多个存储节点（DN）上。数据分区方式由分区函数决定，PolarDB-X支持哈希（Hash）、范围（Range）等常用的分区函数。</li>
+<li>PolarDB-X支持并行计算，将SQL拆分为不同的Task分配给多个CN，并行计算。</li>
+</ul>
+<p><strong>从MySQL迁移至PolarDB-X的理由：</strong></p>
+<ol>
+<li>PolarDB-X将兼容MySQL以及周边生态作为核心设计目标之一。兼容MySQL协议，兼容绝大部分MySQL函数。SQL使用限制见<a target="_blank" rel="noopener" href="https://help.aliyun.com/document_detail/313262.htm">官方文档</a></li>
+<li>PolarDB-X作为分布式服务，在可支撑并发量及容量上都是可以线性扩展的。</li>
+</ol>
+<p><strong>迁移成本</strong></p>
+<ol>
+<li>PolarDB 100%兼容MySQL协议，不需要改变客户端</li>
+<li>学习成本低，除了部分由于分布式导致的SQL使用限制</li>
+<li>由云完全托管，没有新的运维成本开销。</li>
+<li>历史数据可以通过相关工具自动迁移至PolarDB-X。</li>
+</ol>
+<h3 id="3-TableStore"><a href="#3-TableStore" class="headerlink" title="3.TableStore"></a><strong>3.TableStore</strong></h3><p>TableStore是NoSQL数据库，虽然与MySQL不具有可比性。但是作为一种存储的选择，有理由介绍一下。</p>
+<ul>
+<li>TableStore支持<strong>宽列模型</strong>（Wide column），可以存储非结构化的数据。与MySQL相比，MySQL必须预先定义好表结构，读写必须对已有字段进行。</li>
+<li>分布式服务。对数据的<strong>高可靠和一致性</strong>有保障。</li>
+<li>可以通过<strong>二级索引、多元索引</strong>加速查询及支持复杂查询</li>
+</ul>
+<p><strong>从MySQL迁移至TableStore的理由：</strong></p>
+<ul>
+<li>没有理由！不可以互相替代。TableStore不支持MySQL协议，也不支持SQL（通过阿里云的其他工具进行转换除外）</li>
+<li>TableStore可以弥补MySQL在数据量和并发方面的限制问题，可以应用在大数据场景</li>
+<li>可以使用阿里云相关工具将MySQL数据同步至TableStore</li>
+</ul>
+<h3 id="4-MongoDB"><a href="#4-MongoDB" class="headerlink" title="4.MongoDB"></a><strong>4.MongoDB</strong></h3><p>MongoDB是介于关系型DB与非关系型DB之间的分布式数据库。不支持MySQL协议，也不支持SQL。拥有自己的CRUD方法，同样支持聚合。</p>
+<ul>
+<li>MongoDB支持的数据结构是类似json的<strong>bjson格式</strong>，单条数据称为文档，可以类比与MySQL的一行数据。不需要固定的表结构。</li>
+<li>bjson格式可以存储复杂的数据结构、包括内嵌数据，并支持<strong>丰富的查询方式</strong>。</li>
+<li>MongoDB只能支持单文档的原子性，在4.2版本之后可以使用<strong>分布式事务</strong>，并支持ACID。</li>
+<li>支持<strong>索引、复合索引、内嵌结构索引</strong></li>
+<li>可以指定索引或者复合索引作为数据分片值，支持<strong>hash分片及范围分片</strong>。</li>
+</ul>
+<p><strong>从MySQL迁移至MongoDB的理由：</strong></p>
+<ul>
+<li>bjson格式支持存储和查询复杂的数据结构，没有MySQL那样的表结构限制</li>
+<li>MongoDB是分布式的。对数据的高可靠和一致性有保障。</li>
+<li>MongoDB也可以通过建立索引加速查询。</li>
+</ul>
+<p><strong>迁移成本</strong></p>
+<ul>
+<li>需要客户端代码改造</li>
+<li>需要重新设计业务数据存储</li>
+<li>需要学习MongoDB开发及运维知识</li>
+<li>需要自行迁移</li>
+</ul>
+<h3 id="5-TiDB"><a href="#5-TiDB" class="headerlink" title="5.TiDB"></a><strong>5.TiDB</strong></h3><p>TiDB是分布式关系型数据库，兼容 MySQL 5.7 协议和 MySQL 生态等重要特性。在存储层，相比PolarDB-X使用Innodb，TiDB使用RocksDB存储引擎，数据以KV结构存储。</p>
+<ul>
+<li>作为关系型数据库，<strong>支持事务，支持索引</strong>等MySQL常用特性。</li>
+<li>纯分布式数据库，对数据的<strong>高可靠和一致性</strong>有保障。</li>
+<li>支持<strong>hash分片及范围分片</strong>。</li>
+</ul>
+<p><strong>从MySQL迁移至TiDB的理由：</strong></p>
+<ul>
+<li>TiDB是分布式的。对数据的高可靠和一致性有保障。</li>
+<li>兼容 MySQL 5.7 协议、MySQL 常用的功能、MySQL 生态</li>
+</ul>
+<p><strong>迁移成本</strong></p>
+<ul>
+<li>兼容 MySQL 5.7 协议、MySQL 常用的功能、MySQL 生态，应用无需或者修改少量代码即可从 MySQL 迁移到 TiDB</li>
+<li>新的学习成本：TiDB底层存储使用了新的KV存储引擎RocksDB</li>
+<li>可以使用TiDB Lightning将数据从MySQL迁移至TiDB</li>
+</ul>
+<h3 id="6-ClickHouse"><a href="#6-ClickHouse" class="headerlink" title="6.ClickHouse"></a><strong>6.ClickHouse</strong></h3><p>ClickHouse是列式存储计算的分析型数据库，适用于写少但是查询海量数据的场景。</p>
+<ul>
+<li>使用<strong>列式存储</strong>，有更高的压缩比。相比行式存储，相同大小的空间，列式可以存储更多条数据，减少IO。</li>
+<li><strong>无需事务</strong>，数据一致性要求低</li>
+<li>需要<strong>低频批量写入</strong>甚至一次性写入</li>
+<li><strong>有限支持delete、update</strong>（删除、更新操作为异步操作，需要后台compation之后才能生效）</li>
+<li><strong>向量化执行与SIMD</strong>，对内存中的列式数据，一个batch调用一次SIMD指令。加速计算。</li>
+<li>ClickHouse支持更多的数据类型，如数组、Map、嵌套类型</li>
+</ul>
+<p><strong>从MySQL迁移至ClickHouse的理由：</strong></p>
+<ul>
+<li>完全没有理由！MySQL是OLTP，ClickHouse是OLAP。不可相互替代</li>
+<li>ClickHouse可以全量和增量导入MySQL数据。</li>
+</ul>
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a><strong>总结</strong></h3><ul>
+<li>从兼容角度，以上DB的MySQL兼容度从高到低依次为：1. PolarDB 2. PolarDB-X、TiDB；ClickHouse支持SQL；TableStore、MongoDB不支持SQL。</li>
+<li>从事务支持角度，PolarDB与MySQL具有相同的事务支持，PolarDB-X、MongoDB、TiDB支持分布式事务。</li>
+<li>从高可用角度，PolarDB支持有限的扩容。PolarDB-X、MongoDB、TiDB、TableStore、ClickHouse均为分布式服务，支持扩容。</li>
+<li>从存储结构来看，MySQL、PolarDB、PolarDB-X、TiDB、ClickHouse都是固定表结构。MongoDB、TableStore为Scheme-Free。TableStore、ClickHouse为列式存储。MongoDB与ClickHouse支持存储和查询复杂数据类型。</li>
+</ul>
+<h2 id="二、数据库中间件"><a href="#二、数据库中间件" class="headerlink" title="二、数据库中间件"></a>二、数据库中间件</h2><p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230525163757.png" srcset="/img/loading.gif" lazyload alt="image-20230525163756618"></p>
+
+              
+            </div>
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/19-%E6%8A%80%E6%9C%AF%E9%80%89%E5%9E%8B/" class="category-chain-item">19_技术选型</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/%E6%A1%86%E6%9E%B6/">#框架</a>
+      
+        <a href="/tags/%E9%80%89%E5%9E%8B/">#选型</a>
+      
+        <a href="/tags/%E6%95%B0%E6%8D%AE%E5%BA%93/">#数据库</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>02-数据库含中间件选型</div>
+      <div>https://janycode.github.io/2020/06/13/19_技术选型/02-数据库含中间件选型/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Jerry(姜源)</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2020年6月13日</div>
+        </div>
+      
+      
+      <div class="license-meta-item">
+        <div>许可协议</div>
+        <div>
+          
+            
+            
+              <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+              <span class="hint--top hint--rounded" aria-label="BY - 姜源">
+                <i class="iconfont icon-by"></i>
+              </span>
+              </a>
+            
+          
+        </div>
+      </div>
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2020/06/13/19_%E6%8A%80%E6%9C%AF%E9%80%89%E5%9E%8B/01-ORM%E6%A1%86%E6%9E%B6%E9%80%89%E5%9E%8B/" title="01-ORM框架选型">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">01-ORM框架选型</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2020/06/13/19_%E6%8A%80%E6%9C%AF%E9%80%89%E5%9E%8B/04-%E6%B3%A8%E5%86%8C%E4%B8%AD%E5%BF%83%E9%80%89%E5%9E%8B/" title="04-注册中心选型">
+                        <span class="hidden-mobile">04-注册中心选型</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+  <article id="comments" lazyload>
+    
+  <div id="SOHUCS" sid='https://janycode.github.io/2020/06/13/19_%E6%8A%80%E6%9C%AF%E9%80%89%E5%9E%8B/02-%E6%95%B0%E6%8D%AE%E5%BA%93%E5%90%AB%E4%B8%AD%E9%97%B4%E4%BB%B6%E9%80%89%E5%9E%8B/'></div>
+  <script type="text/javascript">
+    Fluid.utils.loadComments('#SOHUCS', function() {
+      Fluid.utils.createScript("https://changyan.sohu.com/upload/changyan.js", function() {
+        window.changyan.api.config({"appid":"cyw5OHIcO","appkey":"fea3446b3df4b3f129f34da4cbc87e51"})
+      });
+    });
+  </script>
+  <noscript>Please enable JavaScript to view the comments</noscript>
+
+
+  </article>
+
+
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://simple.blog.csdn.net" target="_blank" rel="nofollow noopener"><span>CSDN</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/janycode" target="_blank" rel="nofollow noopener"><span>GitHub</span></a> <i class="iconfont icon-love"></i> <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="busuanzi_container_site_pv" style="display: none">
+        总访问量(PV) 
+        <span id="busuanzi_value_site_pv"></span>
+         次，
+      </span>
+    
+    
+      <span id="busuanzi_container_site_uv" style="display: none">
+        总访客数(UV) 
+        <span id="busuanzi_value_site_uv"></span>
+         人
+      </span>
+    
+    
+  
+</div>
+
+  
+  
+  
+</div>
+
+<!-- live2d 动画 -->
+<script src="https://eqcn.ajz.miesnfu.com/wp-content/plugins/wp-3d-pony/live2dw/lib/L2Dwidget.min.js"></script>
+<script>
+    L2Dwidget.init({
+        "model": {
+            jsonPath: "https://unpkg.com/live2d-widget-model-haruto@1.0.5/assets/haruto.model.json",
+            "scale": 1
+        },
+        "display": {
+            "position": "right",
+            "width": 100,
+            "height": 200,
+            "hOffset": 35,
+            "vOffset": -85
+        },
+        "mobile": {
+            "show": false,
+            "scale": 0.1
+        },
+        "react": {
+            "opacityDefault": 0.75,
+            "opacityOnHover": 0.2
+        }
+    });
+</script>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <!-- Baidu Analytics -->
+    <script defer>
+      if (!Fluid.ctx.dnt) {
+        var _hmt = _hmt || [];
+        (function() {
+          var hm = document.createElement("script");
+          hm.src = "https://hm.baidu.com/hm.js?bfff735c897eb60ea49b735096b20e47";
+          var s = document.getElementsByTagName("script")[0];
+          s.parentNode.insertBefore(hm, s);
+        })();
+      }
+    </script>
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.0/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      headingSelector : CONFIG.toc.headingSelector || 'h1,h2,h3,h4,h5,h6',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      collapseDepth   : CONFIG.toc.collapseDepth || 0,
+      scrollSmooth    : true,
+      headingsOffset  : -boardTop
+    });
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+  });
+</script>
+
+
+  <script>
+  (function() {
+    var enableLang = CONFIG.code_language.enable && CONFIG.code_language.default;
+    var enableCopy = CONFIG.copy_btn;
+    if (!enableLang && !enableCopy) {
+      return;
+    }
+
+    function getBgClass(ele) {
+      return Fluid.utils.getBackgroundLightness(ele) >= 0 ? 'code-widget-light' : 'code-widget-dark';
+    }
+
+    var copyTmpl = '';
+    copyTmpl += '<div class="code-widget">';
+    copyTmpl += 'LANG';
+    copyTmpl += '</div>';
+    jQuery('.markdown-body pre').each(function() {
+      var $pre = jQuery(this);
+      if ($pre.find('code.mermaid').length > 0) {
+        return;
+      }
+      if ($pre.find('span.line').length > 0) {
+        return;
+      }
+
+      var lang = '';
+
+      if (enableLang) {
+        lang = CONFIG.code_language.default;
+        if ($pre[0].children.length > 0 && $pre[0].children[0].classList.length >= 2 && $pre.children().hasClass('hljs')) {
+          lang = $pre[0].children[0].classList[1];
+        } else if ($pre[0].getAttribute('data-language')) {
+          lang = $pre[0].getAttribute('data-language');
+        } else if ($pre.parent().hasClass('sourceCode') && $pre[0].children.length > 0 && $pre[0].children[0].classList.length >= 2) {
+          lang = $pre[0].children[0].classList[1];
+          $pre.parent().addClass('code-wrapper');
+        } else if ($pre.parent().hasClass('markdown-body') && $pre[0].classList.length === 0) {
+          $pre.wrap('<div class="code-wrapper"></div>');
+        }
+        lang = lang.toUpperCase().replace('NONE', CONFIG.code_language.default);
+      }
+      $pre.append(copyTmpl.replace('LANG', lang).replace('code-widget">',
+        getBgClass($pre[0]) + (enableCopy ? ' code-widget copy-btn" data-clipboard-snippet><i class="iconfont icon-copy"></i>' : ' code-widget">')));
+
+      if (enableCopy) {
+        Fluid.utils.createScript('https://lib.baomitu.com/clipboard.js/2.0.10/clipboard.min.js', function() {
+          var clipboard = new window.ClipboardJS('.copy-btn', {
+            target: function(trigger) {
+              var nodes = trigger.parentNode.childNodes;
+              for (var i = 0; i < nodes.length; i++) {
+                if (nodes[i].tagName === 'CODE') {
+                  return nodes[i];
+                }
+              }
+            }
+          });
+          clipboard.on('success', function(e) {
+            e.clearSelection();
+            e.trigger.innerHTML = e.trigger.innerHTML.replace('icon-copy', 'icon-success');
+            setTimeout(function() {
+              e.trigger.innerHTML = e.trigger.innerHTML.replace('icon-success', 'icon-copy');
+            }, 2000);
+          });
+        });
+      }
+    });
+  })();
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script  src="/js/local-search.js" ></script>
+
+  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>
