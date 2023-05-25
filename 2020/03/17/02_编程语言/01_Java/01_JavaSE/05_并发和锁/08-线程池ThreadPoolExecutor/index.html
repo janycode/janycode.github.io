@@ -31,10 +31,8 @@
 <meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20220320092926.png">
 <meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20220320092515.png">
 <meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20220320094552.png">
-<meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20220324221642.png">
-<meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20220324221656.png">
 <meta property="article:published_time" content="2020-03-17T08:32:14.000Z">
-<meta property="article:modified_time" content="2023-05-23T08:54:10.715Z">
+<meta property="article:modified_time" content="2023-05-25T11:53:18.183Z">
 <meta property="article:author" content="Jerry(姜源)">
 <meta property="article:tag" content="JavaSE">
 <meta property="article:tag" content="线程池">
@@ -261,7 +259,7 @@
         <i class="iconfont icon-chart"></i>
         
           <!-- compatible with older versions-->
-          4.9k 字
+          3k 字
         
       </span>
     
@@ -273,7 +271,7 @@
         
         
           <!-- compatible with older versions-->
-          42 分钟
+          26 分钟
         
       </span>
     
@@ -400,8 +398,16 @@
 
 <p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20220320094552.png" srcset="/img/loading.gif" lazyload alt="image-20220320094550957"></p>
 <ul>
-<li>CPU密集型任务<br>任务需要大量的运算，而没有阻塞，CPU一直全速运行，CPU密集型任务配置尽可能的少的线程数量，来尽可能压榨CPU的运算能力。<br>公式：<code>CPU核数 + 1</code> 个线程的线程池。</li>
-<li>IO密集型任务<br>数据库交互，文件上传下载，网络传输等。<br>方法一：由于IO密集型任务线程并不是一直在执行任务，可以多分配一点线程数，如<code>CPU核数*2</code>。<br>方法二：任务需要大量的IO，即大量的阻塞。在单线程上运IO密集型的任务会导致浪费大量的CPU运算能力浪费在等待。所以在IO密集型任务中使用多线程可以大大的加速程序运行，即使在单核CPU上，这种加速主要就是利用了被浪费掉的阻塞时间。<br>公式：<code>CPU核数/(1-阻塞系数)</code>，其中阻塞系数在0.8-0.9之间(比如8核CPU：8&#x2F;(1 - 0.9)&#x3D;80个线程数)。</li>
+<li><p>CPU密集型任务</p>
+<p>任务需要大量的运算，而没有阻塞，CPU一直全速运行，CPU密集型任务配置尽可能的少的线程数量，来尽可能压榨CPU的运算能力。</p>
+<p>公式：<code>CPU核数 + 1</code> 个线程的线程池。</p>
+</li>
+<li><p>IO密集型任务</p>
+<p>数据库交互，文件上传下载，网络传输等。</p>
+<p>方法一：由于IO密集型任务线程并不是一直在执行任务，可以多分配一点线程数，如<code>CPU核数*2</code>。</p>
+<p>方法二：任务需要大量的IO，即大量的阻塞。在单线程上运IO密集型的任务会导致浪费大量的CPU运算能力浪费在等待。所以在IO密集型任务中使用多线程可以大大的加速程序运行，即使在单核CPU上，这种加速主要就是利用了被浪费掉的阻塞时间。</p>
+<p>公式：<code>CPU核数/(1-阻塞系数)</code>，其中阻塞系数在0.8-0.9之间(比如8核CPU：8&#x2F;(1 - 0.9)&#x3D;80个线程数)。</p>
+</li>
 </ul>
 <blockquote>
 <p>《Java并发编程实战》的作者 Brain Goetz 推荐的计算方法：</p>
@@ -409,14 +415,6 @@
 <li>线程数 &#x3D; <code>CPU核数 * (1 + 平均等待时间 / 平均工作时间)</code></li>
 </ul>
 </blockquote>
-<h3 id="ThreadPoolTaskExecutor"><a href="#ThreadPoolTaskExecutor" class="headerlink" title="ThreadPoolTaskExecutor"></a>ThreadPoolTaskExecutor</h3><p>参考资料: <a target="_blank" rel="noopener" href="https://vimsky.com/examples/detail/java-method-org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor.setQueueCapacity.html">Java ThreadPoolTaskExecutor.setQueueCapacity方法代码示例</a></p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@Configuration</span><br><span class="hljs-meta">@EnableAsync</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">ThreadPoolTaskConfig</span> &#123;<br><br>    <span class="hljs-comment">/**</span><br><span class="hljs-comment">     * 当前机器的核数</span><br><span class="hljs-comment">     */</span><br>    <span class="hljs-keyword">private</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">final</span> <span class="hljs-type">int</span> <span class="hljs-variable">CPU_NUM</span> <span class="hljs-operator">=</span> Runtime.getRuntime().availableProcessors();<br>    <span class="hljs-keyword">private</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">final</span> <span class="hljs-type">int</span> <span class="hljs-variable">KEEP_ALIVE_TIME</span> <span class="hljs-operator">=</span> <span class="hljs-number">10</span>;<br>    <span class="hljs-keyword">private</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">final</span> <span class="hljs-type">int</span> <span class="hljs-variable">QUEUE_CAPACITY</span> <span class="hljs-operator">=</span> <span class="hljs-number">100</span>;<br>    <span class="hljs-keyword">private</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">final</span> <span class="hljs-type">int</span> <span class="hljs-variable">AWAIT_TERMINATION</span> <span class="hljs-operator">=</span> <span class="hljs-number">60</span>;<br>    <span class="hljs-keyword">private</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">final</span> <span class="hljs-type">String</span> <span class="hljs-variable">THREAD_NAME_PREFIX</span> <span class="hljs-operator">=</span> <span class="hljs-string">&quot;XXX-THREAD-&quot;</span>;<br><br>    <span class="hljs-meta">@Bean(&quot;threadPoolTaskExecutor&quot;)</span><br>    <span class="hljs-keyword">public</span> ThreadPoolTaskExecutor <span class="hljs-title function_">taskExecutor</span><span class="hljs-params">()</span> &#123;<br>        <span class="hljs-type">ThreadPoolTaskExecutor</span> <span class="hljs-variable">taskExecutor</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">ThreadPoolTaskExecutor</span>();<br>        <span class="hljs-comment">//核心线程大小</span><br>        taskExecutor.setCorePoolSize(CPU_NUM);<br>        <span class="hljs-comment">//最大线程大小</span><br>        taskExecutor.setMaxPoolSize(CPU_NUM * <span class="hljs-number">2</span> + <span class="hljs-number">1</span>);<br>        <span class="hljs-comment">//允许线程的空闲时间(秒)：当超过了核心线程出之外的线程在空闲时间到达之后会被销毁</span><br>        taskExecutor.setKeepAliveSeconds(KEEP_ALIVE_TIME);<br>        <span class="hljs-comment">//缓冲队列最大容量，QueueCapacity默认值是: Integer.MAX_VALUE (可查看上述参考资料)</span><br>        taskExecutor.setQueueCapacity(QUEUE_CAPACITY);<br>        <span class="hljs-comment">//设置线程池关闭的时候等待所有任务都完成再继续销毁其他的Bean, 默认值为“false”</span><br>        taskExecutor.setWaitForTasksToCompleteOnShutdown(<span class="hljs-literal">true</span>);<br>        <span class="hljs-comment">//设置true时线程池中corePoolSize线程空闲时间达到keepAliveTime也将关闭</span><br>        taskExecutor.setAllowCoreThreadTimeOut(<span class="hljs-literal">true</span>);<br>        <span class="hljs-comment">//线程池中任务的等待时间，如果超过这个时候还没有销毁就强制销毁</span><br>        taskExecutor.setAwaitTerminationSeconds(AWAIT_TERMINATION);<br>        <span class="hljs-comment">//eg: CallerRunsPolicy只用调用者所在的线程来运行任务，会降低新任务的提交速度，影响程序的整体性能。</span><br>        taskExecutor.setRejectedExecutionHandler(<span class="hljs-keyword">new</span> <span class="hljs-title class_">ThreadPoolExecutor</span>.CallerRunsPolicy());<br>        <span class="hljs-comment">//线程池名的前缀：设置好了之后可以方便定位处理任务所在的线程池</span><br>        taskExecutor.setThreadNamePrefix(THREAD_NAME_PREFIX);<br>        <span class="hljs-comment">//手动创建线程池实例</span><br>        taskExecutor.initialize();<br>        <span class="hljs-keyword">return</span> taskExecutor;<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
-
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-comment">//使用方式一：注入、调用方法</span><br><span class="hljs-meta">@Autowired</span><br><span class="hljs-keyword">private</span> ThreadPoolTaskExecutor threadPoolTaskExecutor;<br>...<br>Future&lt;Result&lt;XxxDTO&gt;&gt; xxxDTOFuture = threadPoolTaskExecutor.submit(() -&gt; &#123;<br>    <span class="hljs-comment">// 查询用户和当前人的好友关系</span><br>    <span class="hljs-keyword">return</span> 方法调用;<br>&#125;);<br>Result&lt;XxxDTO&gt; xxxDTOResult =  xxxDTOFuture.get();<br><br><span class="hljs-comment">//使用方式二：注解  依赖注解@EnableAsync --参考SpringBoot异步任务</span><br><span class="hljs-meta">@Async(&quot;threadPoolTaskExecutor&quot;)</span><br><span class="hljs-keyword">public</span> XXX <span class="hljs-title function_">method</span><span class="hljs-params">()</span> &#123;<br>    <span class="hljs-comment">//TODO</span><br>&#125;<br></code></pre></td></tr></table></figure>
-
-<p>测试调用：</p>
-<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20220324221642.png" srcset="/img/loading.gif" lazyload alt="image-20220324221640949"></p>
-<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20220324221656.png" srcset="/img/loading.gif" lazyload alt="image-20220324221655243"></p>
 
               
             </div>
@@ -527,9 +525,9 @@
                   <article class="post-prev col-6">
                     
                     
-                      <a href="/2020/04/05/17_%E5%88%86%E5%B8%83%E5%BC%8F/01_%E5%88%86%E5%B8%83%E5%BC%8FID/01SnowFlake%E9%9B%AA%E8%8A%B1%E7%AE%97%E6%B3%95/" title="01 SnowFlake雪花算法">
+                      <a href="/2020/03/17/20_%E6%94%B6%E8%97%8F%E6%95%B4%E7%90%86/04_%E9%85%8D%E7%BD%AE%E7%B1%BB/03-ThreadPoolConfig/" title="03-ThreadPoolTaskConfig">
                         <i class="iconfont icon-arrowleft"></i>
-                        <span class="hidden-mobile">01 SnowFlake雪花算法</span>
+                        <span class="hidden-mobile">03-ThreadPoolTaskConfig</span>
                         <span class="visible-mobile">上一篇</span>
                       </a>
                     
