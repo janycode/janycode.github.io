@@ -15,12 +15,12 @@ categories:
 熔断：Hystrix、Resilience4j
 负载均衡：Nginx、SLB、DNS、F5、LVS、OpenResty、HAproxy
 
-数据库：MySql、Oracle、polarDB、Redis、MongoDB、PostgreSQL、Memcache、HBase、ElasticSearch
+数据库：MySql、Oracle、polarDB、Redis、MariaDB、MongoDB、PostgreSQL、Memcache、HBase、ElasticSearch
 数据库中间件：DRDS、Mycat、ShardingSphere/Sharding-Proxy、Atlas（360）、Cobar(不维护了)
 SQL审核：Yearning、Archery
 全文检索：Lucene、ElasticSearch、Solr、Hibernate Search
 缓存：Redis、MemCached、OsCache、EhCache
-缓存客户端：Jedis、Redisson
+缓存客户端：Spring Data Redis、Jedis、Redisson
 
 ORM框架：Hibernate、MyBatis、MyBatisPlus、SpringDataJPA、JOOQ
 
@@ -28,28 +28,34 @@ ORM框架：Hibernate、MyBatis、MyBatisPlus、SpringDataJPA、JOOQ
 配置中心：Nacos、Apollo、Spring Cloud Config、Disconf、Diamond
 限流工具：Sentinel
 认证鉴权：Spring Security、JWT、Shiro
-消息队列：RocketMQ、MQCloud（搜狐）、RabbitMQ、ActiveMQ、Kafka、ZeroMQ、Redis
+消息队列：RocketMQ、MQCloud（搜狐）、RabbitMQ、ActiveMQ、Kafka、ZeroMQ、Redis、Pulsar
 RPC框架：Feign+Ribbon、Dubbo、grpc、Motan、Thrift
 文件系统：OSS、NFS、FastDFS、MogileFS
 爬虫框架：Jsoup、Webmagic、Crawler4j、Nutch
-网络框架：Netty、RocketMQ+MQTT、WebScoket
+网络框架：Netty、RocketMQ+MQTT、WebSocket
 
 分布式ID：UUID、SnowFlake、Leaf（美团）、TinyID（滴滴）、Uidgenerator（百度）
 分布式框架：SpringCould、SpringCloudAlibaba、Dubbo、Motan
+分布式存储：HDFS、Swift、Ceph
 分布式事务：Seata
-分布式任务：XXL-JOB、Elastic-Job、Saturn、Quartz
+分布式任务：XXL-JOB、Elastic-Job、Quartz、Saturn
 分布式追踪：SkyWalking、Spring Cloud Sleuth、Pinpoint、CAT、zipkin
-分布式日志：Elasticsearch、Logstash、Kibana（ELK）、Redis、kafka
+分布式日志：Elasticsearch、Logstash、Kibana（ELK）、Redis、kafka、Filebeat
 
-工具类整合：Hutool
+工具整合：Hutool、Guava
 AI写代码：Cursor(客户端)、Copilot(插件)、Bito(插件)、CodeGPT(插件)
+JSON解析：Fastjson、Jackson、Gson
+Excel解析：EasyExcel、Apache POI、EasyPoi
+图片绘制：Graphics2D
+规则引擎：Easy Rules、Drools、ILOG JRules
+模版引擎：Freemarker、Thymeleaf
 
 调试工具：Arthas、JMH
 代码检测：Sonar、SpotBugs
 单元测试：Junit、Jacoco、Diffblue、Mockito
 接口文档：Knife4j、Swagger、YApi、Apidoc、ApiFox
 压测工具：LoadRunner、JMeter、AB、webbench、MeterSphere
-构建工具：Maven、Gradle
+构建工具：Maven、Gradle、Bazel
 集成部署：Docker、Jenkins、Git、Maven
 容器管理：Docker、Rancher、K8s(Kubernetes)
 系统监控：Grafana、Prometheus、Influxdb、Telegraf、Lepus
@@ -155,7 +161,7 @@ AI写代码：Cursor(客户端)、Copilot(插件)、Bito(插件)、CodeGPT(插�
 
 ### 7.Redis客户端
 
-##### Ridisson（98）
+##### Redisson（98）
 
 ##### RedisTemplate（80）
 
