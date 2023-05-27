@@ -5,7 +5,9 @@ layout: tools
 comment: 'changyan'
 ---
 
-[ASCII码速查(图)](https://img-blog.csdnimg.cn/20200523091817497.png)  
+<center><h1>工欲善其事，必先利其器</h1></center>
+
+[ASCII码可显示字符](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230527165726.png)  |  [ASCII码控制字符](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230527165811.png)
 
 <br>
 
@@ -13,17 +15,17 @@ comment: 'changyan'
 
 ### 开发工具
 
-|     类型      |             工具名             |                           链接地址                           |                             备注                             |
-| :-----------: | :----------------------------: | :----------------------------------------------------------: | :----------------------------------------------------------: |
-|   Java 环境   |           **JDK1.8**           | [官方下载](https://janycode.github.io/2016/04/28/02_%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/01_Java/01_JavaSE/01_%E5%9F%BA%E7%A1%80%E8%AF%AD%E6%B3%95/01-JDK%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA/index.html) |                    下载与本地环境变量配置                    |
-|  Tomcat 环境  |           **Tomcat**           |            [官方下载](http://tomcat.apache.org/)             |                        下载解压文件夹                        |
-|  Maven 环境   |           **Maven**            |            [官方下载](https://mvnrepository.com/)            |                        下载解压文件夹                        |
-|  Jmeter 压测  |           **Jmeter**           |  [官方下载](https://jmeter.apache.org/download_jmeter.cgi)   |                        下载解压文件夹                        |
-|   Java IDE    | **Intellij IDEA 2023.1(new)**  | [百度网盘](https://pan.baidu.com/s/1td5tmXFJUMt3obVDs2x20A?pwd=frvn) |                         提取码: frvn                         |
-|  数据库建模   |     **PowerDesigner 16.5**     | [百度网盘](https://pan.baidu.com/s/1ChK0u4tS9qQQBYLUklngNQ)  |                         提取码: mgut                         |
-| MySQL 客户端  |    **Navicat  Premium 15**     | [百度网盘](https://pan.baidu.com/s/1nLYd8LcC4jDSFrbhxZZnfw)  | 提取码: 1zmt, 候选[DBeaver](https://dbeaver.io/download/)，都比Navicat强 |
-| Redis 客户端  | **AnotherRedisDesktopManager** | [Gitee下载](https://gitee.com/qishibo/AnotherRedisDesktopManager/releases) |                  开源免费，功能比普通的强大                  |
-| HTTP 接口测试 |          **Postman**           |        [官方下载](https://www.postman.com/downloads/)        | HTTP接口测试工具, 候选 [Apifox](https://www.apifox.cn/)/[Apipost](https://www.apipost.cn/) |
+|     类型      |             工具名              |                           链接地址                           |                             备注                             |
+| :-----------: | :-----------------------------: | :----------------------------------------------------------: | :----------------------------------------------------------: |
+|   Java 环境   |           **JDK1.8**            | [官方下载](https://janycode.github.io/2016/04/28/02_%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/01_Java/01_JavaSE/01_%E5%9F%BA%E7%A1%80%E8%AF%AD%E6%B3%95/01-JDK%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA/index.html) |                    下载与本地环境变量配置                    |
+|  Tomcat 环境  |           **Tomcat**            |            [官方下载](http://tomcat.apache.org/)             |                        下载解压文件夹                        |
+|  Maven 环境   |            **Maven**            |            [官方下载](https://mvnrepository.com/)            |                        下载解压文件夹                        |
+|  Jmeter 压测  |           **Jmeter**            |  [官方下载](https://jmeter.apache.org/download_jmeter.cgi)   |                        下载解压文件夹                        |
+|   Java IDE    | **Intellij IDEA 2023.1(`new`)** | [百度网盘](https://pan.baidu.com/s/1td5tmXFJUMt3obVDs2x20A?pwd=frvn) |                         提取码: frvn                         |
+|  数据库建模   |     **PowerDesigner 16.5**      | [百度网盘](https://pan.baidu.com/s/1ChK0u4tS9qQQBYLUklngNQ)  |                         提取码: mgut                         |
+| MySQL 客户端  |     **Navicat  Premium 15**     | [百度网盘](https://pan.baidu.com/s/1nLYd8LcC4jDSFrbhxZZnfw)  | 提取码: 1zmt, 候选[DBeaver](https://dbeaver.io/download/)，都比Navicat强 |
+| Redis 客户端  | **AnotherRedisDesktopManager**  | [Gitee下载](https://gitee.com/qishibo/AnotherRedisDesktopManager/releases) |                  开源免费，功能比普通的强大                  |
+| HTTP 接口测试 |           **Postman**           |        [官方下载](https://www.postman.com/downloads/)        | HTTP接口测试工具, 候选 [Apifox](https://www.apifox.cn/)/[Apipost](https://www.apipost.cn/) |
 
 <br>
 

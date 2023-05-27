@@ -30,7 +30,7 @@ public class SpringDemoApplication {
 }
 ```
 
-一个是@SpringBootApplication，可以参考下一篇文章 [SpringBoot自动配置实现原理及源码解析]() 另一个关键点是SpringApplication.run()方法，这是一个静态方法，详细看下代码：
+一个是@SpringBootApplication，可以参考下一篇文章 [SpringBoot自动配置实现原理及源码解析](#/./18_源码分析/02-SpringBoot自动配置实现原理及源码解析) 另一个关键点是SpringApplication.run()方法，这是一个静态方法，详细看下代码：
 
 ```java
 /**
