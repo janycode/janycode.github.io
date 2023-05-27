@@ -129,12 +129,6 @@ Elements resultLinks = doc.select("h3.r > a"); // direct a after h3
 
 如何快速定位页面上元素的内容？答案是打开Chrome，按F12打开开发者工具，定位到想要的DOM节点，右键，copy，选择Copy selector，即可生成CSS选择器，类似于`body > div > div.content > div.col2 > div > h3:nth-child(10)`
 
-
-
-![img](https://pic2.zhimg.com/80/v2-3c40829a650f96ab57be6975d78f8601_720w.webp)
-
-
-
 遗憾的是Jsoup不支持Xpath选择器，但是早就有人意识到这个问题了，所以诞生了**JsoupXpath**
 
 > **JsoupXpath** 是一款纯Java开发的使用xpath解析提取html数据的解析器，针对html解析完全重新实现了W3C XPATH 1.0标准语法，xpath的Lexer和Parser基于Antlr4构建，html的DOM树生成采用Jsoup，故命名为JsoupXpath. 为了在java里也享受xpath的强大与方便但又苦于找不到一款足够好用的xpath解析器，故开发了JsoupXpath。JsoupXpath的实现逻辑清晰，扩展方便， 支持完备的W3C XPATH 1.0标准语法，W3C规范：http://www.w3.org/TR/1999/REC-xpath-19991116 ，JsoupXpath语法描述文件[Xpath.g4](https://github.com/zhegexiaohuozi/JsoupXpath/blob/master/src/main/resources/Xpath.g4)
@@ -192,7 +186,7 @@ String safe = Jsoup.clean(unsafe, Whitelist.basic());
 
 
 
-## csdn2md
+## **csdn2md**
 
 使用 jsoup 爬虫爬取 csdn 的博客信息并同时转为 markdown 格式：
 
