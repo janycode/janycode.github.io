@@ -264,4 +264,4 @@ done
 echo "部署成功！！！"
 ```
 
-以及参考: [脚本：一键发布两个博客](https://janycode.gitee.io/#/./02_%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/03_Shell/01-shell%E8%84%9A%E6%9C%AC%E5%9F%BA%E7%A1%80%E8%AF%AD%E6%B3%95?id=%e8%84%9a%e6%9c%ac%ef%bc%9a%e4%b8%80%e9%94%ae%e5%8f%91%e5%b8%83%e4%b8%a4%e4%b8%aa%e5%8d%9a%e5%ae%a2)
+以及专门写了个更方便的: [脚本：一键发布两个博客](https://janycode.gitee.io/#/./02_%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/03_Shell/01-shell%E8%84%9A%E6%9C%AC%E5%9F%BA%E7%A1%80%E8%AF%AD%E6%B3%95?id=%e8%84%9a%e6%9c%ac%ef%bc%9a%e4%b8%80%e9%94%ae%e5%8f%91%e5%b8%83%e4%b8%a4%e4%b8%aa%e5%8d%9a%e5%ae%a2)

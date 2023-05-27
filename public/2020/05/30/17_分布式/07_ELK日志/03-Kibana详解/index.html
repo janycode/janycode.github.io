@@ -1,0 +1,949 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=light>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Jerry(姜源)">
+  <meta name="keywords" content="Java,Html,CSS,JavaScript,Python,C,Linux,shell编程经验分享、技术总结、心得体会">
+  
+    <meta name="description" content="ELK是一套针对日志数据做解决方案的框架，分别代表了三款产品：  E: ElasticSearch（ES），负责日志的存储和检索；  L：Logstash，负责日志的收集，过滤和格式化；  K：Kibana，负责日志的展示统计和数据可视化。   Kibana是一个开源的分析和可视化平台，设计用于和Elasticsearch一起工作。 你用Kibana来搜索，查看，并和存储在Elasticsea">
+<meta property="og:type" content="article">
+<meta property="og:title" content="03 Kibana详解">
+<meta property="og:url" content="https://janycode.github.io/2020/05/30/17_%E5%88%86%E5%B8%83%E5%BC%8F/07_ELK%E6%97%A5%E5%BF%97/03-Kibana%E8%AF%A6%E8%A7%A3/index.html">
+<meta property="og:site_name" content="姜源の云笔记">
+<meta property="og:description" content="ELK是一套针对日志数据做解决方案的框架，分别代表了三款产品：  E: ElasticSearch（ES），负责日志的存储和检索；  L：Logstash，负责日志的收集，过滤和格式化；  K：Kibana，负责日志的展示统计和数据可视化。   Kibana是一个开源的分析和可视化平台，设计用于和Elasticsearch一起工作。 你用Kibana来搜索，查看，并和存储在Elasticsea">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20220605211638.png">
+<meta property="article:published_time" content="2020-05-30T13:15:39.000Z">
+<meta property="article:modified_time" content="2023-05-27T03:09:32.229Z">
+<meta property="article:author" content="Jerry(姜源)">
+<meta property="article:tag" content="架构">
+<meta property="article:tag" content="分布式">
+<meta property="article:tag" content="Kibana">
+<meta property="article:tag" content="ELK">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20220605211638.png">
+  
+  
+    <meta name="referrer" content="no-referrer-when-downgrade">
+  
+  
+  <title>03 Kibana详解 - 姜源の云笔记</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"janycode.github.io","root":"/","version":"1.9.0","typing":{"enable":true,"typeSpeed":50,"cursorChar":"|","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":false},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":"bfff735c897eb60ea49b735096b20e47","google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+
+  
+<meta name="generator" content="Hexo 6.2.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 50vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>姜源の云笔记</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tools/">
+                <i class="iconfont icon-slack-fill"></i>
+                工具
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" target="_blank" rel="noopener" href="https://janycode.gitee.io/">
+                <i class="iconfont icon-gitee-fill"></i>
+                Gitee
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="03 Kibana详解"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-author" aria-hidden="true"></i>
+        Jerry(姜源)
+      </span>
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2020-05-30 21:15" pubdate>
+          星期六, 2020/05/30 21:15:39
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          <!-- compatible with older versions-->
+          5.1k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          <!-- compatible with older versions-->
+          43 分钟
+        
+      </span>
+    
+
+    
+    
+      
+        <span id="busuanzi_container_page_pv" style="display: none">
+          <i class="iconfont icon-eye" aria-hidden="true"></i>
+          <span id="busuanzi_value_page_pv"></span> 次
+        </span>
+        
+      
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">03 Kibana详解</h1>
+            
+            <div class="markdown-body">
+              
+              <p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230527095119.png" srcset="/img/loading.gif" lazyload alt="image-20230527095119"></p>
+<blockquote>
+<p>ELK是一套针对日志数据做解决方案的框架，分别代表了三款产品：</p>
+<ul>
+<li>E: ElasticSearch（ES），负责日志的存储和检索； </li>
+<li>L：Logstash，负责日志的收集，过滤和格式化； </li>
+<li>K：Kibana，负责日志的展示统计和数据可视化。</li>
+</ul>
+</blockquote>
+<p>Kibana是一个开源的分析和可视化平台，设计用于和Elasticsearch一起工作。</p>
+<p>你用Kibana来搜索，查看，并和存储在Elasticsearch索引中的数据进行交互。</p>
+<p>你可以轻松地执行高级数据分析，并且以各种图标、表格和地图的形式可视化数据。</p>
+<p>Kibana使得理解大量数据变得很容易。它简单的、基于浏览器的界面使你能够快速创建和共享动态仪表板，实时显示Elasticsearch查询的变化。</p>
+<h3 id="1-安装Kibana"><a href="#1-安装Kibana" class="headerlink" title="1. 安装Kibana"></a>1. 安装Kibana</h3><p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20220612220112.png" srcset="/img/loading.gif" lazyload alt="image-20220612220111201"></p>
+<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20220612220128.png" srcset="/img/loading.gif" lazyload alt="image-20220612220127780"></p>
+<h3 id="2-Kibana配置"><a href="#2-Kibana配置" class="headerlink" title="2. Kibana配置"></a>2. Kibana配置</h3><p> <a target="_blank" rel="noopener" href="https://www.elastic.co/guide/en/kibana/current/settings.html">https://www.elastic.co/guide/en/kibana/current/settings.html</a></p>
+<h3 id="3-访问Kibana"><a href="#3-访问Kibana" class="headerlink" title="3. 访问Kibana"></a>3. 访问Kibana</h3><p> Kibana是一个Web应用程序，你可以通过5601来访问它。例如：localhost:5601 或者 <a target="_blank" rel="noopener" href="http://yourdomain.com:5601/">http://YOURDOMAIN.com:5601</a></p>
+<p>当访问Kibana时，默认情况下，Discover页面加载时选择了默认索引模式。时间过滤器设置为最近15分钟，搜索查询设置为match-all(*)</p>
+<h4 id="3-1-检查Kibana状态"><a href="#3-1-检查Kibana状态" class="headerlink" title="3.1. 检查Kibana状态"></a>3.1. 检查Kibana状态</h4><p><a target="_blank" rel="noopener" href="http://localhost:5601/status">http://localhost:5601/status</a></p>
+<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20220612220554.png" srcset="/img/loading.gif" lazyload alt="image-20220612220553608"></p>
+<p>或者 <a target="_blank" rel="noopener" href="http://192.168.101.5:5601/api/status">http://192.168.101.5:5601/api/status</a> 返回JSON格式状态信息</p>
+<h3 id="4-用Elasticsearch连接到Kibana"><a href="#4-用Elasticsearch连接到Kibana" class="headerlink" title="4. 用Elasticsearch连接到Kibana"></a>4. 用Elasticsearch连接到Kibana</h3><p> 在你开始用Kibana之前，你需要告诉Kibana你想探索哪个Elasticsearch索引。第一次访问Kibana是，系统会提示你定义一个索引模式以匹配一个或多个索引的名字。</p>
+<p>（提示：默认情况下，Kibana连接允许在localhost上的Elasticsearch实例。为了连接到一个不同的Elasticsearch实例，修改kabana.yml中Elasticsearch的URL，然后重启Kibana。）</p>
+<p>为了配置你想要用Kibana访问的Elasticsearch索引：</p>
+<p>　　1、访问Kibana UI。例如，localhost:56011 或者 <a target="_blank" rel="noopener" href="http://yourdomain.com:5601/">http://YOURDOMAIN.com:5601</a></p>
+<p>　　2、指定一个索引模式来匹配一个或多个你的Elasticsearch索引。当你指定了你的索引模式以后，任何匹配到的索引都将被展示出来。</p>
+<p>　　（画外音：*匹配0个或多个字符； 指定索引默认是为了匹配索引，确切的说是匹配索引名字）</p>
+<p>　　3、点击“<strong>Next Step</strong>”以选择你想要用来执行基于时间比较的包含timestamp字段的索引。如果你的索引没有基于时间的数据，那么选择“<strong>I don’t want to use the Time Filter</strong>”选项。</p>
+<p>　　4、点击“<strong>Create index pattern</strong>”按钮来添加索引模式。第一个索引模式自动配置为默认的索引默认，以后当你有多个索引模式的时候，你就可以选择将哪一个设为默认。（提示：Management &gt; Index Patterns）</p>
+<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20220612220613.png" srcset="/img/loading.gif" lazyload alt="image-20220612220612487"></p>
+<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20220612220625.png" srcset="/img/loading.gif" lazyload alt="image-20220612220624330"></p>
+<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20220612220646.png" srcset="/img/loading.gif" lazyload alt="image-20220612220645911"></p>
+<p>现在，Kibana已经连接到你的Elasticsearch数据。Kibana展示了一个只读的字段列表，这些字段是匹配到的这个索引配置的字段。</p>
+<h3 id="5-Discover"><a href="#5-Discover" class="headerlink" title="5. Discover"></a>5. Discover</h3><p>你可以从Discover页面交互式的探索你的数据。你可以访问与所选择的索引默认匹配的每个索引中的每个文档。你可以提交查询请求，过滤搜索结构，并查看文档数据。你也可以看到匹配查询请求的文档数量，以及字段值统计信息。如果你选择的索引模式配置了time字段，则文档随时间的分布将显示在页面顶部的直方图中。</p>
+<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20220612220706.png" srcset="/img/loading.gif" lazyload alt="image-20220612220705482"></p>
+<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20220612220721.png" srcset="/img/loading.gif" lazyload alt="image-20220612220720310"></p>
+<h4 id="5-1-设置时间过滤"><a href="#5-1-设置时间过滤" class="headerlink" title="5.1. 设置时间过滤"></a>5.1. 设置时间过滤</h4><p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20220612220737.png" srcset="/img/loading.gif" lazyload alt="image-20220612220737130"></p>
+<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20220612220749.png" srcset="/img/loading.gif" lazyload alt="image-20220612220748177"></p>
+<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20220612220759.png" srcset="/img/loading.gif" lazyload alt="image-20220612220758481"></p>
+<h4 id="5-2-搜索数据"><a href="#5-2-搜索数据" class="headerlink" title="5.2. 搜索数据"></a>5.2. 搜索数据</h4><p>你可以在搜索框中输入查询条件来查询当前索引模式匹配的索引。在查询的时候，你可以使用Kibana标准的查询语言（基于Lucene的查询语法）或者完全基于JSON的Elasticsearch查询语言DSL。Kibana查询语言可以使用自动完成和简化的查询语法作为实验特性，您可以在查询栏的“选项”菜单下进行选择。</p>
+<p>当你提交一个查询请求时，直方图、文档表和字段列表都会更新，以反映搜索结果。命中（匹配到的文档）总数会显示在工具栏中。文档表格中显示了前500个命中。默认情况下，按时间倒序排列，首先显示最新的文档。你可以通过点击“Time”列来逆转排序顺序。</p>
+<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20220612220813.png" srcset="/img/loading.gif" lazyload alt="image-20220612220812557"></p>
+<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20220612220830.png" srcset="/img/loading.gif" lazyload alt="image-20220612220826181"></p>
+<h5 id="5-2-1-Lucene查询语法"><a href="#5-2-1-Lucene查询语法" class="headerlink" title="5.2.1. Lucene查询语法"></a>5.2.1. Lucene查询语法</h5><p>Kibana查询语言基于Lucene查询语法。下面是一些提示，可能会帮到你：</p>
+<ul>
+<li>为了执行一个文本搜索，可以简单的输入一个文本字符串。例如，如果你想搜索web服务器的日志，你可以输入关键字”<strong>safari</strong>“，这样你就可以搜索到所有有关”safari”的字段</li>
+<li>为了搜索一个特定字段的特定值，可以用字段的名称作为前缀。例如，你输入”<strong>status:200</strong>“，将会找到所有status字段的值是200的文档</li>
+<li>为了搜索一个范围值，你可以用括号范围语法，**[START_VALUE TO END_VALUE]<strong>。例如，为了找到状态码是4xx的文档，你可以输入</strong>status:[400 TO 499]**</li>
+<li>为了指定更改复杂的查询条件，你可以用布尔操作符 <strong>AND</strong> , <strong>OR</strong> , 和 <strong>NOT</strong>。例如，为了找到状态码是4xx并且extension字段是php或者html的文档，你可以输入<strong>status:[400 TO 499] AND (extension:php OR extension:html)</strong></li>
+</ul>
+<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20220612221438.png" srcset="/img/loading.gif" lazyload alt="image-20220612221437782"></p>
+<h5 id="5-2-2-Kibana查询语法增强"><a href="#5-2-2-Kibana查询语法增强" class="headerlink" title="5.2.2. Kibana查询语法增强"></a>5.2.2. Kibana查询语法增强</h5><p><strong>新的更简单的语法</strong></p>
+<p>如果你熟悉Kibana的旧Lucene查询语法，那么你应该对这种新的语法也不会陌生。基本原理保持不变，我们只是简单地改进了一些东西，使查询语言更易于使用。</p>
+<p>response:200 将匹配response字段的值是200的文档</p>
+<p>用引号引起来的一段字符串叫短语搜索。例如，message:”Quick brown fox” 将在message字段中搜索”quick brown fox”这个短语。如果没有引号，将会匹配到包含这些词的所有文档，而不管它们的顺序如何。这就意味着，会匹配到”Quick brown fox”，而不会匹配”quick fox brown”。（画外音：引号引起来作为一个整体）</p>
+<p>查询解析器将不再基于空格进行分割。多个搜索项必须由明确的布尔运算符分隔。注意，布尔运算符不区分大小写。</p>
+<p>在Lucene中，response:200 extension:php 等价于 response:200 and extension:php。这将匹配response字段值匹配200并且extenion字段值匹配php的文档。</p>
+<p>如果我们把中间换成or，那么response:200 or extension:php将匹配response字段匹配200 或者 extension字段匹配php的文档。</p>
+<p>默认情况下，and 比 or 具有更高优先级。</p>
+<p>response:200 and extension:php or extension:css 将匹配response是200并且extension是php，或者匹配extension是css而response任意</p>
+<p>括号可以改变这种优先级</p>
+<p>response:200 and (extension:php or extension:css) 将匹配response是200并且extension是php或者css的文档</p>
+<p>还有一种简写的方式：</p>
+<p>response:(200 or 404) 将匹配response字段是200或404的文档。字符值也可以是多个，比如：tags:(success and info and security)</p>
+<p>还可以用not</p>
+<p>not response:200 将匹配response不是200的文档</p>
+<p>response:200 and not (extension:php or extension:css) 将匹配response是200并且extension不是php也不是css的文档</p>
+<p>范围检索和Lucene有一点点不同</p>
+<p>代替 byte:&gt;1000，我们用byte &gt; 1000</p>
+<p>&gt;, &gt;&#x3D;, &lt;, &lt;&#x3D; 都是有效的操作符</p>
+<p>response:* 将匹配所有存在response字段的文档</p>
+<p>通配符查询也是可以的。machine.os:win* 将匹配machine.os字段以win开头的文档，像”windows 7”和”windows 10”这样的值都会被匹配到。</p>
+<p>通配符也允许我们一次搜索多个字段，例如，假设我们有machine.os和machine.os.keyword两个字段，我们想要搜索这两个字段都有”windows 10”，那么我们可以这样写”machine.os*:windows 10”</p>
+<h5 id="5-2-3-刷新搜索结果"><a href="#5-2-3-刷新搜索结果" class="headerlink" title="5.2.3. 刷新搜索结果"></a>5.2.3. 刷新搜索结果</h5><p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20220612221451.png" srcset="/img/loading.gif" lazyload alt="image-20220612221450031"></p>
+<h4 id="5-3-按字段过滤"><a href="#5-3-按字段过滤" class="headerlink" title="5.3. 按字段过滤"></a>5.3. 按字段过滤</h4><p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20220612221504.png" srcset="/img/loading.gif" lazyload alt="image-20220612221503906"></p>
+<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20220612221518.png" srcset="/img/loading.gif" lazyload alt="image-20220612221517235"></p>
+<p>以上是控制列表显示哪些字段，还有一种方式是在查看文档数据的时候点那个像书一样的小图标</p>
+<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20220612221530.png" srcset="/img/loading.gif" lazyload alt="image-20220612221529131"></p>
+<p>删除也是可以的</p>
+<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20220612221541.png" srcset="/img/loading.gif" lazyload alt="image-20220612221540765"></p>
+<p>我们还可以编辑一个DSL查询语句，用于过滤筛选，例如</p>
+<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20220612221551.png" srcset="/img/loading.gif" lazyload alt="image-20220612221550800"></p>
+<h4 id="5-4-查看文档数据"><a href="#5-4-查看文档数据" class="headerlink" title="5.4. 查看文档数据"></a>5.4. 查看文档数据</h4><p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20220612221641.png" srcset="/img/loading.gif" lazyload alt="image-20220612221640929"></p>
+<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20220612221658.png" srcset="/img/loading.gif" lazyload alt="image-20220612221657572"></p>
+<h4 id="5-5-查看文档上下文"><a href="#5-5-查看文档上下文" class="headerlink" title="5.5. 查看文档上下文"></a>5.5. 查看文档上下文</h4><p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20220612221706.png" srcset="/img/loading.gif" lazyload alt="image-20220612221705901"></p>
+<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20220612221716.png" srcset="/img/loading.gif" lazyload alt="image-20220612221715200"></p>
+<h4 id="5-6-查看字段数据统计"><a href="#5-6-查看字段数据统计" class="headerlink" title="5.6. 查看字段数据统计"></a>5.6. 查看字段数据统计</h4><p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20220612221741.png" srcset="/img/loading.gif" lazyload alt="image-20220612221740934"></p>
+<h3 id="6-Visualize"><a href="#6-Visualize" class="headerlink" title="6. Visualize"></a>6. Visualize</h3><p> Visualize使得你可以创建在你的Elasticsearch索引中的数据的可视化效果。然后，你可以构建dashboard来展示相关可视化。</p>
+<p>Kibana可视化是基于Elasticsearch查询的。通过用一系列的Elasticsearch聚集来提取并处理你的数据，你可以创建图片来线上你需要了解的趋势、峰值和低点。</p>
+<h4 id="6-1-创建一个可视化"><a href="#6-1-创建一个可视化" class="headerlink" title="6.1. 创建一个可视化"></a>6.1. 创建一个可视化</h4><p>为了创建一个可视化的视图：</p>
+<p>第1步：点击左侧导航条中的“<strong>Visualize</strong>”按钮</p>
+<p>第2步：点击“Create new visualization”按钮或者**加号(+)**按钮</p>
+<p>第3步：选择一个可视化类型</p>
+<p>第4步：指定一个搜索查询来检索可视化数据</p>
+<p>第5步：在可视化的构建器中选择Y轴的聚合操作。例如，sum，average，count等等</p>
+<p>第6步：设置X轴</p>
+<p>例如：</p>
+<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20220612221752.png" srcset="/img/loading.gif" lazyload alt="image-20220612221752176"></p>
+<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20220612221802.png" srcset="/img/loading.gif" lazyload alt="image-20220612221801752"></p>
+<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20220612221819.png" srcset="/img/loading.gif" lazyload alt="image-20220612221818502"></p>
+<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20220612221829.png" srcset="/img/loading.gif" lazyload alt="image-20220612221828975"></p>
+<p>更多请看这里:</p>
+<p><a target="_blank" rel="noopener" href="https://www.elastic.co/guide/en/kibana/current/createvis.html">https://www.elastic.co/guide/en/kibana/current/createvis.html</a></p>
+<p><a target="_blank" rel="noopener" href="https://www.elastic.co/guide/en/kibana/current/xy-chart.html">https://www.elastic.co/guide/en/kibana/current/xy-chart.html</a></p>
+<p><a target="_blank" rel="noopener" href="https://www.elastic.co/guide/en/kibana/current/visualize.html">https://www.elastic.co/guide/en/kibana/current/visualize.html</a></p>
+<h3 id="7-Dashboard"><a href="#7-Dashboard" class="headerlink" title="7. Dashboard"></a>7. Dashboard</h3><p> Kibana仪表板显示可视化和搜索的集合。你可以安排、调整和编辑仪表板内容，然后保存仪表板以便共享它。</p>
+<h4 id="7-1-构建一个Dashboard"><a href="#7-1-构建一个Dashboard" class="headerlink" title="7.1. 构建一个Dashboard"></a>7.1. 构建一个Dashboard</h4><p>第1步：在导航条上点击“<strong>Dashboard</strong>”</p>
+<p>第2步：点击“Create new dashboard”或者“加号(+)”按钮</p>
+<p>第3步：点击“Add”按钮</p>
+<p>第4步：为了添加一个可视化，从可视化列表中选择一个，或者点击“Add new visualization”按钮新创建一个</p>
+<p>第5步：为了添加一个已保存的查询，点击“Saved Search”选项卡，然后从列表中选择一个</p>
+<p>第6步：当你完成添加并且调整了dashboard的内容后，去顶部菜单栏，点击“Save”，然后输入一个名字。</p>
+<p>默认情况下，Kibana仪表板使用浅色主题。要使用深色主题，单击“选项”并选择“使用深色主题”。要将dark主题设置为默认，请转到管理&gt;Management &gt; Advanced ，并将dashboard:defaultDarkTheme设置为On。</p>
+<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20220612221851.png" srcset="/img/loading.gif" lazyload alt="image-20220612221850745"></p>
+<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20220612221858.png" srcset="/img/loading.gif" lazyload alt="image-20220612221857220"></p>
+<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20220612221911.png" srcset="/img/loading.gif" lazyload alt="image-20220612221910244"></p>
+<h3 id="8-Monitoring"><a href="#8-Monitoring" class="headerlink" title="8. Monitoring"></a>8. Monitoring</h3><figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs css">Elasticsearch控制台打印日志<br><span class="hljs-selector-attr">[2018-08-15T14:48:26,874]</span><span class="hljs-selector-attr">[INFO ]</span><span class="hljs-selector-attr">[o.e.c.m.MetaDataCreateIndexService]</span> <span class="hljs-selector-attr">[Px524Ts]</span> <span class="hljs-selector-attr">[.monitoring-kibana-6-2018.08.15]</span> creating index, cause <span class="hljs-selector-attr">[auto(bulk api)]</span>, templates <span class="hljs-selector-attr">[.monitoring-kibana]</span>, shards <span class="hljs-selector-attr">[1]</span>/<span class="hljs-selector-attr">[0]</span>, mappings <span class="hljs-selector-attr">[doc]</span><br><br>Kibana控制台打印日志<br>log   <span class="hljs-selector-attr">[03:26:53.605]</span> <span class="hljs-selector-attr">[info]</span><span class="hljs-selector-attr">[license]</span><span class="hljs-selector-attr">[xpack]</span> Imported license information <span class="hljs-selector-tag">from</span> Elasticsearch for the <span class="hljs-selector-attr">[monitoring]</span> cluster: mode: basic | status: active<br></code></pre></td></tr></table></figure>
+
+<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20220612221928.png" srcset="/img/loading.gif" lazyload alt="image-20220612221927124"></p>
+<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20220612221937.png" srcset="/img/loading.gif" lazyload alt="image-20220612221936599"></p>
+<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20220612221950.png" srcset="/img/loading.gif" lazyload alt="image-20220612221950020"></p>
+<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20220612222008.png" srcset="/img/loading.gif" lazyload alt="image-20220612222007796"></p>
+<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20220612222020.png" srcset="/img/loading.gif" lazyload alt="image-20220612222019870"></p>
+<p><a target="_blank" rel="noopener" href="https://www.elastic.co/guide/en/kibana/current/elasticsearch-metrics.html">https://www.elastic.co/guide/en/kibana/current/elasticsearch-metrics.html</a></p>
+
+              
+            </div>
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/17-%E5%88%86%E5%B8%83%E5%BC%8F/" class="category-chain-item">17_分布式</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/17-%E5%88%86%E5%B8%83%E5%BC%8F/07-ELK%E6%97%A5%E5%BF%97/" class="category-chain-item">07_ELK日志</a>
+  
+  
+
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/%E6%9E%B6%E6%9E%84/">#架构</a>
+      
+        <a href="/tags/%E5%88%86%E5%B8%83%E5%BC%8F/">#分布式</a>
+      
+        <a href="/tags/Kibana/">#Kibana</a>
+      
+        <a href="/tags/ELK/">#ELK</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>03 Kibana详解</div>
+      <div>https://janycode.github.io/2020/05/30/17_分布式/07_ELK日志/03-Kibana详解/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Jerry(姜源)</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2020年5月30日</div>
+        </div>
+      
+      
+      <div class="license-meta-item">
+        <div>许可协议</div>
+        <div>
+          
+            
+            
+              <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+              <span class="hint--top hint--rounded" aria-label="BY - 姜源">
+                <i class="iconfont icon-by"></i>
+              </span>
+              </a>
+            
+          
+        </div>
+      </div>
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2020/05/30/17_%E5%88%86%E5%B8%83%E5%BC%8F/07_ELK%E6%97%A5%E5%BF%97/02-Logstash%E8%AF%A6%E8%A7%A3/" title="02 Logstash详解">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">02 Logstash详解</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2020/05/02/06_%E6%9C%8D%E5%8A%A1%E5%99%A8/01_Tomcat/04-Tomcat%E6%9C%8D%E5%8A%A1%E8%B0%83%E4%BC%98/" title="04-Tomcat服务调优">
+                        <span class="hidden-mobile">04-Tomcat服务调优</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+  <article id="comments" lazyload>
+    
+  <div id="SOHUCS" sid='https://janycode.github.io/2020/05/30/17_%E5%88%86%E5%B8%83%E5%BC%8F/07_ELK%E6%97%A5%E5%BF%97/03-Kibana%E8%AF%A6%E8%A7%A3/'></div>
+  <script type="text/javascript">
+    Fluid.utils.loadComments('#SOHUCS', function() {
+      Fluid.utils.createScript("https://changyan.sohu.com/upload/changyan.js", function() {
+        window.changyan.api.config({"appid":"cyw5OHIcO","appkey":"fea3446b3df4b3f129f34da4cbc87e51"})
+      });
+    });
+  </script>
+  <noscript>Please enable JavaScript to view the comments</noscript>
+
+
+  </article>
+
+
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://simple.blog.csdn.net" target="_blank" rel="nofollow noopener"><span>CSDN</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/janycode" target="_blank" rel="nofollow noopener"><span>GitHub</span></a> <i class="iconfont icon-love"></i> <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="busuanzi_container_site_pv" style="display: none">
+        总访问量(PV) 
+        <span id="busuanzi_value_site_pv"></span>
+         次，
+      </span>
+    
+    
+      <span id="busuanzi_container_site_uv" style="display: none">
+        总访客数(UV) 
+        <span id="busuanzi_value_site_uv"></span>
+         人
+      </span>
+    
+    
+  
+</div>
+
+  
+  
+  
+</div>
+
+<!-- live2d 动画 -->
+<script src="https://eqcn.ajz.miesnfu.com/wp-content/plugins/wp-3d-pony/live2dw/lib/L2Dwidget.min.js"></script>
+<script>
+    L2Dwidget.init({
+        "model": {
+            jsonPath: "https://unpkg.com/live2d-widget-model-haruto@1.0.5/assets/haruto.model.json",
+            "scale": 1
+        },
+        "display": {
+            "position": "right",
+            "width": 100,
+            "height": 200,
+            "hOffset": 35,
+            "vOffset": -85
+        },
+        "mobile": {
+            "show": false,
+            "scale": 0.1
+        },
+        "react": {
+            "opacityDefault": 0.75,
+            "opacityOnHover": 0.2
+        }
+    });
+</script>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <!-- Baidu Analytics -->
+    <script defer>
+      if (!Fluid.ctx.dnt) {
+        var _hmt = _hmt || [];
+        (function() {
+          var hm = document.createElement("script");
+          hm.src = "https://hm.baidu.com/hm.js?bfff735c897eb60ea49b735096b20e47";
+          var s = document.getElementsByTagName("script")[0];
+          s.parentNode.insertBefore(hm, s);
+        })();
+      }
+    </script>
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.0/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      headingSelector : CONFIG.toc.headingSelector || 'h1,h2,h3,h4,h5,h6',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      collapseDepth   : CONFIG.toc.collapseDepth || 0,
+      scrollSmooth    : true,
+      headingsOffset  : -boardTop
+    });
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+  });
+</script>
+
+
+  <script>
+  (function() {
+    var enableLang = CONFIG.code_language.enable && CONFIG.code_language.default;
+    var enableCopy = CONFIG.copy_btn;
+    if (!enableLang && !enableCopy) {
+      return;
+    }
+
+    function getBgClass(ele) {
+      return Fluid.utils.getBackgroundLightness(ele) >= 0 ? 'code-widget-light' : 'code-widget-dark';
+    }
+
+    var copyTmpl = '';
+    copyTmpl += '<div class="code-widget">';
+    copyTmpl += 'LANG';
+    copyTmpl += '</div>';
+    jQuery('.markdown-body pre').each(function() {
+      var $pre = jQuery(this);
+      if ($pre.find('code.mermaid').length > 0) {
+        return;
+      }
+      if ($pre.find('span.line').length > 0) {
+        return;
+      }
+
+      var lang = '';
+
+      if (enableLang) {
+        lang = CONFIG.code_language.default;
+        if ($pre[0].children.length > 0 && $pre[0].children[0].classList.length >= 2 && $pre.children().hasClass('hljs')) {
+          lang = $pre[0].children[0].classList[1];
+        } else if ($pre[0].getAttribute('data-language')) {
+          lang = $pre[0].getAttribute('data-language');
+        } else if ($pre.parent().hasClass('sourceCode') && $pre[0].children.length > 0 && $pre[0].children[0].classList.length >= 2) {
+          lang = $pre[0].children[0].classList[1];
+          $pre.parent().addClass('code-wrapper');
+        } else if ($pre.parent().hasClass('markdown-body') && $pre[0].classList.length === 0) {
+          $pre.wrap('<div class="code-wrapper"></div>');
+        }
+        lang = lang.toUpperCase().replace('NONE', CONFIG.code_language.default);
+      }
+      $pre.append(copyTmpl.replace('LANG', lang).replace('code-widget">',
+        getBgClass($pre[0]) + (enableCopy ? ' code-widget copy-btn" data-clipboard-snippet><i class="iconfont icon-copy"></i>' : ' code-widget">')));
+
+      if (enableCopy) {
+        Fluid.utils.createScript('https://lib.baomitu.com/clipboard.js/2.0.10/clipboard.min.js', function() {
+          var clipboard = new window.ClipboardJS('.copy-btn', {
+            target: function(trigger) {
+              var nodes = trigger.parentNode.childNodes;
+              for (var i = 0; i < nodes.length; i++) {
+                if (nodes[i].tagName === 'CODE') {
+                  return nodes[i];
+                }
+              }
+            }
+          });
+          clipboard.on('success', function(e) {
+            e.clearSelection();
+            e.trigger.innerHTML = e.trigger.innerHTML.replace('icon-copy', 'icon-success');
+            setTimeout(function() {
+              e.trigger.innerHTML = e.trigger.innerHTML.replace('icon-success', 'icon-copy');
+            }, 2000);
+          });
+        });
+      }
+    });
+  })();
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script  src="/js/local-search.js" ></script>
+
+  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

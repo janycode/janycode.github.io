@@ -15,6 +15,7 @@ categories:
 
 
 官网：https://www.rabbitmq.com/#getstarted
+
 中文教程网：http://rabbitmq.mr-ping.com
 
 

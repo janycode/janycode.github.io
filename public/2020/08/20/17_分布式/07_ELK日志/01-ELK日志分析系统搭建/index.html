@@ -1,0 +1,926 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=light>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Jerry(姜源)">
+  <meta name="keywords" content="Java,Html,CSS,JavaScript,Python,C,Linux,shell编程经验分享、技术总结、心得体会">
+  
+    <meta name="description" content="ELK是一套针对日志数据做解决方案的框架，分别代表了三款产品：  E: ElasticSearch（ES），负责日志的存储和检索；  L：Logstash，负责日志的收集，过滤和格式化；  K：Kibana，负责日志的展示统计和数据可视化。   一、ELK 是什么？ELK 是三个开源框架的简写，分别是：Elasticsearch、Logstash、Kibana 。  二、安装部署 Elasti">
+<meta property="og:type" content="article">
+<meta property="og:title" content="01-ELK日志分析系统搭建">
+<meta property="og:url" content="https://janycode.github.io/2020/08/20/17_%E5%88%86%E5%B8%83%E5%BC%8F/07_ELK%E6%97%A5%E5%BF%97/01-ELK%E6%97%A5%E5%BF%97%E5%88%86%E6%9E%90%E7%B3%BB%E7%BB%9F%E6%90%AD%E5%BB%BA/index.html">
+<meta property="og:site_name" content="姜源の云笔记">
+<meta property="og:description" content="ELK是一套针对日志数据做解决方案的框架，分别代表了三款产品：  E: ElasticSearch（ES），负责日志的存储和检索；  L：Logstash，负责日志的收集，过滤和格式化；  K：Kibana，负责日志的展示统计和数据可视化。   一、ELK 是什么？ELK 是三个开源框架的简写，分别是：Elasticsearch、Logstash、Kibana 。  二、安装部署 Elasti">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230527095119.png">
+<meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230527100200.png">
+<meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230527100700.png">
+<meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230527101110.png">
+<meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230527101126.png">
+<meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230527101150.png">
+<meta property="article:published_time" content="2020-08-20T14:36:51.000Z">
+<meta property="article:modified_time" content="2023-05-27T03:09:32.227Z">
+<meta property="article:author" content="Jerry(姜源)">
+<meta property="article:tag" content="架构">
+<meta property="article:tag" content="分布式">
+<meta property="article:tag" content="ELK">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230527095119.png">
+  
+  
+    <meta name="referrer" content="no-referrer-when-downgrade">
+  
+  
+  <title>01-ELK日志分析系统搭建 - 姜源の云笔记</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"janycode.github.io","root":"/","version":"1.9.0","typing":{"enable":true,"typeSpeed":50,"cursorChar":"|","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":false},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":"bfff735c897eb60ea49b735096b20e47","google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+
+  
+<meta name="generator" content="Hexo 6.2.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 50vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>姜源の云笔记</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tools/">
+                <i class="iconfont icon-slack-fill"></i>
+                工具
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" target="_blank" rel="noopener" href="https://janycode.gitee.io/">
+                <i class="iconfont icon-gitee-fill"></i>
+                Gitee
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="01-ELK日志分析系统搭建"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-author" aria-hidden="true"></i>
+        Jerry(姜源)
+      </span>
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2020-08-20 22:36" pubdate>
+          星期四, 2020/08/20 22:36:51
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          <!-- compatible with older versions-->
+          7.3k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          <!-- compatible with older versions-->
+          61 分钟
+        
+      </span>
+    
+
+    
+    
+      
+        <span id="busuanzi_container_page_pv" style="display: none">
+          <i class="iconfont icon-eye" aria-hidden="true"></i>
+          <span id="busuanzi_value_page_pv"></span> 次
+        </span>
+        
+      
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">01-ELK日志分析系统搭建</h1>
+            
+            <div class="markdown-body">
+              
+              <p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230527095119.png" srcset="/img/loading.gif" lazyload alt="image-20230527095118017"></p>
+<blockquote>
+<p>ELK是一套针对日志数据做解决方案的框架，分别代表了三款产品：</p>
+<ul>
+<li>E: ElasticSearch（ES），负责日志的存储和检索； </li>
+<li>L：Logstash，负责日志的收集，过滤和格式化； </li>
+<li>K：Kibana，负责日志的展示统计和数据可视化。</li>
+</ul>
+</blockquote>
+<h1 id="一、ELK-是什么？"><a href="#一、ELK-是什么？" class="headerlink" title="一、ELK 是什么？"></a>一、ELK 是什么？</h1><p>ELK 是三个开源框架的简写，分别是：Elasticsearch、Logstash、Kibana 。</p>
+<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230527100200.png" srcset="/img/loading.gif" lazyload alt="image-20230527100158786"></p>
+<h1 id="二、安装部署-Elasticsearch"><a href="#二、安装部署-Elasticsearch" class="headerlink" title="二、安装部署 Elasticsearch"></a>二、安装部署 Elasticsearch</h1><h3 id="1、下载"><a href="#1、下载" class="headerlink" title="1、下载"></a>1、下载</h3><p>官网下载地址：<a target="_blank" rel="noopener" href="https://www.elastic.co/cn/downloads/elasticsearch">https://www.elastic.co/cn/downloads/elasticsearch</a></p>
+<p>国内镜像源（华为）：<a target="_blank" rel="noopener" href="https://mirrors.huaweicloud.com/elasticsearch/">https://mirrors.huaweicloud.com/elasticsearch/</a></p>
+<p>推荐使用国内的下载地址，官网下载太慢了。</p>
+<p>选择合适的版本下载（推荐下载自带 JDK 的版本，否者自己配置的 JDK 可能不符合版本要求。注意：Elasticsearch 会优先使用系统配置的 JDK 。可将 Elasticsearch 自带的 JDK 配置到系统的环境变量中，如果不这样做的话，在安装 Logstash 时，启动会报没有配置 JDK 环境变量的错误。）</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs shell">[root@localhost ~]# wget https://mirrors.huaweicloud.com/elasticsearch/7.8.0/elasticsearch-7.8.0-linux-x86_64.tar.gz<br></code></pre></td></tr></table></figure>
+
+<h3 id="2、解压到指定目录"><a href="#2、解压到指定目录" class="headerlink" title="2、解压到指定目录"></a>2、解压到指定目录</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs shell"><span class="hljs-meta prompt_"># </span><span class="language-bash">新建文件夹</span><br>[root@localhost ~]# mkdir /usr/local/elasticsearch<br><span class="hljs-meta prompt_"></span><br><span class="hljs-meta prompt_"># </span><span class="language-bash">解压到指定文件夹</span><br>[root@localhost ~]# tar -zxvf elasticsearch-7.8.0-linux-x86_64.tar.gz -C /usr/local/elasticsearch/<br></code></pre></td></tr></table></figure>
+
+<h3 id="3、修改配置文件"><a href="#3、修改配置文件" class="headerlink" title="3、修改配置文件"></a>3、修改配置文件</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs shell"><span class="hljs-meta prompt_"># </span><span class="language-bash">进入安装目录</span><br>[root@localhost ~]# cd /usr/local/elasticsearch/elasticsearch-7.8.0/<br><span class="hljs-meta prompt_"></span><br><span class="hljs-meta prompt_"># </span><span class="language-bash">修改config/elasticsearch.yml</span><br>[root@localhost elasticsearch-7.8.0]# vim ./config/elasticsearch.yml<br><span class="hljs-meta prompt_"></span><br><span class="hljs-meta prompt_"># </span><span class="language-bash">修改以下几项：</span><br>node.name: node-1 # 设置节点名<br>network.host: 0.0.0.0 # 允许外部 ip 访问<br>cluster.initial_master_nodes: [&quot;node-1&quot;] # 设置集群初始主节点<br></code></pre></td></tr></table></figure>
+
+<h3 id="4、新建用户并赋权"><a href="#4、新建用户并赋权" class="headerlink" title="4、新建用户并赋权"></a>4、新建用户并赋权</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><code class="hljs shell"><span class="hljs-meta prompt_"># </span><span class="language-bash">添加用户 es</span><br>[root@localhost elasticsearch-7.8.0]# adduser es<br><span class="hljs-meta prompt_"></span><br><span class="hljs-meta prompt_"># </span><span class="language-bash">设置用户 es 的密码（需要输入两遍密码）</span><br><span class="hljs-meta prompt_"># </span><span class="language-bash">（如果设置密码过于简单可能会提示 BAD PASSWORD: XXX ，如果是用 root 用户操作可忽略提示继续输入第二遍密码强制设置密码）</span><br>[root@localhost elasticsearch-7.8.0]# passwd es<br>Changing password for user es.<br>New password: <br>BAD PASSWORD: The password is shorter than 8 characters<br>Retype new password: <br>passwd: all authentication tokens updated successfully.<br><span class="hljs-meta prompt_"></span><br><span class="hljs-meta prompt_"># </span><span class="language-bash">将对应的文件夹权限赋予用户 es</span><br>[root@localhost elasticsearch-7.8.0]# chown -R es /usr/local/elasticsearch<br></code></pre></td></tr></table></figure>
+
+<h3 id="5、切换至新建的用户并启动-Elasticsearch"><a href="#5、切换至新建的用户并启动-Elasticsearch" class="headerlink" title="5、切换至新建的用户并启动 Elasticsearch"></a>5、切换至新建的用户并启动 Elasticsearch</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs shell"><span class="hljs-meta prompt_"># </span><span class="language-bash">切换至用户 es</span><br>[root@localhost elasticsearch-7.8.0]# su es<br><span class="hljs-meta prompt_"></span><br><span class="hljs-meta prompt_"># </span><span class="language-bash">启动 ElasticSearch （-d 表示在后台启动）</span><br>[es@localhost elasticsearch-7.8.0]$ ./bin/elasticsearch -d<br></code></pre></td></tr></table></figure>
+
+<p>错误处理<br>启动之后可能会报以下三个错误：</p>
+<p>ERROR: [3] bootstrap checks failed<br>[1]: max file descriptors [4096] for elasticsearch process is too low, increase to at least [65535]<br>[2]: max number of threads [3795] for user [es] is too low, increase to at least [4096]<br>[3]: max virtual memory areas vm.max_map_count [65530] is too low, increase to at least [262144]</p>
+<p>解决方式：</p>
+<p>需切换到root用户解决错误：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs shell"><span class="hljs-meta prompt_"># </span><span class="language-bash">切换到 root 用户</span><br>[es@localhost elasticsearch-7.8.0]$ su root<br></code></pre></td></tr></table></figure>
+
+<p><strong>[1]</strong> 和 <strong>[2]</strong> 的解决方法：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs shell"><span class="hljs-meta prompt_"># </span><span class="language-bash">修改 /etc/security/limits.conf 文件</span><br>[root@localhost elasticsearch-7.8.0]# vim /etc/security/limits.conf<br><span class="hljs-meta prompt_"># </span><span class="language-bash">添加以下四行</span><br>* soft nofile 65536<br>* hard nofile 131072<br>* soft nproc 2048<br>* hard nproc 4096<br></code></pre></td></tr></table></figure>
+
+<p><strong>[3]</strong> 的解决方法：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs shell"><span class="hljs-meta prompt_"># </span><span class="language-bash">修改 /etc/sysctl.conf 文件</span><br>[root@localhost elasticsearch-7.8.0]# vim /etc/sysctl.conf<br><span class="hljs-meta prompt_"># </span><span class="language-bash">添加下面一行</span><br>vm.max_map_count=655360<br><span class="hljs-meta prompt_"></span><br><span class="hljs-meta prompt_"># </span><span class="language-bash">执行命令</span><br>[root@localhost elasticsearch-7.8.0]# sysctl -p<br></code></pre></td></tr></table></figure>
+
+<p>切换到用户 es 重新启动程序就可以了。</p>
+<h3 id="6、验证"><a href="#6、验证" class="headerlink" title="6、验证"></a>6、验证</h3><p><strong>注意：</strong> 防火墙需要开放9200端口</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs shell">[root@localhost elasticsearch-7.8.0]# firewall-cmd --permanent --add-port=9200/tcp<br>success<br>[root@localhost elasticsearch-7.8.0]# firewall-cmd --permanent --add-port=9200/udp<br>success<br>[root@localhost elasticsearch-7.8.0]# firewall-cmd --reload<br>success<br></code></pre></td></tr></table></figure>
+
+<p>访问：<a target="_blank" rel="noopener" href="http://192.168.40.149:9200/">http://192.168.40.149:9200</a></p>
+<p>返回结果：</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><code class="hljs json"><span class="hljs-punctuation">&#123;</span><br>  <span class="hljs-attr">&quot;name&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;node-1&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;cluster_name&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;elasticsearch&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;cluster_uuid&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;bZD6PjHIQ1uovZrQ6nXa8Q&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;version&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">&#123;</span><br>    <span class="hljs-attr">&quot;number&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;7.8.0&quot;</span><span class="hljs-punctuation">,</span><br>    <span class="hljs-attr">&quot;build_flavor&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;default&quot;</span><span class="hljs-punctuation">,</span><br>    <span class="hljs-attr">&quot;build_type&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;tar&quot;</span><span class="hljs-punctuation">,</span><br>    <span class="hljs-attr">&quot;build_hash&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;757314695644ea9a1dc2fecd26d1a43856725e65&quot;</span><span class="hljs-punctuation">,</span><br>    <span class="hljs-attr">&quot;build_date&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;2020-06-14T19:35:50.234439Z&quot;</span><span class="hljs-punctuation">,</span><br>    <span class="hljs-attr">&quot;build_snapshot&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-keyword">false</span><span class="hljs-punctuation">,</span><br>    <span class="hljs-attr">&quot;lucene_version&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;8.5.1&quot;</span><span class="hljs-punctuation">,</span><br>    <span class="hljs-attr">&quot;minimum_wire_compatibility_version&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;6.8.0&quot;</span><span class="hljs-punctuation">,</span><br>    <span class="hljs-attr">&quot;minimum_index_compatibility_version&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;6.0.0-beta1&quot;</span><br>  <span class="hljs-punctuation">&#125;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;tagline&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;You Know, for Search&quot;</span><br><span class="hljs-punctuation">&#125;</span><br></code></pre></td></tr></table></figure>
+
+<h1 id="三、安装部署-Kibana"><a href="#三、安装部署-Kibana" class="headerlink" title="三、安装部署 Kibana"></a>三、安装部署 Kibana</h1><h3 id="1、下载-1"><a href="#1、下载-1" class="headerlink" title="1、下载"></a>1、下载</h3><p>华为镜像源：<a target="_blank" rel="noopener" href="https://mirrors.huaweicloud.com/kibana">https://mirrors.huaweicloud.com/kibana</a></p>
+<p>选择合适的版本下载（和Elasticsearch版本保持一致）。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs shell"><span class="hljs-meta prompt_"># </span><span class="language-bash">下载安装包</span><br>[root@localhost ~]# wget https://mirrors.huaweicloud.com/kibana/7.8.0/kibana-7.8.0-linux-x86_64.tar.gz<br></code></pre></td></tr></table></figure>
+
+<h3 id="2、解压并移动到指定目录"><a href="#2、解压并移动到指定目录" class="headerlink" title="2、解压并移动到指定目录"></a>2、解压并移动到指定目录</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs shell"><span class="hljs-meta prompt_"># </span><span class="language-bash">解压到当前目录</span><br>[root@localhost ~]# tar -zxvf kibana-7.8.0-linux-x86_64.tar.gz<br><span class="hljs-meta prompt_"></span><br><span class="hljs-meta prompt_"># </span><span class="language-bash">重命名并移动到指定目录</span><br>[root@localhost ~]# mv ./kibana-7.8.0-linux-x86_64 /usr/local/kibana-7.8.0<br></code></pre></td></tr></table></figure>
+
+<h3 id="3、修改配置文件-1"><a href="#3、修改配置文件-1" class="headerlink" title="3、修改配置文件"></a>3、修改配置文件</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs shell">[root@localhost kibana-7.8.0]# vim ./config/kibana.yml<br><span class="hljs-meta prompt_"></span><br><span class="hljs-meta prompt_"># </span><span class="language-bash">服务端口</span><br>server.port: 5601<br><span class="hljs-meta prompt_"># </span><span class="language-bash">服务器ip  本机</span><br>server.host: &quot;0.0.0.0&quot;<br><span class="hljs-meta prompt_"># </span><span class="language-bash">Elasticsearch 服务地址</span><br>elasticsearch.hosts: [&quot;http://localhost:9200&quot;]<br><span class="hljs-meta prompt_"># </span><span class="language-bash">设置语言为中文</span><br>i18n.locale: &quot;zh-CN&quot;<br></code></pre></td></tr></table></figure>
+
+<h3 id="4、授权并切换用户"><a href="#4、授权并切换用户" class="headerlink" title="4、授权并切换用户"></a>4、授权并切换用户</h3><p>给 es 用户授予 kibana 目录的权限。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs shell"><span class="hljs-meta prompt_"># </span><span class="language-bash">授权</span><br>[root@localhost ~]# chown -R es /usr/local/kibana-7.8.0<br><span class="hljs-meta prompt_"></span><br><span class="hljs-meta prompt_"># </span><span class="language-bash">切换用户</span><br>root@localhost ~]# su es<br></code></pre></td></tr></table></figure>
+
+<h3 id="5、启动-Kibana"><a href="#5、启动-Kibana" class="headerlink" title="5、启动 Kibana"></a>5、启动 Kibana</h3><p>注意：启动 Kibana 之前需要先启动 Elasticsearch</p>
+<p>需要先配置防火墙打开5601端口：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><code class="hljs shell">[root@localhost kibana-7.8.0]# firewall-cmd --permanent --add-port=5601/tcp<br>success<br>[root@localhost kibana-7.8.0]# firewall-cmd --permanent --add-port=5601/udp<br>success<br>[root@localhost kibana-7.8.0]# firewall-cmd --reload<br>success<br>123456<br><span class="hljs-meta prompt_"># </span><span class="language-bash">前台启动方式</span><br>[es@localhost kibana-7.8.0]$ ./bin/kibana<br><span class="hljs-meta prompt_"></span><br><span class="hljs-meta prompt_"># </span><span class="language-bash">后台启动方式</span><br>[es@localhost kibana-7.8.0]$ nohup ./bin/kibana &amp;<br></code></pre></td></tr></table></figure>
+
+<h3 id="6、在浏览器中访问-Kibana"><a href="#6、在浏览器中访问-Kibana" class="headerlink" title="6、在浏览器中访问 Kibana"></a>6、在浏览器中访问 Kibana</h3><p>访问地址：<a target="_blank" rel="noopener" href="http://192.168.40.149:5601/">http://192.168.40.149:5601/</a></p>
+<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230527100700.png" srcset="/img/loading.gif" lazyload alt="image-20230527100659744"></p>
+<h1 id="四、安装部署-Logstash"><a href="#四、安装部署-Logstash" class="headerlink" title="四、安装部署 Logstash"></a>四、安装部署 Logstash</h1><h2 id="1、下载安装包"><a href="#1、下载安装包" class="headerlink" title="1、下载安装包"></a>1、下载安装包</h2><p>华为镜像源：<a target="_blank" rel="noopener" href="https://mirrors.huaweicloud.com/logstash">https://mirrors.huaweicloud.com/logstash</a></p>
+<p>选择合适版本的安装包（和 Elasticsearch 保持一致）。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs shell">[root@localhost ~]# wget https://mirrors.huaweicloud.com/logstash/7.8.0/logstash-7.8.0.tar.gz<br></code></pre></td></tr></table></figure>
+
+<h3 id="2、解压并移动到指定目录-1"><a href="#2、解压并移动到指定目录-1" class="headerlink" title="2、解压并移动到指定目录"></a>2、解压并移动到指定目录</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs shell"><span class="hljs-meta prompt_"># </span><span class="language-bash">解压安装包</span><br>[root@localhost ~]# tar -zxvf logstash-7.8.0.tar.gz<br><span class="hljs-meta prompt_"></span><br><span class="hljs-meta prompt_"># </span><span class="language-bash">移动到指定目录</span><br>[root@localhost ~]# mv ./logstash-7.8.0 /usr/local/logstash-7.8.0<br></code></pre></td></tr></table></figure>
+
+<h3 id="3、新建配置文件"><a href="#3、新建配置文件" class="headerlink" title="3、新建配置文件"></a>3、新建配置文件</h3><p>根据原有的 logstash-sample.conf 配置文件复制出一个新的配置文件并修改。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs shell">[root@localhost logstash-7.8.0]# cp config/logstash-sample.conf config/logstash-es.conf<br><span class="hljs-meta prompt_"></span><br><span class="hljs-meta prompt_"># </span><span class="language-bash">修改配置文件logstash-es.conf</span><br>[root@localhost logstash-7.8.0]# vim config/logstash-es.conf<br></code></pre></td></tr></table></figure>
+
+<p>修改成如下内容：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><code class="hljs shell">input &#123;<br>  tcp &#123;<br>    port =&gt; 9601<br>    codec =&gt; json_lines<br>  &#125;<br>&#125;<br><br>output &#123;<br>  elasticsearch &#123;<br>    hosts =&gt; [&quot;http://localhost:9200&quot;]<br>  &#125;<br>  stdout &#123;<br>  	codec =&gt; rubydebug<br>  &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>配置文件logstash-es.conf内容说明：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><code class="hljs shell">input &#123;										# input输入源配置<br>  tcp &#123;										# 使用tcp输入源<br>    port =&gt; 9601							# 服务器监听端口9061接收日志，默认ip localhost<br>    codec =&gt; json_lines						# 使用json解析日志  需要安装json解析插件<br>  &#125;<br>&#125;<br><br>output &#123;									# output 数据输出配置<br>  elasticsearch &#123;							# 使用elasticsearch接收<br>    hosts =&gt; [&quot;http://localhost:9200&quot;]		# 集群地址 多个用,隔开<br>  &#125;<br>  stdout &#123;<br>  	codec =&gt; rubydebug						# 输出到命令窗口<br>  &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<h3 id="4、安装插件"><a href="#4、安装插件" class="headerlink" title="4、安装插件"></a>4、安装插件</h3><p>由于国内无法访问默认的gem source，需要将gem source改为国内的源。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs shell"><span class="hljs-meta prompt_"># </span><span class="language-bash">修改Gemfile</span><br>[root@localhost logstash-7.8.0]# vim Gemfile<br><span class="hljs-meta prompt_"></span><br><span class="hljs-meta prompt_"># </span><span class="language-bash">将<span class="hljs-built_in">source</span>这一行改成如下所示：</span><br>source &quot;https://ruby.taobao.org&quot;<br></code></pre></td></tr></table></figure>
+
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs shell">[root@localhost logstash-7.8.0]# ./bin/logstash-plugin install logstash-codec-json_lines<br></code></pre></td></tr></table></figure>
+
+<blockquote>
+<p>如果报以下错误，请检查是否已经配置了 JDK 环境变量。</p>
+<p>could not find java; set JAVA_HOME or ensure java is in PATH</p>
+</blockquote>
+<h3 id="5、启动-Logstash"><a href="#5、启动-Logstash" class="headerlink" title="5、启动 Logstash"></a>5、启动 Logstash</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs shell"><span class="hljs-meta prompt_"># </span><span class="language-bash">后台启动Logstash</span><br>[root@localhost logstash-7.8.0]# nohup ./bin/logstash -f ./config/logstash-es.conf &amp;<br></code></pre></td></tr></table></figure>
+
+<h1 id="五、配置项目查看结果"><a href="#五、配置项目查看结果" class="headerlink" title="五、配置项目查看结果"></a>五、配置项目查看结果</h1><p>本示例使用的是 Spring Boot 项目。</p>
+<h3 id="1、引入依赖"><a href="#1、引入依赖" class="headerlink" title="1、引入依赖"></a>1、引入依赖</h3><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs xml"><span class="hljs-tag">&lt;<span class="hljs-name">dependency</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">groupId</span>&gt;</span>net.logstash.logback<span class="hljs-tag">&lt;/<span class="hljs-name">groupId</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">artifactId</span>&gt;</span>logstash-logback-encoder<span class="hljs-tag">&lt;/<span class="hljs-name">artifactId</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">version</span>&gt;</span>4.11<span class="hljs-tag">&lt;/<span class="hljs-name">version</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">dependency</span>&gt;</span><br></code></pre></td></tr></table></figure>
+
+<h3 id="2、在resources里新建-logback-xml-配置文件"><a href="#2、在resources里新建-logback-xml-配置文件" class="headerlink" title="2、在resources里新建 logback.xml 配置文件"></a>2、在resources里新建 logback.xml 配置文件</h3><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><code class="hljs xml"><span class="hljs-meta">&lt;?xml version=<span class="hljs-string">&quot;1.0&quot;</span> encoding=<span class="hljs-string">&quot;UTF-8&quot;</span>?&gt;</span><br><span class="hljs-meta">&lt;!DOCTYPE <span class="hljs-keyword">configuration</span>&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">configuration</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">appender</span> <span class="hljs-attr">name</span>=<span class="hljs-string">&quot;LOGSTASH&quot;</span> <span class="hljs-attr">class</span>=<span class="hljs-string">&quot;net.logstash.logback.appender.LogstashTcpSocketAppender&quot;</span>&gt;</span><br>        <span class="hljs-comment">&lt;!--指定logstash ip：监听端口--&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">destination</span>&gt;</span>192.168.40.149:9601<span class="hljs-tag">&lt;/<span class="hljs-name">destination</span>&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">encoder</span> <span class="hljs-attr">charset</span>=<span class="hljs-string">&quot;UTF-8&quot;</span> <span class="hljs-attr">class</span>=<span class="hljs-string">&quot;net.logstash.logback.encoder.LogstashEncoder&quot;</span> /&gt;</span><br>    <span class="hljs-tag">&lt;/<span class="hljs-name">appender</span>&gt;</span><br><br>    <span class="hljs-comment">&lt;!--引用springboot默认配置--&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">include</span> <span class="hljs-attr">resource</span>=<span class="hljs-string">&quot;org/springframework/boot/logging/logback/base.xml&quot;</span>/&gt;</span><br><br>    <span class="hljs-tag">&lt;<span class="hljs-name">root</span> <span class="hljs-attr">level</span>=<span class="hljs-string">&quot;INFO&quot;</span>&gt;</span><br>        <span class="hljs-comment">&lt;!--使用上述订阅logstash数据tcp传输 --&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">appender-ref</span> <span class="hljs-attr">ref</span>=<span class="hljs-string">&quot;LOGSTASH&quot;</span> /&gt;</span><br>        <span class="hljs-comment">&lt;!--使用springboot默认配置 调试窗口输出--&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">appender-ref</span> <span class="hljs-attr">ref</span>=<span class="hljs-string">&quot;CONSOLE&quot;</span> /&gt;</span><br>    <span class="hljs-tag">&lt;/<span class="hljs-name">root</span>&gt;</span><br><br><span class="hljs-tag">&lt;/<span class="hljs-name">configuration</span>&gt;</span><br></code></pre></td></tr></table></figure>
+
+<h3 id="3、启动系统打印日志"><a href="#3、启动系统打印日志" class="headerlink" title="3、启动系统打印日志"></a>3、启动系统打印日志</h3><p>启动 Spring Boot 项目：</p>
+<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230527101110.png" srcset="/img/loading.gif" lazyload alt="image-20230527101108051"></p>
+<p>Kibana还需要配置日志读取的索引：</p>
+<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230527101126.png" srcset="/img/loading.gif" lazyload alt="image-20230527101125044"></p>
+<p>在Kinaba中查看结果：</p>
+<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230527101150.png" srcset="/img/loading.gif" lazyload alt="image-20230527101149128"></p>
+
+              
+            </div>
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/17-%E5%88%86%E5%B8%83%E5%BC%8F/" class="category-chain-item">17_分布式</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/17-%E5%88%86%E5%B8%83%E5%BC%8F/07-ELK%E6%97%A5%E5%BF%97/" class="category-chain-item">07_ELK日志</a>
+  
+  
+
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/%E6%9E%B6%E6%9E%84/">#架构</a>
+      
+        <a href="/tags/%E5%88%86%E5%B8%83%E5%BC%8F/">#分布式</a>
+      
+        <a href="/tags/ELK/">#ELK</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>01-ELK日志分析系统搭建</div>
+      <div>https://janycode.github.io/2020/08/20/17_分布式/07_ELK日志/01-ELK日志分析系统搭建/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Jerry(姜源)</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2020年8月20日</div>
+        </div>
+      
+      
+      <div class="license-meta-item">
+        <div>许可协议</div>
+        <div>
+          
+            
+            
+              <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+              <span class="hint--top hint--rounded" aria-label="BY - 姜源">
+                <i class="iconfont icon-by"></i>
+              </span>
+              </a>
+            
+          
+        </div>
+      </div>
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2020/09/03/20_%E6%94%B6%E8%97%8F%E6%95%B4%E7%90%86/03_%E5%B7%A5%E5%85%B7%E7%B1%BB/10-ExcelUtil/" title="10-ExcelUtil">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">10-ExcelUtil</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2020/06/13/08_%E6%A1%86%E6%9E%B6%E6%8A%80%E6%9C%AF/00_%E4%B8%BB%E6%B5%81%E6%A1%86%E6%9E%B6%E5%92%8C%E7%BB%84%E4%BB%B6/" title="00_主流框架和组件">
+                        <span class="hidden-mobile">00_主流框架和组件</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+  <article id="comments" lazyload>
+    
+  <div id="SOHUCS" sid='https://janycode.github.io/2020/08/20/17_%E5%88%86%E5%B8%83%E5%BC%8F/07_ELK%E6%97%A5%E5%BF%97/01-ELK%E6%97%A5%E5%BF%97%E5%88%86%E6%9E%90%E7%B3%BB%E7%BB%9F%E6%90%AD%E5%BB%BA/'></div>
+  <script type="text/javascript">
+    Fluid.utils.loadComments('#SOHUCS', function() {
+      Fluid.utils.createScript("https://changyan.sohu.com/upload/changyan.js", function() {
+        window.changyan.api.config({"appid":"cyw5OHIcO","appkey":"fea3446b3df4b3f129f34da4cbc87e51"})
+      });
+    });
+  </script>
+  <noscript>Please enable JavaScript to view the comments</noscript>
+
+
+  </article>
+
+
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://simple.blog.csdn.net" target="_blank" rel="nofollow noopener"><span>CSDN</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/janycode" target="_blank" rel="nofollow noopener"><span>GitHub</span></a> <i class="iconfont icon-love"></i> <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="busuanzi_container_site_pv" style="display: none">
+        总访问量(PV) 
+        <span id="busuanzi_value_site_pv"></span>
+         次，
+      </span>
+    
+    
+      <span id="busuanzi_container_site_uv" style="display: none">
+        总访客数(UV) 
+        <span id="busuanzi_value_site_uv"></span>
+         人
+      </span>
+    
+    
+  
+</div>
+
+  
+  
+  
+</div>
+
+<!-- live2d 动画 -->
+<script src="https://eqcn.ajz.miesnfu.com/wp-content/plugins/wp-3d-pony/live2dw/lib/L2Dwidget.min.js"></script>
+<script>
+    L2Dwidget.init({
+        "model": {
+            jsonPath: "https://unpkg.com/live2d-widget-model-haruto@1.0.5/assets/haruto.model.json",
+            "scale": 1
+        },
+        "display": {
+            "position": "right",
+            "width": 100,
+            "height": 200,
+            "hOffset": 35,
+            "vOffset": -85
+        },
+        "mobile": {
+            "show": false,
+            "scale": 0.1
+        },
+        "react": {
+            "opacityDefault": 0.75,
+            "opacityOnHover": 0.2
+        }
+    });
+</script>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <!-- Baidu Analytics -->
+    <script defer>
+      if (!Fluid.ctx.dnt) {
+        var _hmt = _hmt || [];
+        (function() {
+          var hm = document.createElement("script");
+          hm.src = "https://hm.baidu.com/hm.js?bfff735c897eb60ea49b735096b20e47";
+          var s = document.getElementsByTagName("script")[0];
+          s.parentNode.insertBefore(hm, s);
+        })();
+      }
+    </script>
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.0/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      headingSelector : CONFIG.toc.headingSelector || 'h1,h2,h3,h4,h5,h6',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      collapseDepth   : CONFIG.toc.collapseDepth || 0,
+      scrollSmooth    : true,
+      headingsOffset  : -boardTop
+    });
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+  });
+</script>
+
+
+  <script>
+  (function() {
+    var enableLang = CONFIG.code_language.enable && CONFIG.code_language.default;
+    var enableCopy = CONFIG.copy_btn;
+    if (!enableLang && !enableCopy) {
+      return;
+    }
+
+    function getBgClass(ele) {
+      return Fluid.utils.getBackgroundLightness(ele) >= 0 ? 'code-widget-light' : 'code-widget-dark';
+    }
+
+    var copyTmpl = '';
+    copyTmpl += '<div class="code-widget">';
+    copyTmpl += 'LANG';
+    copyTmpl += '</div>';
+    jQuery('.markdown-body pre').each(function() {
+      var $pre = jQuery(this);
+      if ($pre.find('code.mermaid').length > 0) {
+        return;
+      }
+      if ($pre.find('span.line').length > 0) {
+        return;
+      }
+
+      var lang = '';
+
+      if (enableLang) {
+        lang = CONFIG.code_language.default;
+        if ($pre[0].children.length > 0 && $pre[0].children[0].classList.length >= 2 && $pre.children().hasClass('hljs')) {
+          lang = $pre[0].children[0].classList[1];
+        } else if ($pre[0].getAttribute('data-language')) {
+          lang = $pre[0].getAttribute('data-language');
+        } else if ($pre.parent().hasClass('sourceCode') && $pre[0].children.length > 0 && $pre[0].children[0].classList.length >= 2) {
+          lang = $pre[0].children[0].classList[1];
+          $pre.parent().addClass('code-wrapper');
+        } else if ($pre.parent().hasClass('markdown-body') && $pre[0].classList.length === 0) {
+          $pre.wrap('<div class="code-wrapper"></div>');
+        }
+        lang = lang.toUpperCase().replace('NONE', CONFIG.code_language.default);
+      }
+      $pre.append(copyTmpl.replace('LANG', lang).replace('code-widget">',
+        getBgClass($pre[0]) + (enableCopy ? ' code-widget copy-btn" data-clipboard-snippet><i class="iconfont icon-copy"></i>' : ' code-widget">')));
+
+      if (enableCopy) {
+        Fluid.utils.createScript('https://lib.baomitu.com/clipboard.js/2.0.10/clipboard.min.js', function() {
+          var clipboard = new window.ClipboardJS('.copy-btn', {
+            target: function(trigger) {
+              var nodes = trigger.parentNode.childNodes;
+              for (var i = 0; i < nodes.length; i++) {
+                if (nodes[i].tagName === 'CODE') {
+                  return nodes[i];
+                }
+              }
+            }
+          });
+          clipboard.on('success', function(e) {
+            e.clearSelection();
+            e.trigger.innerHTML = e.trigger.innerHTML.replace('icon-copy', 'icon-success');
+            setTimeout(function() {
+              e.trigger.innerHTML = e.trigger.innerHTML.replace('icon-success', 'icon-copy');
+            }, 2000);
+          });
+        });
+      }
+    });
+  })();
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script  src="/js/local-search.js" ></script>
+
+  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>
