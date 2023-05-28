@@ -58,11 +58,11 @@ Spring Cloud 专注于为典型用例提供良好的开箱即用体验，并提�
 
 Spring Cloud Dalston, Edgware, Finchley, and Greenwich 都已达到生命周期结束状态，不再受支持.
 
-**spring-cloud==> **>Hoxton.SR5
+**spring-cloud==>** Hoxton.SR5
 
-**spring-cloud-alibaba==>**2.2.7.RELEASE
+**spring-cloud-alibaba==>** 2.2.7.RELEASE
 
-**spring-boot ==> **2.2.10.RELEASE
+**spring-boot ==>** 2.2.10.RELEASE
 
 ## 1.3 引入依赖
 
@@ -516,7 +516,7 @@ https://sentinelguard.io/zh-cn/docs/api-gateway-flow-control.html
 > 配置
 
 ```yaml
-yaml复制代码spring:
+spring:
   application:
     name: sentinel-zuul
   cloud:
@@ -638,7 +638,7 @@ https://sentinelguard.io/zh-cn/docs/api-gateway-flow-control.html
 > 配置文件：
 
 ```yaml
-yaml复制代码
+
 server:
   port: 8386
 spring:
@@ -690,7 +690,7 @@ spring:
 > 重要的常量 见常量类 SentinelGatewayConstants
 
 ```json
-json复制代码  {
+  {
     "resource": "some_customized_api",
     "resourceMode":1,//针对的自定义api进行限流
     "count": 2,
@@ -828,7 +828,7 @@ https://github.com/seata/seata
 > **seata-server启动参数**
 
 ```arduino
-arduino复制代码  -h: 注册到注册中心的ip
+  -h: 注册到注册中心的ip
   -p: Server rpc 监听端口
   -m: 全局事务会话信息存储模式，file、db、redis，优先读取启动参数 (Seata-Server 1.3及以上版本支持redis)
   -n: Server node，多个Server时，需区分各自节点，用于生成不同区间的transactionId，以免冲突
@@ -941,7 +941,7 @@ AT 模式（[参考链接 TBD](https://seata.io/zh-cn/docs/dev/mode/tcc-mode.htm
 
 https://gitee.com/seata-io/seata/tree/develop/server/src/main/resources
 
-#### https://gitee.com/seata-io/seata/tree/develop/script/client
+https://gitee.com/seata-io/seata/tree/develop/script/client
 
 存放用于客户端的配置和SQL
 
@@ -950,7 +950,7 @@ https://gitee.com/seata-io/seata/tree/develop/server/src/main/resources
 - saga: SAGA 模式下所需表的建表语句
 - spring: SpringBoot 应用支持的配置文件
 
-#### https://gitee.com/seata-io/seata/tree/develop/script/server
+https://gitee.com/seata-io/seata/tree/develop/script/server
 
 存放server侧所需SQL和部署脚本
 
@@ -959,7 +959,7 @@ https://gitee.com/seata-io/seata/tree/develop/server/src/main/resources
 - helm: server 侧通过 Helm 部署的脚本
 - kubernetes: server 侧通过 Kubernetes 部署的脚本
 
-#### https://gitee.com/seata-io/seata/tree/develop/script/config-center
+https://gitee.com/seata-io/seata/tree/develop/script/config-center
 
 用于存放各种配置中心的初始化脚本，执行时都会读取 config.txt配置文件，并写入配置中心
 
