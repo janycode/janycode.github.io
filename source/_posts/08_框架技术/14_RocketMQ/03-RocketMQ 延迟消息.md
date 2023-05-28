@@ -3,6 +3,7 @@ title: 03-RocketMQ 延迟消息
 date: 2019-5-23 22:25:40
 tags:
 - RocketMQ
+- SpringCloudAlibaba
 categories: 
 - 08_框架技术
 - 14_RocketMQ

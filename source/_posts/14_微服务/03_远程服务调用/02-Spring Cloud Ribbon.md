@@ -5,6 +5,7 @@ tags:
 - 微服务
 - Feign
 - Ribbon
+- SpringCloudAlibaba
 categories: 
 - 14_微服务
 - 03_远程服务调用

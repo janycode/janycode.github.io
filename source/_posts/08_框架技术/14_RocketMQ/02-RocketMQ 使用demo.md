@@ -3,6 +3,7 @@ title: 02-RocketMQ 使用demo
 date: 2019-5-22 19:11:49
 tags:
 - RocketMQ
+- SpringCloudAlibaba
 categories: 
 - 08_框架技术
 - 14_RocketMQ

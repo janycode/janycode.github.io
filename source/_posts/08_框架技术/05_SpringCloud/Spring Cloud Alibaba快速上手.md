@@ -3,6 +3,7 @@ title: Spring Cloud Alibaba快速上手
 date: 2020-03-02 17:59:42
 tags:
 - SpringCloud
+- SpringCloudAlibaba
 categories: 
 - 08_框架技术
 - 05_SpringCloud

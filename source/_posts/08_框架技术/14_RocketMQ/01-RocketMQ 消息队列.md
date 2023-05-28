@@ -3,6 +3,7 @@ title: 01-RocketMQ 消息队列
 date: 2019-5-22 15:45:36
 tags:
 - RocketMQ
+- SpringCloudAlibaba
 categories: 
 - 08_框架技术
 - 14_RocketMQ

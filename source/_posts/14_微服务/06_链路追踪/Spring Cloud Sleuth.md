@@ -4,6 +4,7 @@ date: 2020-03-02 17:59:44
 tags:
 - 微服务
 - Sleuth
+- SpringCloudAlibaba
 categories: 
 - 14_微服务
 - 06_链路追踪
