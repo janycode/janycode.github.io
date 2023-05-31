@@ -4,7 +4,8 @@ date: 2021-11-18 08:02:52
 tags:
 - 架构
 - Redis
-- 注解
+- 分布式锁
+- Redisson
 categories: 
 - 17_分布式
 - 03_分布式锁

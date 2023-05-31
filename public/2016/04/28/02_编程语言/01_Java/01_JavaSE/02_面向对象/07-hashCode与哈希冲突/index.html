@@ -1,0 +1,936 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=light>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Jerry(姜源)">
+  <meta name="keywords" content="Java,Html,CSS,JavaScript,Python,C,Linux,shell编程经验分享、技术总结、心得体会">
+  
+    <meta name="description" content="1. hashCode的特性（1）HashCode的存在主要是用于查找的快捷性，如Hashtable，HashMap等，HashCode经常用于确定对象的存储地址； （2）如果两个对象相同， equals方法一定返回true，并且这两个对象的HashCode一定相同； （3）两个对象的HashCode相同，并不一定表示两个对象就相同，即equals()不一定为true，只能够说明这两个对象在一个散">
+<meta property="og:type" content="article">
+<meta property="og:title" content="07-hashCode与哈希冲突">
+<meta property="og:url" content="https://janycode.github.io/2016/04/28/02_%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/01_Java/01_JavaSE/02_%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1/07-hashCode%E4%B8%8E%E5%93%88%E5%B8%8C%E5%86%B2%E7%AA%81/index.html">
+<meta property="og:site_name" content="姜源の云笔记">
+<meta property="og:description" content="1. hashCode的特性（1）HashCode的存在主要是用于查找的快捷性，如Hashtable，HashMap等，HashCode经常用于确定对象的存储地址； （2）如果两个对象相同， equals方法一定返回true，并且这两个对象的HashCode一定相同； （3）两个对象的HashCode相同，并不一定表示两个对象就相同，即equals()不一定为true，只能够说明这两个对象在一个散">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230316135311.png">
+<meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230531170708.png">
+<meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230531171806.png">
+<meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230531171835.png">
+<meta property="article:published_time" content="2016-04-28T13:49:50.000Z">
+<meta property="article:modified_time" content="2023-05-31T09:31:35.144Z">
+<meta property="article:author" content="Jerry(姜源)">
+<meta property="article:tag" content="JavaSE">
+<meta property="article:tag" content="hashCode">
+<meta property="article:tag" content="哈希冲突">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230316135311.png">
+  
+  
+    <meta name="referrer" content="no-referrer-when-downgrade">
+  
+  
+  <title>07-hashCode与哈希冲突 - 姜源の云笔记</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"janycode.github.io","root":"/","version":"1.9.0","typing":{"enable":true,"typeSpeed":50,"cursorChar":"|","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":false},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":"bfff735c897eb60ea49b735096b20e47","google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+
+  
+<meta name="generator" content="Hexo 6.2.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 50vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>姜源の云笔记</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tools/">
+                <i class="iconfont icon-slack-fill"></i>
+                工具
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" target="_blank" rel="noopener" href="https://janycode.gitee.io/">
+                <i class="iconfont icon-gitee-fill"></i>
+                Gitee
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="07-hashCode与哈希冲突"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-author" aria-hidden="true"></i>
+        Jerry(姜源)
+      </span>
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2016-04-28 21:49" pubdate>
+          星期四, 2016/04/28 21:49:50
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          <!-- compatible with older versions-->
+          3.7k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          <!-- compatible with older versions-->
+          31 分钟
+        
+      </span>
+    
+
+    
+    
+      
+        <span id="busuanzi_container_page_pv" style="display: none">
+          <i class="iconfont icon-eye" aria-hidden="true"></i>
+          <span id="busuanzi_value_page_pv"></span> 次
+        </span>
+        
+      
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">07-hashCode与哈希冲突</h1>
+            
+            <div class="markdown-body">
+              
+              <h3 id="1-hashCode的特性"><a href="#1-hashCode的特性" class="headerlink" title="1. hashCode的特性"></a>1. hashCode的特性</h3><p>（1）HashCode的存在主要是用于查找的快捷性，如Hashtable，HashMap等，HashCode经常用于确定对象的存储地址；</p>
+<p>（2）如果两个对象相同， equals方法一定返回true，并且这两个对象的HashCode一定相同；</p>
+<p>（3）两个对象的HashCode相同，并不一定表示两个对象就相同，即equals()不一定为true，只能够说明这两个对象在一个散列存储结构中。</p>
+<p>（4）如果对象的<strong>equals方法被重写</strong>，那么对象的<strong>HashCode也尽量重写</strong>，以保证equals方法相等时两个对象hashcode返回相同的值（eg：Set集合中确保自定义类的成功去重）。</p>
+<p>Set集合中<strong>元素不重复</strong>的基本逻辑判断示意图：</p>
+<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230316135311.png" srcset="/img/loading.gif" lazyload alt="image-20230316135310477"></p>
+<h3 id="2-hashCode的算法"><a href="#2-hashCode的算法" class="headerlink" title="2. hashCode的算法"></a>2. hashCode的算法</h3><ol>
+<li>对象类型的数据，返回的一串字符；</li>
+<li>String类型的数据，返回一串字符；</li>
+<li>integer类型的数据，返回的hash值为数据本身；</li>
+</ol>
+<ul>
+<li>Object对hashCode()的方法实现：</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">native</span> <span class="hljs-type">int</span> <span class="hljs-title function_">hashCode</span><span class="hljs-params">()</span>;<br></code></pre></td></tr></table></figure>
+<p>该方法返回该对象的十六进制的哈希码值（即，对象在内存中的数字型名字）。</p>
+<p>哈希算法根据对象的地址或者字符串或者数字计算出来的int类型的数值。而且哈希码并不唯一，可保证相同对象返回相同的哈希码，只能尽量保证不同对象返回不同的哈希码值。</p>
+<ul>
+<li>String 对hashCode()的方法实现：</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-type">int</span> <span class="hljs-title function_">hashCode</span><span class="hljs-params">()</span> &#123;<br>    <span class="hljs-type">int</span> <span class="hljs-variable">h</span> <span class="hljs-operator">=</span> hash;<br>    <span class="hljs-keyword">if</span> (h == <span class="hljs-number">0</span> &amp;&amp; value.length &gt; <span class="hljs-number">0</span>) &#123;<br>        <span class="hljs-type">char</span> val[] = value;<br> <br>        <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> <span class="hljs-variable">i</span> <span class="hljs-operator">=</span> <span class="hljs-number">0</span>; i &lt; value.length; i++) &#123;<br>            h = <span class="hljs-number">31</span> * h + val[i];<br>        &#125;<br>        hash = h;<br>    &#125;<br>    <span class="hljs-keyword">return</span> h;<br>&#125;<br></code></pre></td></tr></table></figure>
+<p>主要探讨一下String对于hashCode算法的实现：</p>
+<blockquote>
+<p>字符串对象的哈希码根据以下公式计算：<br>s[0]*31^(n-1) + s[1]*31^(n-2) + … + s[n-1]<br>使用 int 算法，这里 s[i] 是字符串的第 i 个字符，n 是字符串的长度，^ 表示求幂。空字符串的哈希值为 0。</p>
+</blockquote>
+<ul>
+<li>Integer对hashCode()的实现：</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@Override</span><br><span class="hljs-keyword">public</span> <span class="hljs-type">int</span> <span class="hljs-title function_">hashCode</span><span class="hljs-params">()</span> &#123;<br>    <span class="hljs-keyword">return</span> Integer.hashCode(value);<br>&#125;<br></code></pre></td></tr></table></figure>
+
+
+<h3 id="3-hashCode的作用"><a href="#3-hashCode的作用" class="headerlink" title="3. hashCode的作用"></a>3. hashCode的作用</h3><p>哈希算法：也称为散列算法，是<code>将数据依特定算法直接指定到一个地址上</code>。这样一来，当集合要添加新的元素时，先调用这个元素的HashCode方法，就一下子能定位到它应该放置的物理位置上。</p>
+<p>（1）如果这个位置上没有元素，它就可以直接存储在这个位置上，不用再进行任何比较了；</p>
+<p>（2）如果这个位置上已经有元素了，就调用它的equals方法与新元素进行比较，相同的话就不存了；</p>
+<p>（3）不相同的话，也就是发生了Hash key相同导致冲突的情况，那么就在这个Hash key的地方产生一个链表，将所有产生相同HashCode的对象放到这个单链表上去，串在一起。这样一来实际调用equals方法的次数就大大降低了。 </p>
+<p>hashCode在上面扮演的角色为<strong>寻域</strong>（寻找某个对象在集合中区域位置）。</p>
+<p>所以，总结一下，hashCode的存在主要是<strong>用于查找的快捷性</strong>，如Hashtable，HashMap，HashSet等。</p>
+<blockquote>
+<p>hashCode是用来在散列存储结构中确定对象的存储地址的。</p>
+</blockquote>
+<h3 id="4-什么是哈希冲突"><a href="#4-什么是哈希冲突" class="headerlink" title="4.什么是哈希冲突"></a>4.什么是哈希冲突</h3><p>哈希冲突（Hash Collision）是指<code>两个或多个不同的数据值被映射到了哈希表中相同的存储地址上</code>。哈希表是一种以键值对形式存储数据的数据结构，其中每个键都会通过哈希函数计算出一个索引值，该索引值作为键在哈希表中的位置，而值则存储在该位置上。但由于哈希函数的输出范围比输入范围小得多，无法避免一定概率的哈希冲突。</p>
+<ul>
+<li><p><strong>哈希函数</strong>：数据元素的存储地址，是根据数据的关键字K通过一定的函数关系计算得出，这个函数关系即称哈希函数。</p>
+</li>
+<li><p><strong>Hash冲突</strong>：不同的数据元素关键字K，计算出的哈希值相同，此时两个或多个数据，对应同一个存储地址，即产生冲突。</p>
+</li>
+</ul>
+<p>先通过取模运算来建立一个简单的哈希表：</p>
+<p>数据：int[] array &#x3D; {1，7，6，5，4，8}；</p>
+<p>哈希函数：hash(key) &#x3D; key% 表长; &#x2F;&#x2F;这里的key为每一个元素的值，表长为10</p>
+<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230531170708.png" srcset="/img/loading.gif" lazyload alt="image-20230531170707674"></p>
+<p>对于上面的hash表来说，如果现在先插入一个元素为14，这时候通过hash函数计算出来的hash地址为4，很明显地址为4已经有了一个元素4，这时候就会发生哈希冲突。首先由于我们底层的数组一般是小于需要存储关键字的数量，所以引起哈希冲突是不可避免的。</p>
+<blockquote>
+<p>引入哈希表的目的就是为了使查找和处理一个数时（不经过比较）让时间复杂度保持在O(1)，这样就是为了加快查询效率，需要了解如何设计哈希函数以及尽可能地避免哈希冲突的方法。</p>
+<p>使用哈希表来存储数据就是将数与存储位置通过一个函数来建立对应关系，之后不经过比较，通过这个函数（哈希函数）的结果就能确定该元素的位置。</p>
+</blockquote>
+<h3 id="5-哈希函数设计原则"><a href="#5-哈希函数设计原则" class="headerlink" title="5.哈希函数设计原则"></a>5.哈希函数设计原则</h3><ul>
+<li>哈希地址必须在哈希表中 </li>
+<li>哈希函数产生的哈希地址尽可能均匀 </li>
+<li>哈希函数要简单</li>
+</ul>
+<h3 id="6-常见的哈希函数"><a href="#6-常见的哈希函数" class="headerlink" title="6.常见的哈希函数"></a>6.常见的哈希函数</h3><h4 id="（1）直接定址法"><a href="#（1）直接定址法" class="headerlink" title="（1）直接定址法"></a>（1）直接定址法</h4><p>取关键字的某个线性函数为散列地址如：</p>
+<figure class="highlight gauss"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs gauss"><span class="hljs-built_in">Hash</span>(<span class="hljs-built_in">key</span>) = A*<span class="hljs-built_in">key</span>+B;<br></code></pre></td></tr></table></figure>
+
+<p>应用场景：查找比较小且连续的情况</p>
+<h4 id="（2）除留余数法"><a href="#（2）除留余数法" class="headerlink" title="（2）除留余数法"></a>（2）除留余数法</h4><p>哈希函数为：</p>
+<figure class="highlight sas"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs sas">Hash(<span class="hljs-keyword">key</span>) = <span class="hljs-keyword">key</span><span class="hljs-title function_">%p</span><span class="hljs-variable">&amp;nbsp</span>; <span class="hljs-variable">&amp;nbsp</span>;//这里的p<span class="hljs-variable">&amp;lt</span>;=哈希表的长度<br></code></pre></td></tr></table></figure>
+
+<h4 id="（3）平方取中法"><a href="#（3）平方取中法" class="headerlink" title="（3）平方取中法"></a>（3）平方取中法</h4><p>假设关键字为1234，对它平方就是1522756，抽取中间的3位227作为哈希地址。</p>
+<p>应用场景：不知道关键字的分布且位数又不是很大。</p>
+<h4 id="（4）折叠法"><a href="#（4）折叠法" class="headerlink" title="（4）折叠法"></a>（4）折叠法</h4><p>折叠法是将关键字从左到右分割成位数相等的几部分(最后一部分位数可以短些)，然后将这几部分叠加求和，并按散列表表长，取后几位作为散列地址。</p>
+<p>使用场景：事先不知道关键字分布，而且关键字位数比较多的情况。</p>
+<h4 id="（5）随机数法"><a href="#（5）随机数法" class="headerlink" title="（5）随机数法"></a>（5）随机数法</h4><p>选择一个随机函数，取关键字的随机函数值为它的哈希地址，即H(key) &#x3D; random(key),其中random为随机数函数。</p>
+<p>使用场景：关键字长度不等时使用。</p>
+<h3 id="7-解决哈希冲突"><a href="#7-解决哈希冲突" class="headerlink" title="7.解决哈希冲突"></a>7.解决哈希冲突</h3><p>散列表的负载调节因子：负载调节因子a&#x3D;填入表中元素个数&#x2F;散列表的长度。</p>
+<p>由负载调节因子公式可以看出，a越大，散列表中元素越多，散列表空间越来越小，之后放进来的元素就越容易产生哈希冲突。当冲突率太大的话，<code>可以通过降低负载调节因子来降低哈希冲突</code>。要是哈希表中关键字的个数不能改变时，我们就需要扩大哈希表的大小来降低哈希冲突的概率。</p>
+<p>发生哈希冲突时，有以下几种常见的解决方法：</p>
+<ol>
+<li><p><strong>开放寻址法</strong>：在哈希表中找到下一个可用的空位存储冲突的键值对。</p>
+</li>
+<li><p><strong>链式法</strong>：将哈希表中的每个位置变成一个链表，所有哈希值相同的键值对都存储在这个链表中。</p>
+</li>
+<li><p><strong>再哈希法</strong>：使用另一个哈希函数重新计算键的哈希值，直到没有冲突为止。</p>
+</li>
+<li><p><strong>建立公共溢出区</strong>：将所有哈希冲突的元素都存储在一个特殊的区域，称为溢出桶中。</p>
+</li>
+</ol>
+<h4 id="7-1-解决哈希冲突的第一种方法（闭散列）"><a href="#7-1-解决哈希冲突的第一种方法（闭散列）" class="headerlink" title="7.1 解决哈希冲突的第一种方法（闭散列）"></a>7.1 解决哈希冲突的第一种方法（闭散列）</h4><p>什么是闭散列：也叫<code>开放定址法</code>，当发生哈希冲突时，如果哈希表未被装满，说明在哈希表中必然还有空位置，那么可以把key存放到冲突位置中的“下一个” 空位置中去。</p>
+<p>这里将寻找key的下一个位置又有两种方式，分别如下:</p>
+<h5 id="（1）线性探测法"><a href="#（1）线性探测法" class="headerlink" title="（1）线性探测法"></a>（1）线性探测法</h5><p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230531171806.png" srcset="/img/loading.gif" lazyload alt="image-20230531171805958"></p>
+<p>线性探测的缺点：可以看出产生冲突的数据都堆积在一起，而且还不能随意的删除哈希表中已存在的元素，因为直接删除可能会导致其他元素的查找，如果4位置的元素删除后，会影响14元素的查找，这时候我们还需要使用标记的伪元素删除法来删除一个元素（差不多就是标记一下这个元素，之后如果由其他元素可以直接覆盖，但是需要保存这个位置的信息，因为后面的元素可能选哟这个哈希地址再进行线性探测进行寻找）。</p>
+<h5 id="（2）二次探测法"><a href="#（2）二次探测法" class="headerlink" title="（2）二次探测法"></a>（2）二次探测法</h5><p>寻找空位置的方法：Hi &#x3D; (H0+i^2)%m</p>
+<p>这里的H0就是通过哈希函数计算出来的哈希地址，m为哈希表的大小，i&#x3D;1,2,3…，这里的i从小到大取，直到不产生哈希冲突即可，最终Hi为元素的存储位置。</p>
+<h4 id="7-2-解决哈希冲突的第二种方法（开散列）"><a href="#7-2-解决哈希冲突的第二种方法（开散列）" class="headerlink" title="7.2 解决哈希冲突的第二种方法（开散列）"></a>7.2 解决哈希冲突的第二种方法（开散列）</h4><h5 id="（1）开散列-x2F-哈希同的概念"><a href="#（1）开散列-x2F-哈希同的概念" class="headerlink" title="（1）开散列&#x2F;哈希同的概念"></a>（1）开散列&#x2F;哈希同的概念</h5><p>开散列法又叫链地址法(开链法)，首先对关键码集合用散列函数计算散列地址，具有相同地址的关键码归于同一子集合，每一个子集合称为一个桶，各个桶中的元素通过一个单链表链接起来，各链表的头结点存储在哈希表中。</p>
+<h5 id="（2）哈希桶图示"><a href="#（2）哈希桶图示" class="headerlink" title="（2）哈希桶图示"></a>（2）哈希桶图示</h5><p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230531171835.png" srcset="/img/loading.gif" lazyload alt="image-20230531171834110"></p>
+<p><strong>注意</strong>：如果哈希冲突特别严重时，就说明桶下的哈希冲突元素太多，这时候也可以将问题逐渐缩小，解决的方法如：还有哈希表，或者转化为搜索树（思路）。</p>
+<p>虽然哈希表一直在和冲突做斗争，但在实际使用过程中，我们认为哈希表的冲突率是不高的，冲突个数是可控的，也就是每个桶中的链表的长度是一个常数，所以，通常意义下，我们认为哈希表的插入&#x2F;删除&#x2F;查找时间复杂度是O(1)。</p>
+
+              
+            </div>
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/02-%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/" class="category-chain-item">02_编程语言</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/02-%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/01-Java/" class="category-chain-item">01_Java</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/02-%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/01-Java/01-JavaSE/" class="category-chain-item">01_JavaSE</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/02-%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/01-Java/01-JavaSE/02-%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1/" class="category-chain-item">02_面向对象</a>
+  
+  
+
+  
+
+  
+
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/JavaSE/">#JavaSE</a>
+      
+        <a href="/tags/hashCode/">#hashCode</a>
+      
+        <a href="/tags/%E5%93%88%E5%B8%8C%E5%86%B2%E7%AA%81/">#哈希冲突</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>07-hashCode与哈希冲突</div>
+      <div>https://janycode.github.io/2016/04/28/02_编程语言/01_Java/01_JavaSE/02_面向对象/07-hashCode与哈希冲突/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Jerry(姜源)</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2016年4月28日</div>
+        </div>
+      
+      
+      <div class="license-meta-item">
+        <div>许可协议</div>
+        <div>
+          
+            
+            
+              <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+              <span class="hint--top hint--rounded" aria-label="BY - 姜源">
+                <i class="iconfont icon-by"></i>
+              </span>
+              </a>
+            
+          
+        </div>
+      </div>
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2016/04/28/02_%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/01_Java/01_JavaSE/02_%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1/06-%E5%9B%9B%E7%A7%8D%E5%86%85%E9%83%A8%E7%B1%BB/" title="06-四种内部类">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">06-四种内部类</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2016/04/28/02_%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/01_Java/01_JavaSE/02_%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1/08-String%E6%96%B9%E6%B3%95&amp;%E6%97%A5%E6%9C%9F/" title="08-String类和方法">
+                        <span class="hidden-mobile">08-String类和方法</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+  <article id="comments" lazyload>
+    
+  <div id="SOHUCS" sid='https://janycode.github.io/2016/04/28/02_%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/01_Java/01_JavaSE/02_%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1/07-hashCode%E4%B8%8E%E5%93%88%E5%B8%8C%E5%86%B2%E7%AA%81/'></div>
+  <script type="text/javascript">
+    Fluid.utils.loadComments('#SOHUCS', function() {
+      Fluid.utils.createScript("https://changyan.sohu.com/upload/changyan.js", function() {
+        window.changyan.api.config({"appid":"cyw5OHIcO","appkey":"fea3446b3df4b3f129f34da4cbc87e51"})
+      });
+    });
+  </script>
+  <noscript>Please enable JavaScript to view the comments</noscript>
+
+
+  </article>
+
+
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://simple.blog.csdn.net" target="_blank" rel="nofollow noopener"><span>CSDN</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/janycode" target="_blank" rel="nofollow noopener"><span>GitHub</span></a> <i class="iconfont icon-love"></i> <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="busuanzi_container_site_pv" style="display: none">
+        总访问量(PV) 
+        <span id="busuanzi_value_site_pv"></span>
+         次，
+      </span>
+    
+    
+      <span id="busuanzi_container_site_uv" style="display: none">
+        总访客数(UV) 
+        <span id="busuanzi_value_site_uv"></span>
+         人
+      </span>
+    
+    
+  
+</div>
+
+  
+  
+  
+</div>
+
+<!-- live2d 动画 -->
+<script src="https://eqcn.ajz.miesnfu.com/wp-content/plugins/wp-3d-pony/live2dw/lib/L2Dwidget.min.js"></script>
+<script>
+    L2Dwidget.init({
+        "model": {
+            jsonPath: "https://unpkg.com/live2d-widget-model-haruto@1.0.5/assets/haruto.model.json",
+            "scale": 1
+        },
+        "display": {
+            "position": "right",
+            "width": 100,
+            "height": 200,
+            "hOffset": 35,
+            "vOffset": -85
+        },
+        "mobile": {
+            "show": false,
+            "scale": 0.1
+        },
+        "react": {
+            "opacityDefault": 0.75,
+            "opacityOnHover": 0.2
+        }
+    });
+</script>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <!-- Baidu Analytics -->
+    <script defer>
+      if (!Fluid.ctx.dnt) {
+        var _hmt = _hmt || [];
+        (function() {
+          var hm = document.createElement("script");
+          hm.src = "https://hm.baidu.com/hm.js?bfff735c897eb60ea49b735096b20e47";
+          var s = document.getElementsByTagName("script")[0];
+          s.parentNode.insertBefore(hm, s);
+        })();
+      }
+    </script>
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.0/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      headingSelector : CONFIG.toc.headingSelector || 'h1,h2,h3,h4,h5,h6',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      collapseDepth   : CONFIG.toc.collapseDepth || 0,
+      scrollSmooth    : true,
+      headingsOffset  : -boardTop
+    });
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+  });
+</script>
+
+
+  <script>
+  (function() {
+    var enableLang = CONFIG.code_language.enable && CONFIG.code_language.default;
+    var enableCopy = CONFIG.copy_btn;
+    if (!enableLang && !enableCopy) {
+      return;
+    }
+
+    function getBgClass(ele) {
+      return Fluid.utils.getBackgroundLightness(ele) >= 0 ? 'code-widget-light' : 'code-widget-dark';
+    }
+
+    var copyTmpl = '';
+    copyTmpl += '<div class="code-widget">';
+    copyTmpl += 'LANG';
+    copyTmpl += '</div>';
+    jQuery('.markdown-body pre').each(function() {
+      var $pre = jQuery(this);
+      if ($pre.find('code.mermaid').length > 0) {
+        return;
+      }
+      if ($pre.find('span.line').length > 0) {
+        return;
+      }
+
+      var lang = '';
+
+      if (enableLang) {
+        lang = CONFIG.code_language.default;
+        if ($pre[0].children.length > 0 && $pre[0].children[0].classList.length >= 2 && $pre.children().hasClass('hljs')) {
+          lang = $pre[0].children[0].classList[1];
+        } else if ($pre[0].getAttribute('data-language')) {
+          lang = $pre[0].getAttribute('data-language');
+        } else if ($pre.parent().hasClass('sourceCode') && $pre[0].children.length > 0 && $pre[0].children[0].classList.length >= 2) {
+          lang = $pre[0].children[0].classList[1];
+          $pre.parent().addClass('code-wrapper');
+        } else if ($pre.parent().hasClass('markdown-body') && $pre[0].classList.length === 0) {
+          $pre.wrap('<div class="code-wrapper"></div>');
+        }
+        lang = lang.toUpperCase().replace('NONE', CONFIG.code_language.default);
+      }
+      $pre.append(copyTmpl.replace('LANG', lang).replace('code-widget">',
+        getBgClass($pre[0]) + (enableCopy ? ' code-widget copy-btn" data-clipboard-snippet><i class="iconfont icon-copy"></i>' : ' code-widget">')));
+
+      if (enableCopy) {
+        Fluid.utils.createScript('https://lib.baomitu.com/clipboard.js/2.0.10/clipboard.min.js', function() {
+          var clipboard = new window.ClipboardJS('.copy-btn', {
+            target: function(trigger) {
+              var nodes = trigger.parentNode.childNodes;
+              for (var i = 0; i < nodes.length; i++) {
+                if (nodes[i].tagName === 'CODE') {
+                  return nodes[i];
+                }
+              }
+            }
+          });
+          clipboard.on('success', function(e) {
+            e.clearSelection();
+            e.trigger.innerHTML = e.trigger.innerHTML.replace('icon-copy', 'icon-success');
+            setTimeout(function() {
+              e.trigger.innerHTML = e.trigger.innerHTML.replace('icon-success', 'icon-copy');
+            }, 2000);
+          });
+        });
+      }
+    });
+  })();
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script  src="/js/local-search.js" ></script>
+
+  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>
