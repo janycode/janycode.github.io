@@ -32,7 +32,7 @@
 <meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20220320092515.png">
 <meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20220320094552.png">
 <meta property="article:published_time" content="2020-03-17T08:32:14.000Z">
-<meta property="article:modified_time" content="2023-06-02T08:55:23.830Z">
+<meta property="article:modified_time" content="2023-06-02T14:48:40.097Z">
 <meta property="article:author" content="Jerry(姜源)">
 <meta property="article:tag" content="JavaSE">
 <meta property="article:tag" content="线程池">
@@ -354,8 +354,8 @@
 <p>5）<code>workQueue</code>：用于保存等待执行任务的阻塞队列。可以选择以下集个阻塞队列：</p>
 <ul>
 <li><strong>ArrayBlockingQueue</strong>：是一个基于<a href="">数组结构</a>的阻塞队列，此队列按FIFO原则对元素进行排序；</li>
-<li><strong>LinkedBlockingQueue</strong>：是一个基于<a href="">链表结构</a>的阻塞队列，此队列按FIFO排序元素，吞吐量通常高于ArrayBlockingQueue。静态工厂方法 Executors.newFixedThreadPool() 使用了这个队列。</li>
-<li><strong>SynchronousQueue</strong>：一个<a href="">不存储元素</a>的阻塞队列。每个插入操作必须等到另一个线程调用移除操作，否则插入操作一直处于阻塞状态，吞吐量常高于 LinkedBlockingQueue ，静态工厂方法Executors.newCachedThreadPool() 使用了这个队列。</li>
+<li><strong>LinkedBlockingQueue</strong>：是一个基于<a href="">链表结构</a>的阻塞队列，此队列按FIFO排序元素，吞吐量通常高于ArrayBlockingQueue。静态工厂方法 Executors.newFixedThreadPool() 使用了这个队列；</li>
+<li><strong>SynchronousQueue</strong>：一个<a href="">不存储元素</a>的阻塞队列。每个插入操作必须等到另一个线程调用移除操作，否则插入操作一直处于阻塞状态，吞吐量常高于 LinkedBlockingQueue ，静态工厂方法Executors.newCachedThreadPool() 使用了这个队列；</li>
 <li><strong>PriorityBlockingQueue</strong>：一个具有<a href="">优先级的无限</a>阻塞队列。</li>
 </ul>
 <p>6）<code>threadFactory</code>：用于设置创建线程的工厂，可以通过工厂给每个创造出来的线程设置更有意义的名字。使用开源框架guava提供的ThreadFactoryBuilder可以快速给线程池里的线程设置有意义的名字：</p>
@@ -374,12 +374,16 @@
 <li>向线程池提交任务</li>
 </ol>
 <ul>
-<li><strong>execute()方法用于像线程池提交不需要返回值的任务</strong><br>所以无法判断任务是否被线程池执行成功。</li>
+<li><p><strong>execute()方法用于像线程池提交不需要返回值的任务</strong></p>
+<p>所以无法判断任务是否被线程池执行成功。</p>
+</li>
 </ul>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs java">executor.execute(<span class="hljs-keyword">new</span> <span class="hljs-title class_">Runnable</span>() &#123;<br>    <span class="hljs-meta">@Override</span> <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">run</span><span class="hljs-params">()</span> &#123;<br>        <span class="hljs-comment">// TODO </span><br>    &#125;<br>&#125;);<br></code></pre></td></tr></table></figure>
 
 <ul>
-<li><strong>submit()方法用于提交需要返回值的任务。</strong><br>线程池会返回一个future类型的对象，通过这个future对象可以判断任务是否执行成功，并且可以通过future的get()方法获取返回值，get()方法会阻塞当前线程直到任务完成，而使用get(long timeout, TimeUnit unit)方法则会阻塞当前线程一段时间后立即返回，这时有可能任务还没有执行完。</li>
+<li><p><strong>submit()方法用于提交需要返回值的任务。</strong></p>
+<p>线程池会返回一个future类型的对象，通过这个future对象可以判断任务是否执行成功，并且可以通过future的get()方法获取返回值，get()方法会阻塞当前线程直到任务完成，而使用get(long timeout, TimeUnit unit)方法则会阻塞当前线程一段时间后立即返回，这时有可能任务还没有执行完。</p>
+</li>
 </ul>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs java">Future&lt;T&gt; future = executor.submit(hasReturnValueTask);<br><span class="hljs-keyword">try</span> &#123;<br>    <span class="hljs-type">T</span> <span class="hljs-variable">s</span> <span class="hljs-operator">=</span> future.get();<br>&#125; <span class="hljs-keyword">catch</span> (InterruptedExecption | ExecutortionExcception e) &#123;<br>    <span class="hljs-comment">// 处理异常</span><br>    e.printStackTrace();<br>&#125; <span class="hljs-keyword">finally</span> &#123;<br>    <span class="hljs-comment">// 关闭线程池</span><br>    executor.shutdown();<br>&#125;<br></code></pre></td></tr></table></figure>
 

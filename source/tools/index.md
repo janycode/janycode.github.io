@@ -22,7 +22,7 @@ comment: 'changyan'
 
 Java SE API 官方文档： [1.6中文](https://tool.oschina.net/apidocs/apidoc?api=jdk-zh)  [1.7英文](https://docs.oracle.com/javase/7/docs/api/index.html)   [1.8中文](https://www.matools.com/api/java8)  [1.8 英文](https://docs.oracle.com/javase/8/docs/api/index.html)
 
-Java EE API 官方文档： [1.7英文](https://docs.oracle.com/javaee/7/api/toc.htm)  [1.8英文](https://javaee.github.io/javaee-spec/javadocs/)  [1.5中英（o309）](https://pan.baidu.com/s/1lnB8QVzICZErWdQQKtwyNA)
+Java EE API 官方文档： [1.7英文](https://docs.oracle.com/javaee/7/api/toc.htm)  [1.8英文](https://javaee.github.io/javaee-spec/javadocs/)
 
 <br>
 

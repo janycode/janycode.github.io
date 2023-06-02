@@ -64,8 +64,8 @@ categories:
 5）`workQueue`：用于保存等待执行任务的阻塞队列。可以选择以下集个阻塞队列：
 
 * **ArrayBlockingQueue**：是一个基于[数组结构]()的阻塞队列，此队列按FIFO原则对元素进行排序；
-* **LinkedBlockingQueue**：是一个基于[链表结构]()的阻塞队列，此队列按FIFO排序元素，吞吐量通常高于ArrayBlockingQueue。静态工厂方法 Executors.newFixedThreadPool() 使用了这个队列。
-* **SynchronousQueue**：一个[不存储元素]()的阻塞队列。每个插入操作必须等到另一个线程调用移除操作，否则插入操作一直处于阻塞状态，吞吐量常高于 LinkedBlockingQueue ，静态工厂方法Executors.newCachedThreadPool() 使用了这个队列。
+* **LinkedBlockingQueue**：是一个基于[链表结构]()的阻塞队列，此队列按FIFO排序元素，吞吐量通常高于ArrayBlockingQueue。静态工厂方法 Executors.newFixedThreadPool() 使用了这个队列；
+* **SynchronousQueue**：一个[不存储元素]()的阻塞队列。每个插入操作必须等到另一个线程调用移除操作，否则插入操作一直处于阻塞状态，吞吐量常高于 LinkedBlockingQueue ，静态工厂方法Executors.newCachedThreadPool() 使用了这个队列；
 * **PriorityBlockingQueue**：一个具有[优先级的无限]()阻塞队列。
 
 6）`threadFactory`：用于设置创建线程的工厂，可以通过工厂给每个创造出来的线程设置更有意义的名字。使用开源框架guava提供的ThreadFactoryBuilder可以快速给线程池里的线程设置有意义的名字：
@@ -97,6 +97,7 @@ ThreadPoolExecutor执行execute()方法原理：
 1. 向线程池提交任务
 
 * **execute()方法用于像线程池提交不需要返回值的任务**
+  
   所以无法判断任务是否被线程池执行成功。
 
 ```java
@@ -108,6 +109,7 @@ executor.execute(new Runnable() {
 ```
 
 * **submit()方法用于提交需要返回值的任务。**
+  
   线程池会返回一个future类型的对象，通过这个future对象可以判断任务是否执行成功，并且可以通过future的get()方法获取返回值，get()方法会阻塞当前线程直到任务完成，而使用get(long timeout, TimeUnit unit)方法则会阻塞当前线程一段时间后立即返回，这时有可能任务还没有执行完。
 
 ```java
