@@ -7,8 +7,15 @@ comment: 'changyan'
 
 <center><h1>工欲善其事，必先利其器</h1></center>
 
-<a href="javascript:void(0)" onMouseOut="hideImg()" onmouseover="showImg()">ASCII码字符</a>
-
+<script type="text/javascript"> 
+  function showImg(){ 
+      document.getElementById("asciiImg").style.display='block'; 
+  } 
+  function hideImg(){ 
+      document.getElementById("asciiImg").style.display='none'; 
+  } 
+</script> 
+<a href="javascript:void(0)" onMouseOut="hideImg()" onmouseover="showImg()">ASCII码字符(图)</a>
 <div id="asciiImg" style="display:none;height:50px;back-ground:#f00;position:absolute;">
     <img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/image-20200523091606519.png">
 </div>
@@ -145,17 +152,5 @@ Java EE API 官方文档： [1.7英文](https://docs.oracle.com/javaee/7/api/toc
 
 ### CodePart
 
-<iframe id="embed_dom" name="embed_dom" frameborder="0" style="display:block;width:800px; height:666px;" src="https://www.processon.com/embed/5e3b6d5ce4b00de9fd7dd195"></iframe>
+<iframe id="embed_dom" name="embed_dom" frameborder="0" style="display:block;width:895px; height:666px;" src="https://www.processon.com/embed/5e3b6d5ce4b00de9fd7dd195"></iframe>
 
-
-
-
-
-<script type="text/javascript"> 
-  function showImg(){ 
-      document.getElementById("asciiImg").style.display='block'; 
-  } 
-  function hideImg(){ 
-      document.getElementById("asciiImg").style.display='none'; 
-  } 
-</script> 
