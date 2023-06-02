@@ -133,7 +133,7 @@ Hash(key) = A*key+B;
 哈希函数为：
 
 ```
-Hash(key) = key%p&nbsp; &nbsp;//这里的p&lt;=哈希表的长度
+Hash(key) = key%p //这里的p&lt;=哈希表的长度
 ```
 
 #### （3）平方取中法

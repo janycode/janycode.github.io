@@ -7,7 +7,22 @@ comment: 'changyan'
 
 <center><h1>工欲善其事，必先利其器</h1></center>
 
-[ASCII码可显示字符](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230527165726.png)  |  [ASCII码控制字符](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230527165811.png)
+<a href="javascript:void(0)" onMouseOut="hideImg()" onmouseover="showImg()">ASCII码字符</a>
+
+<div id="asciiImg" style="display:none;height:50px;back-ground:#f00;position:absolute;">
+    <img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/image-20200523091606519.png">
+</div>
+
+
+<br>
+
+---
+
+### Java文档
+
+Java SE API 官方文档： [1.6中文](https://tool.oschina.net/apidocs/apidoc?api=jdk-zh)  [1.7英文](https://docs.oracle.com/javase/7/docs/api/index.html)   [1.8中文](https://www.matools.com/api/java8)  [1.8 英文](https://docs.oracle.com/javase/8/docs/api/index.html)
+
+Java EE API 官方文档： [1.7英文](https://docs.oracle.com/javaee/7/api/toc.htm)  [1.8英文](https://javaee.github.io/javaee-spec/javadocs/)  [1.5中英（o309）](https://pan.baidu.com/s/1lnB8QVzICZErWdQQKtwyNA)
 
 <br>
 
@@ -126,9 +141,21 @@ comment: 'changyan'
 
 ---
 
-### Java文档
 
-Java SE API 官方文档： [1.6中文](https://tool.oschina.net/apidocs/apidoc?api=jdk-zh)  [1.7英文](https://docs.oracle.com/javase/7/docs/api/index.html)   [1.8中文](https://www.matools.com/api/java8)  [1.8 英文](https://docs.oracle.com/javase/8/docs/api/index.html)
 
-Java EE API 官方文档： [1.7英文](https://docs.oracle.com/javaee/7/api/toc.htm)  [1.8英文](https://javaee.github.io/javaee-spec/javadocs/)  [1.5中英（o309）](https://pan.baidu.com/s/1lnB8QVzICZErWdQQKtwyNA)
+### CodePart
 
+<iframe id="embed_dom" name="embed_dom" frameborder="0" style="display:block;width:800px; height:666px;" src="https://www.processon.com/embed/5e3b6d5ce4b00de9fd7dd195"></iframe>
+
+
+
+
+
+<script type="text/javascript"> 
+  function showImg(){ 
+      document.getElementById("asciiImg").style.display='block'; 
+  } 
+  function hideImg(){ 
+      document.getElementById("asciiImg").style.display='none'; 
+  } 
+</script> 
