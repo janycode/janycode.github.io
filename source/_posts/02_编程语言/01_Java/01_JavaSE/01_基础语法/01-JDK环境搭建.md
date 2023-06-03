@@ -147,19 +147,19 @@ https://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.
 
 win+E >> 右键(空白处) >> 属性 >> 环境变量
 
-- 新建系统变量：
+- **新建系统变量**：
 
    变量名：JAVA_HOME
 
    变量值：E:\program files\Java\jdk1.8.0_231 （找到实际安装路径）
 
-- 新建系统变量：
+- **新建系统变量**：
 
    变量名：CLASS_PATH
 
    变量值：.;%JAVA_HOME%\lib;%JAVA_HOME%\lib\tools.jar
 
-- 编辑Path变量：
+- **编辑Path变量**：
 
    变量名：Path
 
