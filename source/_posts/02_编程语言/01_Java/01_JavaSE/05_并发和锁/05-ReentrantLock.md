@@ -17,18 +17,20 @@ categories:
 ```java
 public interface Lock {}
 ```
-* 提供更多实用性方法，功能更强大、性能更优越。
+提供更多实用性方法，功能更强大、性能更优越。
+
 常用方法：
-① void lock() // 获取锁，如锁被占用，则等待
-② boolean trylock() // 尝试获取锁（成功true，失败false，不阻塞）
-③ void unlock() // 释放锁 
+
+* void lock() // 获取锁，如锁被占用，则等待
+* boolean trylock() // 尝试获取锁（成功true，失败false，不阻塞）
+* void unlock() // 释放锁 
+
+![image-20230605211740164](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230605211741.png)
 
 
 
 ### 2. ReentrantLock类(重入锁/递归锁)
  - Lock接口实现类
-
-
 
 ```java
 public class ReentrantLock extends Object implements Lock, Serializable
@@ -478,3 +480,7 @@ class MyService {
 
 1. 原子操作的颗粒度更小的加锁操作或跨方法释放锁时（灵活）；
 2. 如果你需要使用ReentrantLock的三个高级功能时。
+
+
+
+![image-20230605211836926](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230605211837.png)

@@ -9,8 +9,6 @@ categories:
 
 
 
-
-
 ## 一、前言
 
 一个后端接口大致分为四个部分组成：**接口地址（url）、接口请求方式（get、post等）、请求数据（request）、响应数据（response）**。虽然说后端接口的编写并没有统一规范要求，而且如何构建这几个部分每个公司要求都不同，没有什么“一定是最好的”标准，但其中最重要的关键点就是看是否规范。
@@ -19,7 +17,7 @@ categories:
 
 因为讲解的重点是后端接口，所以需要导入一个`spring-boot-starter-web`包，而lombok作用是简化类，前端显示则使用了knife4j，具体使用在Spring Boot整合knife4j实现Api文档已写明。另外从springboot-2.3开始，校验包被独立成了一个starter组件，所以需要引入如下依赖：
 
-```
+```xml
 <dependency>
 <!--新版框架没有自动引入需要手动引入-->
     <groupId>org.springframework.boot</groupId>
@@ -45,7 +43,7 @@ categories:
 </dependency>
 ```
 
-## 
+
 
 ## 三、参数校验
 
@@ -61,7 +59,7 @@ categories:
 
 而使用`Validator+ BindingResult`已经是非常方便实用的参数校验方式了，在实际开发中也有很多项目就是这么做的，不过这样还是不太方便，因为你每写一个接口都要添加一个BindingResult参数，然后再提取错误信息返回给前端（简单看一下）。
 
-```
+```java
 @PostMapping("/addUser")
 public String addUser(@RequestBody @Validated User user, BindingResult bindingResult) {
     // 如果有参数校验失败，会将错误信息封装成对象组装在BindingResult里
@@ -81,11 +79,11 @@ public String addUser(@RequestBody @Validated User user, BindingResult bindingRe
 
 内置参数校验如下：
 
-![图片](https://mmbiz.qpic.cn/sz_mmbiz_png/tJdrRlG3mibwicqKib43ssLEk3hiaH4ibE0ygexuFXejYDZjia7sf3kTC0z4CXPTO5XHp4Fh8nE4cLItiay3tho0QhoBw/640?wx_fmt=png&wxfrom=5&wx_lazy=1&wx_co=1)
+![image-20230605210552707](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230605210554.png)
 
 首先Validator可以非常方便的制定校验规则，并自动帮你完成校验。首先在入参里需要校验的字段加上注解,每个注解对应不同的校验规则，并可制定校验失败后的信息：
 
-```
+```java
 @Data
 public class User {
     @NotNull(message = "用户id不能为空")
@@ -107,7 +105,7 @@ public class User {
 
 校验规则和错误提示信息配置完毕后，接下来只需要在接口仅需要在校验的参数上加上`@Valid`注解（去掉BindingResult后会自动引发异常，异常发生了自然而然就不会执行业务逻辑）：
 
-```
+```java
 @RestController
 @RequestMapping("user")
 public class ValidationController {
@@ -117,7 +115,6 @@ public class ValidationController {
 
     @PostMapping("/addUser")
     public String addUser(@RequestBody @Validated User user) {
-
         return validationService.addUser(user);
     }
 }
@@ -125,7 +122,7 @@ public class ValidationController {
 
 现在我们进行测试，打开knife4j文档地址，当输入的请求数据为空时，Validator会将所有的报错信息全部进行返回，所以需要与全局异常处理一起使用。
 
-```
+```java
 // 使用form data方式调用接口，校验异常抛出 BindException
 // 使用 json 请求体调用接口，校验异常抛出 MethodArgumentNotValidException
 // 单个参数校验异常抛出ConstraintViolationException
@@ -149,7 +146,11 @@ public ResultVO<String> BindException(BindException e) {
 }
 ```
 
-[![图片](https://mmbiz.qpic.cn/sz_mmbiz_png/tJdrRlG3mibwicqKib43ssLEk3hiaH4ibE0ygJjWMxGic8bJUL3vqv2IwLeicE2ygkmRMRWqjljMChe3tIdgaAghejwBg/640?wx_fmt=png&wxfrom=5&wx_lazy=1&wx_co=1)](https://mp.weixin.qq.com/s?__biz=MzAwMTE3MDY4MQ==&mid=2652469417&idx=1&sn=201bb5c64ee967761691c296bd0ca541&chksm=8130153fb6479c29c14e86a0befe514b751ecab91710723c7aa0493bc9abbd695910e4786d1d&mpshare=1&scene=24&srcid=0504mKVyWhFFWASevuLQSNp0&sharer_sharetime=1683171085887&sharer_shareid=cd0987705a8b57b13ba2ccd96feaffdf&key=67e5e6ea9fb851344bf4594985f5f53dd17dc76742f063b2d7a59fea6ef862100fd2705dd3734b96c2827311fe464468edb523f772c0aafb314664bdb87a4c8bc98759627d66fd8a7943b4e303c65d4ad37a0326d605c5d473264003045aaad7b62561bd0e4a2e86417fddeba8ec7fffe0044de3fe7f7fbb562db1e975029bcf&ascene=0&uin=MjkyNzIxMTAwOQ%3D%3D&devicetype=Windows+11+x64&version=6309021a&lang=zh_CN&countrycode=CN&exportkey=n_ChQIAhIQuJ2UUmOihORikrkILPZLIRLgAQIE97dBBAEAAAAAAJwUDvWh0yYAAAAOpnltbLcz9gKNyK89dVj0q7CQj3oQBcUZfweEEAnSk8aMY%2FF3vikQDBztNkL4IWQxiPbfbE6GbwiMPFcnbVzsIWEqiFXkg0QO6aLc3XbLUMjGdyHIGxJlbdC4flXqzT3RWn%2Fo1P%2FoLLLj61kACINhvWiKZMrtD87cPi%2B2HoleU8qL8S7FaDB4pSJWJ10JD0MLI8L%2BsbFZW9U8mm8fBy92ay3V%2BkTZ6IU1%2BZcg9kGQNI6GO6qY7ZY269HWniiQsB7yaYNn1LNwJBx7&acctmode=0&pass_ticket=PwPklXFP7qWmtDCWmMmlCYtPyJOGIrZ%2FiV9ILXcFS6MMvn%2FD9WGgzdHaKha9Crpv4J9lysDaahInf6Zc%2FstJSQ%3D%3D&wx_header=1&fontgear=2)
+![image-20230605210641076](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230605210642.png)
+
+![image-20230605210701218](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230605210702.png)
+
+
 
 ### 3、分组校验和递归校验
 
@@ -159,7 +160,7 @@ public ResultVO<String> BindException(BindException e) {
 - 在校验注解上添加groups属性指定分组
 - Controller方法的`@Validated`注解添加分组类
 
-```
+```java
 public interface Update extends Default{
 }
 @Data
@@ -174,7 +175,7 @@ public String update(@Validated({Update.class}) User user) {
 }
 ```
 
-如果Update不继承Default，`@Validated({Update.class})`就只会校验属于`Update.class`分组的参数字段；如果继承了，会校验了其他默认属于`Default.class`分组的字段。阿里巴巴 Java 开发手册 v1.2.0：https://www.yoodb.com/deployment/handbook/alibaba-java-specification.html
+如果Update不继承Default，`@Validated({Update.class})`就只会校验属于`Update.class`分组的参数字段；如果继承了，会校验了其他默认属于`Default.class`分组的字段。
 
 对于递归校验（比如类中类），只要在相应属性类上增加`@Valid`注解即可实现（对于集合同样适用）
 
@@ -185,7 +186,7 @@ Spring Validation允许用户自定义校验，实现很简单，分两步：
 - 自定义校验注解
 - 编写校验者类
 
-```
+```java
 @Target({ METHOD, FIELD, ANNOTATION_TYPE, CONSTRUCTOR, PARAMETER, TYPE_USE })
 @Retention(RUNTIME)
 @Documented
@@ -220,13 +221,11 @@ public class HaveNoBlankValidator implements ConstraintValidator<HaveNoBlank, St
 }
 ```
 
-## 
+
 
 ## 四、全局异常处理
 
-参数校验失败会自动引发异常，我们当然不可能再去手动捕捉异常进行处理。但我们又不想手动捕捉这个异常，又要对这个异常进行处理，那正好使用SpringBoot全局异常处理来达到一劳永逸的效果！Spring Cloud Openfeign 实现原理分析：https://www.yoodb.com/spring/springcloud/open-feign-principle.html
-
-### 1、基本使用
+参数校验失败会自动引发异常，我们当然不可能再去手动捕捉异常进行处理。但我们又不想手动捕捉这个异常，又要对这个异常进行处理，那正好使用SpringBoot全局异常处理来达到一劳永逸的效果！
 
 首先，我们需要新建一个类，在这个类上加上`@ControllerAdvice`或`@RestControllerAdvice`注解，这个类就配置成全局处理类了。
 
@@ -234,9 +233,7 @@ public class HaveNoBlankValidator implements ConstraintValidator<HaveNoBlank, St
 
 然后在类中新建方法，在方法上加上`@ExceptionHandler`注解并指定你想处理的异常类型，接着在方法内编写对该异常的操作逻辑，就完成了对该异常的全局处理！我们现在就来演示一下对参数校验失败抛出的`MethodArgumentNotValidException`全局处理：
 
-```
-package com.csdn.demo1.global;
-
+```java
 import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -282,7 +279,7 @@ public class ExceptionControllerAdvice {
 
 以后我们再想写接口参数校验，就只需要在入参的成员变量上加上Validator校验规则注解，然后在参数上加上`@Valid`注解即可完成校验，校验失败会自动返回错误提示信息，无需任何其他代码！
 
-![图片](https://mmbiz.qpic.cn/sz_mmbiz_png/tJdrRlG3mibwicqKib43ssLEk3hiaH4ibE0ygm1N2gnFVMiae6CxOKebNDJRP1UHsib5r2ryrriclzsRF1rGXFLgxeK1og/640?wx_fmt=png&wxfrom=5&wx_lazy=1&wx_co=1)
+![image-20230605210845999](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230605210846.png)
 
 ### 2、自定义异常
 
@@ -294,12 +291,7 @@ public class ExceptionControllerAdvice {
 
 我们现在就来开始写一个自定义异常：
 
-```
-package com.csdn.demo1.global;
-
-import lombok.Getter;
-
-@Getter //只要getter方法，无需setter
+```java
 public class APIException extends RuntimeException {
     private int code;
     private String msg;
@@ -322,7 +314,7 @@ public class APIException extends RuntimeException {
 
 然后在刚才的全局异常类中加入如下:
 
-```
+```java
 //自定义的全局异常
   @ExceptionHandler(APIException.class)
   public String APIExceptionHandler(APIException e) {
@@ -330,19 +322,19 @@ public class APIException extends RuntimeException {
   }
 ```
 
-这样就对异常的处理就比较规范了，当然还可以添加对Exception的处理，这样无论发生什么异常我们都能屏蔽掉然后响应数据给前端，不过建议最后项目上线时这样做，能够屏蔽掉错误信息暴露给前端，在开发中为了方便调试还是不要这样做。Java进阶路线：https://www.yoodb.com/
+这样就对异常的处理就比较规范了，当然还可以添加对Exception的处理，这样无论发生什么异常我们都能屏蔽掉然后响应数据给前端，不过建议最后项目上线时这样做，能够屏蔽掉错误信息暴露给前端，在开发中为了方便调试还是不要这样做。
 
 另外，当我们抛出自定义异常的时候全局异常处理只响应了异常中的错误信息msg给前端，并没有将错误代码code返回。这还需要配合数据统一响应。
 
 如果在多模块使用，全局异常等公共功能抽象成子模块，则在需要的子模块中需要将该模块包扫描加入，`@SpringBootApplication(scanBasePackages = {"com.xxx"})`
 
-## 
+
 
 ## 五、数据统一响应
 
 统一数据响应是我们自己自定义一个响应体类，无论后台是运行正常还是发生异常，响应给前端的数据格式是不变的！这里我包括了响应信息代码code和响应信息说明msg，首先可以设置一个枚举规范响应体中的响应码和响应信息。
 
-```
+```java
 @Getter
 public enum ResultCode {
     SUCCESS(1000, "操作成功"),
@@ -360,9 +352,7 @@ public enum ResultCode {
 
 自定义响应体
 
-```
-package com.csdn.demo1.global;
-
+```java
 import lombok.Getter;
 
 @Getter
@@ -394,7 +384,7 @@ public class ResultVO<T> {
 
 最后需要修改全局异常处理类的返回类型
 
-```
+```java
 @RestControllerAdvice
 public class ExceptionControllerAdvice {
 
@@ -415,7 +405,7 @@ public class ExceptionControllerAdvice {
 
 最后在controller层进行接口信息数据的返回
 
-```
+```java
 @GetMapping("/getUser")
 public ResultVO<User> getUser() {
     User user = new User();
@@ -430,11 +420,11 @@ public ResultVO<User> getUser() {
 
 经过测试，这样响应码和响应信息只能是枚举规定的那几个，就真正做到了响应数据格式、响应码和响应信息规范化、统一化！
 
-![图片](https://mmbiz.qpic.cn/sz_mmbiz_png/tJdrRlG3mibwicqKib43ssLEk3hiaH4ibE0ygDY4lHMEhHZLKVP3Dq54vSDRAsmrW7fCOww40WeO7jzYt8yuOra9vSw/640?wx_fmt=png&wxfrom=5&wx_lazy=1&wx_co=1)
+![image-20230605210954123](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230605210955.png)
 
 还有一种全局返回类如下
 
-```
+```java
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -479,7 +469,7 @@ public class Msg {
 }
 ```
 
-## 
+
 
 ## 六、全局处理响应数据(可选择)
 
@@ -489,7 +479,7 @@ public class Msg {
 
 首先创建自定义注解，作用相当于全局处理类开关：
 
-```
+```java
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.METHOD}) // 表明该注解只能放在方法上
 public @interface NotResponseBody {
@@ -498,9 +488,7 @@ public @interface NotResponseBody {
 
 其次创建一个类并加上注解使其成为全局处理类。然后继承`ResponseBodyAdvice`接口重写其中的方法，即可对我们的controller进行增强操作，具体看代码和注释：
 
-```
-package com.csdn.demo1.global;
-
+```java
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.core.MethodParameter;
@@ -542,7 +530,7 @@ public class ResponseControllerAdvice implements ResponseBodyAdvice<Object> {
 
 对返回数据进行真正的操作还是在`beforeBodyWrite`方法中，我们可以直接在该方法里包装数据，这样就不需要每个接口都进行数据包装了，省去了很多麻烦。此时controller只需这样写就行了：
 
-```
+```java
 @GetMapping("/getUser")
 //@NotResponseBody  //是否绕过数据统一响应开关
 public User getUser() {
@@ -556,7 +544,7 @@ public User getUser() {
 }
 ```
 
-## 
+
 
 ## 七、接口版本控制
 
@@ -573,7 +561,7 @@ public User getUser() {
 
 首先定义一个注解
 
-```
+```java
 @Target({ElementType.METHOD, ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface ApiVersion {
@@ -584,7 +572,7 @@ public @interface ApiVersion {
 
 `ApiVersionCondition`用来控制当前request 指向哪个method
 
-```
+```java
 public class ApiVersionCondition implements RequestCondition<ApiVersionCondition> {
     private static final Pattern VERSION_PREFIX_PATTERN = Pattern.compile("v(\\d+\\.\\d+)");
 
@@ -635,7 +623,7 @@ public class ApiVersionCondition implements RequestCondition<ApiVersionCondition
 
 `PathVersionHandlerMapping`用于注入spring用来管理
 
-```
+```java
 public class PathVersionHandlerMapping extends RequestMappingHandlerMapping {
 
     @Override
@@ -663,7 +651,7 @@ public class PathVersionHandlerMapping extends RequestMappingHandlerMapping {
 
 `WebMvcConfiguration`配置类让spring来接管
 
-```
+```java
 @Configuration
 public class WebMvcConfiguration implements WebMvcRegistrations {
 
@@ -676,7 +664,7 @@ public class WebMvcConfiguration implements WebMvcRegistrations {
 
 最后controller进行测试，默认是v1.0，如果方法上有注解，以方法上的为准（该方法vx.x在路径任意位置出现都可解析）
 
-```
+```java
 @RestController
 @ApiVersion
 @RequestMapping(value = "/{version}/test")
@@ -706,7 +694,7 @@ public class TestController {
 
 总体原理与Path类似，修改`ApiVersionCondition` 即可，之后访问时在header带上`X-VERSION`参数即可
 
-```
+```java
 public class ApiVersionCondition implements RequestCondition<ApiVersionCondition> {
     private static final String X_VERSION = "X-VERSION";
     private final String version ;
@@ -741,7 +729,7 @@ public class ApiVersionCondition implements RequestCondition<ApiVersionCondition
 }
 ```
 
-## 
+
 
 ## 八、API接口安全
 
@@ -800,9 +788,7 @@ APP、前后端分离项目都采用API接口形式与服务器进行数据通�
 
 安全套接字层超文本传输协议HTTPS，为了数据传输的安全，HTTPS在HTTP的基础上加入了SSL协议，SSL依靠证书来验证服务器的身份，并为客户端和服务器之间的通信加密。
 
-HTTPS也不是绝对安全的，比如中间人劫持攻击，中间人可以获取到客户端与服务器之间所有的通信内容。另外，推荐公众号Java精选，回复java面试，获取面试资料，支持在线刷题。
-
-## 
+HTTPS也不是绝对安全的，比如中间人劫持攻击，中间人可以获取到客户端与服务器之间所有的通信内容。
 
 ## 九、总结
 
