@@ -149,7 +149,7 @@ delete 物理删除类同。
 
 #### 2.3 批量更新
 ```java
-int batchUpdate(@Param("articleInfoList") List<ArticleInfo> articleInfoList);
+int batchUpdate(@Param("list") List<ArticleInfo> articleInfoList);
 ```
 
 ```xml
@@ -157,24 +157,40 @@ int batchUpdate(@Param("articleInfoList") List<ArticleInfo> articleInfoList);
         update article_info
         <trim prefix="set">
             <trim prefix=" articleKind = case " suffix=" end, ">
-                <foreach collection="articleInfoList" item="item">
+                <foreach collection="list" item="item">
                     when id = #{item.id} then #{item.articleKind}
                 </foreach>
             </trim>
             更多字段可以直接添加，end后面的逗号需要保留
             <trim prefix=" checkUser = case " suffix=" end ">
-                <foreach collection="articleInfoList" item="item">
+                <foreach collection="list" item="item">
                     when id = #{item.id} then #{item.checkUser}
                 </foreach>
             </trim>
         </trim>
         <where>
             id in
-            <foreach collection="articleInfoList" item="item" open="(" separator="," close=")" index="index">
+            <foreach collection="list" item="item" open="(" separator="," close=")" index="index">
                 #{item.id}
             </foreach>
         </where>
     </update>
+```
+
+上述代码转换成 sql 如下：
+
+```sql
+    update article_info
+    set articleKind = 
+    case
+        when id = #{item.id} then #{item.articleKind} //此处应该是<foreach>展开值
+        ...
+    end, checkUser = 
+    case
+        when id = #{item.id} then #{item.checkUser} //此处应该是<foreach>展开值
+        ...
+	end
+    where id in (...);
 ```
 
 

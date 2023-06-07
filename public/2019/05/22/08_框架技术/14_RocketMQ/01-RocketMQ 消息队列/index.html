@@ -29,8 +29,10 @@
 <meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20220225232950.png">
 <meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20220225233059.png">
 <meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20220225233332.png">
+<meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230607214419.png">
+<meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230607221727.png">
 <meta property="article:published_time" content="2019-05-22T07:45:36.000Z">
-<meta property="article:modified_time" content="2023-06-06T02:42:45.865Z">
+<meta property="article:modified_time" content="2023-06-07T15:24:58.342Z">
 <meta property="article:author" content="Jerry(姜源)">
 <meta property="article:tag" content="SpringCloudAlibaba">
 <meta property="article:tag" content="RocketMQ">
@@ -257,7 +259,7 @@
         <i class="iconfont icon-chart"></i>
         
           <!-- compatible with older versions-->
-          9.2k 字
+          9.9k 字
         
       </span>
     
@@ -269,7 +271,7 @@
         
         
           <!-- compatible with older versions-->
-          77 分钟
+          83 分钟
         
       </span>
     
@@ -457,6 +459,22 @@
 <h5 id="5-2-4-消息堆积"><a href="#5-2-4-消息堆积" class="headerlink" title="5.2.4 消息堆积"></a>5.2.4 消息堆积</h5><p>消息中间件的主要功能是异步解耦，必须具备应对前端的数据洪峰，提高后端系统的可用性，必然要求消息中间件具备一定的消息堆积能力。RocketMQ消息存储使用磁盘文件（内存映射机制），并且在物理布局上为多个大小相等的文件组成逻辑文件组，可以无限循环使用。RocketMQ消息存储文件并不是永久存储在消息服务器端，而是提供了过期机制，默认保留3天。</p>
 <h5 id="5-2-5-定时消息"><a href="#5-2-5-定时消息" class="headerlink" title="5.2.5 定时消息"></a>5.2.5 定时消息</h5><p>定时消息是指消息发送到Broker后，不能被消息消费端立即消费，要到特定的时间点或者等待特定的时间后才能被消费。如果要支持任意精度的定时消息消费，必须在消息服务端对消息进行排序，势必带来很大的性能损耗，故RocketMQ不支持任意进度的定时消息，而只支持特定延迟级别。</p>
 <h5 id="5-2-6-消息重试机制"><a href="#5-2-6-消息重试机制" class="headerlink" title="5.2.6 消息重试机制"></a>5.2.6 消息重试机制</h5><p>消息重试是指消息在消费时，如果发送异常，消息中间件需要支持消息重新投递，RocketMQ支持消息重试机制。</p>
+<h3 id="刷盘机制原理"><a href="#刷盘机制原理" class="headerlink" title="刷盘机制原理"></a>刷盘机制原理</h3><p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230607214419.png" srcset="/img/loading.gif" lazyload alt="image-20230607214418567"></p>
+<h4 id="1、同步刷盘"><a href="#1、同步刷盘" class="headerlink" title="1、同步刷盘"></a>1、同步刷盘</h4><p>上面左图代表同步刷盘机制。消息从Producder端发送出去后，被Broker接收，Broker接收到消息后将消息写入内存的PageCache后，立即通知刷盘线程进行刷盘，当前线程等待刷盘线程的通知。刷盘线程开始进行刷盘操作，刷盘完毕后唤醒之前等待的线程，再返回写成功状态，最后Producer会收到消息发送成功的ACK。</p>
+<h4 id="2、异步刷盘"><a href="#2、异步刷盘" class="headerlink" title="2、异步刷盘"></a>2、异步刷盘</h4><p>右图代表异步刷盘机制。消息从Producder端发送出去后，被Broker接收到，Broker端接收到消息后，消息被写入PageCache后立即返回写成功给Producer端。然后另一个异步线程专门会将PageCache中的数据写到磁盘里，确保消息的持久化。</p>
+<h4 id="3、同步和异步刷盘的比较"><a href="#3、同步和异步刷盘的比较" class="headerlink" title="3、同步和异步刷盘的比较"></a>3、同步和异步刷盘的比较</h4><p>​        从上图的比较可以发现同步和异步刷盘的主要区别在于消息写入PageCache后是否立即返回写状态。可以从几个维度分析两者的差异：</p>
+<ul>
+<li><strong>吞吐量</strong>。由于异步刷盘在写入PageCache后立即返回，没有经历IO操作，因此吞吐量比同步刷盘的高很多。</li>
+<li>可靠性。同步刷盘是在完全写磁盘成功后才算成功，而异步刷盘是写入PageCache就返回，PageCache本质就是内存，假如在异步线程写磁盘之前机器断电了，消息还是可能丢失的，因此可靠性方面同步刷盘较高。</li>
+<li><strong>性能方面</strong>。同步刷盘写入磁盘后才算成功，而异步刷盘只需要写入内存就算成功，因此异步刷盘性能高于同步刷盘。</li>
+<li><strong>适用场景</strong>。同步刷盘可靠性高，因此适用金融等对数据要求较高的场景。异步刷盘可靠性相对来说低一些，但是性能好，因此适合要求高吞吐和高性能的场景。</li>
+</ul>
+<h4 id="4、刷盘机制配置"><a href="#4、刷盘机制配置" class="headerlink" title="4、刷盘机制配置"></a>4、刷盘机制配置</h4><p>刷盘方式可以通过Broker配置文件里的<code>flushDiskType</code>参数设置，这个参数有两种值：</p>
+<ul>
+<li>SYNC_FLUSH (同步刷盘)。</li>
+<li>ASYNC_FLUSH (异步刷盘)。</li>
+</ul>
+<h4 id="5、主流MQ刷盘机制对比"><a href="#5、主流MQ刷盘机制对比" class="headerlink" title="5、主流MQ刷盘机制对比"></a>5、主流MQ刷盘机制对比</h4><p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230607221727.png" srcset="/img/loading.gif" lazyload alt="image-20230607221726455"></p>
 
               
             </div>
@@ -563,8 +581,8 @@
                   <article class="post-next col-6">
                     
                     
-                      <a href="/2019/03/02/08_%E6%A1%86%E6%9E%B6%E6%8A%80%E6%9C%AF/11_Dubbo/4H%E6%90%9E%E5%AE%9ADubbo/" title="4H搞定Dubbo">
-                        <span class="hidden-mobile">4H搞定Dubbo</span>
+                      <a href="/2019/03/02/08_%E6%A1%86%E6%9E%B6%E6%8A%80%E6%9C%AF/12_WebSocket/WebSocket%E8%81%8A%E5%A4%A9%E5%AE%A4%E5%AE%9E%E6%88%98/" title="WebSocket聊天室实战">
+                        <span class="hidden-mobile">WebSocket聊天室实战</span>
                         <span class="visible-mobile">下一篇</span>
                         <i class="iconfont icon-arrowright"></i>
                       </a>
