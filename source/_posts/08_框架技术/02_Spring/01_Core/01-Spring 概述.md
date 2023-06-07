@@ -61,6 +61,19 @@ Spring 是由 Rod Johnson 组织和开发的一个分层的 Java SE/EE full-stac
   - 方便程序的测试。
   - 方便集成各种优秀的框架。
   - 降低 Java EE API 的使用难度。
+  
+* **Spring 七大核心模块**
+
+  * Spring Core
+  * Spring AOP
+  * Spring ORM
+  * Spring Web
+  * Spring DAO
+  * Spring Context
+  * Spring Web MVC
+
+  ![image-20230606215438733](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230606215440.png)
+
 * **Spring 体系结构**
   分层架构，20个模块。
 
@@ -100,8 +113,6 @@ Spring 是由 Rod Johnson 组织和开发的一个分层的 Java SE/EE full-stac
   * **Test**：单元测试、集成测试。
 
 ### 4. Spring 社区经典项目
-
-
 
 #### 4.1 Spring Security
 

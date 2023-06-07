@@ -32,13 +32,24 @@ Nacos : 一个更易于构建云原生应用的动态**服务发现**、**配置
 #### 1.1 Nacos的核心作用
 
 1. `服务注册中心`
+    
     服务治理框架 可以实现服务的发现和注册
+    
 2. `统一配置中心`
+
     可以实现共享的配置信息的管理
+
     微服务配置中心：
+
     Spring Cloud Config - SpringCloud：https://spring.io/projects/spring-cloud-config
+
     Apollo - 携程：https://github.com/ctripcorp/apollo
+
     Nacos - 阿里：https://github.com/alibaba/nacos
+
+#### 1.2 Nacos注册中心原理
+
+![image-20230606222904014](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230606222906.png)
 
 
 
