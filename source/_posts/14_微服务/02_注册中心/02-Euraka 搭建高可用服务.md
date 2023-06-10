@@ -9,9 +9,9 @@ categories:
 - 02_注册中心
 ---
 
-
 参考资料：
 Spring Cloud 官网：<https://spring.io/projects/spring-cloud>
+
 Spring Cloud Eureka 介绍和部署：<http://www.heartthinkdo.com/?p=1933>
 
 ### 1. 什么是SpringCloud

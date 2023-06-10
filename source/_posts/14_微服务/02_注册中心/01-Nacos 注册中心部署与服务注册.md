@@ -33,13 +33,16 @@ Nacos主要提供以下四大功能:
 3. 动态DNS服务
 4. 服务和元数据管理
 
-
 而且阿里巴巴在 2021-3-20 日 `Nacos 2.0` 正式发布了，且据说性能提升了 `10` 倍左右。
+
 Nacos 2.0 下载地址：https://github.com/alibaba/nacos/releases/tag/2.0.0
 
 我在 Nacos 官网页发现了阿里对 Nacos 2.0 的压测报告，性能提升真不是盖的：
+
 Nacos 2.0 配置模块压测报告：https://nacos.io/zh-cn/docs/nacos2-config-benchmark.html
+
 Nacos 2.0 服务发现模块压测报告：https://nacos.io/zh-cn/docs/nacos2-naming-benchmark.html
+
 盲猜以后会是注册中心主流框架(Jerry(姜源) 2021-3-26 11:06:29)。
 
 
