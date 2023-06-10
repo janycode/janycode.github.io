@@ -10,14 +10,16 @@ categories:
 ---
 
 **python学习笔记**：小甲鱼python全套视频  +  python基础教程 第2版修订版（书附10个大型案例）
+
 **python学习环境**：python3, win10下python3.5.4的IDLE  +  ubuntu下python3辅助
+
 **python分享范围**：适合有C/C++/JAVA任意语言之一为基础，不适合纯新手入门
+
 **python语言优势**：至今还没有一门编程语言，开发速度比Python快，运行速度比C快
 
 python常用工具手册：
-http://bbs.fishc.com/forum.php?mod=collection&action=view&ctid=198
 
-        -2017.08.27         --  
+http://bbs.fishc.com/forum.php?mod=collection&action=view&ctid=198
 
 ### 00. python背景与特点
 Python语言起源

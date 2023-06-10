@@ -23,8 +23,9 @@ categories:
 推送仓库：git push
 查看记录：git log
 回滚代码：git reset --hard resetVersionHash #将当前branch的HEAD指针指向commit hash
-		eg: git reset --hard 388a0acd8f29efd98974318f3dd30488a5cf7141 #回滚代码到这个log提交时的状态 
-		#再重新合并代码重新add -> commit
+		(eg: git reset --hard 388a0acd8f29efd98974318f3dd30488a5cf7141 #回滚代码到这个log提交时的状态)
+		git push -f origin currentBranch
+		(eg: git push -f origin dev #强制提交覆盖远程dev分支代码，慎用 -f 确定代码不要的情况使用！！！)
 ```
 
 

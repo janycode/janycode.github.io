@@ -14,7 +14,7 @@ categories:
 
 
 
-# 1.Leaf-segment号段模式
+### 1.Leaf-segment号段模式
 
 Leaf-segment号段模式是对直接用数据库自增ID充当分布式ID的一种优化，减少对数据库的频率操作。相当于从数据库批量的获取自增ID，每次从数据库取出一个号段范围，例如 (1,1000] 代表1000个ID，业务服务将号段在本地生成1~1000的自增ID并加载到内存。 大致流程如下： 
 
@@ -22,7 +22,7 @@ Leaf-segment号段模式是对直接用数据库自增ID充当分布式ID的一�
 
 号段耗尽之后再去数据库获取新的号段，可以大大的减轻数据库的压力。对max_id字段做一次update操作，update max_id= max_id + step，update成功则说明新号段获取成功，新的号段范围是(max_id ,max_id +step]。 
 
-## 1.1 数据库配置
+#### 1.1 数据库配置
 
 由于号段模式依赖于数据库表，我们先创建数据库和表：
 
@@ -53,7 +53,7 @@ insert into leaf_alloc(biz_tag, max_id, step, description) values('leaf-segment-
 - step：步长，也就是每次获取ID的数量 
 - description：对于业务的描述，随意写
 
-## 1.2 导入并修改leaf项目
+#### 1.2 导入并修改leaf项目
 
 我们需要先导入Leaf项目。
 
@@ -86,7 +86,7 @@ leaf.snowflake.enable=false
 
 ![image-20230530204136702](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230530204137.png)
 
-## 1.3 Leaf-segment双buffer模式
+#### 1.3 Leaf-segment双buffer模式
 
 leaf的号段模式在更新号段时是无阻塞的，当号段耗尽时再去DB中取下一个号段，如果此时网络发生抖动，或者DB发生慢查询，业务系统拿不到号段，就会导致整个系统的响应时间变慢，对流量巨大的业务，这是不可容忍的。
 
@@ -118,7 +118,7 @@ leaf的号段模式在更新号段时是无阻塞的，当号段耗尽时再去D
 
 >通常推荐号段（segment）长度设置为服务高峰期发号QPS的600倍（10分钟），这样即使DB宕机，Leaf仍能持续发号10-20分钟不受影响。
 
-## 1.4 Leaf segment监控
+#### 1.4 Leaf segment监控
 
 访问：http://127.0.0.1:8080/cache
 
@@ -126,12 +126,12 @@ leaf的号段模式在更新号段时是无阻塞的，当号段耗尽时再去D
 
 ![image-20230530204819481](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230530204820.png)
 
-## 1.5 优缺点
+#### 1.5 优缺点
 
 - 优点： Leaf服务可以很方便的线性扩展，性能完全能够支撑大多数业务场景。 容灾性高：Leaf服务内部有号段缓存，即使DB宕机，短时间内Leaf仍能正常对外提供服务。 
 - 缺点： ID号码不够随机，能够泄露发号数量的信息，不太安全。 DB宕机会造成整个系统不可用（用到数据库的都有可能）。
 
-# 2.Leaf-snowflake雪花算法
+### 2.Leaf-snowflake雪花算法
 
 
 我简单的给大家说一下雪花算法的原理：Leaf-snowflake 基本上就是沿用了snowflake的设计，ID组成结构：正数位（占1比特）+ 时间戳（占41比特）+ 机器ID（占5比特）+ 机房ID（占5比特）+ 自增值（占12比特），总共64比特组成的一个Long类型。
@@ -140,7 +140,7 @@ Leaf-snowflake不同于原始snowflake算法地方，主要是在workId的生成
 
 好了说了那么多，我们看看Leaf-snowflake是怎么启动的？
 
-## 2.1 Leaf-snowflake的启动过程
+#### 2.1 Leaf-snowflake的启动过程
 
 - 启动Leaf-snowflake服务，连接Zookeeper，在leaf_forever父节点下检查自己是否已经注册过（是否有该顺序子节点）。 
 - 如果有注册过直接取回自己的workerID（zk顺序节点生成的int类型ID号），启动服务。 
@@ -166,7 +166,7 @@ leaf.snowflake.port=2181
 
 ![image-20230530210707373](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230530210708.png)
 
-## 2.2 优缺点
+#### 2.2 优缺点
 
 - 优点： ID号码是趋势递增的8 byte的64位数字，满足上述数据库存储的主键要求。 
 - 缺点： 依赖ZooKeeper，存在服务不可用风险
