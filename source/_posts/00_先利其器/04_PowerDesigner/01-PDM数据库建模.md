@@ -17,11 +17,11 @@ categories:
 
 
 **PowerDesigner 16.5 软件下载**：
-链接：https://pan.baidu.com/s/17qLr0funs3mkrhACk45_pw 
+链接：https://pan.baidu.com/s/17qLr0funs3mkrhACk45_pw?pwd=k9d9 
 提取码：k9d9
 **PowerDesigner 16.5 软件破懈**：
-链接：[https://pan.baidu.com/s/1m6MI3O_k1PCphVD-35C-dg](https://pan.baidu.com/s/1m6MI3O_k1PCphVD-35C-dg) 
-提取码：6e2t 
+链接：https://pan.baidu.com/s/1XzcxcLFLm8_xDlQRMwOIUw?pwd=ddrc 
+提取码：ddrc
 
 > 注意事项：
 > 1. 安装时一路 next 即可，中间需要选择一下同意的协议语言；

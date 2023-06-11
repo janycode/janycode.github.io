@@ -70,7 +70,7 @@ SKU是**物理上不可分割的最小存货单元。**也就是说一款商品�
 
 ① 在线工具：https://dbdiagram.io/d （它有其自身的语法，根据其语法创建）
 
-② 本地工具：[PowerDesigner 建模](https://janycode.github.io/2017/10/18/00_%E5%85%88%E5%88%A9%E5%85%B6%E5%99%A8/04_PowerDesigner/01-%E6%95%B0%E6%8D%AE%E5%BA%93%E5%BB%BA%E6%A8%A1%E8%AE%BE%E8%AE%A1/index.html)
+② 本地工具：[PowerDesigner 建模](https://janycode.github.io/2017/10/18/00_%E5%85%88%E5%88%A9%E5%85%B6%E5%99%A8/04_PowerDesigner/01-PDM%E6%95%B0%E6%8D%AE%E5%BA%93%E5%BB%BA%E6%A8%A1/)
 
 ![image-20200815174136380](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20200815174137.png)
 
