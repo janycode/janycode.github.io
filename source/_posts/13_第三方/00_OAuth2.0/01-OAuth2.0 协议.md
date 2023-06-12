@@ -25,6 +25,7 @@ OAuth（开放授权）是一个开放标准，允许用户授权第三方网站
 #### 1.1 应用场景
 
 对内授权：内部有多个系统，可以实现授权式操作
+
 对外授权：可以让外部第三方应用，进行授权操作  
 
 * 快递员：第三方 申请进入小区
@@ -45,18 +46,27 @@ OAuth（开放授权）是一个开放标准，允许用户授权第三方网站
 ![image-20200815145758397](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20200815145800.png)
 
 涉及到三种角色：
+
 1.应用程序：第三方程序系统 ，需要在开放平台的主站进行申请
+
 2.授权程序：实现基于Oauth2.0的授权交互
+
 3.资源程序：最终要开放的接口资源  
 
 通俗：
 
 1. 需要根据应用的ip和秘钥获取授权码
+    
     `oauth/authorize?client_id=应用的ID&client_secret=应用的秘钥&response_type=code&redirect_uri=回调地址`
+    
     （获取授权服务返回的信息：可以获取授权码，也可以获取令牌等信息）
+    
 2. 再次请求授权服务，通过授权码去获取令牌
+
     `oauth/token?client_id=应用的ID&client_secret=应用的秘钥&response_type=code&redirect_uri=回调地址&code=授权码`
+
     eg: oauth/token?client_id=app1001&client_secret=654321&response_type=code&code=a3cepW  回调地址传递：token、refresh_token（刷新令牌一次性）
+
 3. 有了令牌就可以操作资源
 
 
@@ -239,6 +249,7 @@ public class OauthConfig extends AuthorizationServerConfigurerAdapter {
     >     返回的内容：code=授权码
 
     请求接口：
+    
     http://localhost:8011/oauth/authorize?response_type=code&client_id=user-client&state=123432
     ![image-20200815153042000](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20200815153042.png)
 
@@ -249,17 +260,27 @@ public class OauthConfig extends AuthorizationServerConfigurerAdapter {
 Oauth2.0模式：授权码的模式
 
 1. 请求需求的内容：
+    
     1.获取授权码 code
+    
     2.获取令牌 access_token
-    3.刷新令牌获取新令牌 refresh_token
-    4.校验令牌 check_token
 
+    3.刷新令牌获取新令牌 refresh_token
+    
+    4.校验令牌 check_token
+    
 2. Oauth2.0默认提供的接口：
+
     get /oauth/authorize 获取授权码
+
     需求参数：
+
     client_id: 客户端id
+
     response_type: 类型 code
+
     state: 随机签名 时间戳
+
     scope: 范围 /oauth/token  
 
 * 依赖
@@ -438,6 +459,7 @@ spring:
 
 1. 请求接口
     http://localhost:8011/oauth/authorize?response_type=code&client_id=app001&state=123432
+    
     调用登录页面，输入账号信息，成功之后，将授权码回调到指定的页面
 
 ![image-20200815163506482](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20200815163508.png)
@@ -446,12 +468,16 @@ spring:
 
 2. postman进行接口请求 获取令牌
     http://localhost:8011/oauth/token
+    
     需求的参数：post请求 
+    
     请求示例：http://localhost:8011/oauth/token?client_id=app001&client_secret=123456&code=u8cCJ0&grant_type=authorization_code 
 
 ![image-20200815163611887](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20200815163613.png)
 
 3.校验令牌是否有效
 http://localhost:8011/oauth/check_token
+
 需求参数：token:令牌
+
 请求示例：http://localhost:8011/oauth/check_token?token=0cf70c84-47c5-4132-be3d-e3e9a3f9b889

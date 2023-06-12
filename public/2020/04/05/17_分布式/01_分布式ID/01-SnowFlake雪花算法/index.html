@@ -26,7 +26,7 @@
 <meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20220205110805.png">
 <meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20220205111906.png">
 <meta property="article:published_time" content="2020-04-05T02:51:30.000Z">
-<meta property="article:modified_time" content="2023-06-11T14:16:28.516Z">
+<meta property="article:modified_time" content="2023-06-12T14:49:08.436Z">
 <meta property="article:author" content="Jerry(姜源)">
 <meta property="article:tag" content="架构">
 <meta property="article:tag" content="分布式">
@@ -253,7 +253,7 @@
         <i class="iconfont icon-chart"></i>
         
           <!-- compatible with older versions-->
-          8.8k 字
+          9.5k 字
         
       </span>
     
@@ -265,7 +265,7 @@
         
         
           <!-- compatible with older versions-->
-          74 分钟
+          79 分钟
         
       </span>
     
@@ -341,7 +341,28 @@
 <p>SnowFlake可以保证：</p>
 <p>​        ●  所有生成的id按时间趋势递增</p>
 <p>​        ●  整个分布式系统内不会产生重复id（因为有datacenterId和workerId来做区分）</p>
-<h3 id="2-ID生成使用"><a href="#2-ID生成使用" class="headerlink" title="2. ID生成使用"></a>2. ID生成使用</h3><p>Hutool工具中：</p>
+<h3 id="2-存在问题和解决"><a href="#2-存在问题和解决" class="headerlink" title="2. 存在问题和解决"></a>2. 存在问题和解决</h3><ul>
+<li><p><em>时间回拨问题</em>：由于机器的时间是动态的调整的，有可能会出现时间跑到之前几毫秒，如果这个时候获取到了这种时间，则会出现数据重复</p>
+</li>
+<li><p><em>机器id分配及回收问题</em>：目前机器id需要每台机器不一样，这样的方式分配需要有方案进行处理，同时也要考虑，如果改机器宕机了，对应的workerId分配后的回收问题</p>
+</li>
+<li><p><em>机器id上限</em>：机器id是固定的bit，那么也就是对应的机器个数是有上限的，在有些业务场景下，需要所有机器共享同一个业务空间，那么10bit表示的1024台机器是不够的。</p>
+</li>
+</ul>
+<p>参考资料：<a target="_blank" rel="noopener" href="https://github.com/SimonAlong/Butterfly">https://github.com/SimonAlong/Butterfly</a></p>
+<p>Butterfly（蝴蝶）是一个超高性能的发号器框架。框架通过引入多种新的方案不仅解决了雪花算法存在的所有问题，而且还能够提供比雪花算法更高的性能。</p>
+<ol>
+<li><p>时间回拨问题</p>
+<p>这里采用新的方案：大概思路是：时间戳采用的是<code>历史时间</code>，每次请求只增序列值，序列值增满，然后“历史时间”增1，序列值归0，其中”历史时间”的初始值是应用启动时候的当前时间。</p>
+</li>
+<li><p>机器id分配和回收</p>
+<p>这里机器id分配和回收具体有两种方案：<code>zookeeper</code>和<code>db</code>。理论上分配方案zk是通过哈希和扩容机器，而db是通过查找机制。回收方案，zk采用的是永久节点，节点中存储下次过期时间，客户端定时上报（设置心跳），db是添加过期时间字段，查找时候判断过期字段。</p>
+</li>
+<li><p>机器id上限</p>
+<p>这个采用将<code>改造版雪花+zookeeper分配id</code>方案作为服务端的节点，客户端采用双Buffer+异步获取提高性能，服务端采用每次请求时间戳增1。</p>
+</li>
+</ol>
+<h3 id="3-ID生成使用"><a href="#3-ID生成使用" class="headerlink" title="3. ID生成使用"></a>3. ID生成使用</h3><p>Hutool工具中：</p>
 <p>分布式系统中，有一些需要使用全局唯一ID的场景，有些时候我们希望能使用一种简单一些的ID，并且希望ID能够按照时间有序生成。Twitter的Snowflake 算法就是这种生成器。</p>
 <p>使用方法如下：</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-comment">//参数1为终端ID, 参数2为数据中心ID</span><br><span class="hljs-type">Snowflake</span> <span class="hljs-variable">snowflake</span> <span class="hljs-operator">=</span> IdUtil.getSnowflake(<span class="hljs-number">1</span>, <span class="hljs-number">1</span>);<br><span class="hljs-type">long</span> <span class="hljs-variable">id</span> <span class="hljs-operator">=</span> snowflake.nextId();<br></code></pre></td></tr></table></figure>
