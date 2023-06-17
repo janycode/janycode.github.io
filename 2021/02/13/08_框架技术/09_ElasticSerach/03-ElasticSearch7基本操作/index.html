@@ -1,0 +1,904 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=light>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Jerry(姜源)">
+  <meta name="keywords" content="Java,Html,CSS,JavaScript,Python,C,Linux,shell编程经验分享、技术总结、心得体会">
+  
+    <meta name="description" content="一、索引管理1.1 新建索引使用指定配置创建索引，这里指定主分片的数量为 3； 副本系数为 2，即每个分片两个副本；默认情况下主分片数量和副本系数都是 1。需要注意的是创建索引时，索引名称只能是小写，长度不能超过 255 个字符，同时尽量不要包含特殊字符，不能以 -，_，+ 等字符开头。 1234567PUT testindex&amp;#123;    &quot;settings&quot; : &amp;#">
+<meta property="og:type" content="article">
+<meta property="og:title" content="03-ElasticSearch7基本操作">
+<meta property="og:url" content="https://janycode.github.io/2021/02/13/08_%E6%A1%86%E6%9E%B6%E6%8A%80%E6%9C%AF/09_ElasticSerach/03-ElasticSearch7%E5%9F%BA%E6%9C%AC%E6%93%8D%E4%BD%9C/index.html">
+<meta property="og:site_name" content="姜源の云笔记">
+<meta property="og:description" content="一、索引管理1.1 新建索引使用指定配置创建索引，这里指定主分片的数量为 3； 副本系数为 2，即每个分片两个副本；默认情况下主分片数量和副本系数都是 1。需要注意的是创建索引时，索引名称只能是小写，长度不能超过 255 个字符，同时尽量不要包含特殊字符，不能以 -，_，+ 等字符开头。 1234567PUT testindex&amp;#123;    &quot;settings&quot; : &amp;#">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2021-02-13T02:24:55.000Z">
+<meta property="article:modified_time" content="2023-06-17T02:18:39.851Z">
+<meta property="article:author" content="Jerry(姜源)">
+<meta property="article:tag" content="ElasticSearch">
+<meta name="twitter:card" content="summary_large_image">
+  
+  
+    <meta name="referrer" content="no-referrer-when-downgrade">
+  
+  
+  <title>03-ElasticSearch7基本操作 - 姜源の云笔记</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"janycode.github.io","root":"/","version":"1.9.0","typing":{"enable":true,"typeSpeed":50,"cursorChar":"|","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":false},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":"bfff735c897eb60ea49b735096b20e47","google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+
+  
+<meta name="generator" content="Hexo 6.2.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 50vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>姜源の云笔记</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tools/">
+                <i class="iconfont icon-slack-fill"></i>
+                工具
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" target="_blank" rel="noopener" href="https://janycode.gitee.io/">
+                <i class="iconfont icon-gitee-fill"></i>
+                Gitee
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="03-ElasticSearch7基本操作"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-author" aria-hidden="true"></i>
+        Jerry(姜源)
+      </span>
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2021-02-13 10:24" pubdate>
+          星期六, 2021/02/13 10:24:55
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          <!-- compatible with older versions-->
+          6.7k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          <!-- compatible with older versions-->
+          56 分钟
+        
+      </span>
+    
+
+    
+    
+      
+        <span id="busuanzi_container_page_pv" style="display: none">
+          <i class="iconfont icon-eye" aria-hidden="true"></i>
+          <span id="busuanzi_value_page_pv"></span> 次
+        </span>
+        
+      
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">03-ElasticSearch7基本操作</h1>
+            
+            <div class="markdown-body">
+              
+              <h1 id="一、索引管理"><a href="#一、索引管理" class="headerlink" title="一、索引管理"></a>一、索引管理</h1><h2 id="1-1-新建索引"><a href="#1-1-新建索引" class="headerlink" title="1.1 新建索引"></a>1.1 新建索引</h2><p>使用指定配置创建索引，这里指定主分片的数量为 3； 副本系数为 2，即每个分片两个副本；默认情况下主分片数量和副本系数都是 1。需要注意的是创建索引时，<code>索引名称只能是小写</code>，长度不能超过 255 个字符，同时尽量不要包含特殊字符，不能以 <code>-</code>，<code>_</code>，<code>+</code> 等字符开头。</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs json">PUT testindex<br><span class="hljs-punctuation">&#123;</span><br>    <span class="hljs-attr">&quot;settings&quot;</span> <span class="hljs-punctuation">:</span> <span class="hljs-punctuation">&#123;</span><br>        <span class="hljs-attr">&quot;number_of_shards&quot;</span> <span class="hljs-punctuation">:</span> <span class="hljs-number">3</span><span class="hljs-punctuation">,</span> <br>        <span class="hljs-attr">&quot;number_of_replicas&quot;</span> <span class="hljs-punctuation">:</span> <span class="hljs-number">2</span> <br>    <span class="hljs-punctuation">&#125;</span><br><span class="hljs-punctuation">&#125;</span><br></code></pre></td></tr></table></figure>
+
+<h2 id="1-2-修改配置"><a href="#1-2-修改配置" class="headerlink" title="1.2 修改配置"></a>1.2 修改配置</h2><figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs json">PUT testindex/_settings<br><span class="hljs-punctuation">&#123;</span><br>  <span class="hljs-attr">&quot;number_of_replicas&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">1</span><br><span class="hljs-punctuation">&#125;</span><br></code></pre></td></tr></table></figure>
+
+<p>ES 支持修改索引的副本系数，但不支持随意修改索引的主分片数，这与 ES 分片的路由机制有关，ES 使用以下公式来决定每条数据存储在哪个分片上：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs java">shard = hash(routing) % number_of_primary_shards<br></code></pre></td></tr></table></figure>
+
+<p>routing 是一个任意的字符串，默认是 <code>_id</code> ，即使用 <code>_id</code> 进行分片计算，当然也支持自定义分片键。ES 对其进行哈希运算然后按 <code>number_of_primary_shards</code> 取余后计算出存储分片的序号。基于这个原因，所以 ES 不允许对 <code>number_of_primary_shards</code> 进行修改，因为这会导致已有数据存储位置的失效。</p>
+<h2 id="1-3-查看与删除"><a href="#1-3-查看与删除" class="headerlink" title="1.3 查看与删除"></a>1.3 查看与删除</h2><p>查看索引、查看索引配置、删除索引的语法分别如下：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs shell"><span class="hljs-meta prompt_"># </span><span class="language-bash">查看索引信息</span><br>GET testindex<br><span class="hljs-meta prompt_"></span><br><span class="hljs-meta prompt_"># </span><span class="language-bash">查看索引配置信息</span><br>GET testindex/_settings<br><span class="hljs-meta prompt_"></span><br><span class="hljs-meta prompt_"># </span><span class="language-bash">删除索引</span><br>DELETE testindex<br></code></pre></td></tr></table></figure>
+
+<h2 id="1-4-打开与关闭"><a href="#1-4-打开与关闭" class="headerlink" title="1.4 打开与关闭"></a>1.4 打开与关闭</h2><p>ES 中的索引支持打开和关闭操作，索引关闭后就无法进行读写操作，因此其占用的系统资源也会随之减少。索引打开和关闭的语法为：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs shell"><span class="hljs-meta prompt_"># </span><span class="language-bash">关闭索引</span><br>POST testindex/_close<br><span class="hljs-meta prompt_"></span><br><span class="hljs-meta prompt_"># </span><span class="language-bash">打开索引</span><br>POST testindex/_open<br></code></pre></td></tr></table></figure>
+
+<p>ES 支持一次关闭多个索引，多个索引名之间需要使用逗号分隔，同时也支持使用通配符和 <code>_all</code> 关键字，示例如下：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs shell"><span class="hljs-meta prompt_"># </span><span class="language-bash">关闭多个索引，ignore_unavailable=<span class="hljs-literal">true</span>代表如果其中某个索引不存在，则忽略该索引</span><br>POST testindex1,testindex2,testindex3/_close?ignore_unavailable=true<br><span class="hljs-meta prompt_"></span><br><span class="hljs-meta prompt_"># </span><span class="language-bash">支持通配符</span><br>POST testindex*/_close<br><span class="hljs-meta prompt_"></span><br><span class="hljs-meta prompt_"># </span><span class="language-bash">关闭集群中所有索引</span><br>POST _all/_close<br></code></pre></td></tr></table></figure>
+
+<h1 id="二、单文档操作"><a href="#二、单文档操作" class="headerlink" title="二、单文档操作"></a>二、单文档操作</h1><h2 id="2-1-新建文档"><a href="#2-1-新建文档" class="headerlink" title="2.1 新建文档"></a>2.1 新建文档</h2><figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs json">PUT testindex/_doc/<span class="hljs-number">1</span><br><span class="hljs-punctuation">&#123;</span><br>  <span class="hljs-attr">&quot;user&quot;</span> <span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;kimchy&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;post_date&quot;</span> <span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;2009-11-15T14:12:12&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;message&quot;</span> <span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;trying out Elasticsearch&quot;</span><br><span class="hljs-punctuation">&#125;</span><br></code></pre></td></tr></table></figure>
+
+<p>这里需要注意的是在 7.x 版本后  ES 已经不推荐使用文档类型的概念，所以这里的 <code>_doc</code> 表示端点名称而不是文档类型。输出如下：</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><code class="hljs json"><span class="hljs-punctuation">&#123;</span><br>  <span class="hljs-attr">&quot;_index&quot;</span> <span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;testindex&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;_type&quot;</span> <span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;_doc&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;_id&quot;</span> <span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;1&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;_version&quot;</span> <span class="hljs-punctuation">:</span> <span class="hljs-number">1</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;result&quot;</span> <span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;created&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;_shards&quot;</span> <span class="hljs-punctuation">:</span> <span class="hljs-punctuation">&#123;</span><br>    <span class="hljs-attr">&quot;total&quot;</span> <span class="hljs-punctuation">:</span> <span class="hljs-number">2</span><span class="hljs-punctuation">,</span><br>    <span class="hljs-attr">&quot;successful&quot;</span> <span class="hljs-punctuation">:</span> <span class="hljs-number">1</span><span class="hljs-punctuation">,</span><br>    <span class="hljs-attr">&quot;failed&quot;</span> <span class="hljs-punctuation">:</span> <span class="hljs-number">0</span><br>  <span class="hljs-punctuation">&#125;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;_seq_no&quot;</span> <span class="hljs-punctuation">:</span> <span class="hljs-number">0</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;_primary_term&quot;</span> <span class="hljs-punctuation">:</span> <span class="hljs-number">1</span><br><span class="hljs-punctuation">&#125;</span><br><br></code></pre></td></tr></table></figure>
+
+<h3 id="1-id"><a href="#1-id" class="headerlink" title="1. _id"></a>1. _id</h3><p>在输出中可以看到 <code>_id</code> 的值为 1，这是在创建时指定的。如果创建时没有指定，则由 ES 自动生成。</p>
+<h3 id="2-version"><a href="#2-version" class="headerlink" title="2. _version"></a>2. _version</h3><p><code>_version</code> 为文档版本号，基于它可以实现乐观锁的效果，需要配合 <code>version_type</code> 使用，<code>version_type</code> 有以下可选值：</p>
+<ul>
+<li><strong>interna</strong> ：当给定的版本号与文档版本号相同时候，才执行对应的操作；</li>
+<li><strong>external 或 external_gt</strong> ：如果给定版本号大于存储文档的版本或者原文档不存在时，才执行对应的操作，给定的版本号将用作新的版本；</li>
+<li><strong>external_gte</strong> ：和上一条类似，等价于 <code>gt + equal</code> ，即给定版本号大于或等于存储文档的版本或者原文档不存在时，才执行对应的操作。</li>
+</ul>
+<p>使用示例：<code>PUT testindex/_doc/1?version=2&amp;version_type=external &#123; ... &#125;</code></p>
+<h3 id="3-shards"><a href="#3-shards" class="headerlink" title="3. _shards"></a>3. _shards</h3><p>输出结果中的 <code>_shards</code> 节点下有三个参数，其含义分别如下：</p>
+<ul>
+<li><strong>total</strong> ：操作涉及到的分片总数，这里由于创建 <code>testindex</code> 索引时指定主分片数量和副本系数都是 1，所以 只有 1 个 primary 分片和 1 个 replica 分片，故总数为 2； </li>
+<li><strong>successful</strong> ：这里我采用的是单节点的 ES , replica 分片实际上是不存在的。因为按照 ES 的规则，primary 分片及其对应的 replica 分片不能处于同一台主机上，因为处于同一台主机上时无法达到容错的效果。所以这里只有 primary 分片写入数据成功，故值为 1；</li>
+<li><strong>failed</strong> ：执行复制操作失败的 replica 分片的数量，这里由于 replica 分片本生就不存在所以值为 0 。</li>
+</ul>
+<h3 id="4-routing"><a href="#4-routing" class="headerlink" title="4. routing"></a>4. routing</h3><p>在上面我们提到，ES 的分片路由规则默认进行哈希的对象是 <code>_id</code>，如果你想指定使用其他字段，则可以使用 <code>routing</code> 参数进行指定，示例如下：</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs json">POST testindex/_doc?routing=kimchy<br><span class="hljs-punctuation">&#123;</span><br>    <span class="hljs-attr">&quot;user&quot;</span> <span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;kimchy&quot;</span><span class="hljs-punctuation">,</span><br>    <span class="hljs-attr">&quot;post_date&quot;</span> <span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;2009-11-15T14:12:12&quot;</span><span class="hljs-punctuation">,</span><br>    <span class="hljs-attr">&quot;message&quot;</span> <span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;trying out Elasticsearch&quot;</span><br><span class="hljs-punctuation">&#125;</span><br></code></pre></td></tr></table></figure>
+
+<h2 id="2-2-查询文档"><a href="#2-2-查询文档" class="headerlink" title="2.2 查询文档"></a>2.2 查询文档</h2><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs shell">GET testindex/_doc/1<br></code></pre></td></tr></table></figure>
+
+<p>文档的实际内容位于查询结果的 <code>_source</code> 节点下，输出如下：</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><code class="hljs json"><span class="hljs-punctuation">&#123;</span><br>  <span class="hljs-attr">&quot;_index&quot;</span> <span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;testindex&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;_type&quot;</span> <span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;_doc&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;_id&quot;</span> <span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;1&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;_version&quot;</span> <span class="hljs-punctuation">:</span> <span class="hljs-number">3</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;_seq_no&quot;</span> <span class="hljs-punctuation">:</span> <span class="hljs-number">2</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;_primary_term&quot;</span> <span class="hljs-punctuation">:</span> <span class="hljs-number">1</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;found&quot;</span> <span class="hljs-punctuation">:</span> <span class="hljs-keyword">true</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;_source&quot;</span> <span class="hljs-punctuation">:</span> <span class="hljs-punctuation">&#123;</span><br>    <span class="hljs-attr">&quot;user&quot;</span> <span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;kimchy&quot;</span><span class="hljs-punctuation">,</span><br>    <span class="hljs-attr">&quot;post_date&quot;</span> <span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;2009-11-15T14:12:12&quot;</span><span class="hljs-punctuation">,</span><br>    <span class="hljs-attr">&quot;message&quot;</span> <span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;trying out Elasticsearch&quot;</span><br>  <span class="hljs-punctuation">&#125;</span><br><span class="hljs-punctuation">&#125;</span><br></code></pre></td></tr></table></figure>
+
+<p>默认情况下会返回文档全部字段，如果你只想返回部分字段或者排除部分字段，则可以使用 <code>_source_includes</code> 关键字或 <code>_source_excludes</code> 关键字：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs shell">GET testindex/_doc/1?_source_includes=user<br>GET testindex/_doc/1?_source_excludes=message<br></code></pre></td></tr></table></figure>
+
+<p>如果你不想返回文档内容，即不需要 <code>_source</code> 节点，则可以使用以下语法：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs shell">GET testindex/_doc/1?_source=false<br></code></pre></td></tr></table></figure>
+
+<p>如果你只想返回文档内容，即只需要 <code>_source</code> 节点，则可以使用以下语法：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs shell">GET testindex/_source/1<br></code></pre></td></tr></table></figure>
+
+<p>此时依然支持使用 <code>_source_includes</code> 和 <code>_source_excludes</code> 来包含和排除部分字段：</p>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs routeros"><span class="hljs-built_in">GET</span> testindex/_source/1?<span class="hljs-attribute">_source_includes</span>=user<br><span class="hljs-built_in">GET</span> testindex/_source/1?<span class="hljs-attribute">_source_excludes</span>=message<br></code></pre></td></tr></table></figure>
+
+<h2 id="2-3-更新文档"><a href="#2-3-更新文档" class="headerlink" title="2.3 更新文档"></a>2.3 更新文档</h2><p>新增相同 <code>_id</code> 的文档等价于执行更新操作，此时会用新的文档内容完全替换已有的文档内容，示例如下：</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs json">POST testindex/_doc/<span class="hljs-number">1</span><br><span class="hljs-punctuation">&#123;</span><br>  <span class="hljs-attr">&quot;user&quot;</span> <span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;Tom&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;post_date&quot;</span> <span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;2019-11-15T14:12:12&quot;</span><span class="hljs-punctuation">,</span><br>  <span class="hljs-attr">&quot;message&quot;</span> <span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;trying out Hadoop&quot;</span><br><span class="hljs-punctuation">&#125;</span><br></code></pre></td></tr></table></figure>
+
+<p>如果想要部分更新，可以使用 <code>_update</code> 语法：</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs json">POST testindex/_update/<span class="hljs-number">1</span><br><span class="hljs-punctuation">&#123;</span><br>   <span class="hljs-attr">&quot;doc&quot;</span><span class="hljs-punctuation">:</span><span class="hljs-punctuation">&#123;</span> <br>      <span class="hljs-attr">&quot;message&quot;</span><span class="hljs-punctuation">:</span><span class="hljs-string">&quot;trying out Spark&quot;</span><br>   <span class="hljs-punctuation">&#125;</span><br><span class="hljs-punctuation">&#125;</span><br></code></pre></td></tr></table></figure>
+
+<p>如果更新操作需要依赖原值，这里假设要更新的用户名需要由之前的用户名拼接而成，此时语法如下。更新完成后，新的用户名为 <code>Tom Cat</code> 。这里的 painless 是 ES 内置的一种脚本语言，params 是参数的集合，ctx 是上下文执行对象，其 <code>_source</code> 指向原文档的内容：</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs json">POST  testindex/_update/<span class="hljs-number">1</span>/<br><span class="hljs-punctuation">&#123;</span><br>    <span class="hljs-attr">&quot;script&quot;</span><span class="hljs-punctuation">:</span><span class="hljs-punctuation">&#123;</span><br>        <span class="hljs-attr">&quot;source&quot;</span><span class="hljs-punctuation">:</span><span class="hljs-string">&quot;ctx._source.user+=params.user&quot;</span><span class="hljs-punctuation">,</span><br>        <span class="hljs-attr">&quot;lang&quot;</span><span class="hljs-punctuation">:</span><span class="hljs-string">&quot;painless&quot;</span><span class="hljs-punctuation">,</span><br>        <span class="hljs-attr">&quot;params&quot;</span><span class="hljs-punctuation">:</span><span class="hljs-punctuation">&#123;</span><br>            <span class="hljs-attr">&quot;user&quot;</span> <span class="hljs-punctuation">:</span> <span class="hljs-string">&quot; Cat&quot;</span><br>        <span class="hljs-punctuation">&#125;</span><br>    <span class="hljs-punctuation">&#125;</span><br><span class="hljs-punctuation">&#125;</span><br></code></pre></td></tr></table></figure>
+
+<h2 id="2-4-删除文档"><a href="#2-4-删除文档" class="headerlink" title="2.4  删除文档"></a>2.4  删除文档</h2><p>对文档执行的每个写入操作（包括删除）都会导致其版本号递增。删除文档时，可以通过指定版本号来确保文档在删除期间没有被其它用户更改；被删除的文档版本在删除后的短时间内仍使用，以便更好地支持并发操作。该时间长度由 <code>index.gc_deletes</code> 索引设置，默认为 60 秒。删除示例如下：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs shell">DELETE /testindex/_doc/1?version=2&amp;version_type=interna<br></code></pre></td></tr></table></figure>
+
+<h1 id="三、多文档操作"><a href="#三、多文档操作" class="headerlink" title="三、多文档操作"></a>三、多文档操作</h1><h2 id="3-1-批量获取"><a href="#3-1-批量获取" class="headerlink" title="3.1  批量获取"></a>3.1  批量获取</h2><p>想要查询多个文档，可以使用 <code>_mget</code> 语法，示例如下：</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs json">GET /testindex/_mget<br><span class="hljs-punctuation">&#123;</span><br>    <span class="hljs-attr">&quot;docs&quot;</span> <span class="hljs-punctuation">:</span> <span class="hljs-punctuation">[</span><br>        <span class="hljs-punctuation">&#123;</span><br>            <span class="hljs-attr">&quot;_id&quot;</span> <span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;1&quot;</span><br>        <span class="hljs-punctuation">&#125;</span><span class="hljs-punctuation">,</span><br>        <span class="hljs-punctuation">&#123;</span><br>            <span class="hljs-attr">&quot;_id&quot;</span> <span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;2&quot;</span><br>        <span class="hljs-punctuation">&#125;</span><br>    <span class="hljs-punctuation">]</span><br><span class="hljs-punctuation">&#125;</span><br></code></pre></td></tr></table></figure>
+
+<p>上面的查询语句也可以简写如下：</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs json">GET /testindex/_mget<br><span class="hljs-punctuation">&#123;</span><br>    <span class="hljs-attr">&quot;ids&quot;</span> <span class="hljs-punctuation">:</span> <span class="hljs-punctuation">[</span><span class="hljs-string">&quot;1&quot;</span><span class="hljs-punctuation">,</span> <span class="hljs-string">&quot;2&quot;</span><span class="hljs-punctuation">]</span><br><span class="hljs-punctuation">&#125;</span><br></code></pre></td></tr></table></figure>
+
+<p>和普通查询一样，如果想要针对不同的 <code>_id</code> 选择不同的字段，可以使用以下语法：</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><code class="hljs json">GET /testindex/_mget<br><span class="hljs-punctuation">&#123;</span><br>    <span class="hljs-attr">&quot;docs&quot;</span> <span class="hljs-punctuation">:</span> <span class="hljs-punctuation">[</span><br>        <span class="hljs-punctuation">&#123;</span><br>            <span class="hljs-attr">&quot;_id&quot;</span> <span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;1&quot;</span><span class="hljs-punctuation">,</span><br>            <span class="hljs-attr">&quot;_source&quot;</span><span class="hljs-punctuation">:</span><span class="hljs-punctuation">[</span><span class="hljs-string">&quot;user&quot;</span><span class="hljs-punctuation">,</span><span class="hljs-string">&quot;message&quot;</span><span class="hljs-punctuation">]</span><br>        <span class="hljs-punctuation">&#125;</span><span class="hljs-punctuation">,</span><br>        <span class="hljs-punctuation">&#123;</span><br>            <span class="hljs-attr">&quot;_id&quot;</span> <span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;2&quot;</span><span class="hljs-punctuation">,</span><br>            <span class="hljs-attr">&quot;_source&quot;</span> <span class="hljs-punctuation">:</span> <span class="hljs-punctuation">&#123;</span><br>                <span class="hljs-attr">&quot;include&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">[</span><span class="hljs-string">&quot;message&quot;</span><span class="hljs-punctuation">]</span><span class="hljs-punctuation">,</span><br>                <span class="hljs-attr">&quot;exclude&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">[</span><span class="hljs-string">&quot;user&quot;</span><span class="hljs-punctuation">]</span><br>            <span class="hljs-punctuation">&#125;</span><br>        <span class="hljs-punctuation">&#125;</span><br>    <span class="hljs-punctuation">]</span><br><span class="hljs-punctuation">&#125;</span><br></code></pre></td></tr></table></figure>
+
+<p>如果想要所有的文档都返回相同的字段，可以使用以下语法：</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs json">GET /testindex/_mget?_source_includes=user<span class="hljs-punctuation">,</span>message<br><span class="hljs-punctuation">&#123;</span><br>    <span class="hljs-attr">&quot;ids&quot;</span> <span class="hljs-punctuation">:</span> <span class="hljs-punctuation">[</span><span class="hljs-string">&quot;1&quot;</span><span class="hljs-punctuation">,</span> <span class="hljs-string">&quot;2&quot;</span><span class="hljs-punctuation">]</span><br><span class="hljs-punctuation">&#125;</span><br></code></pre></td></tr></table></figure>
+
+<h2 id="3-2-批量更新"><a href="#3-2-批量更新" class="headerlink" title="3.2 批量更新"></a>3.2 批量更新</h2><figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs json">POST _bulk<br><span class="hljs-punctuation">&#123;</span> <span class="hljs-attr">&quot;update&quot;</span> <span class="hljs-punctuation">:</span> <span class="hljs-punctuation">&#123;</span><span class="hljs-attr">&quot;_id&quot;</span> <span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;1&quot;</span><span class="hljs-punctuation">,</span> <span class="hljs-attr">&quot;_index&quot;</span> <span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;testindex&quot;</span><span class="hljs-punctuation">,</span> <span class="hljs-attr">&quot;retry_on_conflict&quot;</span> <span class="hljs-punctuation">:</span> <span class="hljs-number">3</span><span class="hljs-punctuation">&#125;</span> <span class="hljs-punctuation">&#125;</span><br><span class="hljs-punctuation">&#123;</span> <span class="hljs-attr">&quot;doc&quot;</span> <span class="hljs-punctuation">:</span> <span class="hljs-punctuation">&#123;</span><span class="hljs-attr">&quot;user&quot;</span> <span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;heibai&quot;</span><span class="hljs-punctuation">&#125;</span> <span class="hljs-punctuation">&#125;</span><br><span class="hljs-punctuation">&#123;</span> <span class="hljs-attr">&quot;update&quot;</span> <span class="hljs-punctuation">:</span> <span class="hljs-punctuation">&#123;</span><span class="hljs-attr">&quot;_id&quot;</span> <span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;2&quot;</span><span class="hljs-punctuation">,</span> <span class="hljs-attr">&quot;_index&quot;</span> <span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;testindex&quot;</span><span class="hljs-punctuation">,</span> <span class="hljs-attr">&quot;_source&quot;</span> <span class="hljs-punctuation">:</span> <span class="hljs-keyword">true</span><span class="hljs-punctuation">&#125;</span> <span class="hljs-punctuation">&#125;</span><br><span class="hljs-punctuation">&#123;</span> <span class="hljs-attr">&quot;script&quot;</span><span class="hljs-punctuation">:</span><span class="hljs-punctuation">&#123;</span><span class="hljs-attr">&quot;source&quot;</span><span class="hljs-punctuation">:</span><span class="hljs-string">&quot;ctx._source.user+=params.user&quot;</span><span class="hljs-punctuation">,</span><span class="hljs-attr">&quot;lang&quot;</span><span class="hljs-punctuation">:</span><span class="hljs-string">&quot;painless&quot;</span><span class="hljs-punctuation">,</span><span class="hljs-attr">&quot;params&quot;</span><span class="hljs-punctuation">:</span><span class="hljs-punctuation">&#123;</span><span class="hljs-attr">&quot;user&quot;</span> <span class="hljs-punctuation">:</span> <span class="hljs-string">&quot; Cat&quot;</span><span class="hljs-punctuation">&#125;</span><span class="hljs-punctuation">&#125;</span><span class="hljs-punctuation">&#125;</span><br></code></pre></td></tr></table></figure>
+
+<p>上面是一个批量更新的示例，其抽象语法格式如下。需要注意的是这里语法是非常严格的：一个更新操作必须由两行 Json 组成，第一行 Json 用于指明操作，文档位置和其他可选配置，第二行 Json 用于存放数据或指明更新的方式：</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs json">POST _bulk<br><span class="hljs-punctuation">&#123;</span><span class="hljs-attr">&quot;操作&quot;</span> <span class="hljs-punctuation">:</span> <span class="hljs-punctuation">&#123;</span><span class="hljs-string">&quot;文档位置&quot;</span><span class="hljs-punctuation">,</span><span class="hljs-string">&quot;可选操作&quot;</span><span class="hljs-punctuation">&#125;</span><span class="hljs-punctuation">&#125;</span><br><span class="hljs-punctuation">&#123;</span><span class="hljs-string">&quot;数据&quot;</span><span class="hljs-punctuation">&#125;</span><br><span class="hljs-punctuation">&#123;</span><span class="hljs-attr">&quot;操作&quot;</span> <span class="hljs-punctuation">:</span> <span class="hljs-punctuation">&#123;</span><span class="hljs-string">&quot;文档位置&quot;</span><span class="hljs-punctuation">,</span><span class="hljs-string">&quot;可选操作&quot;</span><span class="hljs-punctuation">&#125;</span><span class="hljs-punctuation">&#125;</span><br><span class="hljs-punctuation">&#123;</span><span class="hljs-string">&quot;数据&quot;</span><span class="hljs-punctuation">&#125;</span><br><span class="hljs-punctuation">&#123;</span><span class="hljs-attr">&quot;操作&quot;</span> <span class="hljs-punctuation">:</span> <span class="hljs-punctuation">&#123;</span><span class="hljs-string">&quot;文档位置&quot;</span><span class="hljs-punctuation">,</span><span class="hljs-string">&quot;可选操作&quot;</span><span class="hljs-punctuation">&#125;</span><span class="hljs-punctuation">&#125;</span><br><span class="hljs-punctuation">&#123;</span><span class="hljs-string">&quot;数据&quot;</span><span class="hljs-punctuation">&#125;</span><br>....<br></code></pre></td></tr></table></figure>
+
+<p>另外一个需要注意的是每行 Json 都必须遵循单行模式，不能是多行模式，即如下的语法是错误的：</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs json"><span class="hljs-punctuation">&#123;</span><br>    <span class="hljs-attr">&quot;script&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">&#123;</span><br>        <span class="hljs-attr">&quot;source&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;ctx._source.user+=params.user&quot;</span><span class="hljs-punctuation">,</span><br>        <span class="hljs-attr">&quot;lang&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;painless&quot;</span><span class="hljs-punctuation">,</span><br>        <span class="hljs-attr">&quot;params&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">&#123;</span><br>            <span class="hljs-attr">&quot;user&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot; Cat&quot;</span><br>        <span class="hljs-punctuation">&#125;</span><br>    <span class="hljs-punctuation">&#125;</span><br><span class="hljs-punctuation">&#125;</span><br></code></pre></td></tr></table></figure>
+
+<p>之所以这样设计是因为如果允许多行模式，其解析就会比较繁琐且耗费性能，假设我们一次批量执行上万个更新，则用于描述操作的 Json 文件就会非常大，此时程序需要将其拷贝到内存中先进行解析，这个操作既浪费内存又浪费计算资源。而采用单行模式就能避免这个问题，程序只需要逐行读取记录，每读取两行则必然就是一个完整的操作，此时只需要将其发送到对应分片节点上执行即可。</p>
+
+              
+            </div>
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/08-%E6%A1%86%E6%9E%B6%E6%8A%80%E6%9C%AF/" class="category-chain-item">08_框架技术</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/08-%E6%A1%86%E6%9E%B6%E6%8A%80%E6%9C%AF/09-Elasticsearch/" class="category-chain-item">09_Elasticsearch</a>
+  
+  
+
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/ElasticSearch/">#ElasticSearch</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>03-ElasticSearch7基本操作</div>
+      <div>https://janycode.github.io/2021/02/13/08_框架技术/09_ElasticSerach/03-ElasticSearch7基本操作/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Jerry(姜源)</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2021年2月13日</div>
+        </div>
+      
+      
+      <div class="license-meta-item">
+        <div>许可协议</div>
+        <div>
+          
+            
+            
+              <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+              <span class="hint--top hint--rounded" aria-label="BY - 姜源">
+                <i class="iconfont icon-by"></i>
+              </span>
+              </a>
+            
+          
+        </div>
+      </div>
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2021/02/13/08_%E6%A1%86%E6%9E%B6%E6%8A%80%E6%9C%AF/09_ElasticSerach/04-ES%20Java%20REST%20Client/" title="04-ES Java REST Client">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">04-ES Java REST Client</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2021/02/04/20_%E6%94%B6%E8%97%8F%E6%95%B4%E7%90%86/03_%E5%B7%A5%E5%85%B7%E7%B1%BB/12-BaseController/" title="12-BaseController">
+                        <span class="hidden-mobile">12-BaseController</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+  <article id="comments" lazyload>
+    
+  <div id="SOHUCS" sid='https://janycode.github.io/2021/02/13/08_%E6%A1%86%E6%9E%B6%E6%8A%80%E6%9C%AF/09_ElasticSerach/03-ElasticSearch7%E5%9F%BA%E6%9C%AC%E6%93%8D%E4%BD%9C/'></div>
+  <script type="text/javascript">
+    Fluid.utils.loadComments('#SOHUCS', function() {
+      Fluid.utils.createScript("https://changyan.sohu.com/upload/changyan.js", function() {
+        window.changyan.api.config({"appid":"cyw5OHIcO","appkey":"fea3446b3df4b3f129f34da4cbc87e51"})
+      });
+    });
+  </script>
+  <noscript>Please enable JavaScript to view the comments</noscript>
+
+
+  </article>
+
+
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://simple.blog.csdn.net" target="_blank" rel="nofollow noopener"><span>CSDN</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/janycode" target="_blank" rel="nofollow noopener"><span>GitHub</span></a> <i class="iconfont icon-love"></i> <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="busuanzi_container_site_pv" style="display: none">
+        总访问量(PV) 
+        <span id="busuanzi_value_site_pv"></span>
+         次，
+      </span>
+    
+    
+      <span id="busuanzi_container_site_uv" style="display: none">
+        总访客数(UV) 
+        <span id="busuanzi_value_site_uv"></span>
+         人
+      </span>
+    
+    
+  
+</div>
+
+  
+  
+  
+</div>
+
+<!-- live2d 动画 -->
+<script src="https://eqcn.ajz.miesnfu.com/wp-content/plugins/wp-3d-pony/live2dw/lib/L2Dwidget.min.js"></script>
+<script>
+    L2Dwidget.init({
+        "model": {
+            jsonPath: "https://unpkg.com/live2d-widget-model-haruto@1.0.5/assets/haruto.model.json",
+            "scale": 1
+        },
+        "display": {
+            "position": "right",
+            "width": 100,
+            "height": 200,
+            "hOffset": 35,
+            "vOffset": -85
+        },
+        "mobile": {
+            "show": false,
+            "scale": 0.1
+        },
+        "react": {
+            "opacityDefault": 0.75,
+            "opacityOnHover": 0.2
+        }
+    });
+</script>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <!-- Baidu Analytics -->
+    <script defer>
+      if (!Fluid.ctx.dnt) {
+        var _hmt = _hmt || [];
+        (function() {
+          var hm = document.createElement("script");
+          hm.src = "https://hm.baidu.com/hm.js?bfff735c897eb60ea49b735096b20e47";
+          var s = document.getElementsByTagName("script")[0];
+          s.parentNode.insertBefore(hm, s);
+        })();
+      }
+    </script>
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.0/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      headingSelector : CONFIG.toc.headingSelector || 'h1,h2,h3,h4,h5,h6',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      collapseDepth   : CONFIG.toc.collapseDepth || 0,
+      scrollSmooth    : true,
+      headingsOffset  : -boardTop
+    });
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+  });
+</script>
+
+
+  <script>
+  (function() {
+    var enableLang = CONFIG.code_language.enable && CONFIG.code_language.default;
+    var enableCopy = CONFIG.copy_btn;
+    if (!enableLang && !enableCopy) {
+      return;
+    }
+
+    function getBgClass(ele) {
+      return Fluid.utils.getBackgroundLightness(ele) >= 0 ? 'code-widget-light' : 'code-widget-dark';
+    }
+
+    var copyTmpl = '';
+    copyTmpl += '<div class="code-widget">';
+    copyTmpl += 'LANG';
+    copyTmpl += '</div>';
+    jQuery('.markdown-body pre').each(function() {
+      var $pre = jQuery(this);
+      if ($pre.find('code.mermaid').length > 0) {
+        return;
+      }
+      if ($pre.find('span.line').length > 0) {
+        return;
+      }
+
+      var lang = '';
+
+      if (enableLang) {
+        lang = CONFIG.code_language.default;
+        if ($pre[0].children.length > 0 && $pre[0].children[0].classList.length >= 2 && $pre.children().hasClass('hljs')) {
+          lang = $pre[0].children[0].classList[1];
+        } else if ($pre[0].getAttribute('data-language')) {
+          lang = $pre[0].getAttribute('data-language');
+        } else if ($pre.parent().hasClass('sourceCode') && $pre[0].children.length > 0 && $pre[0].children[0].classList.length >= 2) {
+          lang = $pre[0].children[0].classList[1];
+          $pre.parent().addClass('code-wrapper');
+        } else if ($pre.parent().hasClass('markdown-body') && $pre[0].classList.length === 0) {
+          $pre.wrap('<div class="code-wrapper"></div>');
+        }
+        lang = lang.toUpperCase().replace('NONE', CONFIG.code_language.default);
+      }
+      $pre.append(copyTmpl.replace('LANG', lang).replace('code-widget">',
+        getBgClass($pre[0]) + (enableCopy ? ' code-widget copy-btn" data-clipboard-snippet><i class="iconfont icon-copy"></i>' : ' code-widget">')));
+
+      if (enableCopy) {
+        Fluid.utils.createScript('https://lib.baomitu.com/clipboard.js/2.0.10/clipboard.min.js', function() {
+          var clipboard = new window.ClipboardJS('.copy-btn', {
+            target: function(trigger) {
+              var nodes = trigger.parentNode.childNodes;
+              for (var i = 0; i < nodes.length; i++) {
+                if (nodes[i].tagName === 'CODE') {
+                  return nodes[i];
+                }
+              }
+            }
+          });
+          clipboard.on('success', function(e) {
+            e.clearSelection();
+            e.trigger.innerHTML = e.trigger.innerHTML.replace('icon-copy', 'icon-success');
+            setTimeout(function() {
+              e.trigger.innerHTML = e.trigger.innerHTML.replace('icon-success', 'icon-copy');
+            }, 2000);
+          });
+        });
+      }
+    });
+  })();
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script  src="/js/local-search.js" ></script>
+
+  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>
