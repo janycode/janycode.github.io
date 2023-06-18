@@ -245,7 +245,7 @@ PROPAGATION_NESTED
 
     * `声明式事务管理` : 不需要手动编写代码和配置 (★ @Transactional 注解)
 
-#### 4.1 编程式事务
+#### 4.1 编程式事务 - 手动挡
 
 * **TransactionTemplate**
 
@@ -266,8 +266,6 @@ transactionTemplate.execute((TransactionStatus transactionStatus) -> {
 });
 ```
 
-
-
 * **TransactionManager**
 
 手动 commit，异常就 rollback
@@ -283,9 +281,68 @@ try {
 }
 ```
 
+* **手动挡事务Service**
+
+```java
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.datasource.DataSourceTransactionManager;
+import org.springframework.lang.Nullable;
+import org.springframework.stereotype.Component;
+import org.springframework.transaction.TransactionDefinition;
+import org.springframework.transaction.TransactionException;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.DefaultTransactionDefinition;
+import org.springframework.transaction.support.TransactionCallback;
+import org.springframework.transaction.support.TransactionTemplate;
+
+/**
+ * 事务，手动挡。
+ */
+@Component
+public class TransactionService {
+
+    @Autowired
+    private DataSourceTransactionManager transactionManager;
+    @Autowired
+    private TransactionTemplate transactionTemplate;
+
+    //*************************** 精细手动控制 开始 ***************************//
+    //开启事务, 默认使用RR隔离级别，REQUIRED传播级别
+    public TransactionStatus begin() {
+        DefaultTransactionDefinition def = new DefaultTransactionDefinition();
+        // 事物隔离级别，开启新事务
+        def.setIsolationLevel(TransactionDefinition.ISOLATION_REPEATABLE_READ);
+        // 事务传播行为
+        def.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRED);
+        //将拿到的事务返回进去，才能提交。
+        return transactionManager.getTransaction(def);
+    }
+
+    //提交事务
+    public void commit(TransactionStatus transaction) {
+        //提交事务
+        transactionManager.commit(transaction);
+    }
+
+    //回滚事务
+    public void rollback(TransactionStatus transaction) {
+        transactionManager.rollback(transaction);
+    }
+    //*************************** 精细手动控制 结束 ***************************//
+
+    //*************************** 粗粒度手动控制 开始 ***************************//
+    //直接执行方法方法体。
+    @Nullable
+    public <T> T execute(TransactionCallback<T> action) throws TransactionException {
+        return transactionTemplate.execute(action);
+    }
+    //*************************** 粗粒度手动控制 结束 ***************************//
+}
+```
 
 
-#### 4.2 声明式事务
+
+#### 4.2 声明式事务 - 自动挡
 
 Spring 事务的本质是数据库对事务的支持。
 
@@ -294,7 +351,9 @@ Spring 事务的本质是数据库对事务的支持。
 * `@EnableTransactionManagement` 注解方式，开启对事务注解的解析
 * `<tx:annotation-driven />` XML配置方式，开启 spring 对注解事务的支持
 
+使用时：
 
+* `@Transaction` 注解加在方法上（基于AOP，规避[失效场景](https://janycode.gitee.io/#/./08_%E6%A1%86%E6%9E%B6%E6%8A%80%E6%9C%AF/02_Spring/04_Data/03-Spring%20%E4%BA%8B%E5%8A%A1%E5%B5%8C%E5%A5%97+%E5%BC%82%E5%B8%B8+%E4%BC%A0%E6%92%AD%E8%A1%8C%E4%B8%BA%E5%88%86%E6%9E%90)）
 
 
 
