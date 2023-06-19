@@ -29,6 +29,8 @@ categories:
 
 ### 1.1 代码
 
+> 代码结构与Bean位置汇总图：[Bean位置汇总图](#/./11_理论规范/05-DDD领域驱动设计详解?id=bean位置汇总图)
+
 后端微服务1：https://github.com/eyebluecn/smart-classroom-misc
 
 后端微服务2：https://github.com/eyebluecn/smart-classroom-subscription

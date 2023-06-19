@@ -188,33 +188,16 @@ AList管理后台中 `存储` - `添加` - `阿里云盘Open` ，挂载路径可
 
 
 
-## 4.延伸-旧手机挂载云盘
+## 4.使用问题
 
-> * 可以将不用的安卓手机作为服务器挂上 alist+raiDrive，就可以不用开着电脑访问了，省电省钱！
-> * 可以将 kodi 连接到挂载的本地磁盘位置，这样不论是电脑上看、电视上看非常方便，依赖网速！
-> * ...
+### 4.1 阿里云token不通问题
 
-比如小米5：
+alist 挂载 aliyunopen 失效的解决办法如下：
+只需要将 aliyundrive_open 后台配置中的 Oauth令牌链接进行更换。
 
-安装 termux 命令行控制台（通过 [F-Droid](https://f-droid.org/) 安装）即可。
+原: https://api-cf.nn.ci/alist/ali_open/token （如果该地址已恢复，可能是因为接口挂了一段时间吧）
 
-安装后
+换为
 
-```shell
-#更新依赖包(遇提示直接用默认值-按回车即可)
-pkg upgrade
-#安装AList
-pkg install alist -y
-#查看默认账号密码
-alist admin
-#启动alist
-alist server
-```
-
-然后可以在手机浏览器里 http://127.0.0.1:5244 访问，使用默认账号密码登陆，进行挂载。
-
-```shell
-#后台运行
-nohup alist server 2>&1 &
-```
+新: https://api.xhofe.top/alist/ali_open/token （获取令牌时的 cn 对应域名，只换域名）
 
