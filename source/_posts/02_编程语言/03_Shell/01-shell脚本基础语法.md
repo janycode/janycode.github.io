@@ -614,3 +614,30 @@ echo -e "\033[32mAll Work Finished！！！\033[0m"
 echo ""
 ```
 
+### 脚本：监控程序并自动拉起
+
+比如手机上跑 alist 服务时，程序会被莫名 kill 掉，所以需要监控并拉起，间隔为 60s：
+
+```shell
+#!/bin/bash
+
+now=`date '+%Y-%m-%d %H:%M:%S'`
+grepFlag='alist'
+thisLog='./alistlog'
+sleepTime=60s
+
+while [ 0 -lt 1 ]
+do
+    now=`date '+%Y-%m-%d %H:%M:%S'`
+    ret=`ps aux | grep "$grepFlag" | grep -v grep | wc -l`
+    if [ $ret -eq 0 ]; then
+	echo "$now $grepFlag not exists, restart now..." >> "$thisLog"
+	alist server 2>&1 &
+	echo "$now restart done..." >> "$thisLog"
+    else
+	echo "$now $grepFlag exists, sleep $sleepTime." >> "$thisLog"
+    fi
+    sleep $sleepTime
+done
+```
+
