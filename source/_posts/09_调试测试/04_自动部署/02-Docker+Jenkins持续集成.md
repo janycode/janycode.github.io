@@ -20,6 +20,12 @@ categories:
 
 ![image-20220127112845609](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20220127112846.png)
 
+# CI/CD的开发流程
+
+**开发流程：**编码 -> 构建 -> 集成 -> 测试 -> 交付 -> 部署
+
+![image-20230624111535488](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230624111536.png)
+
 ### 一、Jenkins安装和配置
 
 ```
