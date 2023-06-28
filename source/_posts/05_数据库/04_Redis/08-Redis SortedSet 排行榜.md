@@ -288,3 +288,72 @@ public class CacheServiceImpl implements CacheService {
     }
 ```
 
+### 4. 限制排行榜最大长度
+
+以下是使用 Jedis 客户端向 Redis 中添加元素并设置排行榜长度的示例代码： - redis 工具类同理
+
+```java
+Jedis jedis = new Jedis("localhost");
+
+// 添加元素到有序集合中
+jedis.zadd("rank", 100, "user1");
+jedis.zadd("rank", 200, "user2");
+jedis.zadd("rank", 300, "user3");
+    
+// 获取有序集合的长度
+long rankLength = jedis.zcard("rank");
+
+// 如果有序集合长度超过了设定的最大值，则删除末尾的元素
+if (rankLength > MAX_RANK_LENGTH) {
+    jedis.zremrangeByRank("rank", 0, rankLength - MAX_RANK_LENGTH - 1);
+}
+```
+
+在上述代码中，我们首先通过 `zadd` 方法向有序集合中添加元素，并指定元素的分数。然后，通过 `zcard` 方法获取有序集合的长度，判断是否超出设定的最大值。如果有序集合长度超过了设定的最大值，则调用 `zremrangeByRank` 方法删除末尾的元素。
+
+### 5. 获取指定排名的元素
+
+使用 RedisTemplate 实现取指定排名位置的数据的示例代码：
+
+```java
+java复制代码@Autowired
+private RedisTemplate<String, String> redisTemplate;
+
+public Set<String> getRankingList(int start, int end) {
+    // 添加元素到有序集合中
+    redisTemplate.opsForZSet().add("rank", "user1", 100);
+    redisTemplate.opsForZSet().add("rank", "user2", 200);
+    redisTemplate.opsForZSet().add("rank", "user3", 300);
+
+    // 取得排名第start和第end的元素，当start==end时，获取的就是对应名次的1个元素
+    return redisTemplate.opsForZSet().range("rank", start, end);
+}
+```
+
+倒数排名则需要更换方法：
+
+```java
+    // 取得倒数第start和第end的元素，当start==end时，获取的就是对应名次的1个元素
+    return redisTemplate.opsForZSet().reverseRange("rank", start, end);
+```
+
+### 6. 获取指定元素的排名
+
+如果想要获取指定成员的排名（即分数从高到低的排名），可以使用 `reverseRank()` 方法或 `rank()` 方法。例如：
+
+```java
+java复制代码@Autowired
+private RedisTemplate<String, String> redisTemplate;
+
+public Long getUserRank(String user) {
+    // 添加元素到有序集合中
+    redisTemplate.opsForZSet().add("rank", "user1", 100);
+    redisTemplate.opsForZSet().add("rank", "user2", 200);
+    redisTemplate.opsForZSet().add("rank", "user3", 300);
+
+    // 获取用户排名
+    return redisTemplate.opsForZSet().reverseRank("rank", user);
+}
+```
+
+在上述代码中，我们可以使用 `reverseRank` 方法获取指定成员的排名。如果要获取分数从低到高的排名，可以使用 `rank` 方法。

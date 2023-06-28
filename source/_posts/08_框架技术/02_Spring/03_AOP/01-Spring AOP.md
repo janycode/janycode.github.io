@@ -348,7 +348,7 @@ public class MyAdvice {
 
 
 
-#### 3.2 注解 配置 AOP
+#### 3.2 注解 配置 AOP-推荐
 
 Spring中的注解配置AOP：
 
@@ -356,11 +356,11 @@ Spring中的注解配置AOP：
 //通知类: 表示该类是一个通知类
 @Aspect
 public class MyAdvice {
-    //自己设置一个切点，管理重复代码
+    //【自定义切点】管理重复代码
 	@Pointcut("execution(* com.demo.service.*ServiceImpl.*(..))")
 	public void pc(){}
     
-	//前置通知 : 指定该方法是前置通知，并制定切入点
+	//前置通知 : 指定该方法是前置通知，并指定切入点为【自定义切点】
 	@Before("MyAdvice.pc()")
     public void before() {
         System.out.println("前置通知（执行目标方法之前执行）");
@@ -428,30 +428,24 @@ http://www.springframework.org/schema/aop/spring-aop-4.2.xsd ">
 
 `execution(* com.springboot.chapter4.aspect.service.impl.UserServiceImpl.printUser(..))`
 
-* execution表示在执行的时候，拦截里面的正则匹配的方法
+* `execution`表示在执行的时候，拦截里面的正则匹配的方法
 
-* \* 表示任意返回类型的方法
+* `*` 表示任意返回类型的方法
 
-* (..)表示任意参数进行匹配
+* `(..)`表示任意参数进行匹配
 
 **指示器**：
 
-| 项目类型    | 描述                                      |
-| ----------- | ----------------------------------------- |
-| arg()       | 限定连接点方法参数                        |
-| @args()     | 通过连接点方法参数上的注解进行限定        |
-| execution() | 用于匹配是连接点的执行方法                |
-| this()      | 限制连接点匹配AOP代理Bean引用为指定的类型 |
-| target      | 目标对象(即被代理对象)                    |
-| @target()   | 限制目标对象的配置了指定的注解            |
-| within      | 限制连接点匹配执行的类型                  |
-| @windin()   | 限定连接点带有匹配注解类型                |
-| @annotation | 限定带有指定注解的连接点                  |
+| 项目类型        | 描述                                                       |
+| --------------- | ---------------------------------------------------------- |
+| arg()           | 限定连接点方法参数                                         |
+| @args()         | 通过连接点方法参数上的注解进行限定                         |
+| **execution()** | 用于匹配是连接点的执行方法                                 |
+| this()          | 限制连接点匹配AOP代理Bean引用为指定的类型                  |
+| target          | 目标对象(即被代理对象)                                     |
+| @target()       | 限制目标对象的配置了指定的注解                             |
+| within          | 限制连接点匹配执行的类型                                   |
+| @windin()       | 限定连接点带有匹配注解类型                                 |
+| **@annotation** | 限定带有指定注解的连接点（`常与自定义注解合用`，极其好用） |
 
 
-
-### 4. AOP 应用
-
-AOP 应用：
-记录 dao 方法在`执行前后的执行时间`，计算 sql 实际消耗的时间，如果时间超过一定时间，将该sql记录到文件，来做有目标性的优化。
-方案：拆表、部分逻辑放入java代码、如5-6s优化到300ms
