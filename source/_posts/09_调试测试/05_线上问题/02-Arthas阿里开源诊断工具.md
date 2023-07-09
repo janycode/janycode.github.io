@@ -173,3 +173,9 @@ trace -E com.xxx.service.impl.XxxImpl 方法名 -n 5  --skipJDKMethod false '1==
 安装了“arthas idea”插件之后，在方法名上面单击右键，选择watch，就生成方法观测命令在粘贴板中：
 
 ![image-20220220122306645](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20220220122308.png)
+
+
+
+### 5. 命令图示详解
+
+![Arthas命令图示详解](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230706161943.png)

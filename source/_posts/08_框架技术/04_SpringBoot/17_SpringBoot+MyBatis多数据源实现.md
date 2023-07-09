@@ -12,6 +12,10 @@ categories:
 
 ![image-20200708160944615](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20200708160946.png)
 
+参考资料：https://www.cnblogs.com/SweetCode/p/15591792.html
+
+
+
 随着应用用户数量的增加，相应的并发请求的数量也会跟着不断增加，慢慢地，单个数据库已经没有办法满足频繁的数据库操作请求了，在某些场景下，可能会需要配置多个数据源，使用多个数据源(例如实现数据库的读写分离)来缓解系统的压力等，同样的，Springboot官方提供了相应的实现来帮助开发者们配置多数据源，一般分为两种方式(目前所了解到的)，分包和AOP。
 
 考虑到mybatis是java开发使用较为频繁的数据库框架，所以使用Springboot+Mybatis来实现多数据源的配置。

@@ -70,10 +70,11 @@ stringStream.forEach(System.out::println);
 ### 2. 中间操作
 
 **2.1 筛选与切片**
-　　filter：过滤流中的某些元素
-　　limit(n)：获取n个元素
-　　skip(n)：跳过n元素，配合limit(n)可实现分页
-　　distinct：通过流中元素的 hashCode() 和 equals() 去除重复元素
+
+* filter：过滤流中的某些元素
+* limit(n)：获取n个元素
+* skip(n)：跳过n元素，配合limit(n)可实现分页
+* distinct：通过流中元素的 hashCode() 和 equals() 去除重复元素
 
 ```java
 Stream<Integer> stream = Stream.of(6, 4, 6, 7, 3, 9, 8, 10, 12, 14, 14);
@@ -85,8 +86,9 @@ newStream.forEach(System.out::println);
 ```
 
 **2.2 映射**
-　　map：接收一个函数作为参数，该函数会被应用到每个元素上，并将其映射成一个新的元素。
-　　flatMap：接收一个函数作为参数，将流中的每个值都换成另一个流，然后把所有流连接成一个流。
+
+* map：接收一个函数作为参数，该函数会被应用到每个元素上，并将其映射成一个新的元素。
+* flatMap：接收一个函数作为参数，将流中的每个值都换成另一个流，然后把所有流连接成一个流。
 
 ```java
 List<String> list = Arrays.asList("a,b,c", "1,2,3");
@@ -103,8 +105,9 @@ s3.forEach(System.out::println); // a b c 1 2 3
 ```
 
 **2.3 排序**
-　　sorted()：自然排序，流中元素需实现Comparable接口
-　　sorted(Comparator com)：定制排序，自定义Comparator排序器
+
+* sorted()：自然排序，流中元素需实现Comparable接口
+* sorted(Comparator com)：定制排序，自定义Comparator排序器
 
 ```java
 List<String> list = Arrays.asList("aa", "ff", "dd");
@@ -128,7 +131,8 @@ studentList.stream().sorted(
 ```
 
 **2.4 消费**
-　　peek：如同于map，能得到流中的每一个元素。但map接收的是一个Function表达式，有返回值；而peek接收的是Consumer表达式，没有返回值。
+
+* peek：如同于map，能得到流中的每一个元素。但map接收的是一个Function表达式，有返回值；而peek接收的是Consumer表达式，没有返回值。
 
 ```java
 Student s1 = new Student("aa", 10);
@@ -145,14 +149,15 @@ Student{name='bb', age=100}
 ### 3. 终止操作
 
 **3.1 匹配、聚合操作**
-　　allMatch：接收一个 Predicate 函数，当流中每个元素都符合该断言时才返回true，否则返回false
-　　noneMatch：接收一个 Predicate 函数，当流中每个元素都不符合该断言时才返回true，否则返回false
-　　anyMatch：接收一个 Predicate 函数，只要流中有一个元素满足该断言则返回true，否则返回false
-　　findFirst：返回流中第一个元素
-　　findAny：返回流中的任意元素
-　　count：返回流中元素的总个数
-　　max：返回流中元素最大值
-　　min：返回流中元素最小值
+
+* allMatch：接收一个 Predicate 函数，当流中每个元素都符合该断言时才返回true，否则返回false
+* noneMatch：接收一个 Predicate 函数，当流中每个元素都不符合该断言时才返回true，否则返回false
+* anyMatch：接收一个 Predicate 函数，只要流中有一个元素满足该断言则返回true，否则返回false
+* findFirst：返回流中第一个元素
+* findAny：返回流中的任意元素
+* count：返回流中元素的总个数
+* max：返回流中元素最大值
+* min：返回流中元素最小值
 
 ```java
 List<Integer> list = Arrays.asList(1, 2, 3, 4, 5);
@@ -167,9 +172,14 @@ Integer min = list.stream().min(Integer::compareTo).get(); //1
 ```
 
 **3.2 规约操作**
-　　Optional reduce(BinaryOperator accumulator)：第一次执行时，accumulator函数的第一个参数为流中的第一个元素，第二个参数为流中元素的第二个元素；第二次执行时，第一个参数为第一次函数执行的结果，第二个参数为流中的第三个元素；依次类推。
-　　T reduce(T identity, BinaryOperator accumulator)：流程跟上面一样，只是第一次执行时，accumulator函数的第一个参数为identity，而第二个参数为流中的第一个元素。
-　　U reduce(U identity,BiFunction<U, ? super T, U> accumulator,BinaryOperator combiner)：在串行流(stream)中，该方法跟第二个方法一样，即第三个参数combiner不会起作用。在并行流(parallelStream)中,我们知道流被fork join出多个线程进行执行，此时每个线程的执行流程就跟第二个方法reduce(identity,accumulator)一样，而第三个参数combiner函数，则是将每个线程的执行结果当成一个新的流，然后使用第一个方法reduce(accumulator)流程进行规约。
+
+* Optional reduce(BinaryOperator accumulator)：
+  * 第一次执行时，accumulator函数的第一个参数为流中的第一个元素，第二个参数为流中元素的第二个元素；
+  * 第二次执行时，第一个参数为第一次函数执行的结果，第二个参数为流中的第三个元素；依次类推。
+* T reduce(T identity, BinaryOperator accumulator)：
+  * 流程跟上面一样，只是第一次执行时，accumulator函数的第一个参数为identity，而第二个参数为流中的第一个元素。
+* U reduce(U identity,BiFunction<U, ? super T, U> accumulator,BinaryOperator combiner)：
+  * 在串行流(stream)中，该方法跟第二个方法一样，即第三个参数combiner不会起作用。在并行流(parallelStream)中,我们知道流被fork join出多个线程进行执行，此时每个线程的执行流程就跟第二个方法reduce(identity,accumulator)一样，而第三个参数combiner函数，则是将每个线程的执行结果当成一个新的流，然后使用第一个方法reduce(accumulator)流程进行规约。
 
 ```java
 //经过测试，当元素个数小于24时，并行时线程数等于元素个数，当大于等于24时，并行时线程数为16
