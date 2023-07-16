@@ -122,6 +122,7 @@ Java EE API 官方文档： [1.7英文](https://docs.oracle.com/javaee/7/api/toc
 |  29  |                    操作系统镜像                    |            [进入下载](https://msdn.itellyou.cn/)             |                 系统级的镜像、工具、资源下载                 |
 |  30  |                      抓包工具                      | [WireShark](https://www.wireshark.org/)<br>[ClarleSproxy](https://www.charlesproxy.com/) |               极其强大的两款HTTP/网口抓包工具                |
 |  31  |    <span style="color:orange">FinalShell</span>    | [百度网盘](https://pan.baidu.com/s/1DYzmAMPyPeLi-pbAGJbu_A)  |          国产免费最好用的终端连接工具，提取码: 81nk          |
+|  32  |                   在线文档翻译器                   |    [在线访问](https://www.onlinedoctranslator.com/zh-CN/)    |               PDF翻译工具，无需登陆，完全免费                |
 
 <br>
 

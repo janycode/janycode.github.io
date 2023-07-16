@@ -10,6 +10,23 @@ categories:
 
 
 
+### REGEXP
+
+LIKE 和 REGEXP之间的重要差别：
+
+LIKE 匹配整个列，如果被匹配的文本在列值中出现，LIKE 将不会找到它，相应的行也不会被返回（除非使用通配符）。而 REGEXP 在列值内进行匹配，如果被匹配的文本在列值中出现，REGEXP 将会找到它，相应的行将被返回，并且 REGEXP 能匹配整个列值（与 LIKE 相同的作用）。
+
+MySQL 的正则表达式匹配（自3.23.4版本后）`不区分大小写`（即大写和小写都匹配）。为区分大小写，可以使用 BINARY 关键字，例如：WHERE name `REGEXP BINARY` 'Hern .000'。
+
+```sql
+#使用正则查询字段包含数字的数据
+SELECT * FROM content WHERE contentText REGEXP '[0-9]';
+```
+
+mysql正则匹配参考: https://blog.csdn.net/qq_36761831/article/details/82862135
+
+
+
 ### group_concat
 
 在我们平常的工作中，使用group by进行分组的场景，是非常多的。
