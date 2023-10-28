@@ -126,6 +126,41 @@ Long insertArticleList(List<ArticleInfo> articleInfos);
 
 
 
+* 保存批次每次100条 - demo
+
+```java
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void saveBatch100(List<SendRecordListDTO> records, String wxCorpId) {
+        int batchSize = 100;
+        int totalSize = records.size();
+        log.info("刷数据开始：totalSize -> {}", totalSize);
+        //分批保存记录
+        for (int i = 0; i < totalSize; i += batchSize) {
+            int endIndex = Math.min(i + batchSize, totalSize);
+            List<SendRecordListDTO> batchRecords = records.subList(i, endIndex);
+            List<RoomReportStatisticsEntity> entityList = Lists.newArrayList();
+            if (ObjUtil.isNotEmpty(batchRecords)) {
+                batchRecords.forEach(r -> {
+                    RoomReportStatisticsEntity entity = new RoomReportStatisticsEntity();
+                    //entity.setXxx(yyy);
+                    entityList.add(entity);
+                });
+            }
+
+            //批量保存当前批次的记录
+            if (ObjUtil.isNotEmpty(entityList)) {
+                saveBatch(entityList);
+            }
+            log.info("刷数据进度 -> {}/{}", endIndex, totalSize);
+        }
+    }
+```
+
+
+
+
+
 #### 2.2 批量删除
 
 ```java

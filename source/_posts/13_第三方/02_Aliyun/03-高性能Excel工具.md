@@ -232,3 +232,150 @@ public class ExcelReadTest {
 扩展阅读：
 
 [100000 行级别数据的 Excel 导入优化之路](https://mp.weixin.qq.com/s/yMrhs7r6xvXQ-iXCRsT3og)
+
+
+
+### 读取数据-Demo
+
+上传方法：
+
+```java
+	@Override
+    public void uploadBatch(CaseExcelReq req, String key) {
+        String wxCorpId = SecurityUser.getWxCorpId();
+        Long userId = SecurityUser.getUserId();
+        String excelUrl = req.getExcelUrl();
+        log.info("开始解析excel: uploadBatch -> wxCorpId = {}, key = {}, excelUrl = {}", wxCorpId, key, excelUrl);
+        if (!(excelUrl.endsWith(ExcelTypeEnum.XLSX.getValue()) || excelUrl.endsWith(ExcelTypeEnum.XLS.getValue()))) {
+            log.info("uploadBatch -> excel 格式有误！");
+            return;
+        }
+
+        Long logId = jsonStoreService.generatorStoreId();
+        CaseExcelUploadLogEntity entity = new CaseExcelUploadLogEntity();
+        entity.setId(logId);
+        entity.setFileName(req.getFileName());
+        entity.setExcelUrl(excelUrl);
+        entity.setStatus(1);
+        entity.setCreator(userId);
+        entity.setCreatorName(sysUserService.get(userId).getRealName());
+        entity.setCreateDate(DateUtil.date());
+        caseExcelUploadLogService.save(entity);
+        log.info("uploadBatch: 存储成功解析中的状态实体 entity -> {}", entity);
+
+        doExcelParse(excelUrl, wxCorpId, userId, logId, key);
+
+    }
+```
+
+异步调用：
+
+```java
+    @Override
+    public void doExcelParse(String excelUrl, String wxCorpId, Long userId, Long logId, String key) {
+        log.info("开始异步解析表格: traceId -> {}", key);
+        //线程最大允许超时时间单位：分钟
+        CompletableFuture<Void> future = CompletableAsyncUtil.run(30, TimeUnit.MINUTES, () -> {
+            TraceIdGenerator.setTraceId(key);
+
+            InputStream inputStream = null;
+            try {
+                inputStream = sysOssService.download(excelUrl);
+                if (Objects.isNull(inputStream)) {
+                    throw new RenException("未读取到对应的文件信息");
+                }
+                //调用EasyExcel的read方法，传入输入流、Sheet对象和监听器，通过监听器存数据入库
+                EasyExcel.read(inputStream, CaseExcelFeildDTO.class, new CaseBaseInfoDataListener(this, excelUrl, excelImportLimitCount, userId, wxCorpId, logId))
+                        .sheet()            //默认第1个sheet
+                        .headRowNumber(2)   //表头行号为2，数据则从第3行开始取
+                        .doRead();
+
+                TraceIdGenerator.removeTraceId();
+            } catch (Exception e) {
+                log.error("uploadBatch 上传excel解析失败：error -> {}", e.getMessage(), e);
+            } finally {
+                if (Objects.nonNull(inputStream)) {
+                    try {
+                        inputStream.close();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        });
+        //等待线程执行完毕
+        //CompletableFutureUtil.allOf(future);
+    }
+```
+
+解析类：
+
+```java
+import com.alibaba.excel.context.AnalysisContext;
+import com.alibaba.excel.event.AnalysisEventListener;
+import com.alibaba.excel.exception.ExcelAnalysisException;
+import com.alibaba.fastjson.JSON;
+import com.google.common.collect.Lists;
+import lombok.extern.slf4j.Slf4j;
+import java.util.List;
+
+@Slf4j
+public class CaseBaseInfoDataListener extends AnalysisEventListener<CaseExcelFeildDTO> {
+    private List<CaseExcelFeildDTO> cachedDataList;
+    private CaseBaseInfoService caseBaseInfoService;
+    private String excelUrl;
+    private Integer limitCount;
+    private String wxCorpId;
+    private Long userId;
+    private Long logId;
+
+    public CaseBaseInfoDataListener(CaseBaseInfoService service, String excelUrl, Integer limit, Long userId, String wxCorpId, Long logId) {
+        log.info("CaseBaseInfoDataListener init: service={}, limit={}, wxCorpId={}", service, limit, wxCorpId);
+        this.caseBaseInfoService = service;
+        this.excelUrl = excelUrl;
+        this.limitCount = limit;
+        this.wxCorpId = wxCorpId;
+        this.userId = userId;
+        this.logId = logId;
+        //为了校验超过 limit 值，需要 +1 操作，防止下标越界
+        cachedDataList = Lists.newArrayListWithCapacity(this.limitCount + 1);
+    }
+
+    @Override
+    public void invoke(CaseExcelFeildDTO data, AnalysisContext analysisContext) {
+        log.info("invoke() 解析到一条数据：{}", JSON.toJSONString(data));
+        cachedDataList.add(data);
+        if (cachedDataList.size() > limitCount) {
+            String msg = "最大支持导入的条数为" + limitCount + "条！";
+            //入库失败原因和状态
+            caseBaseInfoService.updateFailLog(Lists.newArrayList(msg), logId);
+
+            log.warn(msg);
+
+            //异常必须抛出去，才会终止后续逻辑
+            throw new ExcelAnalysisException(msg);
+        }
+    }
+
+    @Override
+    public void doAfterAllAnalysed(AnalysisContext analysisContext) {
+        log.info("所有数据【解析】完成！");
+        this.saveData();
+        log.info("所有数据【保存】完成！");
+    }
+
+    /**
+     * 存储数据库
+     *
+     * @author Jerry(姜源)
+     * @date 2023/10/09 09:32
+     */
+    private void saveData() {
+        boolean res = caseBaseInfoService.saveBatchFromExcel(cachedDataList, excelUrl, userId, wxCorpId, logId);
+        log.info(res ? "存储数据库成功！" : "存储数据库失败！");
+    }
+}
+```
+
+
+

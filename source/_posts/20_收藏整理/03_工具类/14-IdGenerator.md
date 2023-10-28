@@ -197,7 +197,7 @@ public class IdGenerator {
 }
 ```
 
-### Hutool工具雪花id
+### Hutool雪花id
 
 ```java
 import cn.hutool.core.lang.Snowflake;
@@ -236,6 +236,112 @@ public class IdWorker {
 
     public static void main(String[] args) {
         logger.info("" + nextId());
+    }
+}
+```
+
+
+
+### Hutool雪花id封装 - 推荐
+
+注入如下 service 调用 generatorStoreId() 即可。
+
+```java
+public interface IdGeneratorService {
+    Long generatorStoreId();
+}
+```
+
+```java
+import cn.hutool.core.lang.Snowflake;
+import cn.hutool.core.util.IdUtil;
+import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
+import org.redisson.api.RAtomicLong;
+import org.redisson.api.RLock;
+import org.redisson.api.RedissonClient;
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.concurrent.TimeUnit;
+
+@Slf4j
+@Service
+public class IdGeneratorServiceImpl implements IdGeneratorService, InitializingBean {
+
+    private static final String WORK_ID_FORMAT = "id:generator:wordId";
+    private static final String SNOW_FLAKE_LOCK = "id:generator:lock";
+    private static final String CENTER_ID_FORMAT = "id:generator:center";
+    private final int MAX_CENTER_ID = 31;
+    private Snowflake snowflake;
+    
+    @Autowired
+    private RedissonClient redissonClient;
+
+    @SneakyThrows
+    private void generatorWorkAndCenterId() {
+        RLock rLock = redissonClient.getLock(SNOW_FLAKE_LOCK);
+        boolean b = rLock.tryLock(20, TimeUnit.SECONDS);
+        if (!b) {
+            throw new Exception("锁超时");
+        }
+        try {
+            int workId = getWorkId();
+            int centerId = getCenterId(workId);
+            snowflake = IdUtil.getSnowflake(workId, centerId);
+            log.info("snowFlake init success centerId:{} workId:{}", centerId, workId);
+
+        } finally {
+            rLock.unlock();
+        }
+    }
+
+    private int getWorkId() {
+        int workId;
+        // 先修改workId 如果workId不重置为0无需修改centerId
+        RAtomicLong atomicLong = redissonClient.getAtomicLong(WORK_ID_FORMAT);
+        Long l = atomicLong.get();
+        if (l.intValue() >= MAX_CENTER_ID) {
+            atomicLong.set(0);
+            workId = 0;
+        } else {
+            l = atomicLong.incrementAndGet();
+            workId = l.intValue();
+        }
+        return workId;
+    }
+
+    private int getCenterId(int workId) {
+        int centerId;
+        RAtomicLong centerAtomicLong = redissonClient.getAtomicLong(CENTER_ID_FORMAT);
+        Long cl = centerAtomicLong.get();
+        // 先修改workId 如果workId不重置为0无需修改centerId
+        if(workId > 0){
+                centerId = cl.intValue();
+        }else{
+            if (cl.intValue() >= MAX_CENTER_ID) {
+                centerAtomicLong.set(0);
+                centerId = 0;
+            } else {
+                cl = centerAtomicLong.incrementAndGet();
+                centerId = cl.intValue();
+            }
+        }
+        return centerId;
+    }
+
+
+    @Override
+    public Long generatorStoreId() {
+        return snowflake.nextId();
+    }
+
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        generatorWorkAndCenterId();
+        Long snowId = generatorStoreId();
+        log.info("验证snowflake生成正常,生成id：{}",snowId);
     }
 }
 ```
