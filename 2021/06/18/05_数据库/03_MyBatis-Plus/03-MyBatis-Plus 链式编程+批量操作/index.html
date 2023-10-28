@@ -25,7 +25,7 @@
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/001.png">
 <meta property="article:published_time" content="2021-06-18T09:48:28.000Z">
-<meta property="article:modified_time" content="2023-09-23T08:12:03.179Z">
+<meta property="article:modified_time" content="2023-10-28T06:25:56.262Z">
 <meta property="article:author" content="Jerry(姜源)">
 <meta property="article:tag" content="sql">
 <meta property="article:tag" content="MyBatis">
@@ -252,7 +252,7 @@
         <i class="iconfont icon-chart"></i>
         
           <!-- compatible with older versions-->
-          4.5k 字
+          5.4k 字
         
       </span>
     
@@ -264,7 +264,7 @@
         
         
           <!-- compatible with older versions-->
-          38 分钟
+          46 分钟
         
       </span>
     
@@ -333,6 +333,15 @@
 <h3 id="2-批量操作"><a href="#2-批量操作" class="headerlink" title="2. 批量操作"></a>2. 批量操作</h3><h4 id="2-1-批量新增"><a href="#2-1-批量新增" class="headerlink" title="2.1 批量新增"></a>2.1 批量新增</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs java">Long <span class="hljs-title function_">insertArticleList</span><span class="hljs-params">(List&lt;ArticleInfo&gt; articleInfos)</span>;<br></code></pre></td></tr></table></figure>
 
 <figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs xml"><span class="hljs-tag">&lt;<span class="hljs-name">insert</span> <span class="hljs-attr">id</span>=<span class="hljs-string">&quot;insertArticleList&quot;</span> <span class="hljs-attr">useGeneratedKeys</span>=<span class="hljs-string">&quot;true&quot;</span> <span class="hljs-attr">keyProperty</span>=<span class="hljs-string">&quot;id&quot;</span>  <span class="hljs-attr">parameterType</span>=<span class="hljs-string">&quot;com.xxx.ArticleInfo&quot;</span>&gt;</span><br>    insert ignore into article_info(articleKind, 多个字段逗号隔开, articleUrl)<br>            values<br>    <span class="hljs-tag">&lt;<span class="hljs-name">foreach</span> <span class="hljs-attr">collection</span>=<span class="hljs-string">&quot;list&quot;</span> <span class="hljs-attr">item</span>=<span class="hljs-string">&quot;item&quot;</span> <span class="hljs-attr">index</span>=<span class="hljs-string">&quot;index&quot;</span> <span class="hljs-attr">open</span>=<span class="hljs-string">&quot;&quot;</span> <span class="hljs-attr">separator</span>=<span class="hljs-string">&quot;,&quot;</span> <span class="hljs-attr">close</span>=<span class="hljs-string">&quot;&quot;</span>&gt;</span><br>        (<br>            #&#123;item.articleKind&#125;,<br>            多个字段的取值逗号隔开,<br>            #&#123;item.articleUrl&#125;<br>        )<br>    <span class="hljs-tag">&lt;/<span class="hljs-name">foreach</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">insert</span>&gt;</span><br></code></pre></td></tr></table></figure>
+
+
+
+<ul>
+<li>保存批次每次100条 - demo</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@Override</span><br><span class="hljs-meta">@Transactional(rollbackFor = Exception.class)</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">saveBatch100</span><span class="hljs-params">(List&lt;SendRecordListDTO&gt; records, String wxCorpId)</span> &#123;<br>    <span class="hljs-type">int</span> <span class="hljs-variable">batchSize</span> <span class="hljs-operator">=</span> <span class="hljs-number">100</span>;<br>    <span class="hljs-type">int</span> <span class="hljs-variable">totalSize</span> <span class="hljs-operator">=</span> records.size();<br>    log.info(<span class="hljs-string">&quot;刷数据开始：totalSize -&gt; &#123;&#125;&quot;</span>, totalSize);<br>    <span class="hljs-comment">//分批保存记录</span><br>    <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> <span class="hljs-variable">i</span> <span class="hljs-operator">=</span> <span class="hljs-number">0</span>; i &lt; totalSize; i += batchSize) &#123;<br>        <span class="hljs-type">int</span> <span class="hljs-variable">endIndex</span> <span class="hljs-operator">=</span> Math.min(i + batchSize, totalSize);<br>        List&lt;SendRecordListDTO&gt; batchRecords = records.subList(i, endIndex);<br>        List&lt;RoomReportStatisticsEntity&gt; entityList = Lists.newArrayList();<br>        <span class="hljs-keyword">if</span> (ObjUtil.isNotEmpty(batchRecords)) &#123;<br>            batchRecords.forEach(r -&gt; &#123;<br>                <span class="hljs-type">RoomReportStatisticsEntity</span> <span class="hljs-variable">entity</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">RoomReportStatisticsEntity</span>();<br>                <span class="hljs-comment">//entity.setXxx(yyy);</span><br>                entityList.add(entity);<br>            &#125;);<br>        &#125;<br><br>        <span class="hljs-comment">//批量保存当前批次的记录</span><br>        <span class="hljs-keyword">if</span> (ObjUtil.isNotEmpty(entityList)) &#123;<br>            saveBatch(entityList);<br>        &#125;<br>        log.info(<span class="hljs-string">&quot;刷数据进度 -&gt; &#123;&#125;/&#123;&#125;&quot;</span>, endIndex, totalSize);<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+
 
 
 
