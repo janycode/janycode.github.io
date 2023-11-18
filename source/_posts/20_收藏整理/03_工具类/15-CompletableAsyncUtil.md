@@ -1,5 +1,5 @@
 ---
-title: 15-CompletableFutureUtil
+title: 15-CompletableAsyncUtil
 date: 2023-08-20 15:08:05
 tags:
 - 工具类
