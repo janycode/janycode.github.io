@@ -36,6 +36,8 @@ Spring 是由 Rod Johnson 组织和开发的一个分层的 Java SE/EE full-stac
 - 控制反转(IOC)：松耦合。依赖被注入到对象，而不是创建或寻找依赖对象。
 - 面向切面编程(AOP)： 把应用的业务逻辑与系统的服务分离开来。消除样板式代码.
 
+![spring中的编程思想](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20231224104910.png)
+
 
 
 ### 2. Spring 基本原理
@@ -47,6 +49,8 @@ Spring 是由 Rod Johnson 组织和开发的一个分层的 Java SE/EE full-stac
 5. 嵌套 bean 用了递归，容器会放到 servletcontext 里，每次 request 从 servletcontext 找 container。
 6. 如果 bean 的 scope 是 singleton（单例），会重用，将这个 bean 放到一个 map 里，每次用都先从这个 map 里面找。
 7. 如果 scope 是 session，则该 bean 会放到 session 里面。
+
+![spring中常用设计模式和场景](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20231224104943.png)
 
 
 
