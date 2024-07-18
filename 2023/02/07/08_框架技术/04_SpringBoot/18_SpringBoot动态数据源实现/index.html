@@ -1,0 +1,1122 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=light>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Jerry(姜源)">
+  <meta name="keywords" content="Java,Html,CSS,JavaScript,Python,C,Linux,shell编程经验分享、技术总结、心得体会">
+  
+    <meta name="description" content="1. 多套数据源 一句话概括：Spring Boot开发中连接多个数据库进行读写操作，使用多套数据源是最直接、简单的方式。  在开发过程中，避免不了需要同时操作多个数据库的情况，通常的应用场景如下 ：  数据库高性能场景：主从，包括一主一从，一主多从等，在主库进行增删改操作，在从库进行读操作。 数据库高可用场景：主备，包括一往一备，多主多备等，在数据库无法访问时可以切换。 同构或异构数据的业务处">
+<meta property="og:type" content="article">
+<meta property="og:title" content="18_SpringBoot动态数据源实现">
+<meta property="og:url" content="https://janycode.github.io/2023/02/07/08_%E6%A1%86%E6%9E%B6%E6%8A%80%E6%9C%AF/04_SpringBoot/18_SpringBoot%E5%8A%A8%E6%80%81%E6%95%B0%E6%8D%AE%E6%BA%90%E5%AE%9E%E7%8E%B0/index.html">
+<meta property="og:site_name" content="姜源の云笔记">
+<meta property="og:description" content="1. 多套数据源 一句话概括：Spring Boot开发中连接多个数据库进行读写操作，使用多套数据源是最直接、简单的方式。  在开发过程中，避免不了需要同时操作多个数据库的情况，通常的应用场景如下 ：  数据库高性能场景：主从，包括一主一从，一主多从等，在主库进行增删改操作，在从库进行读操作。 数据库高可用场景：主备，包括一往一备，多主多备等，在数据库无法访问时可以切换。 同构或异构数据的业务处">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20200708160946.png">
+<meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230307093432.png">
+<meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230307094438.png">
+<meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230307103210.png">
+<meta property="article:published_time" content="2023-02-07T08:14:12.000Z">
+<meta property="article:modified_time" content="2023-12-24T03:11:24.430Z">
+<meta property="article:author" content="Jerry(姜源)">
+<meta property="article:tag" content="SpringBoot">
+<meta property="article:tag" content="MyBatis">
+<meta property="article:tag" content="动态数据源">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20200708160946.png">
+  
+  
+    <meta name="referrer" content="no-referrer-when-downgrade">
+  
+  
+  <title>18_SpringBoot动态数据源实现 - 姜源の云笔记</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"janycode.github.io","root":"/","version":"1.9.0","typing":{"enable":true,"typeSpeed":50,"cursorChar":"|","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":false},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":"bfff735c897eb60ea49b735096b20e47","google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+
+  
+<meta name="generator" content="Hexo 6.2.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 50vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>姜源の云笔记</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tools/">
+                <i class="iconfont icon-slack-fill"></i>
+                工具
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" target="_blank" rel="noopener" href="https://janycode.gitee.io/">
+                <i class="iconfont icon-gitee-fill"></i>
+                Gitee
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="18_SpringBoot动态数据源实现"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-author" aria-hidden="true"></i>
+        Jerry(姜源)
+      </span>
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2023-02-07 16:14" pubdate>
+          星期二, 2023/02/07 16:14:12
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          <!-- compatible with older versions-->
+          36k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          <!-- compatible with older versions-->
+          301 分钟
+        
+      </span>
+    
+
+    
+    
+      
+        <span id="busuanzi_container_page_pv" style="display: none">
+          <i class="iconfont icon-eye" aria-hidden="true"></i>
+          <span id="busuanzi_value_page_pv"></span> 次
+        </span>
+        
+      
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">18_SpringBoot动态数据源实现</h1>
+            
+            <div class="markdown-body">
+              
+              <p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20200708160946.png" srcset="/img/loading.gif" lazyload alt="image-20200708160944615"></p>
+<h1 id="1-多套数据源"><a href="#1-多套数据源" class="headerlink" title="1. 多套数据源"></a>1. 多套数据源</h1><blockquote>
+<p>一句话概括：Spring Boot开发中连接多个数据库进行读写操作，使用多套数据源是最直接、简单的方式。</p>
+</blockquote>
+<p>在开发过程中，避免不了需要同时操作多个数据库的情况，通常的应用场景如下 ：</p>
+<ul>
+<li>数据库高性能场景：主从，包括一主一从，一主多从等，在主库进行增删改操作，在从库进行读操作。</li>
+<li>数据库高可用场景：主备，包括一往一备，多主多备等，在数据库无法访问时可以切换。</li>
+<li>同构或异构数据的业务处理：需要处理的数据存储在不同的数据库中，包括同构（如都是 MySQL ），异构（如一个MySQL ，另外是 PG 或者 Oracle ）。</li>
+</ul>
+<p>使用 Spring Boot 该如何处理多个数据库的读写，一般有以下几种策略：</p>
+<ul>
+<li>多套数据源：即针对一个数据库建立一套数据处理逻辑，每套数据库都包括数据源配置、会话工厂（ sessionFactory ）、连接、SQL 操作、实体。各套数据库相互独立。</li>
+<li>动态数据源：确定数量的多个数据源共用一个会话工厂，根据条件动态选取数据源进行连接、SQL 操作。</li>
+<li>参数化变更数据源：根据参数添加数据源，并进行数据源切换，数据源数量不确定。通常用于对多个数据库的管理工作。</li>
+</ul>
+<h2 id="1-1-运行环境"><a href="#1-1-运行环境" class="headerlink" title="1.1 运行环境"></a>1.1 运行环境</h2><ul>
+<li>JAVA 运行环境: <code>JDK1.8</code></li>
+<li>Spring Boot: <code>2.2.2.RELEASE</code></li>
+<li>MyBatis Plus: <code>3.3.0</code></li>
+<li>开发IDE: <code>IDEA</code></li>
+<li>构建工具Maven: <code>3.3.9</code></li>
+<li>MySQL : <code>5.6.26</code></li>
+<li><a target="_blank" rel="noopener" href="https://projectlombok.org/">Lombok</a>: <code>1.18.10</code></li>
+</ul>
+<h2 id="1-2-多套数据源搭建"><a href="#1-2-多套数据源搭建" class="headerlink" title="1.2 多套数据源搭建"></a>1.2 多套数据源搭建</h2><p>多套数据源，顾名思义每一个数据库有一套独立的操作。从下往上，数据库、会话工厂、DAO操作，服务层都是独立的一套，如下所示：</p>
+<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230307093432.png" srcset="/img/loading.gif" lazyload alt="image-20230307093431137"></p>
+<p>sql 示例：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br></pre></td><td class="code"><pre><code class="hljs sql">#tables<span class="hljs-operator">-</span>master.sql<br><span class="hljs-keyword">DROP</span> <span class="hljs-keyword">TABLE</span> IF <span class="hljs-keyword">EXISTS</span> `test_user`;<br><br><span class="hljs-keyword">CREATE</span> <span class="hljs-keyword">TABLE</span> `test_user` (<br>  `id` <span class="hljs-type">bigint</span>(<span class="hljs-number">20</span>) <span class="hljs-keyword">NOT</span> <span class="hljs-keyword">NULL</span> AUTO_INCREMENT,<br>  `name` <span class="hljs-type">varchar</span>(<span class="hljs-number">32</span>) <span class="hljs-keyword">NOT</span> <span class="hljs-keyword">NULL</span> COMMENT <span class="hljs-string">&#x27;姓名&#x27;</span>,<br>  `phone` <span class="hljs-type">varchar</span>(<span class="hljs-number">32</span>) <span class="hljs-keyword">DEFAULT</span> <span class="hljs-keyword">NULL</span> COMMENT <span class="hljs-string">&#x27;手机号&#x27;</span>,<br>  `title` <span class="hljs-type">varchar</span>(<span class="hljs-number">32</span>) <span class="hljs-keyword">DEFAULT</span> <span class="hljs-keyword">NULL</span> COMMENT <span class="hljs-string">&#x27;职称职别&#x27;</span>,<br>  `email` <span class="hljs-type">varchar</span>(<span class="hljs-number">128</span>) <span class="hljs-keyword">DEFAULT</span> <span class="hljs-keyword">NULL</span> COMMENT <span class="hljs-string">&#x27;邮箱&#x27;</span>,<br>  `gender` <span class="hljs-type">varchar</span>(<span class="hljs-number">32</span>) <span class="hljs-keyword">DEFAULT</span> <span class="hljs-keyword">NULL</span> COMMENT <span class="hljs-string">&#x27;性别&#x27;</span>,<br>  `date_of_birth` <span class="hljs-type">date</span> <span class="hljs-keyword">DEFAULT</span> <span class="hljs-keyword">NULL</span> COMMENT <span class="hljs-string">&#x27;出生时间&#x27;</span>,<br>  `deleted` tinyint(<span class="hljs-number">1</span>) <span class="hljs-keyword">DEFAULT</span> <span class="hljs-string">&#x27;0&#x27;</span> COMMENT <span class="hljs-string">&#x27;1:已删除,0:未删除&#x27;</span>,<br>  `sys_create_time` datetime <span class="hljs-keyword">NOT</span> <span class="hljs-keyword">NULL</span> <span class="hljs-keyword">DEFAULT</span> <span class="hljs-built_in">CURRENT_TIMESTAMP</span>,<br>  `sys_create_user` <span class="hljs-type">varchar</span>(<span class="hljs-number">255</span>) <span class="hljs-keyword">DEFAULT</span> <span class="hljs-keyword">NULL</span>,<br>  `sys_update_time` datetime <span class="hljs-keyword">NOT</span> <span class="hljs-keyword">NULL</span> <span class="hljs-keyword">DEFAULT</span> <span class="hljs-built_in">CURRENT_TIMESTAMP</span> <span class="hljs-keyword">ON</span> <span class="hljs-keyword">UPDATE</span> <span class="hljs-built_in">CURRENT_TIMESTAMP</span>,<br>  `sys_update_user` <span class="hljs-type">varchar</span>(<span class="hljs-number">255</span>) <span class="hljs-keyword">DEFAULT</span> <span class="hljs-keyword">NULL</span>,<br>  `record_version` <span class="hljs-type">bigint</span>(<span class="hljs-number">20</span>) <span class="hljs-keyword">DEFAULT</span> <span class="hljs-string">&#x27;0&#x27;</span>,<br>  <span class="hljs-keyword">PRIMARY</span> KEY (`id`)<br>) ENGINE<span class="hljs-operator">=</span>InnoDB AUTO_INCREMENT<span class="hljs-operator">=</span><span class="hljs-number">7013</span> <span class="hljs-keyword">DEFAULT</span> CHARSET<span class="hljs-operator">=</span>utf8;<br><br><span class="hljs-comment">/*Data for the table `test_user` */</span><br><br><span class="hljs-keyword">insert</span>  <span class="hljs-keyword">into</span> `test_user`(`id`,`name`,`phone`,`title`,`email`,`gender`,`date_of_birth`,`deleted`,`sys_create_time`,`sys_create_user`,`sys_update_time`,`sys_update_user`,`record_version`) <span class="hljs-keyword">values</span> (<span class="hljs-number">3497</span>,<span class="hljs-string">&#x27;王**&#x27;</span>,<span class="hljs-string">&#x27;13800000000&#x27;</span>,<span class="hljs-string">&#x27;test&#x27;</span>,<span class="hljs-string">&#x27;test1@qq.com&#x27;</span>,<span class="hljs-string">&#x27;1&#x27;</span>,<span class="hljs-string">&#x27;1958-07-01&#x27;</span>,<span class="hljs-number">0</span>,<span class="hljs-string">&#x27;2019-03-28 14:53:44&#x27;</span>,<span class="hljs-string">&#x27;admin&#x27;</span>,<span class="hljs-string">&#x27;2019-05-31 11:17:55&#x27;</span>,<span class="hljs-string">&#x27;admin&#x27;</span>,<span class="hljs-number">0</span>),(<span class="hljs-number">3500</span>,<span class="hljs-string">&#x27;林**&#x27;</span>,<span class="hljs-string">&#x27;13800000000&#x27;</span>,<span class="hljs-keyword">NULL</span>,<span class="hljs-keyword">NULL</span>,<span class="hljs-string">&#x27;1&#x27;</span>,<span class="hljs-keyword">NULL</span>,<span class="hljs-number">0</span>,<span class="hljs-string">&#x27;2019-03-28 14:53:44&#x27;</span>,<span class="hljs-string">&#x27;admin&#x27;</span>,<span class="hljs-string">&#x27;2019-05-31 11:21:47&#x27;</span>,<span class="hljs-string">&#x27;admin&#x27;</span>,<span class="hljs-number">0</span>),(<span class="hljs-number">3508</span>,<span class="hljs-string">&#x27;高**&#x27;</span>,<span class="hljs-string">&#x27;13800000000&#x27;</span>,<span class="hljs-string">&#x27;test&#x27;</span>,<span class="hljs-keyword">NULL</span>,<span class="hljs-string">&#x27;2&#x27;</span>,<span class="hljs-string">&#x27;1978-05-20&#x27;</span>,<span class="hljs-number">0</span>,<span class="hljs-string">&#x27;2019-03-28 14:53:44&#x27;</span>,<span class="hljs-string">&#x27;admin&#x27;</span>,<span class="hljs-string">&#x27;2019-05-31 11:17:55&#x27;</span>,<span class="hljs-string">&#x27;admin&#x27;</span>,<span class="hljs-number">0</span>),(<span class="hljs-number">7005</span>,<span class="hljs-string">&#x27;test4&#x27;</span>,<span class="hljs-keyword">NULL</span>,<span class="hljs-string">&#x27;test4&#x27;</span>,<span class="hljs-string">&#x27;test4@qq.com&#x27;</span>,<span class="hljs-string">&#x27;1&#x27;</span>,<span class="hljs-keyword">NULL</span>,<span class="hljs-number">0</span>,<span class="hljs-string">&#x27;2020-01-06 16:19:23&#x27;</span>,<span class="hljs-keyword">NULL</span>,<span class="hljs-string">&#x27;2020-01-07 11:29:10&#x27;</span>,<span class="hljs-string">&#x27;admin&#x27;</span>,<span class="hljs-number">0</span>),(<span class="hljs-number">7006</span>,<span class="hljs-string">&#x27;test5&#x27;</span>,<span class="hljs-keyword">NULL</span>,<span class="hljs-string">&#x27;new title&#x27;</span>,<span class="hljs-string">&#x27;test5@qq.com&#x27;</span>,<span class="hljs-string">&#x27;1&#x27;</span>,<span class="hljs-keyword">NULL</span>,<span class="hljs-number">0</span>,<span class="hljs-string">&#x27;2020-01-06 16:48:52&#x27;</span>,<span class="hljs-keyword">NULL</span>,<span class="hljs-string">&#x27;2020-01-07 11:19:48&#x27;</span>,<span class="hljs-string">&#x27;admin&#x27;</span>,<span class="hljs-number">0</span>),(<span class="hljs-number">7007</span>,<span class="hljs-string">&#x27;test6&#x27;</span>,<span class="hljs-keyword">NULL</span>,<span class="hljs-keyword">NULL</span>,<span class="hljs-string">&#x27;test6@qq.com&#x27;</span>,<span class="hljs-keyword">NULL</span>,<span class="hljs-keyword">NULL</span>,<span class="hljs-number">1</span>,<span class="hljs-string">&#x27;2020-01-06 16:48:52&#x27;</span>,<span class="hljs-keyword">NULL</span>,<span class="hljs-string">&#x27;2020-01-07 09:46:23&#x27;</span>,<span class="hljs-keyword">NULL</span>,<span class="hljs-number">0</span>);<br><br><br>#tables<span class="hljs-operator">-</span>slave.sql<br><span class="hljs-keyword">DROP</span> <span class="hljs-keyword">TABLE</span> IF <span class="hljs-keyword">EXISTS</span> `test_user`;<br><br><span class="hljs-keyword">CREATE</span> <span class="hljs-keyword">TABLE</span> `test_user` (<br>  `id` <span class="hljs-type">bigint</span>(<span class="hljs-number">20</span>) <span class="hljs-keyword">NOT</span> <span class="hljs-keyword">NULL</span> AUTO_INCREMENT,<br>  `name` <span class="hljs-type">varchar</span>(<span class="hljs-number">32</span>) <span class="hljs-keyword">NOT</span> <span class="hljs-keyword">NULL</span> COMMENT <span class="hljs-string">&#x27;姓名&#x27;</span>,<br>  `phone` <span class="hljs-type">varchar</span>(<span class="hljs-number">32</span>) <span class="hljs-keyword">DEFAULT</span> <span class="hljs-keyword">NULL</span> COMMENT <span class="hljs-string">&#x27;手机号&#x27;</span>,<br>  `title` <span class="hljs-type">varchar</span>(<span class="hljs-number">32</span>) <span class="hljs-keyword">DEFAULT</span> <span class="hljs-keyword">NULL</span> COMMENT <span class="hljs-string">&#x27;职称职别&#x27;</span>,<br>  `email` <span class="hljs-type">varchar</span>(<span class="hljs-number">128</span>) <span class="hljs-keyword">DEFAULT</span> <span class="hljs-keyword">NULL</span> COMMENT <span class="hljs-string">&#x27;邮箱&#x27;</span>,<br>  `gender` <span class="hljs-type">varchar</span>(<span class="hljs-number">32</span>) <span class="hljs-keyword">DEFAULT</span> <span class="hljs-keyword">NULL</span> COMMENT <span class="hljs-string">&#x27;性别&#x27;</span>,<br>  `date_of_birth` <span class="hljs-type">date</span> <span class="hljs-keyword">DEFAULT</span> <span class="hljs-keyword">NULL</span> COMMENT <span class="hljs-string">&#x27;出生时间&#x27;</span>,<br>  `deleted` tinyint(<span class="hljs-number">1</span>) <span class="hljs-keyword">DEFAULT</span> <span class="hljs-string">&#x27;0&#x27;</span> COMMENT <span class="hljs-string">&#x27;1:已删除,0:未删除&#x27;</span>,<br>  `sys_create_time` datetime <span class="hljs-keyword">NOT</span> <span class="hljs-keyword">NULL</span> <span class="hljs-keyword">DEFAULT</span> <span class="hljs-built_in">CURRENT_TIMESTAMP</span>,<br>  `sys_create_user` <span class="hljs-type">varchar</span>(<span class="hljs-number">255</span>) <span class="hljs-keyword">DEFAULT</span> <span class="hljs-keyword">NULL</span>,<br>  `sys_update_time` datetime <span class="hljs-keyword">NOT</span> <span class="hljs-keyword">NULL</span> <span class="hljs-keyword">DEFAULT</span> <span class="hljs-built_in">CURRENT_TIMESTAMP</span> <span class="hljs-keyword">ON</span> <span class="hljs-keyword">UPDATE</span> <span class="hljs-built_in">CURRENT_TIMESTAMP</span>,<br>  `sys_update_user` <span class="hljs-type">varchar</span>(<span class="hljs-number">255</span>) <span class="hljs-keyword">DEFAULT</span> <span class="hljs-keyword">NULL</span>,<br>  `record_version` <span class="hljs-type">bigint</span>(<span class="hljs-number">20</span>) <span class="hljs-keyword">DEFAULT</span> <span class="hljs-string">&#x27;0&#x27;</span>,<br>  <span class="hljs-keyword">PRIMARY</span> KEY (`id`)<br>) ENGINE<span class="hljs-operator">=</span>InnoDB AUTO_INCREMENT<span class="hljs-operator">=</span><span class="hljs-number">7013</span> <span class="hljs-keyword">DEFAULT</span> CHARSET<span class="hljs-operator">=</span>utf8;<br><br><span class="hljs-comment">/*Data for the table `test_user` */</span><br><br><span class="hljs-keyword">insert</span>  <span class="hljs-keyword">into</span> `test_user`(`id`,`name`,`phone`,`title`,`email`,`gender`,`date_of_birth`,`deleted`,`sys_create_time`,`sys_create_user`,`sys_update_time`,`sys_update_user`,`record_version`) <span class="hljs-keyword">values</span> (<span class="hljs-number">3520</span>,<span class="hljs-string">&#x27;刘**&#x27;</span>,<span class="hljs-string">&#x27;13800000000&#x27;</span>,<span class="hljs-keyword">NULL</span>,<span class="hljs-keyword">NULL</span>,<span class="hljs-string">&#x27;1&#x27;</span>,<span class="hljs-string">&#x27;1984-09-25&#x27;</span>,<span class="hljs-number">0</span>,<span class="hljs-string">&#x27;2019-03-28 14:53:44&#x27;</span>,<span class="hljs-string">&#x27;admin&#x27;</span>,<span class="hljs-string">&#x27;2019-05-31 11:17:55&#x27;</span>,<span class="hljs-string">&#x27;admin&#x27;</span>,<span class="hljs-number">0</span>),(<span class="hljs-number">6999</span>,<span class="hljs-string">&#x27;张*&#x27;</span>,<span class="hljs-string">&#x27;13800000000&#x27;</span>,<span class="hljs-string">&#x27;TEST&#x27;</span>,<span class="hljs-string">&#x27;test@qq.com&#x27;</span>,<span class="hljs-string">&#x27;1&#x27;</span>,<span class="hljs-string">&#x27;1990-06-10&#x27;</span>,<span class="hljs-number">0</span>,<span class="hljs-string">&#x27;2019-03-28 14:53:44&#x27;</span>,<span class="hljs-string">&#x27;admin&#x27;</span>,<span class="hljs-string">&#x27;2019-05-31 11:17:55&#x27;</span>,<span class="hljs-string">&#x27;admin&#x27;</span>,<span class="hljs-number">0</span>),(<span class="hljs-number">7003</span>,<span class="hljs-string">&#x27;test_add1&#x27;</span>,<span class="hljs-string">&#x27;13800000000&#x27;</span>,<span class="hljs-string">&#x27;TEST1&#x27;</span>,<span class="hljs-string">&#x27;test1@qq.com&#x27;</span>,<span class="hljs-string">&#x27;1&#x27;</span>,<span class="hljs-string">&#x27;1947-11-01&#x27;</span>,<span class="hljs-number">0</span>,<span class="hljs-string">&#x27;2019-06-04 23:17:48&#x27;</span>,<span class="hljs-keyword">NULL</span>,<span class="hljs-string">&#x27;2019-11-07 10:40:43&#x27;</span>,<span class="hljs-keyword">NULL</span>,<span class="hljs-number">0</span>),(<span class="hljs-number">7004</span>,<span class="hljs-string">&#x27;test_add2&#x27;</span>,<span class="hljs-string">&#x27;13800000000&#x27;</span>,<span class="hljs-string">&#x27;test2&#x27;</span>,<span class="hljs-string">&#x27;test2-dsa@qq.com&#x27;</span>,<span class="hljs-string">&#x27;1&#x27;</span>,<span class="hljs-string">&#x27;1958-07-01&#x27;</span>,<span class="hljs-number">0</span>,<span class="hljs-string">&#x27;2019-06-04 23:17:48&#x27;</span>,<span class="hljs-keyword">NULL</span>,<span class="hljs-string">&#x27;2019-11-07 11:13:06&#x27;</span>,<span class="hljs-keyword">NULL</span>,<span class="hljs-number">0</span>);<br><br></code></pre></td></tr></table></figure>
+
+
+
+<h3 id="1-2-1-搭建-Spring-Boot-工程"><a href="#1-2-1-搭建-Spring-Boot-工程" class="headerlink" title="1.2.1 搭建 Spring Boot 工程"></a>1.2.1 搭建 Spring Boot 工程</h3><h4 id="1-2-1-1-初始化-Spring-Boot-工程"><a href="#1-2-1-1-初始化-Spring-Boot-工程" class="headerlink" title="1.2.1.1 初始化 Spring Boot 工程"></a>1.2.1.1 初始化 Spring Boot 工程</h4><p>使用 spring.io 构建初始 Spring Boot 工程，选用以下几个构件：</p>
+<ul>
+<li>Lombok: 用于简化操作</li>
+<li>Spring Configuration Processor：配置文件处理器</li>
+<li>Spring Web: 用于构建web服务</li>
+<li>MySQL Driver: 数据库驱动</li>
+</ul>
+<h4 id="1-2-1-2-添加-MyBatis-Plus-依赖"><a href="#1-2-1-2-添加-MyBatis-Plus-依赖" class="headerlink" title="1.2.1.2 添加 MyBatis Plus 依赖"></a>1.2.1.2 添加 MyBatis Plus 依赖</h4><p>MyBatis Plus 是对 MyBatis 增强，简化 DAO 操作，提高数据库操作效率。依赖如下：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs xml"><span class="hljs-tag">&lt;<span class="hljs-name">dependency</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">groupId</span>&gt;</span>com.baomidou<span class="hljs-tag">&lt;/<span class="hljs-name">groupId</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">artifactId</span>&gt;</span>mybatis-plus-boot-starter<span class="hljs-tag">&lt;/<span class="hljs-name">artifactId</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">version</span>&gt;</span>3.3.0<span class="hljs-tag">&lt;/<span class="hljs-name">version</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">dependency</span>&gt;</span><br></code></pre></td></tr></table></figure>
+
+<h4 id="1-2-1-3-添加包结构"><a href="#1-2-1-3-添加包结构" class="headerlink" title="1.2.1.3 添加包结构"></a>1.2.1.3 添加包结构</h4><p>主要添加以下几个包：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs java">├─config ---------------------------------- <span class="hljs-comment">// 数据源配置</span><br>├─controller ------------------------------ <span class="hljs-comment">// web服务</span><br>├─entity ---------------------------------- <span class="hljs-comment">// 实体类</span><br>│ ├─master <br>│ └─slave <br>├─mapper ---------------------------------- <span class="hljs-comment">// dao操作类</span><br>│ ├─master <br>│ └─slave <br>└─vo -------------------------------------- <span class="hljs-comment">// 视图返回对象  </span><br></code></pre></td></tr></table></figure>
+
+<blockquote>
+<p>注：</p>
+<ul>
+<li>由于示例简单，省略service层</li>
+<li>实体类及mapper均根据主从进行划分</li>
+</ul>
+</blockquote>
+<h3 id="1-2-2-多套数据源"><a href="#1-2-2-多套数据源" class="headerlink" title="1.2.2 多套数据源"></a>1.2.2 多套数据源</h3><h4 id="1-2-2-1-独立数据库连接信息"><a href="#1-2-2-1-独立数据库连接信息" class="headerlink" title="1.2.2.1 独立数据库连接信息"></a>1.2.2.1 独立数据库连接信息</h4><p>Spring Boot 的默认配置文件是 <code>application.properties</code> ，由于有两个数据库配置，独立配置数据库是好的实践，因此添加配置文件 <code>jbdc.properties</code> ，添加以下自定义的主从数据库配置：</p>
+<figure class="highlight properties"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs properties"><span class="hljs-comment"># master</span><br><span class="hljs-attr">spring.datasource.master.driver-class-name</span>=<span class="hljs-string">com.mysql.cj.jdbc.Driver</span><br><span class="hljs-attr">spring.datasource.master.jdbc-url</span>=<span class="hljs-string">jdbc:mysql://localhost:3306/mytest?useSSL=false&amp;serverTimezone=GMT%2B8&amp;characterEncoding=UTF-8</span><br><span class="hljs-attr">spring.datasource.master.username</span>=<span class="hljs-string">root</span><br><span class="hljs-attr">spring.datasource.master.password</span>=<span class="hljs-string">111111</span><br><span class="hljs-comment"></span><br><span class="hljs-comment"># slave</span><br><span class="hljs-attr">spring.datasource.slave.driver-class-name</span>=<span class="hljs-string">com.mysql.cj.jdbc.Driver</span><br><span class="hljs-attr">spring.datasource.slave.jdbc-url</span>=<span class="hljs-string">jdbc:mysql://localhost:3306/my_test1?useSSL=false&amp;serverTimezone=GMT%2B8&amp;characterEncoding=UTF-8</span><br><span class="hljs-attr">spring.datasource.slave.username</span>=<span class="hljs-string">root</span><br><span class="hljs-attr">spring.datasource.slave.password</span>=<span class="hljs-string">111111</span><br></code></pre></td></tr></table></figure>
+
+<h4 id="1-2-2-2-多套数据源配置"><a href="#1-2-2-2-多套数据源配置" class="headerlink" title="1.2.2.2 多套数据源配置"></a>1.2.2.2 多套数据源配置</h4><p>有了数据源连接信息，需要把数据源注入到 Spring 中。由于每个数据库使用独立的一套数据库连接，数据库连接使用的 <code>SqlSession</code> 进行会话连接，<code>SqlSession</code> 是由<code>SqlSessionFactory</code> 生成。因此，需要分别配置<code>SqlSessionFactory</code> 。以下操作均在 <code>config</code> 目录 下：</p>
+<p>（1）添加 <code>DataSourceConfig</code> 配置文件，注入主从数据源</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@Configuration</span><br><span class="hljs-meta">@PropertySource(&quot;classpath:config/jdbc.properties&quot;)</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">DatasourceConfig</span> &#123;<br>    <span class="hljs-meta">@Bean(&quot;master&quot;)</span><br>    <span class="hljs-meta">@ConfigurationProperties(prefix = &quot;spring.datasource.master&quot;)</span><br>    <span class="hljs-keyword">public</span> DataSource <span class="hljs-title function_">masterDataSource</span><span class="hljs-params">()</span>&#123;<br>        <span class="hljs-keyword">return</span> DataSourceBuilder.create().build();<br>    &#125;<br><br>    <span class="hljs-meta">@Bean(&quot;slave&quot;)</span><br>    <span class="hljs-meta">@ConfigurationProperties(prefix = &quot;spring.datasource.slave&quot;)</span><br>    <span class="hljs-keyword">public</span> DataSource <span class="hljs-title function_">slaveDataSource</span><span class="hljs-params">()</span>&#123;<br>        <span class="hljs-keyword">return</span> DataSourceBuilder.create().build();<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<blockquote>
+<ul>
+<li>注解 <code>PropertySource</code> 指定配置信息文件</li>
+<li>注解 <code>ConfigurationProperties</code> 指定主从配置前缀</li>
+<li>分别指定主从数据源的 bean 名称为 <code>master</code> ，<code>slave</code></li>
+</ul>
+</blockquote>
+<p>（2）添加 <code>MasterMybatisConfig</code> 配置文件，注入 Master 的<code>SqlSessionFactory</code></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@Configuration</span><br><span class="hljs-meta">@MapperScan(basePackages = &quot;me.jerry.demo.basicmultidatasource.mapper.master&quot;, sqlSessionFactoryRef = &quot;masterSqlSessionFactory&quot;)</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">MasterMybatisConfig</span> &#123;<br>    <span class="hljs-comment">/**</span><br><span class="hljs-comment">     * 注意，此处需要使用MybatisSqlSessionFactoryBean，不是SqlSessionFactoryBean，</span><br><span class="hljs-comment">     * 否则，使用mybatis-plus的内置函数时就会报invalid bound statement (not found)异常</span><br><span class="hljs-comment">     */</span><br>    <span class="hljs-meta">@Bean(&quot;masterSqlSessionFactory&quot;)</span><br>    <span class="hljs-keyword">public</span> SqlSessionFactory <span class="hljs-title function_">masterSqlSessionFactory</span><span class="hljs-params">(<span class="hljs-meta">@Qualifier(&quot;master&quot;)</span> DataSource dataSource)</span> <span class="hljs-keyword">throws</span> Exception &#123;<br>        <span class="hljs-comment">// 设置数据源</span><br>        <span class="hljs-type">MybatisSqlSessionFactoryBean</span> <span class="hljs-variable">mybatisSqlSessionFactoryBean</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">MybatisSqlSessionFactoryBean</span>();<br>        mybatisSqlSessionFactoryBean.setDataSource(dataSource);<br>        <span class="hljs-comment">//mapper的xml文件位置</span><br>        <span class="hljs-type">PathMatchingResourcePatternResolver</span> <span class="hljs-variable">resolver</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">PathMatchingResourcePatternResolver</span>();<br>        <span class="hljs-type">String</span> <span class="hljs-variable">locationPattern</span> <span class="hljs-operator">=</span> <span class="hljs-string">&quot;classpath*:/mapper/master/*.xml&quot;</span>;<br>        mybatisSqlSessionFactoryBean.setMapperLocations(resolver.getResources(locationPattern));<br>        <span class="hljs-comment">//对应数据库的entity位置</span><br>        <span class="hljs-type">String</span> <span class="hljs-variable">typeAliasesPackage</span> <span class="hljs-operator">=</span> <span class="hljs-string">&quot;me.jerry.demo.basicmultidatasource.entity.master&quot;</span>;<br>        mybatisSqlSessionFactoryBean.setTypeAliasesPackage(typeAliasesPackage);<br>        <span class="hljs-keyword">return</span> mybatisSqlSessionFactoryBean.getObject();<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<blockquote>
+<ul>
+<li>注解 <code>MapperScan</code> 指定那些包下的 <code>mapper</code> 使用本数据源，并指定使用哪个<code>SqlSessionFactory</code>，注意，此处的 <code>sqlSessionFactoryRef</code> 即本配置中的注入的 <code>SqlSessionFactory</code>。</li>
+<li>设置指定的数据源，此处是名为 <code>master</code> 的数据源，使用 <code>Qualifier</code> 指定。</li>
+<li>MyBatis Plus 对应的 Mapper 若有自定义的 mapper.xml， 则使用 <code>setMapperLocations</code> 指定。</li>
+<li>若需要对实体进行别名处理，则使用 <code>setTypeAliasesPackage</code> 指定。</li>
+</ul>
+</blockquote>
+<p>（3）添加 <code>SlaveMybatisConfig</code> 配置文件，注入Slave 的 <code>SqlSessionFactory</code> 与（2）一致，把 master 改为 slave即可。</p>
+<h4 id="1-2-2-3-多套实体"><a href="#1-2-2-3-多套实体" class="headerlink" title="1.2.2.3 多套实体"></a>1.2.2.3 多套实体</h4><p>在 MyBatis 配置中，实体设置 <code>typeAliases</code> 可以简化 xml 的配置，前面提到，使用 <code>typeAliasesPackage</code> 设置实体路径，在 <code>entity</code> 包下分别设置 <code>master</code> 和 <code>slave</code> 包，存放两个库对应的表实体，使用 Lombok 简化实体操作。如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@Data</span><br><span class="hljs-meta">@TableName(&quot;test_user&quot;)</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">MasterTestUser</span> <span class="hljs-keyword">implements</span> <span class="hljs-title class_">Serializable</span> &#123;<br>    <span class="hljs-keyword">private</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">final</span> <span class="hljs-type">long</span> <span class="hljs-variable">serialVersionUID</span> <span class="hljs-operator">=</span> <span class="hljs-number">1L</span>;<br>    <span class="hljs-comment">/** id */</span><br>    <span class="hljs-keyword">private</span> Long id;<br>    <span class="hljs-comment">/** 姓名 */</span><br>    <span class="hljs-keyword">private</span> String name;<br>    ...<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<h4 id="1-2-2-4-多套Mapper操作"><a href="#1-2-2-4-多套Mapper操作" class="headerlink" title="1.2.2.4 多套Mapper操作"></a>1.2.2.4 多套Mapper操作</h4><p>在 <code>mapper</code> 包下，分别添加 <code>master</code> 和 <code>slave</code> 包，存放两个库对应的 Mapper ，由于 MyBatis Plus 本身已包含基本的 CRUD 操作，所以很多时候可以不用 xml 文件配置。若需要自定义操作，需要结合 xml文件，与此同时需要指定对应的 xml 文件所在目录。如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@Repository</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">interface</span> <span class="hljs-title class_">MasterTestUserMapper</span> <span class="hljs-keyword">extends</span> <span class="hljs-title class_">BaseMapper</span>&lt;MasterTestUser&gt; &#123;<br>    <span class="hljs-comment">/**</span><br><span class="hljs-comment">     * 自定义查询</span><br><span class="hljs-comment">     * <span class="hljs-doctag">@param</span> wrapper 条件构造器</span><br><span class="hljs-comment">     */</span><br>    List&lt;MasterTestUser&gt; <span class="hljs-title function_">selectAll</span><span class="hljs-params">(<span class="hljs-meta">@Param(Constants.WRAPPER)</span>Wrapper&lt;MasterTestUser&gt; wrapper)</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>slave对应的Mapper与此类似</p>
+<h4 id="1-2-2-5-多套-mapper-xml-文件"><a href="#1-2-2-5-多套-mapper-xml-文件" class="headerlink" title="1.2.2.5 多套 mapper xml 文件"></a>1.2.2.5 多套 mapper xml 文件</h4><p>MyBatis Plus 的默认mapper xml 文件路径为 <code>classpath*:/mapper/**/*.xml</code>，即 <code>resources/mapper</code> 下，同样设置 <code>master</code> 及 <code>slave</code> 目录，分别存放对应的mapper xml 文件。以下是 master 的自定义操作：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs xml"><span class="hljs-tag">&lt;<span class="hljs-name">mapper</span> <span class="hljs-attr">namespace</span>=<span class="hljs-string">&quot;me.jerry.demo.basicmultidatasource.mapper.master.MasterTestUserMapper&quot;</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">select</span> <span class="hljs-attr">id</span>=<span class="hljs-string">&quot;selectAll&quot;</span> <span class="hljs-attr">resultType</span>=<span class="hljs-string">&quot;masterTestUser&quot;</span>&gt;</span><br>        select * from test_user<br>        <span class="hljs-tag">&lt;<span class="hljs-name">if</span> <span class="hljs-attr">test</span>=<span class="hljs-string">&quot;ew!=null&quot;</span>&gt;</span><br>          $&#123;ew.customSqlSegment&#125;<br>        <span class="hljs-tag">&lt;/<span class="hljs-name">if</span>&gt;</span><br>    <span class="hljs-tag">&lt;/<span class="hljs-name">select</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">mapper</span>&gt;</span><br></code></pre></td></tr></table></figure>
+
+<h3 id="1-2-3-多数据源使用"><a href="#1-2-3-多数据源使用" class="headerlink" title="1.2.3 多数据源使用"></a>1.2.3 多数据源使用</h3><p>经过上面的多套数据源配置，可知道，若需要操作哪个数据库，直接使用对应的 mapper 进行 CRUD 操作即可。如下为 Controller 中分别查询两个库，获取到的数据合在一起返回：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@RestController</span><br><span class="hljs-meta">@RequestMapping(&quot;/user&quot;)</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">TestUserController</span> &#123;<br><br>    <span class="hljs-meta">@Autowired</span><br>    <span class="hljs-keyword">private</span> MasterTestUserMapper masterTestUserMapper;<br>    <span class="hljs-meta">@Autowired</span><br>    <span class="hljs-keyword">private</span> SlaveTestUserMapper slaveTestUserMapper;<br>    <span class="hljs-comment">/**</span><br><span class="hljs-comment">     * 查询全部</span><br><span class="hljs-comment">     */</span><br>    <span class="hljs-meta">@GetMapping(&quot;/listall&quot;)</span><br>    <span class="hljs-keyword">public</span> Object <span class="hljs-title function_">listAll</span><span class="hljs-params">()</span> &#123;<br>        <span class="hljs-comment">//master库，自定义接口查询</span><br>        QueryWrapper&lt;MasterTestUser&gt; queryWrapper = <span class="hljs-keyword">new</span> <span class="hljs-title class_">QueryWrapper</span>&lt;&gt;();<br>        List&lt;MasterTestUser&gt; resultData = masterTestUserMapper.selectAll(queryWrapper.isNotNull(<span class="hljs-string">&quot;name&quot;</span>));<br>        <span class="hljs-comment">//slave库，mp内置接口</span><br>        List&lt;SlaveTestUser&gt; resultDataSlave = slaveTestUserMapper.selectList(<span class="hljs-literal">null</span>);<br>        <span class="hljs-comment">//返回</span><br>        Map&lt;String, Object&gt; result = <span class="hljs-keyword">new</span> <span class="hljs-title class_">HashMap</span>&lt;&gt;();<br>        result.put(<span class="hljs-string">&quot;master&quot;</span> , resultData);<br>        result.put(<span class="hljs-string">&quot;slave&quot;</span> , resultDataSlave);<br>        <span class="hljs-keyword">return</span> ResponseResult.success(result);<br>    &#125;<br><br>&#125;<br></code></pre></td></tr></table></figure>
+
+<blockquote>
+<ul>
+<li>使用Autowired注解注入对应的mapper</li>
+<li>使用对应数据库的 mapper 进行业务操作</li>
+<li>根据业务在数据库中执行相应的操作，如主只做增删改操作、从只读操作</li>
+</ul>
+</blockquote>
+<p>至此，多数据源的实现已完成，当前示例是两个同构的数据库，当然，若是异构的数据库，或者多于两个的数据库，处理方式是一样的，只不过是把数据源增加一套而已。</p>
+<h2 id="1-3-优缺点"><a href="#1-3-优缺点" class="headerlink" title="1.3 优缺点"></a>1.3 优缺点</h2><p><strong>优点</strong></p>
+<ul>
+<li>简单、直接：一个库对应一套处理方式，很好理解。</li>
+<li>符合开闭原则（ OCP ）：开发的设计模式告诉，对扩展开放，对修改关闭，添加多一个数据库，原来的那一套不需要改动，只添加即可。</li>
+</ul>
+<p><strong>缺点</strong></p>
+<ul>
+<li>资源浪费：针对每一个数据源写一套操作，连接数据库的资源也是独立的，分别占用同样多的资源。<code>SqlSessionFactory</code> 是一个工厂，建议是使用单例，完全可以重用，不需要建立多个，只需要更改数据源即可，跟多线程，使用线程池减少资源消耗是同一道理。</li>
+<li>代码冗余：在前面的多数据源配置中可以看出，其实 master 和 slave 的很多操作是一样的，只是改个名称而已，因此会造成代码冗余。</li>
+<li>缺乏灵活：所有需要使用的地方都需要引入对应的mapper，对于很多操作，只是选择数据源的不一样，代码逻辑是一致的。另外，对于一主多从的情况，若需要对多个从库进行负载均衡，相对比较麻烦。</li>
+</ul>
+<p>正因为有上述的缺点，所以还有改进的空间，于是就有了动态数据源。</p>
+<h1 id="2-动态数据源"><a href="#2-动态数据源" class="headerlink" title="2. 动态数据源"></a>2. 动态数据源</h1><blockquote>
+<p>一句话概括：使用动态数据源对多个数据库进行操作，灵活，简洁。</p>
+<p>在大型应用程序中，配置主从数据库并使用读写分离是常见的设计模式。在Spring应用程序中，要实现读写分离，最好不要对现有代码进行改动，而是在底层透明地支持。</p>
+<p>Spring内置了一个<code>AbstractRoutingDataSource</code>，它可以把多个数据源配置成一个Map，然后，根据不同的key返回不同的数据源。因为AbstractRoutingDataSource也是一个DataSource接口，因此，应用程序可以先设置好key， 访问数据库的代码就可以从AbstractRoutingDataSource拿到对应的一个真实的数据源，从而访问指定的数据库。</p>
+</blockquote>
+<p>动态数据源可以解决多套数据源的处理不够灵活、占用资源多等问题。用户可以根据实际的业务需要，统一操作逻辑，只要在需要切换数据源的进行处理即可。何为动态，其实是批切换数据源的时机可以动态选择，在需要的地方进行切换即可。</p>
+<h2 id="2-1-动态数据源流程说明"><a href="#2-1-动态数据源流程说明" class="headerlink" title="2.1 动态数据源流程说明"></a>2.1 动态数据源流程说明</h2><p>Spring Boot 的动态数据源，本质上是把多个数据源存储在一个 Map 中，当需要使用某个数据源时，从 Map 中获取此数据源进行处理。而在 Spring 中，已提供了抽象类 <code>AbstractRoutingDataSource</code> 来实现此功能。因此，在实现动态数据源的，只需要继承它，实现自己的获取数据源逻辑即可。动态数据源流程如下所示：</p>
+<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230307094438.png" srcset="/img/loading.gif" lazyload alt="image-20230307094438025"></p>
+<p>用户访问应用，在需要访问不同的数据源时，根据自己的数据源路由逻辑，访问不同的数据源，实现对应数据源的操作。本示例中的两数据库的分别有一个表 <code>test_user</code>，表结构一致，为便于说明，两个表中的数据是不一样的。两个表结构:</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br></pre></td><td class="code"><pre><code class="hljs sql">#tables<span class="hljs-operator">-</span>master.sql<br><span class="hljs-keyword">DROP</span> <span class="hljs-keyword">TABLE</span> IF <span class="hljs-keyword">EXISTS</span> `test_user`;<br><br><span class="hljs-keyword">CREATE</span> <span class="hljs-keyword">TABLE</span> `test_user` (<br>  `id` <span class="hljs-type">bigint</span>(<span class="hljs-number">20</span>) <span class="hljs-keyword">NOT</span> <span class="hljs-keyword">NULL</span> AUTO_INCREMENT,<br>  `name` <span class="hljs-type">varchar</span>(<span class="hljs-number">32</span>) <span class="hljs-keyword">NOT</span> <span class="hljs-keyword">NULL</span> COMMENT <span class="hljs-string">&#x27;姓名&#x27;</span>,<br>  `phone` <span class="hljs-type">varchar</span>(<span class="hljs-number">32</span>) <span class="hljs-keyword">DEFAULT</span> <span class="hljs-keyword">NULL</span> COMMENT <span class="hljs-string">&#x27;手机号&#x27;</span>,<br>  `title` <span class="hljs-type">varchar</span>(<span class="hljs-number">32</span>) <span class="hljs-keyword">DEFAULT</span> <span class="hljs-keyword">NULL</span> COMMENT <span class="hljs-string">&#x27;职称职别&#x27;</span>,<br>  `email` <span class="hljs-type">varchar</span>(<span class="hljs-number">128</span>) <span class="hljs-keyword">DEFAULT</span> <span class="hljs-keyword">NULL</span> COMMENT <span class="hljs-string">&#x27;邮箱&#x27;</span>,<br>  `gender` <span class="hljs-type">varchar</span>(<span class="hljs-number">32</span>) <span class="hljs-keyword">DEFAULT</span> <span class="hljs-keyword">NULL</span> COMMENT <span class="hljs-string">&#x27;性别&#x27;</span>,<br>  `date_of_birth` <span class="hljs-type">date</span> <span class="hljs-keyword">DEFAULT</span> <span class="hljs-keyword">NULL</span> COMMENT <span class="hljs-string">&#x27;出生时间&#x27;</span>,<br>  `deleted` tinyint(<span class="hljs-number">1</span>) <span class="hljs-keyword">DEFAULT</span> <span class="hljs-string">&#x27;0&#x27;</span> COMMENT <span class="hljs-string">&#x27;1:已删除,0:未删除&#x27;</span>,<br>  `sys_create_time` datetime <span class="hljs-keyword">NOT</span> <span class="hljs-keyword">NULL</span> <span class="hljs-keyword">DEFAULT</span> <span class="hljs-built_in">CURRENT_TIMESTAMP</span>,<br>  `sys_create_user` <span class="hljs-type">varchar</span>(<span class="hljs-number">255</span>) <span class="hljs-keyword">DEFAULT</span> <span class="hljs-keyword">NULL</span>,<br>  `sys_update_time` datetime <span class="hljs-keyword">NOT</span> <span class="hljs-keyword">NULL</span> <span class="hljs-keyword">DEFAULT</span> <span class="hljs-built_in">CURRENT_TIMESTAMP</span> <span class="hljs-keyword">ON</span> <span class="hljs-keyword">UPDATE</span> <span class="hljs-built_in">CURRENT_TIMESTAMP</span>,<br>  `sys_update_user` <span class="hljs-type">varchar</span>(<span class="hljs-number">255</span>) <span class="hljs-keyword">DEFAULT</span> <span class="hljs-keyword">NULL</span>,<br>  `record_version` <span class="hljs-type">bigint</span>(<span class="hljs-number">20</span>) <span class="hljs-keyword">DEFAULT</span> <span class="hljs-string">&#x27;0&#x27;</span>,<br>  <span class="hljs-keyword">PRIMARY</span> KEY (`id`)<br>) ENGINE<span class="hljs-operator">=</span>InnoDB AUTO_INCREMENT<span class="hljs-operator">=</span><span class="hljs-number">7013</span> <span class="hljs-keyword">DEFAULT</span> CHARSET<span class="hljs-operator">=</span>utf8;<br><br><span class="hljs-comment">/*Data for the table `test_user` */</span><br><br><span class="hljs-keyword">insert</span>  <span class="hljs-keyword">into</span> `test_user`(`id`,`name`,`phone`,`title`,`email`,`gender`,`date_of_birth`,`deleted`,`sys_create_time`,`sys_create_user`,`sys_update_time`,`sys_update_user`,`record_version`) <span class="hljs-keyword">values</span> (<span class="hljs-number">3497</span>,<span class="hljs-string">&#x27;王**&#x27;</span>,<span class="hljs-string">&#x27;13800000000&#x27;</span>,<span class="hljs-string">&#x27;test&#x27;</span>,<span class="hljs-string">&#x27;test1@qq.com&#x27;</span>,<span class="hljs-string">&#x27;1&#x27;</span>,<span class="hljs-string">&#x27;1958-07-01&#x27;</span>,<span class="hljs-number">0</span>,<span class="hljs-string">&#x27;2019-03-28 14:53:44&#x27;</span>,<span class="hljs-string">&#x27;admin&#x27;</span>,<span class="hljs-string">&#x27;2019-05-31 11:17:55&#x27;</span>,<span class="hljs-string">&#x27;admin&#x27;</span>,<span class="hljs-number">0</span>),(<span class="hljs-number">3500</span>,<span class="hljs-string">&#x27;林**&#x27;</span>,<span class="hljs-string">&#x27;13800000000&#x27;</span>,<span class="hljs-keyword">NULL</span>,<span class="hljs-keyword">NULL</span>,<span class="hljs-string">&#x27;1&#x27;</span>,<span class="hljs-keyword">NULL</span>,<span class="hljs-number">0</span>,<span class="hljs-string">&#x27;2019-03-28 14:53:44&#x27;</span>,<span class="hljs-string">&#x27;admin&#x27;</span>,<span class="hljs-string">&#x27;2019-05-31 11:21:47&#x27;</span>,<span class="hljs-string">&#x27;admin&#x27;</span>,<span class="hljs-number">0</span>),(<span class="hljs-number">3508</span>,<span class="hljs-string">&#x27;高**&#x27;</span>,<span class="hljs-string">&#x27;13800000000&#x27;</span>,<span class="hljs-string">&#x27;test&#x27;</span>,<span class="hljs-keyword">NULL</span>,<span class="hljs-string">&#x27;2&#x27;</span>,<span class="hljs-string">&#x27;1978-05-20&#x27;</span>,<span class="hljs-number">0</span>,<span class="hljs-string">&#x27;2019-03-28 14:53:44&#x27;</span>,<span class="hljs-string">&#x27;admin&#x27;</span>,<span class="hljs-string">&#x27;2019-05-31 11:17:55&#x27;</span>,<span class="hljs-string">&#x27;admin&#x27;</span>,<span class="hljs-number">0</span>),(<span class="hljs-number">7005</span>,<span class="hljs-string">&#x27;test4&#x27;</span>,<span class="hljs-keyword">NULL</span>,<span class="hljs-string">&#x27;test4&#x27;</span>,<span class="hljs-string">&#x27;test4@qq.com&#x27;</span>,<span class="hljs-string">&#x27;1&#x27;</span>,<span class="hljs-keyword">NULL</span>,<span class="hljs-number">0</span>,<span class="hljs-string">&#x27;2020-01-06 16:19:23&#x27;</span>,<span class="hljs-keyword">NULL</span>,<span class="hljs-string">&#x27;2020-01-07 11:29:10&#x27;</span>,<span class="hljs-string">&#x27;admin&#x27;</span>,<span class="hljs-number">0</span>),(<span class="hljs-number">7006</span>,<span class="hljs-string">&#x27;test5&#x27;</span>,<span class="hljs-keyword">NULL</span>,<span class="hljs-string">&#x27;new title&#x27;</span>,<span class="hljs-string">&#x27;test5@qq.com&#x27;</span>,<span class="hljs-string">&#x27;1&#x27;</span>,<span class="hljs-keyword">NULL</span>,<span class="hljs-number">0</span>,<span class="hljs-string">&#x27;2020-01-06 16:48:52&#x27;</span>,<span class="hljs-keyword">NULL</span>,<span class="hljs-string">&#x27;2020-01-07 11:19:48&#x27;</span>,<span class="hljs-string">&#x27;admin&#x27;</span>,<span class="hljs-number">0</span>),(<span class="hljs-number">7007</span>,<span class="hljs-string">&#x27;test6&#x27;</span>,<span class="hljs-keyword">NULL</span>,<span class="hljs-keyword">NULL</span>,<span class="hljs-string">&#x27;test6@qq.com&#x27;</span>,<span class="hljs-keyword">NULL</span>,<span class="hljs-keyword">NULL</span>,<span class="hljs-number">1</span>,<span class="hljs-string">&#x27;2020-01-06 16:48:52&#x27;</span>,<span class="hljs-keyword">NULL</span>,<span class="hljs-string">&#x27;2020-01-07 09:46:23&#x27;</span>,<span class="hljs-keyword">NULL</span>,<span class="hljs-number">0</span>);<br><br>#tables<span class="hljs-operator">-</span>slave.sql<br><span class="hljs-keyword">DROP</span> <span class="hljs-keyword">TABLE</span> IF <span class="hljs-keyword">EXISTS</span> `test_user`;<br><br><span class="hljs-keyword">CREATE</span> <span class="hljs-keyword">TABLE</span> `test_user` (<br>  `id` <span class="hljs-type">bigint</span>(<span class="hljs-number">20</span>) <span class="hljs-keyword">NOT</span> <span class="hljs-keyword">NULL</span> AUTO_INCREMENT,<br>  `name` <span class="hljs-type">varchar</span>(<span class="hljs-number">32</span>) <span class="hljs-keyword">NOT</span> <span class="hljs-keyword">NULL</span> COMMENT <span class="hljs-string">&#x27;姓名&#x27;</span>,<br>  `phone` <span class="hljs-type">varchar</span>(<span class="hljs-number">32</span>) <span class="hljs-keyword">DEFAULT</span> <span class="hljs-keyword">NULL</span> COMMENT <span class="hljs-string">&#x27;手机号&#x27;</span>,<br>  `title` <span class="hljs-type">varchar</span>(<span class="hljs-number">32</span>) <span class="hljs-keyword">DEFAULT</span> <span class="hljs-keyword">NULL</span> COMMENT <span class="hljs-string">&#x27;职称职别&#x27;</span>,<br>  `email` <span class="hljs-type">varchar</span>(<span class="hljs-number">128</span>) <span class="hljs-keyword">DEFAULT</span> <span class="hljs-keyword">NULL</span> COMMENT <span class="hljs-string">&#x27;邮箱&#x27;</span>,<br>  `gender` <span class="hljs-type">varchar</span>(<span class="hljs-number">32</span>) <span class="hljs-keyword">DEFAULT</span> <span class="hljs-keyword">NULL</span> COMMENT <span class="hljs-string">&#x27;性别&#x27;</span>,<br>  `date_of_birth` <span class="hljs-type">date</span> <span class="hljs-keyword">DEFAULT</span> <span class="hljs-keyword">NULL</span> COMMENT <span class="hljs-string">&#x27;出生时间&#x27;</span>,<br>  `deleted` tinyint(<span class="hljs-number">1</span>) <span class="hljs-keyword">DEFAULT</span> <span class="hljs-string">&#x27;0&#x27;</span> COMMENT <span class="hljs-string">&#x27;1:已删除,0:未删除&#x27;</span>,<br>  `sys_create_time` datetime <span class="hljs-keyword">NOT</span> <span class="hljs-keyword">NULL</span> <span class="hljs-keyword">DEFAULT</span> <span class="hljs-built_in">CURRENT_TIMESTAMP</span>,<br>  `sys_create_user` <span class="hljs-type">varchar</span>(<span class="hljs-number">255</span>) <span class="hljs-keyword">DEFAULT</span> <span class="hljs-keyword">NULL</span>,<br>  `sys_update_time` datetime <span class="hljs-keyword">NOT</span> <span class="hljs-keyword">NULL</span> <span class="hljs-keyword">DEFAULT</span> <span class="hljs-built_in">CURRENT_TIMESTAMP</span> <span class="hljs-keyword">ON</span> <span class="hljs-keyword">UPDATE</span> <span class="hljs-built_in">CURRENT_TIMESTAMP</span>,<br>  `sys_update_user` <span class="hljs-type">varchar</span>(<span class="hljs-number">255</span>) <span class="hljs-keyword">DEFAULT</span> <span class="hljs-keyword">NULL</span>,<br>  `record_version` <span class="hljs-type">bigint</span>(<span class="hljs-number">20</span>) <span class="hljs-keyword">DEFAULT</span> <span class="hljs-string">&#x27;0&#x27;</span>,<br>  <span class="hljs-keyword">PRIMARY</span> KEY (`id`)<br>) ENGINE<span class="hljs-operator">=</span>InnoDB AUTO_INCREMENT<span class="hljs-operator">=</span><span class="hljs-number">7013</span> <span class="hljs-keyword">DEFAULT</span> CHARSET<span class="hljs-operator">=</span>utf8;<br><br><span class="hljs-comment">/*Data for the table `test_user` */</span><br><br><span class="hljs-keyword">insert</span>  <span class="hljs-keyword">into</span> `test_user`(`id`,`name`,`phone`,`title`,`email`,`gender`,`date_of_birth`,`deleted`,`sys_create_time`,`sys_create_user`,`sys_update_time`,`sys_update_user`,`record_version`) <span class="hljs-keyword">values</span> (<span class="hljs-number">3520</span>,<span class="hljs-string">&#x27;刘**&#x27;</span>,<span class="hljs-string">&#x27;13800000000&#x27;</span>,<span class="hljs-keyword">NULL</span>,<span class="hljs-keyword">NULL</span>,<span class="hljs-string">&#x27;1&#x27;</span>,<span class="hljs-string">&#x27;1984-09-25&#x27;</span>,<span class="hljs-number">0</span>,<span class="hljs-string">&#x27;2019-03-28 14:53:44&#x27;</span>,<span class="hljs-string">&#x27;admin&#x27;</span>,<span class="hljs-string">&#x27;2019-05-31 11:17:55&#x27;</span>,<span class="hljs-string">&#x27;admin&#x27;</span>,<span class="hljs-number">0</span>),(<span class="hljs-number">6999</span>,<span class="hljs-string">&#x27;张*&#x27;</span>,<span class="hljs-string">&#x27;13800000000&#x27;</span>,<span class="hljs-string">&#x27;TEST&#x27;</span>,<span class="hljs-string">&#x27;test@qq.com&#x27;</span>,<span class="hljs-string">&#x27;1&#x27;</span>,<span class="hljs-string">&#x27;1990-06-10&#x27;</span>,<span class="hljs-number">0</span>,<span class="hljs-string">&#x27;2019-03-28 14:53:44&#x27;</span>,<span class="hljs-string">&#x27;admin&#x27;</span>,<span class="hljs-string">&#x27;2019-05-31 11:17:55&#x27;</span>,<span class="hljs-string">&#x27;admin&#x27;</span>,<span class="hljs-number">0</span>),(<span class="hljs-number">7003</span>,<span class="hljs-string">&#x27;test_add1&#x27;</span>,<span class="hljs-string">&#x27;13800000000&#x27;</span>,<span class="hljs-string">&#x27;TEST1&#x27;</span>,<span class="hljs-string">&#x27;test1@qq.com&#x27;</span>,<span class="hljs-string">&#x27;1&#x27;</span>,<span class="hljs-string">&#x27;1947-11-01&#x27;</span>,<span class="hljs-number">0</span>,<span class="hljs-string">&#x27;2019-06-04 23:17:48&#x27;</span>,<span class="hljs-keyword">NULL</span>,<span class="hljs-string">&#x27;2019-11-07 10:40:43&#x27;</span>,<span class="hljs-keyword">NULL</span>,<span class="hljs-number">0</span>),(<span class="hljs-number">7004</span>,<span class="hljs-string">&#x27;test_add2&#x27;</span>,<span class="hljs-string">&#x27;13800000000&#x27;</span>,<span class="hljs-string">&#x27;test2&#x27;</span>,<span class="hljs-string">&#x27;test2-dsa@qq.com&#x27;</span>,<span class="hljs-string">&#x27;1&#x27;</span>,<span class="hljs-string">&#x27;1958-07-01&#x27;</span>,<span class="hljs-number">0</span>,<span class="hljs-string">&#x27;2019-06-04 23:17:48&#x27;</span>,<span class="hljs-keyword">NULL</span>,<span class="hljs-string">&#x27;2019-11-07 11:13:06&#x27;</span>,<span class="hljs-keyword">NULL</span>,<span class="hljs-number">0</span>);<br><br></code></pre></td></tr></table></figure>
+
+
+
+<h2 id="2-2-实现动态数据源"><a href="#2-2-实现动态数据源" class="headerlink" title="2.2 实现动态数据源"></a>2.2 实现动态数据源</h2><h3 id="2-2-1-说明及数据源配置"><a href="#2-2-1-说明及数据源配置" class="headerlink" title="2.2.1 说明及数据源配置"></a>2.2.1 说明及数据源配置</h3><h4 id="2-2-1-1-包结构说明"><a href="#2-2-1-1-包结构说明" class="headerlink" title="2.2.1.1 包结构说明"></a>2.2.1.1 包结构说明</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs java">├─annotation ---- <span class="hljs-comment">// 自定义注解</span><br>├─aop ----------- <span class="hljs-comment">// 切面</span><br>├─config -------- <span class="hljs-comment">// 数据源配置</span><br>├─constants ----- <span class="hljs-comment">// 常用注解</span><br>├─context ------- <span class="hljs-comment">// 自定义上下文</span><br>├─controller ---- <span class="hljs-comment">// 访问接口</span><br>├─entity -------- <span class="hljs-comment">// 实体</span><br>├─mapper -------- <span class="hljs-comment">// 数据库dao操作</span><br>├─service ------- <span class="hljs-comment">// 服务类</span><br>└─vo ------------ <span class="hljs-comment">// 视图返回数据</span><br></code></pre></td></tr></table></figure>
+
+<h4 id="2-2-1-2-数据库连接信息配置"><a href="#2-2-1-2-数据库连接信息配置" class="headerlink" title="2.2.1.2 数据库连接信息配置"></a>2.2.1.2 数据库连接信息配置</h4><p>Spring Boot 的默认配置文件是 <code>application.properties</code> ，由于有两个数据库配置，独立配置数据库是好的实践，因此添加配置文件 <code>jbdc.properties</code> ，添加以下自定义的主从数据库配置：</p>
+<figure class="highlight properties"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs properties"><span class="hljs-comment"># master</span><br><span class="hljs-attr">spring.datasource.master.driver-class-name</span>=<span class="hljs-string">com.mysql.cj.jdbc.Driver</span><br><span class="hljs-attr">spring.datasource.master.jdbc-url</span>=<span class="hljs-string">jdbc:mysql://localhost:3306/mytest?useSSL=false&amp;serverTimezone=GMT%2B8&amp;characterEncoding=UTF-8</span><br><span class="hljs-attr">spring.datasource.master.username</span>=<span class="hljs-string">root</span><br><span class="hljs-attr">spring.datasource.master.password</span>=<span class="hljs-string">111111</span><br><span class="hljs-comment"></span><br><span class="hljs-comment"># slave</span><br><span class="hljs-attr">spring.datasource.slave.driver-class-name</span>=<span class="hljs-string">com.mysql.cj.jdbc.Driver</span><br><span class="hljs-attr">spring.datasource.slave.jdbc-url</span>=<span class="hljs-string">jdbc:mysql://localhost:3306/my_test1?useSSL=false&amp;serverTimezone=GMT%2B8&amp;characterEncoding=UTF-8</span><br><span class="hljs-attr">spring.datasource.slave.username</span>=<span class="hljs-string">root</span><br><span class="hljs-attr">spring.datasource.slave.password</span>=<span class="hljs-string">111111</span><br></code></pre></td></tr></table></figure>
+
+<h4 id="2-2-1-3-数据源配置"><a href="#2-2-1-3-数据源配置" class="headerlink" title="2.2.1.3 数据源配置"></a>2.2.1.3 数据源配置</h4><p>根据连接信息，把数据源注入到 Spring 中，添加 <code>DynamicDataSourceConfig</code> 文件，配置如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@Configuration</span><br><span class="hljs-meta">@PropertySource(&quot;classpath:config/jdbc.properties&quot;)</span><br><span class="hljs-meta">@MapperScan(basePackages = &quot;me.jerry.demo.dynamicdatasource.mapper&quot;)</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">DynamicDataSourceConfig</span> &#123;<br>    <span class="hljs-meta">@Bean(DataSourceConstants.DS_KEY_MASTER)</span><br>    <span class="hljs-meta">@ConfigurationProperties(prefix = &quot;spring.datasource.master&quot;)</span><br>    <span class="hljs-keyword">public</span> DataSource <span class="hljs-title function_">masterDataSource</span><span class="hljs-params">()</span> &#123;<br>        <span class="hljs-keyword">return</span> DataSourceBuilder.create().build();<br>    &#125;<br><br>    <span class="hljs-meta">@Bean(DataSourceConstants.DS_KEY_SLAVE)</span><br>    <span class="hljs-meta">@ConfigurationProperties(prefix = &quot;spring.datasource.slave&quot;)</span><br>    <span class="hljs-keyword">public</span> DataSource <span class="hljs-title function_">slaveDataSource</span><span class="hljs-params">()</span> &#123;<br>        <span class="hljs-keyword">return</span> DataSourceBuilder.create().build();<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<blockquote>
+<p>注意：</p>
+<ul>
+<li>此处使用 <code>PropertySource</code> 指定配置文件，<code>ConfigurationProperties</code> 指定数据源配置前缀</li>
+<li>使用 <code>MapperScan</code> 指定包，自动注入相应的 mapper 类</li>
+<li>把数据源常量写在 <code>DataSourceConstants</code> 类中</li>
+<li>从此配置可以看到，已经把 SqlSessionFactory 这个配置从代码中擦除，直接使用 Spring Boot 自动配置的 SqlSessionFactory 即可，无需自己配置</li>
+</ul>
+</blockquote>
+<h3 id="2-2-2-动态数据源设置"><a href="#2-2-2-动态数据源设置" class="headerlink" title="2.2.2 动态数据源设置"></a>2.2.2 动态数据源设置</h3><p>前面的配置已把多个数据源注入到 Spring 中，接着对动态数据源进行配置。</p>
+<h4 id="2-2-2-1-动态数据源配置"><a href="#2-2-2-1-动态数据源配置" class="headerlink" title="2.2.2.1 动态数据源配置"></a>2.2.2.1 动态数据源配置</h4><p>（1）添加jdbc依赖</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs java">&lt;dependency&gt;<br>    &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;<br>    &lt;artifactId&gt;spring-boot-starter-jdbc&lt;/artifactId&gt;<br>&lt;/dependency&gt;<br></code></pre></td></tr></table></figure>
+
+<p>（2）添加动态数据源类</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">DynamicDataSource</span> <span class="hljs-keyword">extends</span> <span class="hljs-title class_">AbstractRoutingDataSource</span> &#123;<br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-keyword">protected</span> Object <span class="hljs-title function_">determineCurrentLookupKey</span><span class="hljs-params">()</span> &#123;<br>        <span class="hljs-comment">// 此处暂时返回固定 master 数据源, 后面按动态策略修改</span><br>        <span class="hljs-keyword">return</span> DataSourceConstants.DS_KEY_MASTER;<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<blockquote>
+<p>注意：</p>
+<ul>
+<li>继承抽象类 <code>AbstractRoutingDataSource</code> ，需要实现方法 <code>determineCurrentLookupKey</code>，即路由策略</li>
+<li>动态路由策略下一步实现，当前策略直接返回 master 数据源</li>
+</ul>
+</blockquote>
+<p><strong>（3） 设置动态数据源为主数据源</strong></p>
+<p>在前面的数据源配置文件 <code>DynamicDataSourceConfig</code> 中，添加以下代码：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@Bean</span><br><span class="hljs-meta">@Primary</span><br><span class="hljs-keyword">public</span> DataSource <span class="hljs-title function_">dynamicDataSource</span><span class="hljs-params">()</span> &#123;<br>    Map&lt;Object, Object&gt; dataSourceMap = <span class="hljs-keyword">new</span> <span class="hljs-title class_">HashMap</span>&lt;&gt;(<span class="hljs-number">2</span>);<br>    dataSourceMap.put(DataSourceConstants.DS_KEY_MASTER, masterDataSource());<br>    dataSourceMap.put(DataSourceConstants.DS_KEY_SLAVE, slaveDataSource());<br>    <span class="hljs-comment">//设置动态数据源</span><br>    <span class="hljs-type">DynamicDataSource</span> <span class="hljs-variable">dynamicDataSource</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">DynamicDataSource</span>();<br>    dynamicDataSource.setTargetDataSources(dataSourceMap);<br>    dynamicDataSource.setDefaultTargetDataSource(masterDataSource());<br><br>    <span class="hljs-keyword">return</span> dynamicDataSource;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<blockquote>
+<ul>
+<li>使用 Map 保存多个数据源，并设置到动态数据源对象中</li>
+<li>设置默认的数据源是 master 数据源</li>
+<li>使用注解 <code>Primary</code> 优先从动态数据源中获取</li>
+</ul>
+</blockquote>
+<p>同时，需要在 <code>DynamicDataSourceConfig</code> 中，排除 <code>DataSourceAutoConfiguration</code> 的自动配置，否则 会出现<code>The dependencies of some of the beans in the application context form a cycle</code>的错误。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@EnableAutoConfiguration(exclude = &#123; DataSourceAutoConfiguration.class &#125;)</span><br></code></pre></td></tr></table></figure>
+
+<h4 id="2-2-2-2-动态选择数据源"><a href="#2-2-2-2-动态选择数据源" class="headerlink" title="2.2.2.2 动态选择数据源"></a>2.2.2.2 动态选择数据源</h4><p>**（1） 数据源 key 的上下文 **</p>
+<p>前面固定写了一个数据源路由策略，总是返回 master，显然不是想要的。想要的是在需要的地方，想切换就切换。因此，需要有一个动态获取数据源 key 的地方（称为上下文），对于 web 应用，访问以线程为单位，使用 ThreadLocal 就比较合适，如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">DynamicDataSourceContextHolder</span> &#123;<br>    <span class="hljs-comment">/**</span><br><span class="hljs-comment">     * 动态数据源名称上下文</span><br><span class="hljs-comment">     */</span><br>    <span class="hljs-keyword">private</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">final</span> ThreadLocal&lt;String&gt; DATASOURCE_CONTEXT_KEY_HOLDER = <span class="hljs-keyword">new</span> <span class="hljs-title class_">ThreadLocal</span>&lt;&gt;();<br>    <span class="hljs-comment">/**</span><br><span class="hljs-comment">     * 设置/切换数据源</span><br><span class="hljs-comment">     */</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">setContextKey</span><span class="hljs-params">(String key)</span>&#123;<br>        DATASOURCE_CONTEXT_KEY_HOLDER.set(key);<br>    &#125;<br>    <span class="hljs-comment">/**</span><br><span class="hljs-comment">     * 获取数据源名称</span><br><span class="hljs-comment">     */</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> String <span class="hljs-title function_">getContextKey</span><span class="hljs-params">()</span>&#123;<br>        <span class="hljs-type">String</span> <span class="hljs-variable">key</span> <span class="hljs-operator">=</span> DATASOURCE_CONTEXT_KEY_HOLDER.get();<br>        <span class="hljs-type">return</span> <span class="hljs-variable">key</span> <span class="hljs-operator">=</span>= <span class="hljs-literal">null</span>?DataSourceConstants.DS_KEY_MASTER:key;<br>    &#125;<br><br>    <span class="hljs-comment">/**</span><br><span class="hljs-comment">     * 删除当前数据源名称</span><br><span class="hljs-comment">     */</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">removeContextKey</span><span class="hljs-params">()</span>&#123;<br>        DATASOURCE_CONTEXT_KEY_HOLDER.remove();<br>    &#125;<br></code></pre></td></tr></table></figure>
+
+<blockquote>
+<ul>
+<li>以 DATASOURCE_CONTEXT_KEY_HOLDER 存储需要使用数据源 key</li>
+<li>getContextKey 时，若 key 为空，默认返回 master</li>
+</ul>
+</blockquote>
+<p><strong>（2） 设置动态数据 <code>DynamicDataSource</code> 路由策略</strong></p>
+<p>需要达到的路由策略是，当设置数据源 key 到上下文，则从上下文中得到此数据源 key ，从而知道使用此对应的数据源。因此，修改前面 <code>DynamicDataSource</code> 的 <code>determineCurrentLookupKey</code> 方法如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@Override</span><br><span class="hljs-keyword">protected</span> Object <span class="hljs-title function_">determineCurrentLookupKey</span><span class="hljs-params">()</span> &#123;<br>    <span class="hljs-keyword">return</span> DynamicDataSourceContextHolder.getContextKey();<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<h4 id="2-2-2-3-动态数据源使用"><a href="#2-2-2-3-动态数据源使用" class="headerlink" title="2.2.2.3 动态数据源使用"></a>2.2.2.3 动态数据源使用</h4><p>有了上面的动态路由选择，则不需要像之前的多套数据源那样，mapper、entity、service等都写一套相同逻辑的代码，因为是主从，一般来说数据库结构是一致的，只需要一套entity、mapper、service即可，在需要在不同的数据源进行操作时，直接对上下文进行设置即可。如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@RestController</span><br><span class="hljs-meta">@RequestMapping(&quot;/user&quot;)</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">TestUserController</span> &#123;<br><br>    <span class="hljs-meta">@Autowired</span><br>    <span class="hljs-keyword">private</span> TestUserMapper testUserMapper;<br><br>    <span class="hljs-comment">/**</span><br><span class="hljs-comment">     * 查询全部</span><br><span class="hljs-comment">     */</span><br>    <span class="hljs-meta">@GetMapping(&quot;/listall&quot;)</span><br>    <span class="hljs-keyword">public</span> Object <span class="hljs-title function_">listAll</span><span class="hljs-params">()</span> &#123;<br>        <span class="hljs-type">int</span> <span class="hljs-variable">initSize</span> <span class="hljs-operator">=</span> <span class="hljs-number">2</span>;<br>        Map&lt;String, Object&gt; result = <span class="hljs-keyword">new</span> <span class="hljs-title class_">HashMap</span>&lt;&gt;(initSize);<br>        <span class="hljs-comment">//默认master查询</span><br>        QueryWrapper&lt;TestUser&gt; queryWrapper = <span class="hljs-keyword">new</span> <span class="hljs-title class_">QueryWrapper</span>&lt;&gt;();<br>        List&lt;TestUser&gt; resultData = testUserMapper.selectAll(queryWrapper.isNotNull(<span class="hljs-string">&quot;name&quot;</span>));<br>        result.put(DataSourceConstants.DS_KEY_MASTER, resultData);<br><br>        <span class="hljs-comment">//切换数据源，在slave查询</span><br>        DynamicDataSourceContextHolder.setContextKey(DataSourceConstants.DS_KEY_SLAVE);<br>        List&lt;TestUser&gt; resultDataSlave = testUserMapper.selectList(<span class="hljs-literal">null</span>);<br>        result.put(DataSourceConstants.DS_KEY_SLAVE, resultDataSlave);<br>        <span class="hljs-comment">//恢复数据源</span><br>        DynamicDataSourceContextHolder.removeContextKey();<br>        <span class="hljs-comment">//返回数据</span><br>        <span class="hljs-keyword">return</span> ResponseResult.success(result);<br>    &#125;<br><br>&#125;<br></code></pre></td></tr></table></figure>
+
+<blockquote>
+<ul>
+<li>默认是使用 master 数据源查询</li>
+<li>使用上下文的 setContextKey 来切换数据源，使用完后使用 removeContextKey 进行恢复</li>
+</ul>
+</blockquote>
+<h3 id="2-2-3-使用-AOP-选择数据源"><a href="#2-2-3-使用-AOP-选择数据源" class="headerlink" title="2.2.3 使用 AOP 选择数据源"></a>2.2.3 使用 AOP 选择数据源</h3><p>经过上面的动态数据源配置，可以实现动态数据源切换，但会发现，在进行数据源切换时，都需要做 <code>setContextKey</code> 和 <code>removeContextKey</code> 操作，如果需要切换的方法比多，就会发现很多重复的代码，如何消除这些重复的代码，就需要用到动态代理了，在 Spring 中，AOP 的实现也是基于动态代理的。此处，希望通过注解的方式指定函数需要的数据源，从而消除数据源切换时产品的模板代码。</p>
+<h4 id="2-2-3-1-定义数据源注解"><a href="#2-2-3-1-定义数据源注解" class="headerlink" title="2.2.3.1 定义数据源注解"></a>2.2.3.1 定义数据源注解</h4><p>在<code>annotation</code>包中，添加数据源注解 <code>DS</code>，此注解可以写在类中，也可以写在方法定义中，如下所示：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@Target(&#123;ElementType.METHOD,ElementType.TYPE&#125;)</span><br><span class="hljs-meta">@Retention(RetentionPolicy.RUNTIME)</span><br><span class="hljs-keyword">public</span> <span class="hljs-meta">@interface</span> DS &#123;<br>    <span class="hljs-comment">/**</span><br><span class="hljs-comment">     * 数据源名称</span><br><span class="hljs-comment">     */</span><br>    String <span class="hljs-title function_">value</span><span class="hljs-params">()</span> <span class="hljs-keyword">default</span> DataSourceConstants.DS_KEY_MASTER;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<h4 id="2-2-3-2-定义数据源切面"><a href="#2-2-3-2-定义数据源切面" class="headerlink" title="2.2.3.2 定义数据源切面"></a>2.2.3.2 定义数据源切面</h4><p>定义数据源切面，此切面可以针对使用了 <code>DS</code> 注解的方法或者类，进行数据源切换。</p>
+<p><strong>（1）添加aop依赖</strong></p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs xml"><span class="hljs-tag">&lt;<span class="hljs-name">dependency</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">groupId</span>&gt;</span>org.springframework.boot<span class="hljs-tag">&lt;/<span class="hljs-name">groupId</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">artifactId</span>&gt;</span>spring-boot-starter-aop<span class="hljs-tag">&lt;/<span class="hljs-name">artifactId</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">dependency</span>&gt;</span><br></code></pre></td></tr></table></figure>
+
+<p>**（2） 定义切面 **</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@Aspect</span><br><span class="hljs-meta">@Component</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">DynamicDataSourceAspect</span> &#123;<br>    <span class="hljs-meta">@Pointcut(&quot;@annotation(me.jerry.demo.dynamicdatasource.annotation.DS)&quot;)</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">dataSourcePointCut</span><span class="hljs-params">()</span>&#123;<br><br>    &#125;<br><br>    <span class="hljs-meta">@Around(&quot;dataSourcePointCut()&quot;)</span><br>    <span class="hljs-keyword">public</span> Object <span class="hljs-title function_">around</span><span class="hljs-params">(ProceedingJoinPoint joinPoint)</span> <span class="hljs-keyword">throws</span> Throwable &#123;<br>        <span class="hljs-type">String</span> <span class="hljs-variable">dsKey</span> <span class="hljs-operator">=</span> getDSAnnotation(joinPoint).value();<br>        DynamicDataSourceContextHolder.setContextKey(dsKey);<br>        <span class="hljs-keyword">try</span>&#123;<br>            <span class="hljs-keyword">return</span> joinPoint.proceed();<br>        &#125;<span class="hljs-keyword">finally</span> &#123;<br>            DynamicDataSourceContextHolder.removeContextKey();<br>        &#125;<br>    &#125;<br><br>    <span class="hljs-comment">/**</span><br><span class="hljs-comment">     * 根据类或方法获取数据源注解</span><br><span class="hljs-comment">     */</span><br>    <span class="hljs-keyword">private</span> DS <span class="hljs-title function_">getDSAnnotation</span><span class="hljs-params">(ProceedingJoinPoint joinPoint)</span>&#123;<br>        Class&lt;?&gt; targetClass = joinPoint.getTarget().getClass();<br>        <span class="hljs-type">DS</span> <span class="hljs-variable">dsAnnotation</span> <span class="hljs-operator">=</span> targetClass.getAnnotation(DS.class);<br>        <span class="hljs-comment">// 先判断类的注解，再判断方法注解</span><br>        <span class="hljs-keyword">if</span>(Objects.nonNull(dsAnnotation))&#123;<br>            <span class="hljs-keyword">return</span> dsAnnotation;<br>        &#125;<span class="hljs-keyword">else</span>&#123;<br>            <span class="hljs-type">MethodSignature</span> <span class="hljs-variable">methodSignature</span> <span class="hljs-operator">=</span> (MethodSignature)joinPoint.getSignature();<br>            <span class="hljs-keyword">return</span> methodSignature.getMethod().getAnnotation(DS.class);<br>        &#125;<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<blockquote>
+<ul>
+<li>注解 Pointcut 使用 <code>annotation</code> 指定注解</li>
+<li>注解 Around 使用环绕通知处理，使用上下文进行对使用注解 <code>DS</code> 的值进行数据源切换，处理完后，恢复数据源。</li>
+</ul>
+</blockquote>
+<h4 id="2-2-3-3-使用-AOP-进行数据源切换"><a href="#2-2-3-3-使用-AOP-进行数据源切换" class="headerlink" title="2.2.3.3 使用 AOP 进行数据源切换"></a>2.2.3.3 使用 AOP 进行数据源切换</h4><p>在service层，定义一个 <code>TestUserService</code> ，里面有两个方法，分别是从 master 和 slave 中获取数据，使用了注解<code>DS</code>，如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-comment">/**</span><br><span class="hljs-comment"> * 查询master库User</span><br><span class="hljs-comment"> */</span><br><span class="hljs-meta">@DS(DataSourceConstants.DS_KEY_MASTER)</span><br><span class="hljs-keyword">public</span> List&lt;TestUser&gt; <span class="hljs-title function_">getMasterUser</span><span class="hljs-params">()</span>&#123;<br>    QueryWrapper&lt;TestUser&gt; queryWrapper = <span class="hljs-keyword">new</span> <span class="hljs-title class_">QueryWrapper</span>&lt;&gt;();<br>    <span class="hljs-keyword">return</span> testUserMapper.selectAll(queryWrapper.isNotNull(<span class="hljs-string">&quot;name&quot;</span>));<br>&#125;<br><br><span class="hljs-comment">/**</span><br><span class="hljs-comment"> * 查询slave库User</span><br><span class="hljs-comment"> */</span><br><span class="hljs-meta">@DS(DataSourceConstants.DS_KEY_SLAVE)</span><br><span class="hljs-keyword">public</span> List&lt;TestUser&gt; <span class="hljs-title function_">getSlaveUser</span><span class="hljs-params">()</span>&#123; <span class="hljs-keyword">return</span> testUserMapper.selectList(<span class="hljs-literal">null</span>); &#125;<br></code></pre></td></tr></table></figure>
+
+<p>这样定义后，在 controller 层的处理就可以变成：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@GetMapping(&quot;/listall&quot;)</span><br><span class="hljs-keyword">public</span> Object <span class="hljs-title function_">listAll</span><span class="hljs-params">()</span> &#123;<br>	<span class="hljs-type">int</span> <span class="hljs-variable">initSize</span> <span class="hljs-operator">=</span> <span class="hljs-number">2</span>;<br>	Map&lt;String, Object&gt; result = <span class="hljs-keyword">new</span> <span class="hljs-title class_">HashMap</span>&lt;&gt;(initSize);<br>	<span class="hljs-comment">//默认master数据源查询</span><br>	List&lt;TestUser&gt; masterUser = testUserService.getMasterUser();<br>	result.put(DataSourceConstants.DS_KEY_MASTER, masterUser);<br>	<span class="hljs-comment">//从slave数据源查询</span><br>	List&lt;TestUser&gt; slaveUser = testUserService.getSlaveUser();<br>	result.put(DataSourceConstants.DS_KEY_SLAVE, slaveUser);<br>	<span class="hljs-comment">//返回数据</span><br>	<span class="hljs-keyword">return</span> ResponseResult.success(result);<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>由此可见，已经把数据库切换的模板代码消除，只需要关注业务逻辑处理即可，这就是AOP的好处。</p>
+<h1 id="3-参数化变更数据源"><a href="#3-参数化变更数据源" class="headerlink" title="3. 参数化变更数据源"></a>3. 参数化变更数据源</h1><blockquote>
+<p>一句话概括：参数化变更源意思是根据参数动态添加数据源以及切换数据源，解决不确定数据源的问题。</p>
+</blockquote>
+<p>无论是多套源还是动态数据源，相对来说还是固定的数据源（如一主一从，一主多从等），即在编码时已经确定的数据库数量，只是在具体使用哪一个时进行动态处理。如果数据源本身并不确定，或者说需要根据用户输入来连接数据库，这时，如何处理呢？可以想象现在有一个需求，需要对数据库进行连接管理，用户可以输入对应的数据库连接信息，然后可以查看数据库有哪些表。这就跟平时使用的数据库管理软件有点类似了，如 MySQL Workbench、Navicat、SQLyog，下图是SQLyog截图：</p>
+<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230307103210.png" srcset="/img/loading.gif" lazyload alt="image-20230307103209018"></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br></pre></td><td class="code"><pre><code class="hljs java">#tables-master.sql<br>DROP TABLE IF EXISTS `test_user`;<br><br>CREATE TABLE `test_user` (<br>  `id` bigint(<span class="hljs-number">20</span>) NOT NULL AUTO_INCREMENT,<br>  `name` varchar(<span class="hljs-number">32</span>) NOT NULL COMMENT <span class="hljs-string">&#x27;姓名&#x27;</span>,<br>  `phone` varchar(<span class="hljs-number">32</span>) DEFAULT NULL COMMENT <span class="hljs-string">&#x27;手机号&#x27;</span>,<br>  `title` varchar(<span class="hljs-number">32</span>) DEFAULT NULL COMMENT <span class="hljs-string">&#x27;职称职别&#x27;</span>,<br>  `email` varchar(<span class="hljs-number">128</span>) DEFAULT NULL COMMENT <span class="hljs-string">&#x27;邮箱&#x27;</span>,<br>  `gender` varchar(<span class="hljs-number">32</span>) DEFAULT NULL COMMENT <span class="hljs-string">&#x27;性别&#x27;</span>,<br>  `date_of_birth` date DEFAULT NULL COMMENT <span class="hljs-string">&#x27;出生时间&#x27;</span>,<br>  `deleted` tinyint(<span class="hljs-number">1</span>) DEFAULT <span class="hljs-string">&#x27;0&#x27;</span> COMMENT <span class="hljs-string">&#x27;1:已删除,0:未删除&#x27;</span>,<br>  `sys_create_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,<br>  `sys_create_user` varchar(<span class="hljs-number">255</span>) DEFAULT NULL,<br>  `sys_update_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,<br>  `sys_update_user` varchar(<span class="hljs-number">255</span>) DEFAULT NULL,<br>  `record_version` bigint(<span class="hljs-number">20</span>) DEFAULT <span class="hljs-string">&#x27;0&#x27;</span>,<br>  PRIMARY <span class="hljs-title function_">KEY</span> <span class="hljs-params">(`id`)</span><br>) ENGINE=InnoDB AUTO_INCREMENT=<span class="hljs-number">7013</span> DEFAULT CHARSET=utf8;<br><br><span class="hljs-comment">/*Data for the table `test_user` */</span><br><br>insert  into `test_user`(`id`,`name`,`phone`,`title`,`email`,`gender`,`date_of_birth`,`deleted`,`sys_create_time`,`sys_create_user`,`sys_update_time`,`sys_update_user`,`record_version`) values (<span class="hljs-number">3497</span>,<span class="hljs-string">&#x27;王**&#x27;</span>,<span class="hljs-string">&#x27;13800000000&#x27;</span>,<span class="hljs-string">&#x27;test&#x27;</span>,<span class="hljs-string">&#x27;test1@qq.com&#x27;</span>,<span class="hljs-string">&#x27;1&#x27;</span>,<span class="hljs-string">&#x27;1958-07-01&#x27;</span>,<span class="hljs-number">0</span>,<span class="hljs-string">&#x27;2019-03-28 14:53:44&#x27;</span>,<span class="hljs-string">&#x27;admin&#x27;</span>,<span class="hljs-string">&#x27;2019-05-31 11:17:55&#x27;</span>,<span class="hljs-string">&#x27;admin&#x27;</span>,<span class="hljs-number">0</span>),(<span class="hljs-number">3500</span>,<span class="hljs-string">&#x27;林**&#x27;</span>,<span class="hljs-string">&#x27;13800000000&#x27;</span>,NULL,NULL,<span class="hljs-string">&#x27;1&#x27;</span>,NULL,<span class="hljs-number">0</span>,<span class="hljs-string">&#x27;2019-03-28 14:53:44&#x27;</span>,<span class="hljs-string">&#x27;admin&#x27;</span>,<span class="hljs-string">&#x27;2019-05-31 11:21:47&#x27;</span>,<span class="hljs-string">&#x27;admin&#x27;</span>,<span class="hljs-number">0</span>),(<span class="hljs-number">3508</span>,<span class="hljs-string">&#x27;高**&#x27;</span>,<span class="hljs-string">&#x27;13800000000&#x27;</span>,<span class="hljs-string">&#x27;test&#x27;</span>,NULL,<span class="hljs-string">&#x27;2&#x27;</span>,<span class="hljs-string">&#x27;1978-05-20&#x27;</span>,<span class="hljs-number">0</span>,<span class="hljs-string">&#x27;2019-03-28 14:53:44&#x27;</span>,<span class="hljs-string">&#x27;admin&#x27;</span>,<span class="hljs-string">&#x27;2019-05-31 11:17:55&#x27;</span>,<span class="hljs-string">&#x27;admin&#x27;</span>,<span class="hljs-number">0</span>),(<span class="hljs-number">7005</span>,<span class="hljs-string">&#x27;test4&#x27;</span>,NULL,<span class="hljs-string">&#x27;test4&#x27;</span>,<span class="hljs-string">&#x27;test4@qq.com&#x27;</span>,<span class="hljs-string">&#x27;1&#x27;</span>,NULL,<span class="hljs-number">0</span>,<span class="hljs-string">&#x27;2020-01-06 16:19:23&#x27;</span>,NULL,<span class="hljs-string">&#x27;2020-01-07 11:29:10&#x27;</span>,<span class="hljs-string">&#x27;admin&#x27;</span>,<span class="hljs-number">0</span>),(<span class="hljs-number">7006</span>,<span class="hljs-string">&#x27;test5&#x27;</span>,NULL,<span class="hljs-string">&#x27;new title&#x27;</span>,<span class="hljs-string">&#x27;test5@qq.com&#x27;</span>,<span class="hljs-string">&#x27;1&#x27;</span>,NULL,<span class="hljs-number">0</span>,<span class="hljs-string">&#x27;2020-01-06 16:48:52&#x27;</span>,NULL,<span class="hljs-string">&#x27;2020-01-07 11:19:48&#x27;</span>,<span class="hljs-string">&#x27;admin&#x27;</span>,<span class="hljs-number">0</span>),(<span class="hljs-number">7007</span>,<span class="hljs-string">&#x27;test6&#x27;</span>,NULL,NULL,<span class="hljs-string">&#x27;test6@qq.com&#x27;</span>,NULL,NULL,<span class="hljs-number">1</span>,<span class="hljs-string">&#x27;2020-01-06 16:48:52&#x27;</span>,NULL,<span class="hljs-string">&#x27;2020-01-07 09:46:23&#x27;</span>,NULL,<span class="hljs-number">0</span>);<br><br>#tables-slave.sql<br>DROP TABLE IF EXISTS `test_user`;<br><br>CREATE TABLE `test_user` (<br>  `id` bigint(<span class="hljs-number">20</span>) NOT NULL AUTO_INCREMENT,<br>  `name` varchar(<span class="hljs-number">32</span>) NOT NULL COMMENT <span class="hljs-string">&#x27;姓名&#x27;</span>,<br>  `phone` varchar(<span class="hljs-number">32</span>) DEFAULT NULL COMMENT <span class="hljs-string">&#x27;手机号&#x27;</span>,<br>  `title` varchar(<span class="hljs-number">32</span>) DEFAULT NULL COMMENT <span class="hljs-string">&#x27;职称职别&#x27;</span>,<br>  `email` varchar(<span class="hljs-number">128</span>) DEFAULT NULL COMMENT <span class="hljs-string">&#x27;邮箱&#x27;</span>,<br>  `gender` varchar(<span class="hljs-number">32</span>) DEFAULT NULL COMMENT <span class="hljs-string">&#x27;性别&#x27;</span>,<br>  `date_of_birth` date DEFAULT NULL COMMENT <span class="hljs-string">&#x27;出生时间&#x27;</span>,<br>  `deleted` tinyint(<span class="hljs-number">1</span>) DEFAULT <span class="hljs-string">&#x27;0&#x27;</span> COMMENT <span class="hljs-string">&#x27;1:已删除,0:未删除&#x27;</span>,<br>  `sys_create_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,<br>  `sys_create_user` varchar(<span class="hljs-number">255</span>) DEFAULT NULL,<br>  `sys_update_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,<br>  `sys_update_user` varchar(<span class="hljs-number">255</span>) DEFAULT NULL,<br>  `record_version` bigint(<span class="hljs-number">20</span>) DEFAULT <span class="hljs-string">&#x27;0&#x27;</span>,<br>  PRIMARY <span class="hljs-title function_">KEY</span> <span class="hljs-params">(`id`)</span><br>) ENGINE=InnoDB AUTO_INCREMENT=<span class="hljs-number">7013</span> DEFAULT CHARSET=utf8;<br><br><span class="hljs-comment">/*Data for the table `test_user` */</span><br><br>insert  into `test_user`(`id`,`name`,`phone`,`title`,`email`,`gender`,`date_of_birth`,`deleted`,`sys_create_time`,`sys_create_user`,`sys_update_time`,`sys_update_user`,`record_version`) values (<span class="hljs-number">3520</span>,<span class="hljs-string">&#x27;刘**&#x27;</span>,<span class="hljs-string">&#x27;13800000000&#x27;</span>,NULL,NULL,<span class="hljs-string">&#x27;1&#x27;</span>,<span class="hljs-string">&#x27;1984-09-25&#x27;</span>,<span class="hljs-number">0</span>,<span class="hljs-string">&#x27;2019-03-28 14:53:44&#x27;</span>,<span class="hljs-string">&#x27;admin&#x27;</span>,<span class="hljs-string">&#x27;2019-05-31 11:17:55&#x27;</span>,<span class="hljs-string">&#x27;admin&#x27;</span>,<span class="hljs-number">0</span>),(<span class="hljs-number">6999</span>,<span class="hljs-string">&#x27;张*&#x27;</span>,<span class="hljs-string">&#x27;13800000000&#x27;</span>,<span class="hljs-string">&#x27;TEST&#x27;</span>,<span class="hljs-string">&#x27;test@qq.com&#x27;</span>,<span class="hljs-string">&#x27;1&#x27;</span>,<span class="hljs-string">&#x27;1990-06-10&#x27;</span>,<span class="hljs-number">0</span>,<span class="hljs-string">&#x27;2019-03-28 14:53:44&#x27;</span>,<span class="hljs-string">&#x27;admin&#x27;</span>,<span class="hljs-string">&#x27;2019-05-31 11:17:55&#x27;</span>,<span class="hljs-string">&#x27;admin&#x27;</span>,<span class="hljs-number">0</span>),(<span class="hljs-number">7003</span>,<span class="hljs-string">&#x27;test_add1&#x27;</span>,<span class="hljs-string">&#x27;13800000000&#x27;</span>,<span class="hljs-string">&#x27;TEST1&#x27;</span>,<span class="hljs-string">&#x27;test1@qq.com&#x27;</span>,<span class="hljs-string">&#x27;1&#x27;</span>,<span class="hljs-string">&#x27;1947-11-01&#x27;</span>,<span class="hljs-number">0</span>,<span class="hljs-string">&#x27;2019-06-04 23:17:48&#x27;</span>,NULL,<span class="hljs-string">&#x27;2019-11-07 10:40:43&#x27;</span>,NULL,<span class="hljs-number">0</span>),(<span class="hljs-number">7004</span>,<span class="hljs-string">&#x27;test_add2&#x27;</span>,<span class="hljs-string">&#x27;13800000000&#x27;</span>,<span class="hljs-string">&#x27;test2&#x27;</span>,<span class="hljs-string">&#x27;test2-dsa@qq.com&#x27;</span>,<span class="hljs-string">&#x27;1&#x27;</span>,<span class="hljs-string">&#x27;1958-07-01&#x27;</span>,<span class="hljs-number">0</span>,<span class="hljs-string">&#x27;2019-06-04 23:17:48&#x27;</span>,NULL,<span class="hljs-string">&#x27;2019-11-07 11:13:06&#x27;</span>,NULL,<span class="hljs-number">0</span>);<br></code></pre></td></tr></table></figure>
+
+
+
+<h2 id="3-1-参数化变更源说明"><a href="#3-1-参数化变更源说明" class="headerlink" title="3.1 参数化变更源说明"></a>3.1 参数化变更源说明</h2><h3 id="3-1-1-解决思路"><a href="#3-1-1-解决思路" class="headerlink" title="3.1.1 解决思路"></a>3.1.1 解决思路</h3><p>Spring Boot 的动态数据源，本质上是把多个数据源存储在一个 Map 中，当需要使用某个数据源时，从 Map 中获取此数据源进行处理。在动态数据源处理时，通过继承抽象类 <code>AbstractRoutingDataSource</code> 可实现此功能。既然是 Map ，如果有新的数据源，把新的数据源添加到此 Map 中就可以了。这就是整个解决思路。</p>
+<p>但是，查看 <code>AbstractRoutingDataSource</code> 源码，可以发现，存放数据源的 Map <code>targetDataSources</code> 是 private 的，而且并没有提供对此 Map 本身的操作，它提供的是两个关键操作：<code>setTargetDataSources</code> 及 <code>afterPropertiesSet</code> 。其中 <code>setTargetDataSources</code> 设置整个 Map 目标数据源，<code>afterPropertiesSet</code> 则是对 Map 目标数据源进行解析，形成最终使用的 <code>resolvedDataSources</code>，可见以下源码：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-built_in">this</span>.resolvedDataSources = <span class="hljs-keyword">new</span> <span class="hljs-title class_">HashMap</span>(<span class="hljs-built_in">this</span>.targetDataSources.size());<br><span class="hljs-built_in">this</span>.targetDataSources.forEach((key, value) -&gt; &#123;<br>    <span class="hljs-type">Object</span> <span class="hljs-variable">lookupKey</span> <span class="hljs-operator">=</span> <span class="hljs-built_in">this</span>.resolveSpecifiedLookupKey(key);<br>    <span class="hljs-type">DataSource</span> <span class="hljs-variable">dataSource</span> <span class="hljs-operator">=</span> <span class="hljs-built_in">this</span>.resolveSpecifiedDataSource(value);<br>    <span class="hljs-built_in">this</span>.resolvedDataSources.put(lookupKey, dataSource);<br>&#125;);<br></code></pre></td></tr></table></figure>
+
+<p>因此，为实现动态添加数据源到 Map 的功能，可以根据这两个关键操作进行处理。</p>
+<h3 id="3-1-2-流程说明"><a href="#3-1-2-流程说明" class="headerlink" title="3.1.2 流程说明"></a>3.1.2 流程说明</h3><ol>
+<li>用户输入数据库连接参数（包括IP、端口、驱动名、数据库名、用户名、密码）</li>
+<li>根据数据库连接参数创建数据源</li>
+<li>添加数据源到动态数据源中</li>
+<li>切换数据源</li>
+<li>操作数据库</li>
+</ol>
+<h2 id="3-2-实现参数化变更源"><a href="#3-2-实现参数化变更源" class="headerlink" title="3.2 实现参数化变更源"></a>3.2 实现参数化变更源</h2><blockquote>
+<p>下面的操作基于前面的工程。</p>
+</blockquote>
+<h3 id="3-2-1-改造动态数据源"><a href="#3-2-1-改造动态数据源" class="headerlink" title="3.2.1 改造动态数据源"></a>3.2.1 改造动态数据源</h3><h4 id="3-2-1-1-动态数据源添加功能"><a href="#3-2-1-1-动态数据源添加功能" class="headerlink" title="3.2.1.1 动态数据源添加功能"></a>3.2.1.1 动态数据源添加功能</h4><p>为了可以动态添加数据源到 Map ，需要对动态数据源进行改造。如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">DynamicDataSource</span> <span class="hljs-keyword">extends</span> <span class="hljs-title class_">AbstractRoutingDataSource</span> &#123;<br>    <span class="hljs-keyword">private</span> Map&lt;Object, Object&gt; backupTargetDataSources;<br><br>    <span class="hljs-comment">/**</span><br><span class="hljs-comment">     * 自定义构造函数</span><br><span class="hljs-comment">     */</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-title function_">DynamicDataSource</span><span class="hljs-params">(DataSource defaultDataSource,Map&lt;Object, Object&gt; targetDataSource)</span>&#123;<br>        backupTargetDataSources = targetDataSource;<br>        <span class="hljs-built_in">super</span>.setDefaultTargetDataSource(defaultDataSource);<br>        <span class="hljs-built_in">super</span>.setTargetDataSources(backupTargetDataSources);<br>        <span class="hljs-built_in">super</span>.afterPropertiesSet();<br>    &#125;<br><br>    <span class="hljs-comment">/**</span><br><span class="hljs-comment">     * 添加新数据源</span><br><span class="hljs-comment">     */</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">addDataSource</span><span class="hljs-params">(String key, DataSource dataSource)</span>&#123;<br>        <span class="hljs-built_in">this</span>.backupTargetDataSources.put(key,dataSource);<br>        <span class="hljs-built_in">super</span>.setTargetDataSources(<span class="hljs-built_in">this</span>.backupTargetDataSources);<br>        <span class="hljs-built_in">super</span>.afterPropertiesSet();<br>    &#125;<br><br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-keyword">protected</span> Object <span class="hljs-title function_">determineCurrentLookupKey</span><span class="hljs-params">()</span> &#123;<br>        <span class="hljs-keyword">return</span> DynamicDataSourceContextHolder.getContextKey();<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<blockquote>
+<ul>
+<li>添加了自定义的 <code>backupTargetDataSources</code> 作为原 <code>targetDataSources</code> 的拷贝</li>
+<li>自定义构造函数，把需要保存的目标数据源拷贝到自定义的 Map 中</li>
+<li>添加新数据源时，依然使用 <code>setTargetDataSources</code> 及 <code>afterPropertiesSet</code> 完成新数据源添加</li>
+<li>注意：<code>afterPropertiesSet</code> 的作用很重要，它负责解析成可用的目标数据源</li>
+</ul>
+</blockquote>
+<h4 id="3-2-1-2-动态数据源配置"><a href="#3-2-1-2-动态数据源配置" class="headerlink" title="3.2.1.2 动态数据源配置"></a>3.2.1.2 动态数据源配置</h4><p>原来在创建动态数据源时，使用的是无参数构造函数，经过前面改造后，使用有参构造函数，如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@Bean</span><br><span class="hljs-meta">@Primary</span><br><span class="hljs-keyword">public</span> DataSource <span class="hljs-title function_">dynamicDataSource</span><span class="hljs-params">()</span> &#123;<br>    Map&lt;Object, Object&gt; dataSourceMap = <span class="hljs-keyword">new</span> <span class="hljs-title class_">HashMap</span>&lt;&gt;(<span class="hljs-number">2</span>);<br>    dataSourceMap.put(DataSourceConstants.DS_KEY_MASTER, masterDataSource());<br>    dataSourceMap.put(DataSourceConstants.DS_KEY_SLAVE, slaveDataSource());<br>    <span class="hljs-comment">//有参构造函数</span><br>    <span class="hljs-keyword">return</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">DynamicDataSource</span>(masterDataSource(), dataSourceMap);<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<h3 id="3-2-2-添加数据源工具类"><a href="#3-2-2-添加数据源工具类" class="headerlink" title="3.2.2 添加数据源工具类"></a>3.2.2 添加数据源工具类</h3><h4 id="3-2-2-1-Spring-上下文工具类"><a href="#3-2-2-1-Spring-上下文工具类" class="headerlink" title="3.2.2.1 Spring 上下文工具类"></a>3.2.2.1 Spring 上下文工具类</h4><p>在Spring Boot 使用过程中，经常会用到 Spring 的上下文，常见的就是从 Spring 的 IOC 中获取 bean 来进行操作。由于 Spring 使用的 IOC 基本上把 bean 都注入到容器中，因此需要 Spring 上下文来获取。在 context 包下添加 <code>SpringContextHolder</code> ，如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@Component</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">SpringContextHolder</span> <span class="hljs-keyword">implements</span> <span class="hljs-title class_">ApplicationContextAware</span> &#123;<br>    <span class="hljs-keyword">private</span> <span class="hljs-keyword">static</span> ApplicationContext applicationContext;<br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">setApplicationContext</span><span class="hljs-params">(ApplicationContext applicationContext)</span> <span class="hljs-keyword">throws</span> BeansException &#123;<br>        SpringContextHolder.applicationContext = applicationContext;<br>    &#125;<br>    <span class="hljs-comment">/**</span><br><span class="hljs-comment">     * 返回上下文</span><br><span class="hljs-comment">     */</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> ApplicationContext <span class="hljs-title function_">getContext</span><span class="hljs-params">()</span>&#123;<br>        <span class="hljs-keyword">return</span> SpringContextHolder.applicationContext;<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>通过 <code>getContext</code> 就可以获取上下文，进而操作。</p>
+<h4 id="3-2-2-2-数据源操作工具"><a href="#3-2-2-2-数据源操作工具" class="headerlink" title="3.2.2.2 数据源操作工具"></a>3.2.2.2 数据源操作工具</h4><p>通过参数添加数据源，需要根据参数构造数据源，然后添加到前面说的 Map 中。如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">DataSourceUtil</span> &#123;<br>    <span class="hljs-comment">/**</span><br><span class="hljs-comment">     * 创建新的数据源，注意：此处只针对 MySQL 数据库</span><br><span class="hljs-comment">     */</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> DataSource <span class="hljs-title function_">makeNewDataSource</span><span class="hljs-params">(DbInfo dbInfo)</span>&#123;<br>        <span class="hljs-type">String</span> <span class="hljs-variable">url</span> <span class="hljs-operator">=</span> <span class="hljs-string">&quot;jdbc:mysql://&quot;</span>+dbInfo.getIp() + <span class="hljs-string">&quot;:&quot;</span>+dbInfo.getPort()+<span class="hljs-string">&quot;/&quot;</span>+dbInfo.getDbName()<br>                +<span class="hljs-string">&quot;?useSSL=false&amp;serverTimezone=GMT%2B8&amp;characterEncoding=UTF-8&quot;</span>;<br>        <span class="hljs-type">String</span> <span class="hljs-variable">driveClassName</span> <span class="hljs-operator">=</span> StringUtils.isEmpty(dbInfo.getDriveClassName())? <span class="hljs-string">&quot;com.mysql.cj.jdbc.Driver&quot;</span>:dbInfo.getDriveClassName();<br>        <span class="hljs-keyword">return</span> DataSourceBuilder.create().url(url)<br>                .driverClassName(driveClassName)<br>                .username(dbInfo.getUsername())<br>                .password(dbInfo.getPassword())<br>                .build();<br>    &#125;<br><br>    <span class="hljs-comment">/**</span><br><span class="hljs-comment">     * 添加数据源到动态源中</span><br><span class="hljs-comment">     */</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">addDataSourceToDynamic</span><span class="hljs-params">(String key, DataSource dataSource)</span>&#123;<br>        <span class="hljs-type">DynamicDataSource</span> <span class="hljs-variable">dynamicDataSource</span> <span class="hljs-operator">=</span> SpringContextHolder.getContext().getBean(DynamicDataSource.class);<br>        dynamicDataSource.addDataSource(key,dataSource);<br>    &#125;<br><br>    <span class="hljs-comment">/**</span><br><span class="hljs-comment">     * 根据数据库连接信息添加数据源到动态源中</span><br><span class="hljs-comment">     * <span class="hljs-doctag">@param</span> key</span><br><span class="hljs-comment">     * <span class="hljs-doctag">@param</span> dbInfo</span><br><span class="hljs-comment">     */</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">addDataSourceToDynamic</span><span class="hljs-params">(String key, DbInfo dbInfo)</span>&#123;<br>        <span class="hljs-type">DataSource</span> <span class="hljs-variable">dataSource</span> <span class="hljs-operator">=</span> makeNewDataSource(dbInfo);<br>        addDataSourceToDynamic(key,dataSource);<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<blockquote>
+<ul>
+<li>通过 <code>DataSourceBuilder</code> 及相应的参数来构造数据源，注意此处只针对 MySQL 作处理，其它数据库的话，对应的 url 及 DriveClassName 需作相应的变更。</li>
+<li>添加数据源时，通过 Spring 上下文获取动态数据源的 bean，然后添加。</li>
+</ul>
+</blockquote>
+<h3 id="3-2-3-使用参数变更数据源"><a href="#3-2-3-使用参数变更数据源" class="headerlink" title="3.2.3 使用参数变更数据源"></a>3.2.3 使用参数变更数据源</h3><p>前面两步已实现添加数据源，下面根据需求（根据用户输入的数据库连接信息，连接数据库，并返回数据库的表信息）。</p>
+<h4 id="3-2-3-1-添加查询数据库表信息的-Mapper"><a href="#3-2-3-1-添加查询数据库表信息的-Mapper" class="headerlink" title="3.2.3.1 添加查询数据库表信息的 Mapper"></a>3.2.3.1 添加查询数据库表信息的 Mapper</h4><p>通过 MySQL 的 <code>information_schema</code> 可以获取表信息。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@Repository</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">interface</span> <span class="hljs-title class_">TableMapper</span> <span class="hljs-keyword">extends</span> <span class="hljs-title class_">BaseMapper</span>&lt;TestUser&gt; &#123;<br>    <span class="hljs-comment">/**</span><br><span class="hljs-comment">     * 查询表信息</span><br><span class="hljs-comment">     */</span><br>    <span class="hljs-meta">@Select(&quot;select table_name, table_comment, create_time, update_time &quot; +</span><br><span class="hljs-meta">            &quot; from information_schema.tables &quot; +</span><br><span class="hljs-meta">            &quot; where table_schema = (select database())&quot;)</span><br>    List&lt;Map&lt;String,Object&gt;&gt; <span class="hljs-title function_">selectTableList</span><span class="hljs-params">()</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<h4 id="3-2-3-2-定义数据库连接信息对象"><a href="#3-2-3-2-定义数据库连接信息对象" class="headerlink" title="3.2.3.2 定义数据库连接信息对象"></a>3.2.3.2 定义数据库连接信息对象</h4><p>把数据库连接信息通过一个类进行封装。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@Data</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">DbInfo</span> &#123;<br>    <span class="hljs-keyword">private</span> String ip;<br>    <span class="hljs-keyword">private</span> String port;<br>    <span class="hljs-keyword">private</span> String dbName;<br>    <span class="hljs-keyword">private</span> String driveClassName;<br>    <span class="hljs-keyword">private</span> String username;<br>    <span class="hljs-keyword">private</span> String password;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<h4 id="3-2-3-3-参数化变更源并查询表信息"><a href="#3-2-3-3-参数化变更源并查询表信息" class="headerlink" title="3.2.3.3 参数化变更源并查询表信息"></a>3.2.3.3 参数化变更源并查询表信息</h4><p>在 controller 层，定义一个查询表信息的接口，根据传入的参数，连接数据源，返回表信息：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-comment">/**</span><br><span class="hljs-comment"> * 根据数据库连接信息获取表信息</span><br><span class="hljs-comment"> */</span><br><span class="hljs-meta">@GetMapping(&quot;table&quot;)</span><br><span class="hljs-keyword">public</span> Object <span class="hljs-title function_">findWithDbInfo</span><span class="hljs-params">(DbInfo dbInfo)</span> <span class="hljs-keyword">throws</span> Exception &#123;<br>    <span class="hljs-comment">//数据源key</span><br>    <span class="hljs-type">String</span> <span class="hljs-variable">newDsKey</span> <span class="hljs-operator">=</span> System.currentTimeMillis()+<span class="hljs-string">&quot;&quot;</span>;<br>    <span class="hljs-comment">//添加数据源</span><br>    DataSourceUtil.addDataSourceToDynamic(newDsKey,dbInfo);<br>    DynamicDataSourceContextHolder.setContextKey(newDsKey);<br>    <span class="hljs-comment">//查询表信息</span><br>    List&lt;Map&lt;String, Object&gt;&gt; tables = tableMapper.selectTableList();<br>    DynamicDataSourceContextHolder.removeContextKey();<br>    <span class="hljs-keyword">return</span> ResponseResult.success(tables);<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<blockquote>
+<ul>
+<li>访问地址 <code>http://localhost:8080/dd/table?ip=localhost&amp;port=3310&amp;dbName=mytest&amp;username=root&amp;password=111111</code> ，对应数据库连接参数。</li>
+<li>此处数据源的 key 是无意义的，建议根据实际场景设置有意义的值</li>
+</ul>
+</blockquote>
+<h2 id="3-3-动态代理消除模板代码"><a href="#3-3-动态代理消除模板代码" class="headerlink" title="3.3 动态代理消除模板代码"></a>3.3 动态代理消除模板代码</h2><p>前面已经完成了参数化切换数据源功能，但还有一点就是有模板代码，如添加数据源、切换数据源、对此数据源进行CURD操作、释放数据源，如果每个地方都这样做，就很繁琐，这个时候，就需要用到动态代理了。此处使用 JDK 自带的动态代理，实现参数化变更数据源的功能，消除模板代码。</p>
+<h3 id="3-3-1-添加-JDK-动态代理"><a href="#3-3-1-添加-JDK-动态代理" class="headerlink" title="3.3.1 添加 JDK 动态代理"></a>3.3.1 添加 JDK 动态代理</h3><p>添加 proxy 包，添加 <code>JdkParamDsMethodProxy</code> 类，实现 <code>InvocationHandler</code> 接口，在 <code>invoke</code> 中编写参数化切换数据源的逻辑即可。如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">JdkParamDsMethodProxy</span> <span class="hljs-keyword">implements</span> <span class="hljs-title class_">InvocationHandler</span> &#123;<br>    <span class="hljs-comment">// 代理对象及相应参数</span><br>    <span class="hljs-keyword">private</span> String dataSourceKey;<br>    <span class="hljs-keyword">private</span> DbInfo dbInfo;<br>    <span class="hljs-keyword">private</span> Object targetObject;<br>    <span class="hljs-keyword">public</span> <span class="hljs-title function_">JdkParamDsMethodProxy</span><span class="hljs-params">(Object targetObject, String dataSourceKey, DbInfo dbInfo)</span> &#123;<br>        <span class="hljs-built_in">this</span>.targetObject = targetObject;<br>        <span class="hljs-built_in">this</span>.dataSourceKey = dataSourceKey;<br>        <span class="hljs-built_in">this</span>.dbInfo = dbInfo;<br>    &#125;<br><br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-keyword">public</span> Object <span class="hljs-title function_">invoke</span><span class="hljs-params">(Object proxy, Method method, Object[] args)</span> <span class="hljs-keyword">throws</span> Throwable &#123;<br>        <span class="hljs-comment">//切换数据源</span><br>        DataSourceUtil.addDataSourceToDynamic(dataSourceKey, dbInfo);<br>        DynamicDataSourceContextHolder.setContextKey(dataSourceKey);<br>        <span class="hljs-comment">//调用方法</span><br>        <span class="hljs-type">Object</span> <span class="hljs-variable">result</span> <span class="hljs-operator">=</span> method.invoke(targetObject, args);<br>        DynamicDataSourceContextHolder.removeContextKey();<br>        <span class="hljs-keyword">return</span> result;<br>    &#125;<br><br>    <span class="hljs-comment">/**</span><br><span class="hljs-comment">     * 创建代理</span><br><span class="hljs-comment">     */</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> Object <span class="hljs-title function_">createProxyInstance</span><span class="hljs-params">(Object targetObject, String dataSourceKey, DbInfo dbInfo)</span> <span class="hljs-keyword">throws</span> Exception &#123;<br>        <span class="hljs-keyword">return</span> Proxy.newProxyInstance(targetObject.getClass().getClassLoader()<br>                , targetObject.getClass().getInterfaces(), <span class="hljs-keyword">new</span> <span class="hljs-title class_">JdkParamDsMethodProxy</span>(targetObject, dataSourceKey, dbInfo));<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<blockquote>
+<ul>
+<li>代码中，需要使用的参数通过构造函数传入</li>
+<li>通过 <code>Proxy.newProxyInstance</code> 创建代理，在方法执行时( <code>invoke</code> ) 进行数据源添加、切换、数据库操作、清除等</li>
+</ul>
+</blockquote>
+<h3 id="3-3-2-使用代理实现功能"><a href="#3-3-2-使用代理实现功能" class="headerlink" title="3.3.2 使用代理实现功能"></a>3.3.2 使用代理实现功能</h3><p>有了代理，在添加和切换数据源时就可以擦除模板代码，前面的业务代码就变成：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@GetMapping(&quot;table&quot;)</span><br>    <span class="hljs-keyword">public</span> Object <span class="hljs-title function_">findWithDbInfo</span><span class="hljs-params">(DbInfo dbInfo)</span> <span class="hljs-keyword">throws</span> Exception &#123;<br>        <span class="hljs-comment">//数据源key</span><br>        <span class="hljs-type">String</span> <span class="hljs-variable">newDsKey</span> <span class="hljs-operator">=</span> System.currentTimeMillis()+<span class="hljs-string">&quot;&quot;</span>;<br>        <span class="hljs-comment">//使用代理切换数据源</span><br>        <span class="hljs-type">TableMapper</span> <span class="hljs-variable">tableMapperProxy</span> <span class="hljs-operator">=</span> (TableMapper)JdkParamDsMethodProxy.createProxyInstance(tableMapper, newDsKey, dbInfo);<br>        List&lt;Map&lt;String, Object&gt;&gt; tables = tableMapperProxy.selectTableList();<br>        <span class="hljs-keyword">return</span> ResponseResult.success(tables);<br>    &#125;<br></code></pre></td></tr></table></figure>
+
+<p>通过代理，代码就简洁多了。</p>
+
+              
+            </div>
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/08-%E6%A1%86%E6%9E%B6%E6%8A%80%E6%9C%AF/" class="category-chain-item">08_框架技术</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/08-%E6%A1%86%E6%9E%B6%E6%8A%80%E6%9C%AF/04-SpringBoot/" class="category-chain-item">04_SpringBoot</a>
+  
+  
+
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/SpringBoot/">#SpringBoot</a>
+      
+        <a href="/tags/MyBatis/">#MyBatis</a>
+      
+        <a href="/tags/%E5%8A%A8%E6%80%81%E6%95%B0%E6%8D%AE%E6%BA%90/">#动态数据源</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>18_SpringBoot动态数据源实现</div>
+      <div>https://janycode.github.io/2023/02/07/08_框架技术/04_SpringBoot/18_SpringBoot动态数据源实现/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Jerry(姜源)</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2023年2月7日</div>
+        </div>
+      
+      
+      <div class="license-meta-item">
+        <div>许可协议</div>
+        <div>
+          
+            
+            
+              <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+              <span class="hint--top hint--rounded" aria-label="BY - 姜源">
+                <i class="iconfont icon-by"></i>
+              </span>
+              </a>
+            
+          
+        </div>
+      </div>
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2023/03/01/01_%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/05_Windows/03-10%E5%88%86%E9%92%9F%E6%90%9E%E5%AE%9Awin11%E5%AE%89%E5%8D%93%E5%AD%90%E7%B3%BB%E7%BB%9F/" title="03-10分钟搞定win11安卓子系统">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">03-10分钟搞定win11安卓子系统</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2023/01/06/08_%E6%A1%86%E6%9E%B6%E6%8A%80%E6%9C%AF/04_SpringBoot/17_SpringBoot+MyBatis%E5%A4%9A%E6%95%B0%E6%8D%AE%E6%BA%90%E5%AE%9E%E7%8E%B0/" title="17_SpringBoot+MyBatis多数据源实现">
+                        <span class="hidden-mobile">17_SpringBoot+MyBatis多数据源实现</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+  <article id="comments" lazyload>
+    
+  <div id="SOHUCS" sid='https://janycode.github.io/2023/02/07/08_%E6%A1%86%E6%9E%B6%E6%8A%80%E6%9C%AF/04_SpringBoot/18_SpringBoot%E5%8A%A8%E6%80%81%E6%95%B0%E6%8D%AE%E6%BA%90%E5%AE%9E%E7%8E%B0/'></div>
+  <script type="text/javascript">
+    Fluid.utils.loadComments('#SOHUCS', function() {
+      Fluid.utils.createScript("https://changyan.sohu.com/upload/changyan.js", function() {
+        window.changyan.api.config({"appid":"cyw5OHIcO","appkey":"fea3446b3df4b3f129f34da4cbc87e51"})
+      });
+    });
+  </script>
+  <noscript>Please enable JavaScript to view the comments</noscript>
+
+
+  </article>
+
+
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://simple.blog.csdn.net" target="_blank" rel="nofollow noopener"><span>CSDN</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/janycode" target="_blank" rel="nofollow noopener"><span>GitHub</span></a> <i class="iconfont icon-love"></i> <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="busuanzi_container_site_pv" style="display: none">
+        总访问量(PV) 
+        <span id="busuanzi_value_site_pv"></span>
+         次，
+      </span>
+    
+    
+      <span id="busuanzi_container_site_uv" style="display: none">
+        总访客数(UV) 
+        <span id="busuanzi_value_site_uv"></span>
+         人
+      </span>
+    
+    
+  
+</div>
+
+  
+  
+  
+</div>
+
+<!-- live2d 动画 -->
+<script src="https://eqcn.ajz.miesnfu.com/wp-content/plugins/wp-3d-pony/live2dw/lib/L2Dwidget.min.js"></script>
+<script>
+    L2Dwidget.init({
+        "model": {
+            jsonPath: "https://unpkg.com/live2d-widget-model-haruto@1.0.5/assets/haruto.model.json",
+            "scale": 1
+        },
+        "display": {
+            "position": "right",
+            "width": 100,
+            "height": 200,
+            "hOffset": 35,
+            "vOffset": -85
+        },
+        "mobile": {
+            "show": false,
+            "scale": 0.1
+        },
+        "react": {
+            "opacityDefault": 0.75,
+            "opacityOnHover": 0.2
+        }
+    });
+</script>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <!-- Baidu Analytics -->
+    <script defer>
+      if (!Fluid.ctx.dnt) {
+        var _hmt = _hmt || [];
+        (function() {
+          var hm = document.createElement("script");
+          hm.src = "https://hm.baidu.com/hm.js?bfff735c897eb60ea49b735096b20e47";
+          var s = document.getElementsByTagName("script")[0];
+          s.parentNode.insertBefore(hm, s);
+        })();
+      }
+    </script>
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.0/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      headingSelector : CONFIG.toc.headingSelector || 'h1,h2,h3,h4,h5,h6',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      collapseDepth   : CONFIG.toc.collapseDepth || 0,
+      scrollSmooth    : true,
+      headingsOffset  : -boardTop
+    });
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+  });
+</script>
+
+
+  <script>
+  (function() {
+    var enableLang = CONFIG.code_language.enable && CONFIG.code_language.default;
+    var enableCopy = CONFIG.copy_btn;
+    if (!enableLang && !enableCopy) {
+      return;
+    }
+
+    function getBgClass(ele) {
+      return Fluid.utils.getBackgroundLightness(ele) >= 0 ? 'code-widget-light' : 'code-widget-dark';
+    }
+
+    var copyTmpl = '';
+    copyTmpl += '<div class="code-widget">';
+    copyTmpl += 'LANG';
+    copyTmpl += '</div>';
+    jQuery('.markdown-body pre').each(function() {
+      var $pre = jQuery(this);
+      if ($pre.find('code.mermaid').length > 0) {
+        return;
+      }
+      if ($pre.find('span.line').length > 0) {
+        return;
+      }
+
+      var lang = '';
+
+      if (enableLang) {
+        lang = CONFIG.code_language.default;
+        if ($pre[0].children.length > 0 && $pre[0].children[0].classList.length >= 2 && $pre.children().hasClass('hljs')) {
+          lang = $pre[0].children[0].classList[1];
+        } else if ($pre[0].getAttribute('data-language')) {
+          lang = $pre[0].getAttribute('data-language');
+        } else if ($pre.parent().hasClass('sourceCode') && $pre[0].children.length > 0 && $pre[0].children[0].classList.length >= 2) {
+          lang = $pre[0].children[0].classList[1];
+          $pre.parent().addClass('code-wrapper');
+        } else if ($pre.parent().hasClass('markdown-body') && $pre[0].classList.length === 0) {
+          $pre.wrap('<div class="code-wrapper"></div>');
+        }
+        lang = lang.toUpperCase().replace('NONE', CONFIG.code_language.default);
+      }
+      $pre.append(copyTmpl.replace('LANG', lang).replace('code-widget">',
+        getBgClass($pre[0]) + (enableCopy ? ' code-widget copy-btn" data-clipboard-snippet><i class="iconfont icon-copy"></i>' : ' code-widget">')));
+
+      if (enableCopy) {
+        Fluid.utils.createScript('https://lib.baomitu.com/clipboard.js/2.0.10/clipboard.min.js', function() {
+          var clipboard = new window.ClipboardJS('.copy-btn', {
+            target: function(trigger) {
+              var nodes = trigger.parentNode.childNodes;
+              for (var i = 0; i < nodes.length; i++) {
+                if (nodes[i].tagName === 'CODE') {
+                  return nodes[i];
+                }
+              }
+            }
+          });
+          clipboard.on('success', function(e) {
+            e.clearSelection();
+            e.trigger.innerHTML = e.trigger.innerHTML.replace('icon-copy', 'icon-success');
+            setTimeout(function() {
+              e.trigger.innerHTML = e.trigger.innerHTML.replace('icon-success', 'icon-copy');
+            }, 2000);
+          });
+        });
+      }
+    });
+  })();
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script  src="/js/local-search.js" ></script>
+
+  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

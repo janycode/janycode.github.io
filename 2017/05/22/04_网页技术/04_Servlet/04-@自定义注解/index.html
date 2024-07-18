@@ -1,0 +1,959 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=light>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Jerry(姜源)">
+  <meta name="keywords" content="Java,Html,CSS,JavaScript,Python,C,Linux,shell编程经验分享、技术总结、心得体会">
+  
+    <meta name="description" content="1. Java 注解 JDK5.0之后引入的特性。  注解Annotation，用于描述元数据的修饰符，包括类、成员变量、构造方法、成员方法、方法参数和声明。示例： 123456public class UserDaoImpl implements UserDao &amp;#123;    @Override &#x2F;* Hey，快来看！这里有个注解 *&#x2F;    public void add() throw">
+<meta property="og:type" content="article">
+<meta property="og:title" content="04-@自定义注解">
+<meta property="og:url" content="https://janycode.github.io/2017/05/22/04_%E7%BD%91%E9%A1%B5%E6%8A%80%E6%9C%AF/04_Servlet/04-@%E8%87%AA%E5%AE%9A%E4%B9%89%E6%B3%A8%E8%A7%A3/index.html">
+<meta property="og:site_name" content="姜源の云笔记">
+<meta property="og:description" content="1. Java 注解 JDK5.0之后引入的特性。  注解Annotation，用于描述元数据的修饰符，包括类、成员变量、构造方法、成员方法、方法参数和声明。示例： 123456public class UserDaoImpl implements UserDao &amp;#123;    @Override &#x2F;* Hey，快来看！这里有个注解 *&#x2F;    public void add() throw">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230316142446.png">
+<meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230316142454.png">
+<meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230316142502.png">
+<meta property="article:published_time" content="2017-05-22T14:26:20.000Z">
+<meta property="article:modified_time" content="2023-12-24T03:11:24.288Z">
+<meta property="article:author" content="Jerry(姜源)">
+<meta property="article:tag" content="Servlet">
+<meta property="article:tag" content="自定义注解">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230316142446.png">
+  
+  
+    <meta name="referrer" content="no-referrer-when-downgrade">
+  
+  
+  <title>04-@自定义注解 - 姜源の云笔记</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"janycode.github.io","root":"/","version":"1.9.0","typing":{"enable":true,"typeSpeed":50,"cursorChar":"|","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":false},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":"bfff735c897eb60ea49b735096b20e47","google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+
+  
+<meta name="generator" content="Hexo 6.2.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 50vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>姜源の云笔记</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tools/">
+                <i class="iconfont icon-slack-fill"></i>
+                工具
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" target="_blank" rel="noopener" href="https://janycode.gitee.io/">
+                <i class="iconfont icon-gitee-fill"></i>
+                Gitee
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="04-@自定义注解"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-author" aria-hidden="true"></i>
+        Jerry(姜源)
+      </span>
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2017-05-22 22:26" pubdate>
+          星期一, 2017/05/22 22:26:20
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          <!-- compatible with older versions-->
+          7.6k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          <!-- compatible with older versions-->
+          64 分钟
+        
+      </span>
+    
+
+    
+    
+      
+        <span id="busuanzi_container_page_pv" style="display: none">
+          <i class="iconfont icon-eye" aria-hidden="true"></i>
+          <span id="busuanzi_value_page_pv"></span> 次
+        </span>
+        
+      
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">04-@自定义注解</h1>
+            
+            <div class="markdown-body">
+              
+              <h3 id="1-Java-注解"><a href="#1-Java-注解" class="headerlink" title="1. Java 注解"></a>1. Java 注解</h3><blockquote>
+<p>JDK5.0之后引入的特性。</p>
+</blockquote>
+<p><code>注解Annotation</code>，用于描述元数据的修饰符，包括类、成员变量、构造方法、成员方法、方法参数和声明。<br>示例：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">UserDaoImpl</span> <span class="hljs-keyword">implements</span> <span class="hljs-title class_">UserDao</span> &#123;<br>    <span class="hljs-meta">@Override</span> <span class="hljs-comment">/* Hey，快来看！这里有个注解 */</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">add</span><span class="hljs-params">()</span> <span class="hljs-keyword">throws</span> Exception &#123;<br>        System.out.println(<span class="hljs-string">&quot;add user...&quot;</span>);<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+<h4 id="1-1-Java-注解作用"><a href="#1-1-Java-注解作用" class="headerlink" title="1.1 Java 注解作用"></a>1.1 Java 注解作用</h4><p>注解的作用:</p>
+<ol>
+<li>生成文档或提供配置信息</li>
+<li>跟踪代码依赖性</li>
+<li>编译时进行格式检查</li>
+</ol>
+<h4 id="1-2-Java-注解分类"><a href="#1-2-Java-注解分类" class="headerlink" title="1.2 Java 注解分类"></a>1.2 Java 注解分类</h4><p>按类型分：</p>
+<ul>
+<li><strong>标记注解</strong>：注解中没有属性可以设置，如 @Override、@Deprecated</li>
+<li><strong>单值注解</strong>：注解中只有一个属性(“value&#x3D;”可省略)，如 @SuppressWarings{ String[] value; }</li>
+<li><strong>完整注解</strong>：注解中有多个属性，如@WebServlet(name &#x3D; “MyServlet”, urlPatterns &#x3D; “&#x2F;demo01”, initParams &#x3D; {@WebInitParam(name &#x3D; “root”, value &#x3D; “1234”)})</li>
+</ul>
+<p>按来源分：</p>
+<ul>
+<li>JDK内置注解</li>
+<li>第三方注解（框架注解）</li>
+<li>自定义注解</li>
+</ul>
+<h4 id="1-3-Java-元注解-注解的注解"><a href="#1-3-Java-元注解-注解的注解" class="headerlink" title="1.3 Java 元注解 - 注解的注解"></a>1.3 Java 元注解 - 注解的注解</h4><p><code>定义在自定义注解上</code>，规定自定义的<code>作用区域</code>、<code>存活策略</code>。</p>
+<ul>
+<li><p><code>@Target</code> 规定自定义注解的作用区域（默认全区域）</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-meta">@interface</span> Target &#123;<br>    ElementType[] value();<br>&#125;<br><span class="hljs-comment">// 使用</span><br><span class="hljs-meta">@Target(ElementType.METHOD)</span> <span class="hljs-comment">// 该注解只能作用在方法上</span><br><span class="hljs-keyword">public</span> <span class="hljs-meta">@interface</span> 自定义注解名 &#123;<br>&#125;<br></code></pre></td></tr></table></figure>
+<blockquote>
+<p>当前定义的注解可以应用的范围：</p>
+<ul>
+<li>TYPE, 类、接口、枚举的类型定义上</li>
+<li>FIELD, 成员变量上</li>
+<li>METHOD, 成员方法上</li>
+<li>PARAMETER, 方法参数上</li>
+<li>CONSTRUCTOR, 构造方法上</li>
+<li>LOCAL_VARIABLE, 局部变量上</li>
+<li>ANNOTATION_TYPE, 注解类型上</li>
+<li>PACKAGE, 包定义语句上</li>
+<li>TYPE_PARAMETER, 类型参数声明</li>
+<li>TYPE_USE, 使用一个类型</li>
+</ul>
+</blockquote>
+</li>
+<li><p><code>@Retention</code> 规定自定义注解的存活策略（一般情况下设置RUNTIME）</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-meta">@interface</span> Retention &#123;<br>    RetentionPolicy <span class="hljs-title function_">value</span><span class="hljs-params">()</span>;<br>&#125;<br><span class="hljs-comment">// 使用</span><br><span class="hljs-meta">@Retention(RetentionPolicy.RUNTIME)</span> <span class="hljs-comment">// 运行时可被反射捕获该注解</span><br><span class="hljs-keyword">public</span> <span class="hljs-meta">@interface</span> 自定义注解名 &#123;<br>&#125;<br></code></pre></td></tr></table></figure>
+<blockquote>
+<p>当前定义的注解可以存活的方式：</p>
+<ul>
+<li>SOURCE, 仅仅停留在源码中，编译时即除去</li>
+<li>CLASS, 保留到编译后的字节码中，运行时无法获取注解信息</li>
+<li>RUNTIME, <strong>保留到运行时，通过反射机制可以获取注解信息</strong></li>
+</ul>
+</blockquote>
+</li>
+<li><p><code>@Documented</code> 文档标记注解（无参数）<br>将注解中的内容包含到Javadoc中。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-meta">@interface</span> Documented &#123; &#125;<br></code></pre></td></tr></table></figure>
+</li>
+<li><p><code>@Inherited</code> 可随修饰类被继承的标记注解（无参数）<br>例如B继承了A，A添加了注解，那么B也会继承同样的注解。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-meta">@interface</span> Inherited &#123; &#125;<br></code></pre></td></tr></table></figure></li>
+</ul>
+<h3 id="2-自定义注解"><a href="#2-自定义注解" class="headerlink" title="2. 自定义注解"></a>2. 自定义注解</h3><p>格式：（default 默认值可省略）</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@Retention(RetentionPolicy.RUNTIME)</span><br><span class="hljs-keyword">public</span> <span class="hljs-meta">@interface</span> 自定义注解名 &#123;<br>    数据类型 属性名<span class="hljs-number">1</span>() <span class="hljs-keyword">default</span> 默认值<span class="hljs-number">1</span>;<br>    数据类型 属性名<span class="hljs-number">2</span>() <span class="hljs-keyword">default</span> 默认值<span class="hljs-number">2</span>;<br>    数据类型 属性名<span class="hljs-number">3</span>()[] <span class="hljs-keyword">default</span> &#123;元素值<span class="hljs-number">1</span>, 元素值<span class="hljs-number">2</span>&#125;; <span class="hljs-comment">// 注解中的数组</span><br>&#125;<br></code></pre></td></tr></table></figure>
+<p>eg:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@Retention(RetentionPolicy.RUNTIME)</span><br><span class="hljs-keyword">public</span> <span class="hljs-meta">@interface</span> MyAnnotation &#123;<br>    String <span class="hljs-title function_">username</span><span class="hljs-params">()</span> <span class="hljs-keyword">default</span> <span class="hljs-string">&quot;root&quot;</span>;<br>    <span class="hljs-type">int</span> <span class="hljs-title function_">age</span><span class="hljs-params">()</span> <span class="hljs-keyword">default</span> <span class="hljs-number">18</span>;<br>	String <span class="hljs-title function_">citys</span><span class="hljs-params">()</span>[] <span class="hljs-keyword">default</span> &#123;<span class="hljs-string">&quot;北京&quot;</span>, <span class="hljs-string">&quot;上海&quot;</span>, <span class="hljs-string">&quot;广州&quot;</span>, <span class="hljs-string">&quot;深圳&quot;</span>&#125;;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<h3 id="3-注解信息获取"><a href="#3-注解信息获取" class="headerlink" title="3. 注解信息获取"></a>3. 注解信息获取</h3><p><strong>核心步骤</strong>：——<code>反射机制</code><br> <strong>①</strong> 注解在类&#x2F;方法上，获取对应的 <code>Class 对象</code> &#x2F; <code>Method 对象</code><br> <strong>②</strong> 判断类&#x2F;方法上的注解是否存在 <code>.isAnnotationPresent(注解名.class)</code><br> <strong>③</strong> 获取注解信息 <code>.getAnnotation(注解名.class)</code></p>
+<h4 id="3-1-获取并执行自定义注解修饰的方法（标记注解）"><a href="#3-1-获取并执行自定义注解修饰的方法（标记注解）" class="headerlink" title="3.1 获取并执行自定义注解修饰的方法（标记注解）"></a>3.1 获取并执行自定义注解修饰的方法（标记注解）</h4><p>步骤：<br>1.自定义注解<br>2.在测试类上使用该自定义注解<br>3.让自定义注解生效<br>    ● 获取测试类的Class对象<br>    ● 获取测试类的成员方法<br>    ● 判断方法上是否有自定义注解<br>    ● 执行添加了注解的方法</p>
+<p>自定义注解：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@Retention(RetentionPolicy.RUNTIME)</span><br><span class="hljs-keyword">public</span> <span class="hljs-meta">@interface</span> MyTest &#123;<br>&#125;<br></code></pre></td></tr></table></figure>
+<p>使用自定义注解修饰方法：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">class</span> <span class="hljs-title class_">Test01</span> &#123;<br>    <span class="hljs-meta">@MyTest</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">t1</span><span class="hljs-params">()</span> &#123; System.out.println(<span class="hljs-string">&quot;t1 t1...&quot;</span>); &#125;<br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">t2</span><span class="hljs-params">()</span> &#123; System.out.println(<span class="hljs-string">&quot;t2 t2...&quot;</span>); &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+<p>调用执行自定义注解修饰的方法：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">TestMyTest</span> &#123;<br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">main</span><span class="hljs-params">(String[] args)</span> &#123;<br>        <span class="hljs-comment">/* 使用反射去扫描 Test01 中有哪些方法有 @MyTest注解 */</span><br>        <span class="hljs-comment">// 1.获取 Class 对象</span><br>        Class&lt;Test01&gt; clazz = Test01.class;<br>        <span class="hljs-comment">// 2.获取类里成员方法(@Test注解的方法被强制public且无参)</span><br>        Method[] methods = clazz.getMethods();<br>        Arrays.stream(methods).forEach(method -&gt; &#123;<br>            <span class="hljs-comment">// method 就是单个方法对象</span><br>            <span class="hljs-comment">// 3.判断方法上的注解</span><br>            <span class="hljs-type">boolean</span> <span class="hljs-variable">flag</span> <span class="hljs-operator">=</span> method.isAnnotationPresent(MyTest.class);<br>            <span class="hljs-comment">//System.out.println(method.getName() + &quot;:&quot; + flag);</span><br>            <span class="hljs-keyword">if</span> (flag) &#123;<br>                <span class="hljs-keyword">try</span> &#123;<br>                    method.invoke(clazz.newInstance());<br>                &#125; <span class="hljs-keyword">catch</span> (Exception e) &#123;<br>                    e.printStackTrace();<br>                &#125;<br>            &#125;<br>        &#125;);<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+<p>运行结果：<br><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230316142446.png" srcset="/img/loading.gif" lazyload alt="Java注解"></p>
+<h4 id="3-2-获取注解参数信息用于数据库初始化（完整注解）"><a href="#3-2-获取注解参数信息用于数据库初始化（完整注解）" class="headerlink" title="3.2 获取注解参数信息用于数据库初始化（完整注解）"></a>3.2 获取注解参数信息用于数据库初始化（完整注解）</h4><p>步骤：<br>1.自定义注解@JDBCInfo<br>2.在DBUtils工具类上使用@JDBCInfo<br>3.在DBUtils工具类的静态代码中获取注解中的属性(反射读取注解信息)</p>
+<p>自定义注解：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@Retention(RetentionPolicy.RUNTIME)</span><br><span class="hljs-keyword">public</span> <span class="hljs-meta">@interface</span> JDBCInfo &#123;<br>    String <span class="hljs-title function_">driverClass</span><span class="hljs-params">()</span> <span class="hljs-keyword">default</span> <span class="hljs-string">&quot;com.mysql.jdbc.Driver&quot;</span>;<br>    String <span class="hljs-title function_">url</span><span class="hljs-params">()</span> <span class="hljs-keyword">default</span> <span class="hljs-string">&quot;jdbc:mysql://localhost:3306/demo&quot;</span>;<br>    String <span class="hljs-title function_">username</span><span class="hljs-params">()</span> <span class="hljs-keyword">default</span> <span class="hljs-string">&quot;root&quot;</span>;<br>    String <span class="hljs-title function_">password</span><span class="hljs-params">()</span> <span class="hljs-keyword">default</span> <span class="hljs-string">&quot;1234&quot;</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
+<p>JDBC工具类中获取注解默认值信息(覆盖了密码值)：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@JDBCInfo(password = &quot;123456&quot;)</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">DBUtils</span> &#123;<br>    <span class="hljs-keyword">private</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">final</span> String DRIVERCLASS;<br>    <span class="hljs-keyword">private</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">final</span> String URL;<br>    <span class="hljs-keyword">private</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">final</span> String USERNAME;<br>    <span class="hljs-keyword">private</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">final</span> String PASSWORD;<br><br>    <span class="hljs-keyword">static</span> &#123;<br>        Class&lt;DBUtils&gt; dbClass = DBUtils.class;<br>        <span class="hljs-type">boolean</span> <span class="hljs-variable">present</span> <span class="hljs-operator">=</span> dbClass.isAnnotationPresent(JDBCInfo.class);<br>        <span class="hljs-keyword">if</span> (present) &#123;<br>            <span class="hljs-type">JDBCInfo</span> <span class="hljs-variable">jdbcInfo</span> <span class="hljs-operator">=</span> dbClass.getAnnotation(JDBCInfo.class);<br>            DRIVERCLASS = jdbcInfo.driverClass();<br>            URL = jdbcInfo.url();<br>            USERNAME = jdbcInfo.username();<br>            PASSWORD = jdbcInfo.password();<br>            System.out.println(DRIVERCLASS + <span class="hljs-string">&quot; &quot;</span> + URL + <span class="hljs-string">&quot; &quot;</span> + USERNAME + <span class="hljs-string">&quot; &quot;</span> + PASSWORD);<br>        &#125; <span class="hljs-keyword">else</span> &#123;<br>            <span class="hljs-comment">// 没有注解从 Properties 中取</span><br>            <span class="hljs-type">Properties</span> <span class="hljs-variable">properties</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">Properties</span>();<br>            <span class="hljs-type">InputStream</span> <span class="hljs-variable">is</span> <span class="hljs-operator">=</span> DBUtils.class.getClassLoader().getResourceAsStream(<span class="hljs-string">&quot;database.properties&quot;</span>);<br>            <span class="hljs-keyword">try</span> &#123;<br>                properties.load(is);<br>            &#125; <span class="hljs-keyword">catch</span> (Exception e) &#123;<br>                e.printStackTrace();<br>            &#125;<br>            DRIVERCLASS = properties.getProperty(<span class="hljs-string">&quot;driver&quot;</span>);<br>            URL = properties.getProperty(<span class="hljs-string">&quot;url&quot;</span>);<br>            USERNAME = properties.getProperty(<span class="hljs-string">&quot;username&quot;</span>);<br>            PASSWORD = properties.getProperty(<span class="hljs-string">&quot;password&quot;</span>);<br>        &#125;<br>    &#125;<br><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">loadDriver</span><span class="hljs-params">()</span> <span class="hljs-keyword">throws</span> Exception &#123;<br>        Class.forName(DRIVERCLASS);<br>    &#125;<br><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> Connection <span class="hljs-title function_">getConnection</span><span class="hljs-params">()</span> <span class="hljs-keyword">throws</span> Exception &#123;<br>        <span class="hljs-keyword">return</span> DriverManager.getConnection(URL, USERNAME, PASSWORD);<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+<p>测试类调用：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">TestJDBCInfo</span> &#123;<br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">main</span><span class="hljs-params">(String[] args)</span> <span class="hljs-keyword">throws</span> Exception &#123;<br>        <span class="hljs-keyword">new</span> <span class="hljs-title class_">DBUtils</span>();<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+<p>运行结果：<br><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230316142454.png" srcset="/img/loading.gif" lazyload alt="Java注解"></p>
+<h3 id="4-注解-反射-动态代理设计模式-实现【日志记录】"><a href="#4-注解-反射-动态代理设计模式-实现【日志记录】" class="headerlink" title="4. 注解+反射+动态代理设计模式 实现【日志记录】"></a>4. 注解+反射+动态代理设计模式 实现【日志记录】</h3><p>① 自定义注解：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@Retention(RetentionPolicy.RUNTIME)</span><br><span class="hljs-keyword">public</span> <span class="hljs-meta">@interface</span> SysLog &#123; &#125;<br></code></pre></td></tr></table></figure>
+<p>② UserDao接口：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">interface</span> <span class="hljs-title class_">UserDao</span> &#123;<br>    <span class="hljs-meta">@SysLog</span><br>    <span class="hljs-keyword">void</span> <span class="hljs-title function_">add</span><span class="hljs-params">()</span>;<br>    <span class="hljs-meta">@SysLog</span><br>    <span class="hljs-keyword">void</span> <span class="hljs-title function_">del</span><span class="hljs-params">()</span>;<br>    <span class="hljs-keyword">void</span> <span class="hljs-title function_">upd</span><span class="hljs-params">()</span>;<br>    <span class="hljs-keyword">void</span> <span class="hljs-title function_">get</span><span class="hljs-params">()</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
+<p>③ UserDaoImpl实现类：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">UserDaoImpl</span> <span class="hljs-keyword">implements</span> <span class="hljs-title class_">UserDao</span> &#123;<br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">add</span><span class="hljs-params">()</span> &#123; System.out.println(<span class="hljs-string">&quot;add method executed...&quot;</span>); &#125;<br><br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">del</span><span class="hljs-params">()</span> &#123; System.out.println(<span class="hljs-string">&quot;del method executed...&quot;</span>); &#125;<br><br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">upd</span><span class="hljs-params">()</span> &#123; System.out.println(<span class="hljs-string">&quot;upd method executed...&quot;</span>); &#125;<br><br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">get</span><span class="hljs-params">()</span> &#123; System.out.println(<span class="hljs-string">&quot;get method executed...&quot;</span>); &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+<p>④ 动态代理设计模式 - 测试类：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">TestSysLog</span> &#123;<br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">main</span><span class="hljs-params">(String[] args)</span> &#123;<br>        <span class="hljs-type">UserDao</span> <span class="hljs-variable">userDao</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">UserDaoImpl</span>();<br>        <span class="hljs-type">UserDao</span> <span class="hljs-variable">p</span> <span class="hljs-operator">=</span> (UserDao) Proxy.newProxyInstance(<br>                userDao.getClass().getClassLoader(),<br>                userDao.getClass().getInterfaces(),<br>                (proxy, method, argss) -&gt; &#123;<br>                    <span class="hljs-comment">// 1.检查方法上是否有对应注解</span><br>                    <span class="hljs-type">boolean</span> <span class="hljs-variable">present</span> <span class="hljs-operator">=</span> method.isAnnotationPresent(SysLog.class);<br>                    <span class="hljs-keyword">if</span> (present) &#123;<br>                        <span class="hljs-type">String</span> <span class="hljs-variable">className</span> <span class="hljs-operator">=</span> UserDao.class.getName();<br>                        <span class="hljs-type">String</span> <span class="hljs-variable">methodName</span> <span class="hljs-operator">=</span> method.getName();<br>                        <span class="hljs-comment">// 2.拼接日志需要的时间和必要信息</span><br>                        <span class="hljs-type">String</span> <span class="hljs-variable">currTimeStr</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">SimpleDateFormat</span>(<span class="hljs-string">&quot;yyyy/MM/dd hh:mm:ss&quot;</span>).format(<span class="hljs-keyword">new</span> <span class="hljs-title class_">Date</span>());<br>                        System.out.println(<span class="hljs-string">&quot;[&quot;</span> + currTimeStr + <span class="hljs-string">&quot;]&lt;&quot;</span> + className + <span class="hljs-string">&quot;&gt; &quot;</span> + methodName + <span class="hljs-string">&quot;():&quot;</span>);<br>                    &#125;<br>                    <span class="hljs-comment">// 3.打印日志(有注解) + 执行原方法(有/无注解)</span><br>                    <span class="hljs-keyword">return</span> method.invoke(userDao);<br>                &#125;<br>        );<br>        p.add();<br>        p.del();<br>        p.upd();<br>        p.get();<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+<p>运行结果：<br><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230316142502.png" srcset="/img/loading.gif" lazyload alt="Java注解"></p>
+<h3 id="5-常用注解说明"><a href="#5-常用注解说明" class="headerlink" title="5. 常用注解说明"></a>5. 常用注解说明</h3><h4 id="5-1-JDK-内置注解"><a href="#5-1-JDK-内置注解" class="headerlink" title="5.1 JDK 内置注解"></a>5.1 JDK 内置注解</h4><ul>
+<li><p><code>@Override</code>  <strong>方法覆盖注解</strong><br>判断子类中的方法是否是一个父类方法的重写方法。</p>
+</li>
+<li><p><code>@Deprecated</code>  <strong>过时标记注解</strong><br>标记一个类&#x2F;方法&#x2F;变量是否是过时的，调用时会有删除线。</p>
+</li>
+<li><p><code>@SupressWarning(&quot;all&quot;)</code>  <strong>压制警告注解</strong><br>可以消除编译器&#x2F;开发工具烦人的警告的提示，一般给 all 即可。</p>
+</li>
+<li><p><code>@FunctionaInterface</code> <strong>函数式接口注解</strong><br>该方法只有1个公开抽象方法，用于 Lambda 表达式简写匿名内部类。</p>
+</li>
+<li><p><code>@SafeVarargs</code> <strong>安全的可变参数注解</strong><br>jdk1.7引入的适用于可变参数与泛型能够更好结合的一个注解，也就是说如果你认为你的方法或者构造方法是类型安全的，那么你也就可以使用 @SafeVarargs 来跳过@SuppressWarnings(“unchecked”) 检查。</p>
+</li>
+</ul>
+<h4 id="5-2-Junit-单元测试注解"><a href="#5-2-Junit-单元测试注解" class="headerlink" title="5.2 Junit 单元测试注解"></a>5.2 Junit 单元测试注解</h4><ul>
+<li><p><code>@Test</code> <strong>单元测试注解</strong><br>该注解的方法被强制public且无参，可以直接运行被改注解修饰的方法，底层还是 main 方法运行（通过反射执行）。</p>
+</li>
+<li><p><code>@Ignore</code> <strong>忽略测试注解</strong><br>暂时不运行某些测试方法\测试类，可以在方法前加上这个注解。（不建议经常这么做）</p>
+</li>
+<li><p><code>@BeforeClass</code> <strong>优先测试注解</strong><br>在测试类里所有用例运行之前，运行一次这个方法。例如创建数据库连接、读取文件等。</p>
+</li>
+</ul>
+<p>还有其他的，比较简单，暂不赘述，随用随查即可。</p>
+<h4 id="5-3-Servlet-配置注解"><a href="#5-3-Servlet-配置注解" class="headerlink" title="5.3 Servlet 配置注解"></a>5.3 Servlet 配置注解</h4><ul>
+<li><code>@WebServlet</code> <strong>web资源配置注解</strong><br>Servlet3.0+版本支持，可以替代web.xml配置。<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@WebServlet(</span><br><span class="hljs-meta">    name = &quot;TestWebServlet&quot;, // 设置 Servlet 的映射名字（通常与类名一致）</span><br><span class="hljs-meta">    /*value = &#123;&quot;/demo&quot;, &quot;/web&quot;&#125;,*/</span><br><span class="hljs-meta">    urlPatterns = &#123;&quot;/demo01&quot;, &quot;/web01&quot;&#125;, // 设置 Servlet 访问资源名（value同urlPatterns）</span><br><span class="hljs-meta">    loadOnStartup = 1, // 设置 Servlet 启动优先级</span><br><span class="hljs-meta">    initParams = &#123; // 设置 Servlet 启动参数</span><br><span class="hljs-meta">        @WebInitParam(name = &quot;username&quot;, value = &quot;root&quot;),</span><br><span class="hljs-meta">        @WebInitParam(name = &quot;password&quot;, value = &quot;123456&quot;),</span><br><span class="hljs-meta">    &#125;</span><br><span class="hljs-meta">)</span><br></code></pre></td></tr></table></figure></li>
+</ul>
+<h4 id="5-4-其他框架注解"><a href="#5-4-其他框架注解" class="headerlink" title="5.4 其他框架注解"></a>5.4 其他框架注解</h4><p>——更多第三方注解后续汇总…</p>
+<h2 id="6-xml与注解优劣对比"><a href="#6-xml与注解优劣对比" class="headerlink" title="6. xml与注解优劣对比"></a>6. xml与注解优劣对比</h2><p><code>xml</code><br><strong>优点</strong>：</p>
+<ol>
+<li>降低耦合，使容易扩展</li>
+<li>对象之间的关系一目了然</li>
+<li>xml配置文件比注解功能齐全</li>
+</ol>
+<p><strong>缺点</strong>：</p>
+<ol>
+<li>配置文件配置工作量相对注解要大</li>
+</ol>
+<p><code>注解</code><br><strong>优点</strong>：</p>
+<ol>
+<li>在class文件中，可以降低维护成本</li>
+<li>提高开发效率</li>
+</ol>
+<p><strong>缺点</strong>：</p>
+<ol>
+<li>如果对注解文件(Annotation)进行修改，需要重新编译整个工程</li>
+<li>业务类之间的关系不如xml配置那样一目了然</li>
+<li>程序中过多的注解，对于代码的简洁度有一定影响</li>
+<li>注解功能没有xml配置文件齐全</li>
+</ol>
+
+              
+            </div>
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/04-%E7%BD%91%E9%A1%B5%E6%8A%80%E6%9C%AF/" class="category-chain-item">04_网页技术</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/04-%E7%BD%91%E9%A1%B5%E6%8A%80%E6%9C%AF/04-Servlet/" class="category-chain-item">04_Servlet</a>
+  
+  
+
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/Servlet/">#Servlet</a>
+      
+        <a href="/tags/%E8%87%AA%E5%AE%9A%E4%B9%89%E6%B3%A8%E8%A7%A3/">#自定义注解</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>04-@自定义注解</div>
+      <div>https://janycode.github.io/2017/05/22/04_网页技术/04_Servlet/04-@自定义注解/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Jerry(姜源)</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2017年5月22日</div>
+        </div>
+      
+      
+      <div class="license-meta-item">
+        <div>许可协议</div>
+        <div>
+          
+            
+            
+              <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+              <span class="hint--top hint--rounded" aria-label="BY - 姜源">
+                <i class="iconfont icon-by"></i>
+              </span>
+              </a>
+            
+          
+        </div>
+      </div>
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2017/05/22/04_%E7%BD%91%E9%A1%B5%E6%8A%80%E6%9C%AF/04_Servlet/03-web.xml%E9%85%8D%E7%BD%AE/" title="03-web.xml配置">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">03-web.xml配置</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2017/05/22/04_%E7%BD%91%E9%A1%B5%E6%8A%80%E6%9C%AF/04_Servlet/05-request,response/" title="05-request,response">
+                        <span class="hidden-mobile">05-request,response</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+  <article id="comments" lazyload>
+    
+  <div id="SOHUCS" sid='https://janycode.github.io/2017/05/22/04_%E7%BD%91%E9%A1%B5%E6%8A%80%E6%9C%AF/04_Servlet/04-@%E8%87%AA%E5%AE%9A%E4%B9%89%E6%B3%A8%E8%A7%A3/'></div>
+  <script type="text/javascript">
+    Fluid.utils.loadComments('#SOHUCS', function() {
+      Fluid.utils.createScript("https://changyan.sohu.com/upload/changyan.js", function() {
+        window.changyan.api.config({"appid":"cyw5OHIcO","appkey":"fea3446b3df4b3f129f34da4cbc87e51"})
+      });
+    });
+  </script>
+  <noscript>Please enable JavaScript to view the comments</noscript>
+
+
+  </article>
+
+
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://simple.blog.csdn.net" target="_blank" rel="nofollow noopener"><span>CSDN</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/janycode" target="_blank" rel="nofollow noopener"><span>GitHub</span></a> <i class="iconfont icon-love"></i> <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="busuanzi_container_site_pv" style="display: none">
+        总访问量(PV) 
+        <span id="busuanzi_value_site_pv"></span>
+         次，
+      </span>
+    
+    
+      <span id="busuanzi_container_site_uv" style="display: none">
+        总访客数(UV) 
+        <span id="busuanzi_value_site_uv"></span>
+         人
+      </span>
+    
+    
+  
+</div>
+
+  
+  
+  
+</div>
+
+<!-- live2d 动画 -->
+<script src="https://eqcn.ajz.miesnfu.com/wp-content/plugins/wp-3d-pony/live2dw/lib/L2Dwidget.min.js"></script>
+<script>
+    L2Dwidget.init({
+        "model": {
+            jsonPath: "https://unpkg.com/live2d-widget-model-haruto@1.0.5/assets/haruto.model.json",
+            "scale": 1
+        },
+        "display": {
+            "position": "right",
+            "width": 100,
+            "height": 200,
+            "hOffset": 35,
+            "vOffset": -85
+        },
+        "mobile": {
+            "show": false,
+            "scale": 0.1
+        },
+        "react": {
+            "opacityDefault": 0.75,
+            "opacityOnHover": 0.2
+        }
+    });
+</script>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <!-- Baidu Analytics -->
+    <script defer>
+      if (!Fluid.ctx.dnt) {
+        var _hmt = _hmt || [];
+        (function() {
+          var hm = document.createElement("script");
+          hm.src = "https://hm.baidu.com/hm.js?bfff735c897eb60ea49b735096b20e47";
+          var s = document.getElementsByTagName("script")[0];
+          s.parentNode.insertBefore(hm, s);
+        })();
+      }
+    </script>
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.0/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      headingSelector : CONFIG.toc.headingSelector || 'h1,h2,h3,h4,h5,h6',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      collapseDepth   : CONFIG.toc.collapseDepth || 0,
+      scrollSmooth    : true,
+      headingsOffset  : -boardTop
+    });
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+  });
+</script>
+
+
+  <script>
+  (function() {
+    var enableLang = CONFIG.code_language.enable && CONFIG.code_language.default;
+    var enableCopy = CONFIG.copy_btn;
+    if (!enableLang && !enableCopy) {
+      return;
+    }
+
+    function getBgClass(ele) {
+      return Fluid.utils.getBackgroundLightness(ele) >= 0 ? 'code-widget-light' : 'code-widget-dark';
+    }
+
+    var copyTmpl = '';
+    copyTmpl += '<div class="code-widget">';
+    copyTmpl += 'LANG';
+    copyTmpl += '</div>';
+    jQuery('.markdown-body pre').each(function() {
+      var $pre = jQuery(this);
+      if ($pre.find('code.mermaid').length > 0) {
+        return;
+      }
+      if ($pre.find('span.line').length > 0) {
+        return;
+      }
+
+      var lang = '';
+
+      if (enableLang) {
+        lang = CONFIG.code_language.default;
+        if ($pre[0].children.length > 0 && $pre[0].children[0].classList.length >= 2 && $pre.children().hasClass('hljs')) {
+          lang = $pre[0].children[0].classList[1];
+        } else if ($pre[0].getAttribute('data-language')) {
+          lang = $pre[0].getAttribute('data-language');
+        } else if ($pre.parent().hasClass('sourceCode') && $pre[0].children.length > 0 && $pre[0].children[0].classList.length >= 2) {
+          lang = $pre[0].children[0].classList[1];
+          $pre.parent().addClass('code-wrapper');
+        } else if ($pre.parent().hasClass('markdown-body') && $pre[0].classList.length === 0) {
+          $pre.wrap('<div class="code-wrapper"></div>');
+        }
+        lang = lang.toUpperCase().replace('NONE', CONFIG.code_language.default);
+      }
+      $pre.append(copyTmpl.replace('LANG', lang).replace('code-widget">',
+        getBgClass($pre[0]) + (enableCopy ? ' code-widget copy-btn" data-clipboard-snippet><i class="iconfont icon-copy"></i>' : ' code-widget">')));
+
+      if (enableCopy) {
+        Fluid.utils.createScript('https://lib.baomitu.com/clipboard.js/2.0.10/clipboard.min.js', function() {
+          var clipboard = new window.ClipboardJS('.copy-btn', {
+            target: function(trigger) {
+              var nodes = trigger.parentNode.childNodes;
+              for (var i = 0; i < nodes.length; i++) {
+                if (nodes[i].tagName === 'CODE') {
+                  return nodes[i];
+                }
+              }
+            }
+          });
+          clipboard.on('success', function(e) {
+            e.clearSelection();
+            e.trigger.innerHTML = e.trigger.innerHTML.replace('icon-copy', 'icon-success');
+            setTimeout(function() {
+              e.trigger.innerHTML = e.trigger.innerHTML.replace('icon-success', 'icon-copy');
+            }, 2000);
+          });
+        });
+      }
+    });
+  })();
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script  src="/js/local-search.js" ></script>
+
+  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

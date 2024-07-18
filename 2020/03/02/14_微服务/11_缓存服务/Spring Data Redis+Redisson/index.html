@@ -1,0 +1,893 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=light>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Jerry(姜源)">
+  <meta name="keywords" content="Java,Html,CSS,JavaScript,Python,C,Linux,shell编程经验分享、技术总结、心得体会">
+  
+    <meta name="description" content="官网地址：https:&#x2F;&#x2F;spring.io&#x2F;projects&#x2F;spring-data-redis 参考文档：https:&#x2F;&#x2F;docs.spring.io&#x2F;spring-data&#x2F;data-redis&#x2F;docs&#x2F;current&#x2F;reference&#x2F;html&#x2F; 1. 简介适合：高频 使用的数据、具有有效期的数据 不适合：频繁修改的数据、敏感数据 常用技术：Redis、MongoDB 对比：  Re">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Spring Data Redis+Redisson">
+<meta property="og:url" content="https://janycode.github.io/2020/03/02/14_%E5%BE%AE%E6%9C%8D%E5%8A%A1/11_%E7%BC%93%E5%AD%98%E6%9C%8D%E5%8A%A1/Spring%20Data%20Redis+Redisson/index.html">
+<meta property="og:site_name" content="姜源の云笔记">
+<meta property="og:description" content="官网地址：https:&#x2F;&#x2F;spring.io&#x2F;projects&#x2F;spring-data-redis 参考文档：https:&#x2F;&#x2F;docs.spring.io&#x2F;spring-data&#x2F;data-redis&#x2F;docs&#x2F;current&#x2F;reference&#x2F;html&#x2F; 1. 简介适合：高频 使用的数据、具有有效期的数据 不适合：频繁修改的数据、敏感数据 常用技术：Redis、MongoDB 对比：  Re">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20200815230440.png">
+<meta property="article:published_time" content="2020-03-02T09:59:44.000Z">
+<meta property="article:modified_time" content="2023-12-24T03:11:24.590Z">
+<meta property="article:author" content="Jerry(姜源)">
+<meta property="article:tag" content="微服务">
+<meta property="article:tag" content="Redis">
+<meta property="article:tag" content="缓存服务">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20200815230440.png">
+  
+  
+    <meta name="referrer" content="no-referrer-when-downgrade">
+  
+  
+  <title>Spring Data Redis+Redisson - 姜源の云笔记</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"janycode.github.io","root":"/","version":"1.9.0","typing":{"enable":true,"typeSpeed":50,"cursorChar":"|","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":false},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":"bfff735c897eb60ea49b735096b20e47","google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+
+  
+<meta name="generator" content="Hexo 6.2.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 50vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>姜源の云笔记</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tools/">
+                <i class="iconfont icon-slack-fill"></i>
+                工具
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" target="_blank" rel="noopener" href="https://janycode.gitee.io/">
+                <i class="iconfont icon-gitee-fill"></i>
+                Gitee
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="Spring Data Redis+Redisson"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-author" aria-hidden="true"></i>
+        Jerry(姜源)
+      </span>
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2020-03-02 17:59" pubdate>
+          星期一, 2020/03/02 17:59:44
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          <!-- compatible with older versions-->
+          22k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          <!-- compatible with older versions-->
+          187 分钟
+        
+      </span>
+    
+
+    
+    
+      
+        <span id="busuanzi_container_page_pv" style="display: none">
+          <i class="iconfont icon-eye" aria-hidden="true"></i>
+          <span id="busuanzi_value_page_pv"></span> 次
+        </span>
+        
+      
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">Spring Data Redis+Redisson</h1>
+            
+            <div class="markdown-body">
+              
+              <p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20200815230440.png" srcset="/img/loading.gif" lazyload alt="image-20200815230439632"></p>
+<p>官网地址：<a target="_blank" rel="noopener" href="https://spring.io/projects/spring-data-redis">https://spring.io/projects/spring-data-redis</a></p>
+<p>参考文档：<a target="_blank" rel="noopener" href="https://docs.spring.io/spring-data/data-redis/docs/current/reference/html/">https://docs.spring.io/spring-data/data-redis/docs/current/reference/html/</a></p>
+<h3 id="1-简介"><a href="#1-简介" class="headerlink" title="1. 简介"></a>1. 简介</h3><p>适合：高频 使用的数据、具有有效期的数据</p>
+<p>不适合：频繁修改的数据、敏感数据</p>
+<p>常用技术：Redis、MongoDB</p>
+<p>对比：</p>
+<ul>
+<li><strong>Redis</strong>：</li>
+</ul>
+<p>优点：适合读多写少的业务场景，支持操作原子性。读写性能在100,000 ops&#x2F;s（operation per second 每秒操作次数）左右，时延一般为10～70微妙左右；而HBase的单机读写性能一般不会超过1,000ops&#x2F;s，时延则在1～5毫秒之间。</p>
+<p>缺点：不支持二级索引。也不适合做存储和分析。处理的数据量要小于HBase与MongoDB。</p>
+<p>适用场景：“读写分离”的场景下作为“读库”用，特别是存放Hadoop或Spark的分析结果。微信token每两小时刷新一次，就比较适合用redis存储，读也比较方便。  </p>
+<ul>
+<li><strong>MongoDB</strong>：</li>
+</ul>
+<p>优点：适合复杂数据格式存储及查询。  </p>
+<p>缺点：比较消耗内存，有事务、join（全外连接）等短板</p>
+<p>适用场景：排行榜，每天刷新一次，remove一次再从db更新过去。  </p>
+<ul>
+<li><strong>Hbase</strong>：</li>
+</ul>
+<p>优点：写性能高，适合超高量级写入的场景，适合写多读少的业务场景，可用来存储BI数据及存储大数据。</p>
+<p>缺点：不支持二级索引。</p>
+<p>适用场景：作为MapReduce（大规模数据集（大于1TB）的并行运算）的后台数据源；Facebook的消息类应用，包括Messages、Chats、Emails和SMS系统，用的都是HBase；淘宝的WEB版阿里旺旺，后台是HBase；小米的米聊用的也是HBase；移动某省公司的手机详单查询系统。（单次分析，只能scan全表或者一个范围内的）  </p>
+<h3 id="2-缓存服务"><a href="#2-缓存服务" class="headerlink" title="2. 缓存服务"></a>2. 缓存服务</h3><p>实现：<code>Spring Data Redis</code> + <code>Redission</code>(分布式锁 setnx)</p>
+<p>Spring Data Redis 的封装操作Redis模板对象：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs java">RedisTemplate&lt;String,Object&gt;：可以存储任意类型（需要实现序列化接口）<br>StringRedisTemplate :存储的值只能是String类型<br></code></pre></td></tr></table></figure>
+
+<p>提供的方法：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs java">String : opsForValue()<br>List : opsForList()<br>Set : opsForSet()<br>ZSet : opsForZSet()<br>Hash : opsForHash()<br>Geo : opsForGeo()<br>HyperLogLog : opsForHyperLogLog()<br>Stream : opsForStream()  <br></code></pre></td></tr></table></figure>
+
+<h4 id="2-1-依赖"><a href="#2-1-依赖" class="headerlink" title="2.1 依赖"></a>2.1 依赖</h4><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs xml"><span class="hljs-tag">&lt;<span class="hljs-name">dependency</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">groupId</span>&gt;</span>org.springframework.boot<span class="hljs-tag">&lt;/<span class="hljs-name">groupId</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">artifactId</span>&gt;</span>spring-boot-starter-data-redis<span class="hljs-tag">&lt;/<span class="hljs-name">artifactId</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">dependency</span>&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">dependency</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">groupId</span>&gt;</span>org.redisson<span class="hljs-tag">&lt;/<span class="hljs-name">groupId</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">artifactId</span>&gt;</span>redisson<span class="hljs-tag">&lt;/<span class="hljs-name">artifactId</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">version</span>&gt;</span>3.13.2<span class="hljs-tag">&lt;/<span class="hljs-name">version</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">dependency</span>&gt;</span><br></code></pre></td></tr></table></figure>
+
+<h4 id="2-2-配置类"><a href="#2-2-配置类" class="headerlink" title="2.2 配置类"></a>2.2 配置类</h4><p>可根据情况修改生成策略。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@Configuration</span><br><span class="hljs-meta">@EnableCaching</span> <span class="hljs-comment">//启用缓存</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">RedisConfig</span> <span class="hljs-keyword">extends</span> <span class="hljs-title class_">CachingConfigurerSupport</span> &#123;<br>    <span class="hljs-comment">//自定义Redis的key的生成策略</span><br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-keyword">public</span> KeyGenerator <span class="hljs-title function_">keyGenerator</span><span class="hljs-params">()</span> &#123;<br>        <span class="hljs-comment">/**</span><br><span class="hljs-comment">         * 生成策略：</span><br><span class="hljs-comment">         * 1.target 类</span><br><span class="hljs-comment">         * 2.method 方法</span><br><span class="hljs-comment">         * 3.params 参数</span><br><span class="hljs-comment">         */</span><br>        <span class="hljs-keyword">return</span> (target, method, params) -&gt; &#123;<br>            <span class="hljs-type">StringBuffer</span> <span class="hljs-variable">buffer</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">StringBuffer</span>();<br>            buffer.append(target.getClass().getName() + <span class="hljs-string">&quot;:&quot;</span>);<br>            buffer.append(method.getName() + <span class="hljs-string">&quot;:&quot;</span>);<br>            <span class="hljs-keyword">for</span> (Object o : params) &#123;<br>                buffer.append(o.toString());<br>            &#125;<br>            <span class="hljs-keyword">return</span> buffer.toString();<br>        &#125;;<br>    &#125;<br><br>    <span class="hljs-comment">//transient String msg;</span><br>    <span class="hljs-comment">//创建缓存管理器</span><br>    <span class="hljs-meta">@Bean</span><br>    <span class="hljs-keyword">public</span> CacheManager <span class="hljs-title function_">createCM</span><span class="hljs-params">(LettuceConnectionFactory connectionFactory)</span> &#123;<br>        <span class="hljs-comment">//Redis写入对象</span><br>        <span class="hljs-type">RedisCacheWriter</span> <span class="hljs-variable">writer</span> <span class="hljs-operator">=</span> RedisCacheWriter.lockingRedisCacheWriter(connectionFactory);<br>        <span class="hljs-keyword">return</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">RedisCacheManager</span>(writer, RedisCacheConfiguration.defaultCacheConfig());<br>    &#125;<br><br>    <span class="hljs-comment">//重新Redis操作模板对象，可以存储任意类型：对象存储 使用序列化存储 实现序列化接口</span><br>    <span class="hljs-meta">@Bean</span><br>    <span class="hljs-keyword">public</span> RedisTemplate&lt;String, Object&gt; <span class="hljs-title function_">createRT</span><span class="hljs-params">(LettuceConnectionFactory connectionFactory)</span> &#123;<br>        <span class="hljs-comment">//实例化对象</span><br>        RedisTemplate&lt;String, Object&gt; template = <span class="hljs-keyword">new</span> <span class="hljs-title class_">RedisTemplate</span>();<br>        <span class="hljs-comment">//设置连接对象</span><br>        template.setConnectionFactory(connectionFactory);<br>        <span class="hljs-comment">//设置序列化格式</span><br>        <span class="hljs-type">StringRedisSerializer</span> <span class="hljs-variable">stringRedisSerializer</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">StringRedisSerializer</span>();<br>        template.setKeySerializer(stringRedisSerializer);<br>        template.setHashKeySerializer(stringRedisSerializer);<br>        <span class="hljs-comment">//设置内容的序列化存储</span><br>        <span class="hljs-type">Jackson2JsonRedisSerializer</span> <span class="hljs-variable">redisSerializer</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">Jackson2JsonRedisSerializer</span>(Object.class);<br>        <span class="hljs-comment">//设置序列化</span><br>        <span class="hljs-type">ObjectMapper</span> <span class="hljs-variable">mapper</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">ObjectMapper</span>();<br>        <span class="hljs-comment">//设置</span><br>        mapper.setVisibility(PropertyAccessor.ALL, JsonAutoDetect.Visibility.ANY);<br>        <span class="hljs-comment">//已过时</span><br>        <span class="hljs-comment">//mapper.enableDefaultTyping(ObjectMapper.DefaultTyping.NON_FINAL);</span><br>        <span class="hljs-comment">//新版本</span><br>        mapper.activateDefaultTyping(mapper.getPolymorphicTypeValidator(), ObjectMapper.DefaultTyping.NON_FINAL);<br>        <span class="hljs-comment">//字符串、set、List、ZSet</span><br>        template.setValueSerializer(redisSerializer);<br>        <span class="hljs-comment">//Hash</span><br>        template.setHashKeySerializer(redisSerializer);<br><br>        <span class="hljs-keyword">return</span> template;<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+
+
+<h4 id="2-3-工具类"><a href="#2-3-工具类" class="headerlink" title="2.3 工具类"></a>2.3 工具类</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">RedissonUtil</span> &#123;<br>    <span class="hljs-keyword">private</span> <span class="hljs-keyword">static</span> RedissonUtil redissonUtil;<br><br>    <span class="hljs-comment">//加锁 释放锁</span><br>    <span class="hljs-keyword">private</span> RedissonClient client;<br><br>    <span class="hljs-keyword">private</span> <span class="hljs-title function_">RedissonUtil</span><span class="hljs-params">(String host, <span class="hljs-type">int</span> port, String pass)</span> &#123;<br>        <span class="hljs-type">Config</span> <span class="hljs-variable">config</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">Config</span>();<br>        config.useSingleServer().setAddress(<span class="hljs-string">&quot;redis://&quot;</span> + host + <span class="hljs-string">&quot;:&quot;</span> + port).setPassword(pass);<br>        client = Redisson.create(config);<br>    &#125;<br><br><span class="hljs-comment">//    public static RedissonUtil getInstance(String host, int port, String pass) &#123;</span><br><span class="hljs-comment">//        Lock lock = null;</span><br><span class="hljs-comment">//        try &#123;</span><br><span class="hljs-comment">//            lock = new ReentrantLock();</span><br><span class="hljs-comment">//            lock.lock();</span><br><span class="hljs-comment">//            if (redissonUtil == null) &#123;</span><br><span class="hljs-comment">//                redissonUtil = new RedissonUtil(host, port, pass);</span><br><span class="hljs-comment">//            &#125;</span><br><span class="hljs-comment">//        &#125; finally &#123;</span><br><span class="hljs-comment">//            lock.unlock();</span><br><span class="hljs-comment">//        &#125;</span><br><span class="hljs-comment">//        return redissonUtil;</span><br><span class="hljs-comment">//    &#125;</span><br><br>    <span class="hljs-comment">/**</span><br><span class="hljs-comment">     * 获取一个传递来自配置中心参数的实例</span><br><span class="hljs-comment">     */</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> RedissonUtil <span class="hljs-title function_">getInstance</span><span class="hljs-params">(String host, <span class="hljs-type">int</span> port, String pass)</span> &#123;<br>        <span class="hljs-keyword">return</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">RedissonUtil</span>(host, port, pass);<br>    &#125;<br><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">saveStr</span><span class="hljs-params">(String key, String value)</span> &#123;<br>        client.getBucket(key).set(value);<br><span class="hljs-comment">//        client.getMap(key).put();</span><br><span class="hljs-comment">//        client.getScoredSortedSet(key).add();</span><br><span class="hljs-comment">//        client.getList(key);</span><br><span class="hljs-comment">//        client.getSet().add();</span><br><span class="hljs-comment">//        client.getGeo(key).add();</span><br>    &#125;<br><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">lock</span><span class="hljs-params">(String key)</span> &#123;<br>        client.getLock(key).lock();<br>    &#125;<br><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">lock</span><span class="hljs-params">(String key, <span class="hljs-type">long</span> timeseconds)</span> &#123;<br>        client.getLock(key).lock(timeseconds, TimeUnit.SECONDS);<br>    &#125;<br><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">unlock</span><span class="hljs-params">(String key)</span> &#123;<br>        client.getLock(key).unlock();<br>    &#125;<br><br>    <span class="hljs-keyword">public</span> <span class="hljs-type">boolean</span> <span class="hljs-title function_">checkLock</span><span class="hljs-params">(String key)</span> &#123;<br>        <span class="hljs-keyword">return</span> client.getLock(key).isLocked();<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+
+
+<h4 id="2-4-控制层"><a href="#2-4-控制层" class="headerlink" title="2.4 控制层"></a>2.4 控制层</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@RestController</span><br><span class="hljs-meta">@RequestMapping(&quot;cache/api&quot;)</span><br><span class="hljs-meta">@Slf4j</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">CacheController</span> &#123;<br>    <span class="hljs-meta">@Autowired</span><br>    <span class="hljs-keyword">private</span> CacheService service;<br><br>    <span class="hljs-comment">//实现常用的操作</span><br>    <span class="hljs-meta">@SentinelResource(fallback = &quot;saveError&quot;)</span><br>    <span class="hljs-meta">@PostMapping(&quot;/savestr.do&quot;)</span><br>    <span class="hljs-keyword">public</span> R <span class="hljs-title function_">saveStr2Redis</span><span class="hljs-params">(String key, <span class="hljs-type">long</span> times, String value)</span> <span class="hljs-keyword">throws</span> CacheException &#123;<br>        <span class="hljs-keyword">return</span> R.ok(service.saveStr2Redis(key, times, value));<br>    &#125;<br><br>    <span class="hljs-comment">//降级方法</span><br>    <span class="hljs-keyword">public</span> R <span class="hljs-title function_">saveError</span><span class="hljs-params">(String key, <span class="hljs-type">long</span> times, String value)</span> <span class="hljs-keyword">throws</span> CacheException &#123;<br>        log.error(<span class="hljs-string">&quot;缓存服务崩溃&quot;</span>);<br>        <span class="hljs-keyword">return</span> R.fail(<span class="hljs-string">&quot;服务器崩溃降级&quot;</span>);<br>    &#125;<br><br>    <span class="hljs-meta">@PostMapping(&quot;/savelist.do&quot;)</span><br>    <span class="hljs-keyword">public</span> R <span class="hljs-title function_">saveList2Redis</span><span class="hljs-params">(String key, <span class="hljs-type">long</span> times, String... values)</span> <span class="hljs-keyword">throws</span> CacheException &#123;<br>        <span class="hljs-keyword">return</span> R.ok(service.saveStr2Redis(key, times, values));<br>    &#125;<br><br>    <span class="hljs-meta">@PostMapping(&quot;/saveset.do&quot;)</span><br>    <span class="hljs-keyword">public</span> R <span class="hljs-title function_">saveSet2Redis</span><span class="hljs-params">(String key, <span class="hljs-type">long</span> times, String... values)</span> <span class="hljs-keyword">throws</span> CacheException &#123;<br>        <span class="hljs-keyword">return</span> R.ok(service.saveSet2Redis(key, times, values));<br>    &#125;<br><br>    <span class="hljs-meta">@PostMapping(&quot;/savezset.do&quot;)</span><br>    <span class="hljs-keyword">public</span> R <span class="hljs-title function_">saveScoreSet2Redis</span><span class="hljs-params">( <span class="hljs-meta">@RequestBody</span> ZsetDto zsetDto)</span> <span class="hljs-keyword">throws</span> CacheException &#123;<br>        <span class="hljs-keyword">return</span> R.ok(service.saveScoreSet2Redis(zsetDto.getKey(), zsetDto.getTimes(),zsetDto.getScore() , zsetDto.getValue()));<br>    &#125;<br><br>    <span class="hljs-meta">@PostMapping(&quot;/savehash.do&quot;)</span><br>    <span class="hljs-keyword">public</span> R <span class="hljs-title function_">saveHash2Redis</span><span class="hljs-params">(String key, <span class="hljs-type">long</span> times, String field, String value)</span> <span class="hljs-keyword">throws</span> CacheException &#123;<br>        <span class="hljs-keyword">return</span> R.ok(service.saveHash2Redis(key, times, field, value));<br>    &#125;<br><br>    <span class="hljs-meta">@GetMapping(&quot;/getstr.do&quot;)</span><br>    <span class="hljs-keyword">public</span> R <span class="hljs-title function_">getStrFromRedis</span><span class="hljs-params">(String key)</span> &#123;<br>        <span class="hljs-keyword">return</span> R.ok(service.getStrFromRedis(key));<br>    &#125;<br><br>    <span class="hljs-meta">@GetMapping(&quot;/getlistsize.do&quot;)</span><br>    <span class="hljs-keyword">public</span> R <span class="hljs-title function_">getListSize</span><span class="hljs-params">(String key)</span> &#123;<br>        <span class="hljs-keyword">return</span> R.ok(service.getListSize(key));<br>    &#125;<br><br>    <span class="hljs-meta">@GetMapping(&quot;/getlist.do&quot;)</span><br>    <span class="hljs-keyword">public</span> R <span class="hljs-title function_">getListFromRedis</span><span class="hljs-params">(String key)</span> &#123;<br>        <span class="hljs-keyword">return</span> R.ok(service.getListFromRedis(key).toString());<br>    &#125;<br><br>    <span class="hljs-meta">@GetMapping(&quot;/checkset.do&quot;)</span><br>    <span class="hljs-keyword">public</span> R <span class="hljs-title function_">checkSet</span><span class="hljs-params">(String key, String val)</span> &#123;<br>        <span class="hljs-keyword">return</span> R.ok(service.checkSet(key, val));<br>    &#125;<br><br>    <span class="hljs-meta">@GetMapping(&quot;/getset.do&quot;)</span><br>    <span class="hljs-keyword">public</span> R <span class="hljs-title function_">getSetFromRedis</span><span class="hljs-params">(String key)</span> &#123;<br>        <span class="hljs-keyword">return</span> R.ok(service.getSetFromRedis(key).toString());<br>    &#125;<br><br>    <span class="hljs-comment">/**</span><br><span class="hljs-comment">     * zset 自动排序</span><br><span class="hljs-comment">     *</span><br><span class="hljs-comment">     * <span class="hljs-doctag">@param</span> key  指定zset的 key 名</span><br><span class="hljs-comment">     * <span class="hljs-doctag">@param</span> flag 0 升序，非0 降序</span><br><span class="hljs-comment">     * <span class="hljs-doctag">@return</span> 注意封装进去的数据必须为 string 否则 ribbon 请求服务时只能拿到集合的第1个</span><br><span class="hljs-comment">     */</span><br>    <span class="hljs-meta">@GetMapping(&quot;/getzset.do&quot;)</span><br>    <span class="hljs-keyword">public</span> R <span class="hljs-title function_">getScoreSetFromRedis</span><span class="hljs-params">(String key, <span class="hljs-type">int</span> flag)</span> &#123;<br>        <span class="hljs-keyword">return</span> R.ok(service.getScoreSetFromRedis(key, flag).toString());<br>    &#125;<br><br>    <span class="hljs-meta">@GetMapping(&quot;/gethash2.do&quot;)</span><br>    <span class="hljs-keyword">public</span> R <span class="hljs-title function_">getHashFromRedis</span><span class="hljs-params">(String key, String field)</span> &#123;<br>        <span class="hljs-keyword">return</span> R.ok(service.getHashFromRedis(key, field));<br>    &#125;<br><br>    <span class="hljs-meta">@GetMapping(&quot;/checkhash.do&quot;)</span><br>    <span class="hljs-keyword">public</span> R <span class="hljs-title function_">checkHash</span><span class="hljs-params">(String key, String field)</span> &#123;<br>        <span class="hljs-keyword">return</span> R.ok(service.checkHash(key, field));<br>    &#125;<br><br>    <span class="hljs-meta">@GetMapping(&quot;/gethash1.do&quot;)</span><br>    <span class="hljs-keyword">public</span> R <span class="hljs-title function_">gethashFromRedis</span><span class="hljs-params">(String key)</span> &#123;<br>        <span class="hljs-keyword">return</span> R.ok(service.gethashFromRedis(key).toString());<br>    &#125;<br><br>    <span class="hljs-meta">@GetMapping(&quot;/gethashstr.do&quot;)</span><br>    <span class="hljs-keyword">public</span> R <span class="hljs-title function_">gethashStrFromRedis</span><span class="hljs-params">(String key)</span> &#123;<br>        <span class="hljs-keyword">return</span> R.ok(service.gethashStrFromRedis(key).toString());<br>    &#125;<br><br><br>    <span class="hljs-meta">@GetMapping(&quot;/checkkey.do&quot;)</span><br>    <span class="hljs-keyword">public</span> R <span class="hljs-title function_">checkKey</span><span class="hljs-params">(String key)</span> &#123;<br>        <span class="hljs-keyword">return</span> R.ok(service.checkKey(key));<br>    &#125;<br><br>    <span class="hljs-meta">@GetMapping(&quot;/keys.do&quot;)</span><br>    <span class="hljs-keyword">public</span> R <span class="hljs-title function_">keys</span><span class="hljs-params">(String prefile)</span> &#123;<br>        <span class="hljs-keyword">return</span> R.ok(service.keys(prefile));<br>    &#125;<br><br>    <span class="hljs-meta">@PostMapping(&quot;/expire.do&quot;)</span><br>    <span class="hljs-keyword">public</span> R <span class="hljs-title function_">expire</span><span class="hljs-params">(String key, <span class="hljs-type">long</span> time, TimeUnit timeUnit)</span> &#123;<br>        <span class="hljs-keyword">return</span> R.ok(service.expire(key, time, timeUnit));<br>    &#125;<br><br>    <span class="hljs-meta">@PostMapping(&quot;/delkeys&quot;)</span><br>    <span class="hljs-keyword">public</span> R <span class="hljs-title function_">delKeys</span><span class="hljs-params">(String... keys)</span> &#123;<br>        <span class="hljs-keyword">return</span> R.ok(service.delKey(keys));<br>    &#125;<br><br>    <span class="hljs-meta">@PostMapping(&quot;/lock.do&quot;)</span><br>    <span class="hljs-keyword">public</span> R <span class="hljs-title function_">lock</span><span class="hljs-params">(String key)</span> &#123;<br>        <span class="hljs-keyword">return</span> R.ok(service.lock(key));<br>    &#125;<br><br>    <span class="hljs-meta">@PostMapping(&quot;/locktime.do&quot;)</span><br>    <span class="hljs-keyword">public</span> R <span class="hljs-title function_">lock</span><span class="hljs-params">(String key, <span class="hljs-type">long</span> timeseconds)</span> &#123;<br>        <span class="hljs-keyword">return</span> R.ok(service.lock(key, timeseconds));<br>    &#125;<br><br>    <span class="hljs-meta">@PostMapping(&quot;/unlock.do&quot;)</span><br>    <span class="hljs-keyword">public</span> R <span class="hljs-title function_">unlock</span><span class="hljs-params">(String key)</span> &#123;<br>        <span class="hljs-keyword">return</span> R.ok(service.unlock(key));<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+
+
+<h4 id="2-5-业务层"><a href="#2-5-业务层" class="headerlink" title="2.5 业务层"></a>2.5 业务层</h4><p>接口：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">interface</span> <span class="hljs-title class_">CacheService</span> &#123;<br>    <span class="hljs-comment">//存储数据-5大常用类型</span><br>    <span class="hljs-comment">//存储  字符串</span><br>    <span class="hljs-type">boolean</span> <span class="hljs-title function_">saveStr2Redis</span><span class="hljs-params">(String key, <span class="hljs-type">long</span> expireTimeSeconds, String value)</span> <span class="hljs-keyword">throws</span> CacheException;<br><br>    <span class="hljs-type">boolean</span> <span class="hljs-title function_">saveList2Redis</span><span class="hljs-params">(String key, <span class="hljs-type">long</span> expireTimeSeconds, String... values)</span> <span class="hljs-keyword">throws</span> CacheException;<br><br>    <span class="hljs-type">boolean</span> <span class="hljs-title function_">saveSet2Redis</span><span class="hljs-params">(String key, <span class="hljs-type">long</span> expireTimeSeconds, String... values)</span> <span class="hljs-keyword">throws</span> CacheException;<br><br>    <span class="hljs-type">boolean</span> <span class="hljs-title function_">saveScoreSet2Redis</span><span class="hljs-params">(String key, <span class="hljs-type">long</span> expireTimeSeconds, <span class="hljs-type">double</span> score, String value)</span> <span class="hljs-keyword">throws</span> CacheException;<br><br>    <span class="hljs-type">boolean</span> <span class="hljs-title function_">saveHash2Redis</span><span class="hljs-params">(String key, <span class="hljs-type">long</span> expireTimeSeconds, String field, String value)</span> <span class="hljs-keyword">throws</span> CacheException;<br><br>    <span class="hljs-comment">//存储 序列化单个对象</span><br>    <span class="hljs-type">boolean</span> <span class="hljs-title function_">saveList2Redis</span><span class="hljs-params">(String key, <span class="hljs-type">long</span> expireTimeSeconds, Object o)</span> <span class="hljs-keyword">throws</span> CacheException;<br><br>    <span class="hljs-type">boolean</span> <span class="hljs-title function_">saveSet2Redis</span><span class="hljs-params">(String key, <span class="hljs-type">long</span> expireTimeSeconds, Object o)</span> <span class="hljs-keyword">throws</span> CacheException;<br><br>    <span class="hljs-type">boolean</span> <span class="hljs-title function_">saveScoreSet2Redis</span><span class="hljs-params">(String key, <span class="hljs-type">long</span> expireTimeSeconds, <span class="hljs-type">double</span> score, Object o)</span> <span class="hljs-keyword">throws</span> CacheException;<br><br>    <span class="hljs-type">boolean</span> <span class="hljs-title function_">saveHash2Redis</span><span class="hljs-params">(String key, <span class="hljs-type">long</span> expireTimeSeconds, String field, Object o)</span> <span class="hljs-keyword">throws</span> CacheException;<br><br>    <span class="hljs-comment">//存储 序列化</span><br>    <span class="hljs-type">boolean</span> <span class="hljs-title function_">saveStr2Redis</span><span class="hljs-params">(String key, <span class="hljs-type">long</span> expireTimeSeconds, Object o)</span> <span class="hljs-keyword">throws</span> CacheException;<br><br>    <span class="hljs-type">boolean</span> <span class="hljs-title function_">saveList2Redis</span><span class="hljs-params">(String key, <span class="hljs-type">long</span> expireTimeSeconds, List&lt;Object&gt; list)</span> <span class="hljs-keyword">throws</span> CacheException;<br><br>    <span class="hljs-type">boolean</span> <span class="hljs-title function_">saveSet2Redis</span><span class="hljs-params">(String key, <span class="hljs-type">long</span> expireTimeSeconds, Set&lt;Object&gt; set)</span> <span class="hljs-keyword">throws</span> CacheException;<br><br>    <span class="hljs-type">boolean</span> <span class="hljs-title function_">saveScoreSet2Redis</span><span class="hljs-params">(String key, <span class="hljs-type">long</span> expireTimeSeconds, Map&lt;Object, Double&gt; map)</span> <span class="hljs-keyword">throws</span> CacheException;<br><br>    <span class="hljs-type">boolean</span> <span class="hljs-title function_">saveHash2Redis</span><span class="hljs-params">(String key, <span class="hljs-type">long</span> expireTimeSeconds, Map&lt;String, Object&gt; map)</span> <span class="hljs-keyword">throws</span> CacheException;<br><br>    <span class="hljs-comment">//查询</span><br>    String <span class="hljs-title function_">getStrFromRedis</span><span class="hljs-params">(String key)</span>;<br><br>    <span class="hljs-type">long</span> <span class="hljs-title function_">getListSize</span><span class="hljs-params">(String key)</span>;<br><br>    List&lt;Object&gt; <span class="hljs-title function_">getListFromRedis</span><span class="hljs-params">(String key)</span>;<br><br>    <span class="hljs-type">boolean</span> <span class="hljs-title function_">checkSet</span><span class="hljs-params">(String key, String val)</span>;<br><br>    <span class="hljs-type">boolean</span> <span class="hljs-title function_">checkSet</span><span class="hljs-params">(String key, Object val)</span>;<br><br>    Set&lt;Object&gt; <span class="hljs-title function_">getSetFromRedis</span><span class="hljs-params">(String key)</span>;<br><br>    Set&lt;Object&gt; <span class="hljs-title function_">getScoreSetFromRedis</span><span class="hljs-params">(String key, <span class="hljs-type">int</span> flag)</span>;<br><br>    String <span class="hljs-title function_">getHashFromRedis</span><span class="hljs-params">(String key, String field)</span>;<br><br>    <span class="hljs-type">boolean</span> <span class="hljs-title function_">checkHash</span><span class="hljs-params">(String key, String field)</span>;<br><br>    Map&lt;String, Object&gt; <span class="hljs-title function_">gethashFromRedis</span><span class="hljs-params">(String key)</span>;<br><br>    Map&lt;String, String&gt; <span class="hljs-title function_">gethashStrFromRedis</span><span class="hljs-params">(String key)</span>;<br><br>    <span class="hljs-comment">//校验</span><br>    <span class="hljs-type">boolean</span> <span class="hljs-title function_">checkKey</span><span class="hljs-params">(String key)</span>;<br><br>    List&lt;String&gt; <span class="hljs-title function_">keys</span><span class="hljs-params">(String prefile)</span>;<br><br>    <span class="hljs-type">boolean</span> <span class="hljs-title function_">expire</span><span class="hljs-params">(String key, <span class="hljs-type">long</span> time, TimeUnit timeUnit)</span>;<br><br>    <span class="hljs-type">boolean</span> <span class="hljs-title function_">delKey</span><span class="hljs-params">(String... keys)</span>;<br><br>    <span class="hljs-type">boolean</span> <span class="hljs-title function_">lock</span><span class="hljs-params">(String key)</span>;<br><br>    <span class="hljs-type">boolean</span> <span class="hljs-title function_">lock</span><span class="hljs-params">(String key, <span class="hljs-type">long</span> timeseconds)</span>;<br><br>    <span class="hljs-type">boolean</span> <span class="hljs-title function_">unlock</span><span class="hljs-params">(String key)</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>实现类：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br><span class="line">169</span><br><span class="line">170</span><br><span class="line">171</span><br><span class="line">172</span><br><span class="line">173</span><br><span class="line">174</span><br><span class="line">175</span><br><span class="line">176</span><br><span class="line">177</span><br><span class="line">178</span><br><span class="line">179</span><br><span class="line">180</span><br><span class="line">181</span><br><span class="line">182</span><br><span class="line">183</span><br><span class="line">184</span><br><span class="line">185</span><br><span class="line">186</span><br><span class="line">187</span><br><span class="line">188</span><br><span class="line">189</span><br><span class="line">190</span><br><span class="line">191</span><br><span class="line">192</span><br><span class="line">193</span><br><span class="line">194</span><br><span class="line">195</span><br><span class="line">196</span><br><span class="line">197</span><br><span class="line">198</span><br><span class="line">199</span><br><span class="line">200</span><br><span class="line">201</span><br><span class="line">202</span><br><span class="line">203</span><br><span class="line">204</span><br><span class="line">205</span><br><span class="line">206</span><br><span class="line">207</span><br><span class="line">208</span><br><span class="line">209</span><br><span class="line">210</span><br><span class="line">211</span><br><span class="line">212</span><br><span class="line">213</span><br><span class="line">214</span><br><span class="line">215</span><br><span class="line">216</span><br><span class="line">217</span><br><span class="line">218</span><br><span class="line">219</span><br><span class="line">220</span><br><span class="line">221</span><br><span class="line">222</span><br><span class="line">223</span><br><span class="line">224</span><br><span class="line">225</span><br><span class="line">226</span><br><span class="line">227</span><br><span class="line">228</span><br><span class="line">229</span><br><span class="line">230</span><br><span class="line">231</span><br><span class="line">232</span><br><span class="line">233</span><br><span class="line">234</span><br><span class="line">235</span><br><span class="line">236</span><br><span class="line">237</span><br><span class="line">238</span><br><span class="line">239</span><br><span class="line">240</span><br><span class="line">241</span><br><span class="line">242</span><br><span class="line">243</span><br><span class="line">244</span><br><span class="line">245</span><br><span class="line">246</span><br><span class="line">247</span><br><span class="line">248</span><br><span class="line">249</span><br><span class="line">250</span><br><span class="line">251</span><br><span class="line">252</span><br><span class="line">253</span><br><span class="line">254</span><br><span class="line">255</span><br><span class="line">256</span><br><span class="line">257</span><br><span class="line">258</span><br><span class="line">259</span><br><span class="line">260</span><br><span class="line">261</span><br><span class="line">262</span><br><span class="line">263</span><br><span class="line">264</span><br><span class="line">265</span><br><span class="line">266</span><br><span class="line">267</span><br><span class="line">268</span><br><span class="line">269</span><br><span class="line">270</span><br><span class="line">271</span><br><span class="line">272</span><br><span class="line">273</span><br><span class="line">274</span><br><span class="line">275</span><br><span class="line">276</span><br><span class="line">277</span><br><span class="line">278</span><br><span class="line">279</span><br><span class="line">280</span><br><span class="line">281</span><br><span class="line">282</span><br><span class="line">283</span><br><span class="line">284</span><br><span class="line">285</span><br><span class="line">286</span><br><span class="line">287</span><br><span class="line">288</span><br><span class="line">289</span><br><span class="line">290</span><br><span class="line">291</span><br><span class="line">292</span><br><span class="line">293</span><br><span class="line">294</span><br><span class="line">295</span><br><span class="line">296</span><br><span class="line">297</span><br><span class="line">298</span><br><span class="line">299</span><br><span class="line">300</span><br><span class="line">301</span><br><span class="line">302</span><br><span class="line">303</span><br><span class="line">304</span><br><span class="line">305</span><br><span class="line">306</span><br><span class="line">307</span><br><span class="line">308</span><br><span class="line">309</span><br><span class="line">310</span><br><span class="line">311</span><br><span class="line">312</span><br><span class="line">313</span><br><span class="line">314</span><br><span class="line">315</span><br><span class="line">316</span><br><span class="line">317</span><br><span class="line">318</span><br><span class="line">319</span><br><span class="line">320</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@Slf4j</span><br><span class="hljs-meta">@Service</span><br><span class="hljs-meta">@RefreshScope</span> <span class="hljs-comment">//实时获取统一配置中心的 配置内容（如本地配置则无需该注解）</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">CacheServiceImpl</span> <span class="hljs-keyword">implements</span> <span class="hljs-title class_">CacheService</span> &#123;<br>    <span class="hljs-meta">@Autowired</span><br>    <span class="hljs-keyword">private</span> RedisTemplate&lt;String, Object&gt; template;<br><br>    <span class="hljs-meta">@Value(&quot;$&#123;spring.redis.host&#125;&quot;)</span> <span class="hljs-comment">//IOC 的属性注入是发送对象实例之后</span><br>    <span class="hljs-keyword">private</span> String host;<br>    <span class="hljs-meta">@Value(&quot;$&#123;spring.redis.port&#125;&quot;)</span><br>    <span class="hljs-keyword">private</span> <span class="hljs-type">int</span> port;<br>    <span class="hljs-meta">@Value(&quot;$&#123;spring.redis.password&#125;&quot;)</span><br>    <span class="hljs-keyword">private</span> String pass;<br><br>    <span class="hljs-keyword">private</span> RedissonUtil redissonUtil;<br><br>    <span class="hljs-meta">@PostConstruct()</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">init</span><span class="hljs-params">()</span> &#123;<br>        redissonUtil = RedissonUtil.getInstance(host, port, pass);<br>    &#125;<br>    <span class="hljs-comment">// @PreDestroy -- destoryMethod</span><br><br>    <span class="hljs-comment">/**</span><br><span class="hljs-comment">     * <span class="hljs-doctag">@param</span> key</span><br><span class="hljs-comment">     * <span class="hljs-doctag">@param</span> expireTimeSeconds -1 永久有效；-2 Key不存在；其他值 Key有效时间</span><br><span class="hljs-comment">     * <span class="hljs-doctag">@param</span> value</span><br><span class="hljs-comment">     * <span class="hljs-doctag">@return</span> 新增是否成功</span><br><span class="hljs-comment">     */</span><br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-type">boolean</span> <span class="hljs-title function_">saveStr2Redis</span><span class="hljs-params">(String key, <span class="hljs-type">long</span> expireTimeSeconds, String value)</span> <span class="hljs-keyword">throws</span> CacheException &#123;<br>        <span class="hljs-keyword">try</span> &#123;<br>            template.opsForValue().set(key, value);<br>            <span class="hljs-keyword">if</span> (expireTimeSeconds &gt; <span class="hljs-number">0</span>) &#123;<br>                template.opsForValue().set(key, value, expireTimeSeconds, TimeUnit.SECONDS);<br>            &#125;<br>            <span class="hljs-keyword">return</span> <span class="hljs-literal">true</span>;<br>        &#125; <span class="hljs-keyword">catch</span> (Exception e) &#123;<br>            log.error(<span class="hljs-string">&quot;存储异常&quot;</span>);<br>            <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">CacheException</span>(<span class="hljs-string">&quot;存储异常&quot;</span> + e.getMessage());<br>        &#125;<br>    &#125;<br><br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-type">boolean</span> <span class="hljs-title function_">saveList2Redis</span><span class="hljs-params">(String key, <span class="hljs-type">long</span> expireTimeSeconds, String... values)</span> <span class="hljs-keyword">throws</span> CacheException &#123;<br>        <span class="hljs-keyword">for</span> (String v : values) &#123;<br>            saveStr2Redis(key, expireTimeSeconds, v);<br>        &#125;<br>        <span class="hljs-keyword">return</span> <span class="hljs-literal">true</span>;<br>    &#125;<br><br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-type">boolean</span> <span class="hljs-title function_">saveSet2Redis</span><span class="hljs-params">(String key, <span class="hljs-type">long</span> expireTimeSeconds, String... values)</span> <span class="hljs-keyword">throws</span> CacheException &#123;<br>        <span class="hljs-keyword">try</span> &#123;<br>            template.opsForSet().add(key, values);<br>            <span class="hljs-keyword">if</span> (expireTimeSeconds &gt; <span class="hljs-number">0</span>) &#123;<br>                template.opsForSet().getOperations().expire(key, expireTimeSeconds, TimeUnit.SECONDS);<br>            &#125;<br>            <span class="hljs-keyword">return</span> <span class="hljs-literal">true</span>;<br>        &#125; <span class="hljs-keyword">catch</span> (Exception e) &#123;<br>            log.error(<span class="hljs-string">&quot;存储异常&quot;</span>);<br>            <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">CacheException</span>(<span class="hljs-string">&quot;存储异常&quot;</span> + e.getMessage());<br>        &#125;<br>    &#125;<br><br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-type">boolean</span> <span class="hljs-title function_">saveScoreSet2Redis</span><span class="hljs-params">(String key, <span class="hljs-type">long</span> expireTimeSeconds, <span class="hljs-type">double</span> score, String value)</span> <span class="hljs-keyword">throws</span> CacheException &#123;<br>        <span class="hljs-keyword">try</span> &#123;<br>            template.opsForZSet().add(key, value, score);<br>            <span class="hljs-keyword">if</span> (expireTimeSeconds &gt; <span class="hljs-number">0</span>) &#123;<br>                template.opsForSet().getOperations().expire(key, expireTimeSeconds, TimeUnit.SECONDS);<br>            &#125;<br>            <span class="hljs-keyword">return</span> <span class="hljs-literal">true</span>;<br>        &#125; <span class="hljs-keyword">catch</span> (Exception e) &#123;<br>            log.error(<span class="hljs-string">&quot;存储异常&quot;</span>);<br>            <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">CacheException</span>(<span class="hljs-string">&quot;存储异常&quot;</span> + e.getMessage());<br>        &#125;<br>    &#125;<br><br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-type">boolean</span> <span class="hljs-title function_">saveHash2Redis</span><span class="hljs-params">(String key, <span class="hljs-type">long</span> expireTimeSeconds, String field, String value)</span> <span class="hljs-keyword">throws</span> CacheException &#123;<br>        <span class="hljs-keyword">try</span> &#123;<br>            template.opsForHash().put(key, field, value);<br>            <span class="hljs-keyword">if</span> (expireTimeSeconds &gt; <span class="hljs-number">0</span>) &#123;<br>                template.expire(key, expireTimeSeconds, TimeUnit.SECONDS);<br>            &#125;<br>            <span class="hljs-keyword">return</span> <span class="hljs-literal">true</span>;<br>        &#125; <span class="hljs-keyword">catch</span> (Exception e) &#123;<br>            log.error(<span class="hljs-string">&quot;存储异常&quot;</span>);<br>            <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">CacheException</span>(<span class="hljs-string">&quot;存储异常&quot;</span> + e.getMessage());<br>        &#125;<br>    &#125;<br><br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-type">boolean</span> <span class="hljs-title function_">saveList2Redis</span><span class="hljs-params">(String key, <span class="hljs-type">long</span> expireTimeSeconds, Object o)</span> <span class="hljs-keyword">throws</span> CacheException &#123;<br>        <span class="hljs-keyword">try</span> &#123;<br>            template.opsForList().rightPush(key, o);<br>            <span class="hljs-keyword">if</span> (expireTimeSeconds &gt; <span class="hljs-number">0</span>) &#123;<br>                template.opsForList().set(key, expireTimeSeconds, o);<br>            &#125;<br>            <span class="hljs-keyword">return</span> <span class="hljs-literal">true</span>;<br>        &#125; <span class="hljs-keyword">catch</span> (Exception e) &#123;<br>            log.error(<span class="hljs-string">&quot;存储异常&quot;</span>);<br>            <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">CacheException</span>(<span class="hljs-string">&quot;存储异常&quot;</span> + e.getMessage());<br>        &#125;<br>    &#125;<br><br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-type">boolean</span> <span class="hljs-title function_">saveSet2Redis</span><span class="hljs-params">(String key, <span class="hljs-type">long</span> expireTimeSeconds, Object o)</span> <span class="hljs-keyword">throws</span> CacheException &#123;<br>        <span class="hljs-keyword">try</span> &#123;<br>            template.opsForSet().add(key, o);<br>            <span class="hljs-keyword">if</span> (expireTimeSeconds &gt; <span class="hljs-number">0</span>) &#123;<br>                template.opsForSet().getOperations().expire(key, expireTimeSeconds, TimeUnit.SECONDS);<br>            &#125;<br>            <span class="hljs-keyword">return</span> <span class="hljs-literal">true</span>;<br>        &#125; <span class="hljs-keyword">catch</span> (Exception e) &#123;<br>            log.error(<span class="hljs-string">&quot;存储异常&quot;</span>);<br>            <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">CacheException</span>(<span class="hljs-string">&quot;存储异常&quot;</span> + e.getMessage());<br>        &#125;<br>    &#125;<br><br>    <span class="hljs-comment">/**</span><br><span class="hljs-comment">     * 存储 ScoreSet 类型的数据到 redis</span><br><span class="hljs-comment">     * <span class="hljs-doctag">@param</span> key</span><br><span class="hljs-comment">     * <span class="hljs-doctag">@param</span> expireTimeSeconds</span><br><span class="hljs-comment">     * <span class="hljs-doctag">@param</span> score</span><br><span class="hljs-comment">     * <span class="hljs-doctag">@param</span> o</span><br><span class="hljs-comment">     * <span class="hljs-doctag">@return</span></span><br><span class="hljs-comment">     * <span class="hljs-doctag">@throws</span> CacheException</span><br><span class="hljs-comment">     */</span><br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-type">boolean</span> <span class="hljs-title function_">saveScoreSet2Redis</span><span class="hljs-params">(String key, <span class="hljs-type">long</span> expireTimeSeconds, <span class="hljs-type">double</span> score, Object o)</span> <span class="hljs-keyword">throws</span> CacheException &#123;<br>        <span class="hljs-keyword">try</span> &#123;<br>            template.opsForZSet().add(key, o, score);<br>            <span class="hljs-keyword">if</span> (expireTimeSeconds &gt; <span class="hljs-number">0</span>) &#123;<br>                template.opsForSet().getOperations().expire(key, expireTimeSeconds, TimeUnit.SECONDS);<br>            &#125;<br>            <span class="hljs-keyword">return</span> <span class="hljs-literal">true</span>;<br>        &#125; <span class="hljs-keyword">catch</span> (Exception e) &#123;<br>            log.error(<span class="hljs-string">&quot;存储异常&quot;</span>);<br>            <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">CacheException</span>(<span class="hljs-string">&quot;存储异常&quot;</span> + e.getMessage());<br>        &#125;<br>    &#125;<br><br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-type">boolean</span> <span class="hljs-title function_">saveHash2Redis</span><span class="hljs-params">(String key, <span class="hljs-type">long</span> expireTimeSeconds, String field, Object o)</span> <span class="hljs-keyword">throws</span> CacheException &#123;<br>        <span class="hljs-keyword">try</span> &#123;<br>            template.opsForHash().put(key, field, o);<br>            <span class="hljs-keyword">if</span> (expireTimeSeconds &gt; <span class="hljs-number">0</span>) &#123;<br>                template.expire(key, expireTimeSeconds, TimeUnit.SECONDS);<br>            &#125;<br>            <span class="hljs-keyword">return</span> <span class="hljs-literal">true</span>;<br>        &#125; <span class="hljs-keyword">catch</span> (Exception e) &#123;<br>            log.error(<span class="hljs-string">&quot;存储异常&quot;</span>);<br>            <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">CacheException</span>(<span class="hljs-string">&quot;存储异常&quot;</span> + e.getMessage());<br>        &#125;<br>    &#125;<br><br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-type">boolean</span> <span class="hljs-title function_">saveStr2Redis</span><span class="hljs-params">(String key, <span class="hljs-type">long</span> expireTimeSeconds, Object o)</span> <span class="hljs-keyword">throws</span> CacheException &#123;<br>        <span class="hljs-keyword">try</span> &#123;<br>            template.opsForValue().set(key, o);<br>            <span class="hljs-keyword">if</span> (expireTimeSeconds &gt; <span class="hljs-number">0</span>) &#123;<br>                template.opsForValue().set(key, o, expireTimeSeconds, TimeUnit.SECONDS);<br>            &#125;<br>            <span class="hljs-keyword">return</span> <span class="hljs-literal">true</span>;<br>        &#125; <span class="hljs-keyword">catch</span> (Exception e) &#123;<br>            log.error(<span class="hljs-string">&quot;存储异常&quot;</span>);<br>            <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">CacheException</span>(<span class="hljs-string">&quot;存储异常&quot;</span> + e.getMessage());<br>        &#125;<br>    &#125;<br><br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-type">boolean</span> <span class="hljs-title function_">saveList2Redis</span><span class="hljs-params">(String key, <span class="hljs-type">long</span> expireTimeSeconds, List&lt;Object&gt; list)</span> <span class="hljs-keyword">throws</span> CacheException &#123;<br>        <span class="hljs-keyword">for</span> (Object o : list) &#123;<br>            saveList2Redis(key, expireTimeSeconds, o);<br>        &#125;<br>        <span class="hljs-keyword">return</span> <span class="hljs-literal">true</span>;<br>    &#125;<br><br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-type">boolean</span> <span class="hljs-title function_">saveSet2Redis</span><span class="hljs-params">(String key, <span class="hljs-type">long</span> expireTimeSeconds, Set&lt;Object&gt; set)</span> <span class="hljs-keyword">throws</span> CacheException &#123;<br>        <span class="hljs-keyword">for</span> (Object s : set) &#123;<br>            saveSet2Redis(key, expireTimeSeconds, s);<br>        &#125;<br>        <span class="hljs-keyword">return</span> <span class="hljs-literal">true</span>;<br>    &#125;<br><br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-type">boolean</span> <span class="hljs-title function_">saveScoreSet2Redis</span><span class="hljs-params">(String key, <span class="hljs-type">long</span> expireTimeSeconds, Map&lt;Object, Double&gt; map)</span> <span class="hljs-keyword">throws</span> CacheException &#123;<br>        <span class="hljs-keyword">for</span> (Map.Entry&lt;Object, Double&gt; m : map.entrySet()) &#123;<br>            saveScoreSet2Redis(key, expireTimeSeconds, m.getValue(), m.getKey());<br>        &#125;<br>        <span class="hljs-keyword">return</span> <span class="hljs-literal">true</span>;<br>    &#125;<br><br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-type">boolean</span> <span class="hljs-title function_">saveHash2Redis</span><span class="hljs-params">(String key, <span class="hljs-type">long</span> expireTimeSeconds, Map&lt;String, Object&gt; map)</span> <span class="hljs-keyword">throws</span> CacheException &#123;<br>        <span class="hljs-keyword">for</span> (Map.Entry&lt;String, Object&gt; m : map.entrySet()) &#123;<br>            saveHash2Redis(key, expireTimeSeconds, m.getKey(), m.getValue());<br>        &#125;<br>        <span class="hljs-keyword">return</span> <span class="hljs-literal">true</span>;<br>    &#125;<br><br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-keyword">public</span> String <span class="hljs-title function_">getStrFromRedis</span><span class="hljs-params">(String key)</span> &#123;<br>        <span class="hljs-keyword">return</span> template.opsForValue().get(key, <span class="hljs-number">0</span>, -<span class="hljs-number">1</span>);<br>    &#125;<br><br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-type">long</span> <span class="hljs-title function_">getListSize</span><span class="hljs-params">(String key)</span> &#123;<br>        <span class="hljs-keyword">return</span> template.opsForList().size(key);<br>    &#125;<br><br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-keyword">public</span> List&lt;Object&gt; <span class="hljs-title function_">getListFromRedis</span><span class="hljs-params">(String key)</span> &#123;<br>        <span class="hljs-keyword">return</span> template.opsForList().range(key, <span class="hljs-number">0</span>, -<span class="hljs-number">1</span>);<br>    &#125;<br><br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-type">boolean</span> <span class="hljs-title function_">checkSet</span><span class="hljs-params">(String key, String val)</span> &#123;<br>        <span class="hljs-keyword">return</span> template.opsForSet().isMember(key, val);<br>    &#125;<br><br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-type">boolean</span> <span class="hljs-title function_">checkSet</span><span class="hljs-params">(String key, Object val)</span> &#123;<br>        <span class="hljs-keyword">return</span> template.opsForSet().isMember(key, val);<br>    &#125;<br><br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-keyword">public</span> Set&lt;Object&gt; <span class="hljs-title function_">getSetFromRedis</span><span class="hljs-params">(String key)</span> &#123;<br>        <span class="hljs-keyword">return</span> template.opsForSet().members(key);<br>    &#125;<br><br>    <span class="hljs-comment">/**</span><br><span class="hljs-comment">     * 获取 SortedSet 有序集合</span><br><span class="hljs-comment">     *</span><br><span class="hljs-comment">     * <span class="hljs-doctag">@param</span> key</span><br><span class="hljs-comment">     * <span class="hljs-doctag">@param</span> flag 0 升序，非0 降序</span><br><span class="hljs-comment">     * <span class="hljs-doctag">@return</span></span><br><span class="hljs-comment">     */</span><br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-keyword">public</span> Set&lt;Object&gt; <span class="hljs-title function_">getScoreSetFromRedis</span><span class="hljs-params">(String key, <span class="hljs-type">int</span> flag)</span> &#123;<br>        <span class="hljs-type">return</span> <span class="hljs-variable">flag</span> <span class="hljs-operator">=</span>= <span class="hljs-number">0</span> ? template.opsForZSet().range(key, <span class="hljs-number">0</span>, -<span class="hljs-number">1</span>) : template.opsForZSet().reverseRange(key, <span class="hljs-number">0</span>, -<span class="hljs-number">1</span>);<br>    &#125;<br><br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-keyword">public</span> String <span class="hljs-title function_">getHashFromRedis</span><span class="hljs-params">(String key, String field)</span> &#123;<br>        <span class="hljs-keyword">return</span> (String) template.opsForHash().entries(key).get(field);<br>    &#125;<br><br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-type">boolean</span> <span class="hljs-title function_">checkHash</span><span class="hljs-params">(String key, String field)</span> &#123;<br>        <span class="hljs-keyword">return</span> template.opsForHash().hasKey(key, field);<br>    &#125;<br><br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-keyword">public</span> Map&lt;String, Object&gt; <span class="hljs-title function_">gethashFromRedis</span><span class="hljs-params">(String key)</span> &#123;<br>        Map&lt;String, Object&gt; map = <span class="hljs-keyword">new</span> <span class="hljs-title class_">HashMap</span>&lt;&gt;();<br>        template.opsForHash().entries(key).forEach((k, v) -&gt; &#123;<br>            <span class="hljs-keyword">if</span> (k <span class="hljs-keyword">instanceof</span> String) &#123;<br>                map.put((String) k, v);<br>            &#125;<br>        &#125;);<br>        <span class="hljs-keyword">return</span> map;<br>    &#125;<br><br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-keyword">public</span> Map&lt;String, String&gt; <span class="hljs-title function_">gethashStrFromRedis</span><span class="hljs-params">(String key)</span> &#123;<br>        Map&lt;String, String&gt; map = <span class="hljs-keyword">new</span> <span class="hljs-title class_">HashMap</span>&lt;&gt;();<br>        template.opsForHash().entries(key).forEach((k, v) -&gt; &#123;<br>            <span class="hljs-keyword">if</span> (k <span class="hljs-keyword">instanceof</span> String &amp;&amp; v <span class="hljs-keyword">instanceof</span> String) &#123;<br>                map.put((String) k, (String) v);<br>            &#125;<br>        &#125;);<br>        <span class="hljs-keyword">return</span> map;<br>    &#125;<br><br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-type">boolean</span> <span class="hljs-title function_">checkKey</span><span class="hljs-params">(String key)</span> &#123;<br>        <span class="hljs-keyword">return</span> template.hasKey(key);<br>    &#125;<br><br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-keyword">public</span> List&lt;String&gt; <span class="hljs-title function_">keys</span><span class="hljs-params">(String prefile)</span> &#123;<br>        Set&lt;String&gt; keys = template.keys(prefile + <span class="hljs-string">&quot;*&quot;</span>);<br>        List&lt;String&gt; list = <span class="hljs-literal">null</span>;<br>        <span class="hljs-keyword">if</span> (keys != <span class="hljs-literal">null</span>) &#123;<br>            list = <span class="hljs-keyword">new</span> <span class="hljs-title class_">ArrayList</span>&lt;&gt;(keys);<br>        &#125;<br>        <span class="hljs-keyword">return</span> list;<br>    &#125;<br><br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-type">boolean</span> <span class="hljs-title function_">expire</span><span class="hljs-params">(String key, <span class="hljs-type">long</span> time, TimeUnit timeUnit)</span> &#123;<br>        <span class="hljs-keyword">return</span> template.expire(key, time, timeUnit);<br>    &#125;<br><br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-type">boolean</span> <span class="hljs-title function_">delKey</span><span class="hljs-params">(String... keys)</span> &#123;<br>        <span class="hljs-keyword">return</span> template.delete(Arrays.asList(keys)) == keys.length;<br>    &#125;<br><br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-type">boolean</span> <span class="hljs-title function_">lock</span><span class="hljs-params">(String key)</span> &#123;<br>        redissonUtil.lock(key);<br>        <span class="hljs-keyword">return</span> <span class="hljs-literal">true</span>;<br>    &#125;<br><br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-type">boolean</span> <span class="hljs-title function_">lock</span><span class="hljs-params">(String key, <span class="hljs-type">long</span> timeseconds)</span> &#123;<br>        redissonUtil.lock(key, timeseconds);<br>        <span class="hljs-keyword">return</span> <span class="hljs-literal">true</span>;<br>    &#125;<br><br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-type">boolean</span> <span class="hljs-title function_">unlock</span><span class="hljs-params">(String key)</span> &#123;<br>        redissonUtil.unlock(key);<br>        <span class="hljs-keyword">return</span> <span class="hljs-literal">true</span>;<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+
+
+<h4 id="2-6-全局异常"><a href="#2-6-全局异常" class="headerlink" title="2.6 全局异常"></a>2.6 全局异常</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">CacheException</span> <span class="hljs-keyword">extends</span> <span class="hljs-title class_">Exception</span> &#123;<br>    <span class="hljs-keyword">public</span> <span class="hljs-title function_">CacheException</span><span class="hljs-params">()</span> &#123;<br>    &#125;<br><br>    <span class="hljs-keyword">public</span> <span class="hljs-title function_">CacheException</span><span class="hljs-params">(String msg)</span> &#123;<br>        <span class="hljs-built_in">super</span>(msg);<br>    &#125;<br><br>    <span class="hljs-keyword">public</span> <span class="hljs-title function_">CacheException</span><span class="hljs-params">(String msg, CacheException exception)</span> &#123;<br>        <span class="hljs-built_in">super</span>(msg, exception);<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+
+
+<h3 id="3-调用缓存服务示例"><a href="#3-调用缓存服务示例" class="headerlink" title="3. 调用缓存服务示例"></a>3. 调用缓存服务示例</h3><p>Ribbon 远程调用：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-comment">// ribbon 进行远程调用</span><br><span class="hljs-meta">@Service</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">RedisServiceImpl</span> <span class="hljs-keyword">implements</span> <span class="hljs-title class_">RedisService</span> &#123;<br>    <span class="hljs-meta">@Autowired</span><br>    <span class="hljs-keyword">private</span> RestTemplate restTemplate;<br><br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-keyword">public</span> R <span class="hljs-title function_">saveStr2Redis</span><span class="hljs-params">(String key, <span class="hljs-type">long</span> times, String value)</span> &#123;<br>        <span class="hljs-type">RedisStrDto</span> <span class="hljs-variable">dto</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">RedisStrDto</span>(key, times, value);<br>		<span class="hljs-comment">// 设置 JSON 请求头，封装消息体，JSON格式必须设置</span><br>        <span class="hljs-type">HttpHeaders</span> <span class="hljs-variable">requestHeaders</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">HttpHeaders</span>();<br>        requestHeaders.setContentType(MediaType.APPLICATION_JSON);<br>        HttpEntity&lt;RedisStrDto&gt; requestEntity = <span class="hljs-keyword">new</span> <span class="hljs-title class_">HttpEntity</span>&lt;&gt;(dto, requestHeaders);<br>        <span class="hljs-keyword">return</span> restTemplate.postForObject(<span class="hljs-string">&quot;http://cacheserver/cache/api/savestr.do&quot;</span>, requestEntity, R.class);<br>    &#125;<br><br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-keyword">public</span> R <span class="hljs-title function_">getStrFromRedis</span><span class="hljs-params">(String key)</span> &#123;<br>        <span class="hljs-keyword">return</span> restTemplate.getForObject(<span class="hljs-string">&quot;http://cacheserver/cache/api/getstr.do?key=&quot;</span> + key, R.class);<br>    &#125;<br><br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-keyword">public</span> R <span class="hljs-title function_">delkeyFromRedis</span><span class="hljs-params">(String key)</span> &#123;<br>        <span class="hljs-keyword">return</span> restTemplate.getForObject(<span class="hljs-string">&quot;http://cacheserver/cache/api/delkeys?key=&quot;</span> + key, R.class);<br>    &#125;<br><br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-keyword">public</span> R <span class="hljs-title function_">checkKeyFromRedis</span><span class="hljs-params">(String key)</span> &#123;<br>        <span class="hljs-keyword">return</span> restTemplate.getForObject(<span class="hljs-string">&quot;http://cacheserver/cache/api/checkkey.do?key=&quot;</span> + key, R.class);<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>调用实现类注入：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@Service</span><br><span class="hljs-meta">@Slf4j</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">UserLoginServiceImpl</span> <span class="hljs-keyword">implements</span> <span class="hljs-title class_">UserLoginService</span> &#123;<br>    <span class="hljs-meta">@Autowired</span><br>    <span class="hljs-keyword">private</span> UserLoginDao dao;<br>    <span class="hljs-meta">@Autowired</span><br>    <span class="hljs-keyword">private</span> RedisService cache;<br><br>    <span class="hljs-comment">//...</span><br>    <br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-keyword">public</span> R <span class="hljs-title function_">checkToken</span><span class="hljs-params">(String token)</span> &#123;<br>        <span class="hljs-keyword">if</span> (StringUtil.isnoEmpty(token)) &#123;<br>            <span class="hljs-comment">// 从 Cache 服务中获取key，能获取到就没有过期，反之则过期</span><br>            <span class="hljs-type">R</span> <span class="hljs-variable">r</span> <span class="hljs-operator">=</span> cache.checkKeyFromRedis(USERLOGIN_TOKEN + token);<br>            <span class="hljs-keyword">if</span> (r.getCode() == <span class="hljs-number">200</span>) &#123;<br>                <span class="hljs-keyword">if</span> (StringUtil.isnoEmpty(r.getData().toString())) &#123;<br>                    R.ok(<span class="hljs-string">&quot;token有效&quot;</span>);<br>                &#125;<br>            &#125;<br>        &#125;<br>        <span class="hljs-keyword">return</span> R.fail(<span class="hljs-string">&quot;token或账户名有误！&quot;</span>);<br>    &#125;<br>&#125;<br><br></code></pre></td></tr></table></figure>
+
+
+
+<h3 id="4-缓存服务高可用"><a href="#4-缓存服务高可用" class="headerlink" title="4. 缓存服务高可用"></a>4. 缓存服务高可用</h3><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs xml"><span class="hljs-tag">&lt;<span class="hljs-name">dependency</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">groupId</span>&gt;</span>com.alibaba.cloud<span class="hljs-tag">&lt;/<span class="hljs-name">groupId</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">artifactId</span>&gt;</span>spring-cloud-starter-alibaba-sentinel<span class="hljs-tag">&lt;/<span class="hljs-name">artifactId</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">version</span>&gt;</span>2.2.1.RELEASE<span class="hljs-tag">&lt;/<span class="hljs-name">version</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">dependency</span>&gt;</span><br></code></pre></td></tr></table></figure>
+
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@RestController</span><br><span class="hljs-meta">@RequestMapping(&quot;cache/api&quot;)</span><br><span class="hljs-meta">@Slf4j</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">CacheController</span> &#123;<br>    <span class="hljs-meta">@Autowired</span><br>    <span class="hljs-keyword">private</span> CacheService service;<br><br>    <span class="hljs-comment">//实现常用的操作，@SentinelResource 注解指定服务降级后的回调函数</span><br>    <span class="hljs-meta">@SentinelResource(fallback = &quot;saveError&quot;)</span><br>    <span class="hljs-meta">@PostMapping(&quot;/savestr.do&quot;)</span><br>    <span class="hljs-keyword">public</span> R <span class="hljs-title function_">saveStr2Redis</span><span class="hljs-params">(String key, <span class="hljs-type">long</span> times, String value)</span> <span class="hljs-keyword">throws</span> CacheException &#123;<br>        <span class="hljs-keyword">return</span> R.ok(service.saveStr2Redis(key, times, value));<br>    &#125;<br><br>    <span class="hljs-comment">//降级方法</span><br>    <span class="hljs-keyword">public</span> R <span class="hljs-title function_">saveError</span><span class="hljs-params">(String key, <span class="hljs-type">long</span> times, String value)</span> <span class="hljs-keyword">throws</span> CacheException &#123;<br>        log.error(<span class="hljs-string">&quot;缓存服务崩溃&quot;</span>);<br>        <span class="hljs-keyword">return</span> R.fail(<span class="hljs-string">&quot;服务器崩溃&quot;</span>);<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+
+              
+            </div>
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/14-%E5%BE%AE%E6%9C%8D%E5%8A%A1/" class="category-chain-item">14_微服务</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/14-%E5%BE%AE%E6%9C%8D%E5%8A%A1/11-%E7%BC%93%E5%AD%98%E6%9C%8D%E5%8A%A1/" class="category-chain-item">11_缓存服务</a>
+  
+  
+
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/%E5%BE%AE%E6%9C%8D%E5%8A%A1/">#微服务</a>
+      
+        <a href="/tags/Redis/">#Redis</a>
+      
+        <a href="/tags/%E7%BC%93%E5%AD%98%E6%9C%8D%E5%8A%A1/">#缓存服务</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>Spring Data Redis+Redisson</div>
+      <div>https://janycode.github.io/2020/03/02/14_微服务/11_缓存服务/Spring Data Redis+Redisson/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Jerry(姜源)</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2020年3月2日</div>
+        </div>
+      
+      
+      <div class="license-meta-item">
+        <div>许可协议</div>
+        <div>
+          
+            
+            
+              <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+              <span class="hint--top hint--rounded" aria-label="BY - 姜源">
+                <i class="iconfont icon-by"></i>
+              </span>
+              </a>
+            
+          
+        </div>
+      </div>
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2020/03/02/14_%E5%BE%AE%E6%9C%8D%E5%8A%A1/10_%E6%94%AF%E4%BB%98%E6%9C%8D%E5%8A%A1/03-%E8%81%9A%E5%90%88%E6%94%AF%E4%BB%98Demo/" title="03-聚合支付Demo">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">03-聚合支付Demo</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2020/03/02/08_%E6%A1%86%E6%9E%B6%E6%8A%80%E6%9C%AF/05_SpringCloud/Spring%20Cloud%E4%B8%AD%E6%96%87%E6%96%87%E6%A1%A3/" title="Spring Cloud中文文档">
+                        <span class="hidden-mobile">Spring Cloud中文文档</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+  <article id="comments" lazyload>
+    
+  <div id="SOHUCS" sid='https://janycode.github.io/2020/03/02/14_%E5%BE%AE%E6%9C%8D%E5%8A%A1/11_%E7%BC%93%E5%AD%98%E6%9C%8D%E5%8A%A1/Spring%20Data%20Redis+Redisson/'></div>
+  <script type="text/javascript">
+    Fluid.utils.loadComments('#SOHUCS', function() {
+      Fluid.utils.createScript("https://changyan.sohu.com/upload/changyan.js", function() {
+        window.changyan.api.config({"appid":"cyw5OHIcO","appkey":"fea3446b3df4b3f129f34da4cbc87e51"})
+      });
+    });
+  </script>
+  <noscript>Please enable JavaScript to view the comments</noscript>
+
+
+  </article>
+
+
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://simple.blog.csdn.net" target="_blank" rel="nofollow noopener"><span>CSDN</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/janycode" target="_blank" rel="nofollow noopener"><span>GitHub</span></a> <i class="iconfont icon-love"></i> <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="busuanzi_container_site_pv" style="display: none">
+        总访问量(PV) 
+        <span id="busuanzi_value_site_pv"></span>
+         次，
+      </span>
+    
+    
+      <span id="busuanzi_container_site_uv" style="display: none">
+        总访客数(UV) 
+        <span id="busuanzi_value_site_uv"></span>
+         人
+      </span>
+    
+    
+  
+</div>
+
+  
+  
+  
+</div>
+
+<!-- live2d 动画 -->
+<script src="https://eqcn.ajz.miesnfu.com/wp-content/plugins/wp-3d-pony/live2dw/lib/L2Dwidget.min.js"></script>
+<script>
+    L2Dwidget.init({
+        "model": {
+            jsonPath: "https://unpkg.com/live2d-widget-model-haruto@1.0.5/assets/haruto.model.json",
+            "scale": 1
+        },
+        "display": {
+            "position": "right",
+            "width": 100,
+            "height": 200,
+            "hOffset": 35,
+            "vOffset": -85
+        },
+        "mobile": {
+            "show": false,
+            "scale": 0.1
+        },
+        "react": {
+            "opacityDefault": 0.75,
+            "opacityOnHover": 0.2
+        }
+    });
+</script>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <!-- Baidu Analytics -->
+    <script defer>
+      if (!Fluid.ctx.dnt) {
+        var _hmt = _hmt || [];
+        (function() {
+          var hm = document.createElement("script");
+          hm.src = "https://hm.baidu.com/hm.js?bfff735c897eb60ea49b735096b20e47";
+          var s = document.getElementsByTagName("script")[0];
+          s.parentNode.insertBefore(hm, s);
+        })();
+      }
+    </script>
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.0/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      headingSelector : CONFIG.toc.headingSelector || 'h1,h2,h3,h4,h5,h6',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      collapseDepth   : CONFIG.toc.collapseDepth || 0,
+      scrollSmooth    : true,
+      headingsOffset  : -boardTop
+    });
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+  });
+</script>
+
+
+  <script>
+  (function() {
+    var enableLang = CONFIG.code_language.enable && CONFIG.code_language.default;
+    var enableCopy = CONFIG.copy_btn;
+    if (!enableLang && !enableCopy) {
+      return;
+    }
+
+    function getBgClass(ele) {
+      return Fluid.utils.getBackgroundLightness(ele) >= 0 ? 'code-widget-light' : 'code-widget-dark';
+    }
+
+    var copyTmpl = '';
+    copyTmpl += '<div class="code-widget">';
+    copyTmpl += 'LANG';
+    copyTmpl += '</div>';
+    jQuery('.markdown-body pre').each(function() {
+      var $pre = jQuery(this);
+      if ($pre.find('code.mermaid').length > 0) {
+        return;
+      }
+      if ($pre.find('span.line').length > 0) {
+        return;
+      }
+
+      var lang = '';
+
+      if (enableLang) {
+        lang = CONFIG.code_language.default;
+        if ($pre[0].children.length > 0 && $pre[0].children[0].classList.length >= 2 && $pre.children().hasClass('hljs')) {
+          lang = $pre[0].children[0].classList[1];
+        } else if ($pre[0].getAttribute('data-language')) {
+          lang = $pre[0].getAttribute('data-language');
+        } else if ($pre.parent().hasClass('sourceCode') && $pre[0].children.length > 0 && $pre[0].children[0].classList.length >= 2) {
+          lang = $pre[0].children[0].classList[1];
+          $pre.parent().addClass('code-wrapper');
+        } else if ($pre.parent().hasClass('markdown-body') && $pre[0].classList.length === 0) {
+          $pre.wrap('<div class="code-wrapper"></div>');
+        }
+        lang = lang.toUpperCase().replace('NONE', CONFIG.code_language.default);
+      }
+      $pre.append(copyTmpl.replace('LANG', lang).replace('code-widget">',
+        getBgClass($pre[0]) + (enableCopy ? ' code-widget copy-btn" data-clipboard-snippet><i class="iconfont icon-copy"></i>' : ' code-widget">')));
+
+      if (enableCopy) {
+        Fluid.utils.createScript('https://lib.baomitu.com/clipboard.js/2.0.10/clipboard.min.js', function() {
+          var clipboard = new window.ClipboardJS('.copy-btn', {
+            target: function(trigger) {
+              var nodes = trigger.parentNode.childNodes;
+              for (var i = 0; i < nodes.length; i++) {
+                if (nodes[i].tagName === 'CODE') {
+                  return nodes[i];
+                }
+              }
+            }
+          });
+          clipboard.on('success', function(e) {
+            e.clearSelection();
+            e.trigger.innerHTML = e.trigger.innerHTML.replace('icon-copy', 'icon-success');
+            setTimeout(function() {
+              e.trigger.innerHTML = e.trigger.innerHTML.replace('icon-success', 'icon-copy');
+            }, 2000);
+          });
+        });
+      }
+    });
+  })();
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script  src="/js/local-search.js" ></script>
+
+  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

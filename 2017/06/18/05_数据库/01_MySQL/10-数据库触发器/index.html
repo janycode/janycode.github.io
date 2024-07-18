@@ -1,0 +1,886 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=light>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Jerry(姜源)">
+  <meta name="keywords" content="Java,Html,CSS,JavaScript,Python,C,Linux,shell编程经验分享、技术总结、心得体会">
+  
+    <meta name="description" content="1. Trigger 简介  【概念】  它是与表有关的数据库对象，在满足定义条件时触发，并执行触发器中定义的语句集合。  这种特性可以协助应用在数据库端确保数据的完整性。  【基本语法】 1234567CREATE TRIGGER trigger_name trigger_time trigger_event ON tb_name FOR EACH ROW trigger_stmt  # @t">
+<meta property="og:type" content="article">
+<meta property="og:title" content="10-数据库触发器">
+<meta property="og:url" content="https://janycode.github.io/2017/06/18/05_%E6%95%B0%E6%8D%AE%E5%BA%93/01_MySQL/10-%E6%95%B0%E6%8D%AE%E5%BA%93%E8%A7%A6%E5%8F%91%E5%99%A8/index.html">
+<meta property="og:site_name" content="姜源の云笔记">
+<meta property="og:description" content="1. Trigger 简介  【概念】  它是与表有关的数据库对象，在满足定义条件时触发，并执行触发器中定义的语句集合。  这种特性可以协助应用在数据库端确保数据的完整性。  【基本语法】 1234567CREATE TRIGGER trigger_name trigger_time trigger_event ON tb_name FOR EACH ROW trigger_stmt  # @t">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20200812132738.png">
+<meta property="article:published_time" content="2017-06-18T15:04:05.000Z">
+<meta property="article:modified_time" content="2023-12-24T03:11:24.369Z">
+<meta property="article:author" content="Jerry(姜源)">
+<meta property="article:tag" content="MySQL">
+<meta property="article:tag" content="触发器">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20200812132738.png">
+  
+  
+    <meta name="referrer" content="no-referrer-when-downgrade">
+  
+  
+  <title>10-数据库触发器 - 姜源の云笔记</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"janycode.github.io","root":"/","version":"1.9.0","typing":{"enable":true,"typeSpeed":50,"cursorChar":"|","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":false},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":"bfff735c897eb60ea49b735096b20e47","google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+
+  
+<meta name="generator" content="Hexo 6.2.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 50vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>姜源の云笔记</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tools/">
+                <i class="iconfont icon-slack-fill"></i>
+                工具
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" target="_blank" rel="noopener" href="https://janycode.gitee.io/">
+                <i class="iconfont icon-gitee-fill"></i>
+                Gitee
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="10-数据库触发器"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-author" aria-hidden="true"></i>
+        Jerry(姜源)
+      </span>
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2017-06-18 23:04" pubdate>
+          星期日, 2017/06/18 23:04:05
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          <!-- compatible with older versions-->
+          5.6k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          <!-- compatible with older versions-->
+          47 分钟
+        
+      </span>
+    
+
+    
+    
+      
+        <span id="busuanzi_container_page_pv" style="display: none">
+          <i class="iconfont icon-eye" aria-hidden="true"></i>
+          <span id="busuanzi_value_page_pv"></span> 次
+        </span>
+        
+      
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">10-数据库触发器</h1>
+            
+            <div class="markdown-body">
+              
+              <p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20200812132738.png" srcset="/img/loading.gif" lazyload alt="image-20200812132737977"></p>
+<h3 id="1-Trigger-简介"><a href="#1-Trigger-简介" class="headerlink" title="1. Trigger 简介"></a>1. Trigger 简介</h3><p>  <strong>【概念】</strong><br>  它是与表有关的数据库对象，在满足定义条件时触发，并执行触发器中定义的语句集合。<br>  这种特性可以协助应用在数据库端<code>确保数据的完整性</code>。</p>
+<p> <strong>【基本语法】</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs mysql">CREATE TRIGGER trigger_name trigger_time trigger_event ON tb_name FOR EACH ROW trigger_stmt<br>  <br># @trigger_name：触发器名称，自定义<br># @tirgger_time：触发时机，取值 BEFORE、AFTER<br># @trigger_event：触发事件，取值 INSERT、DELETE、UPDATE<br># @tb_name：表示建立触发器的表名，就是在哪张表上建立触发器<br># @trigger_stmt：触发器的程序体，可以是一条SQL语句或者是用 BEGIN 和 END 包含的多条语句<br></code></pre></td></tr></table></figure>
+
+<p>  所以 MySQL 可以创建以下 6 种触发器：<br>  BEFORE INSERT,  BEFORE DELETE,  BEFORE UPDATE<br>  AFTER INSERT,  AFTER DELETE,  AFTER UPDATE</p>
+<p> <strong>【包含多个执行语句语法】</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs mysql">DELIMITER $<br>CREATE TRIGGER 触发器名 触发时机 触发事件 ON 表名 FOR EACH ROW<br>BEGIN<br>    执行语句列表;<br>    ...;<br>END $<br>DELIMITER ;<br></code></pre></td></tr></table></figure>
+
+<blockquote>
+<p> SQL 语句分隔符问题：<br> 一般情况下，mysql默认是以 ; 作为结束执行语句，与触发器中需要的分行有冲突。<br> 为解决此问题可用 <code>DELIMITER</code> 关键字，如：DELIMITER #，可以将结束符号变成 #<br> 当触发器创建完成后，可以用 DELIMITER ; 来将结束符号变成 ;</p>
+</blockquote>
+<p> <strong>【Trigger CRUD】</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs Mysql"># 增 Create<br>CREATE TRIGGER 触发器名 触发时机 触发事件 ON 表名 FOR EACH ROW 触发器程序体<br># 查 Retrieve<br>SHOW TRIGGERS<br># 改 Update<br>ALTER TRIGGER 触发器名 触发时机 触发事件 ON 表名 FOR EACH ROW 触发器程序体<br># 删 Delete<br>DROP TRIGGER trigger_name<br></code></pre></td></tr></table></figure>
+
+
+
+<p><strong>【NEW 和 OLD】</strong></p>
+<ul>
+<li><code>NEW</code> 对象：SQL语句执行之前的记录对象</li>
+<li><code>OLD</code> 对象：SQL语句执行之后的记录对象</li>
+</ul>
+<p><strong>【基本使用】</strong></p>
+<ul>
+<li>当需要在操作 user 表的时候做独立的<code>数据库操作记录</code>，并备份 user 表的数据 —— Demo1</li>
+<li>当 user 表中发生了 DML 行为，那么就会<code>修改关联表中的某个字段</code>，比如数量 —— Demo2</li>
+<li>…</li>
+</ul>
+<h3 id="2-Trigger-Demo1-For-Log"><a href="#2-Trigger-Demo1-For-Log" class="headerlink" title="2. Trigger Demo1 For Log"></a>2. Trigger Demo1 For Log</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br></pre></td><td class="code"><pre><code class="hljs mysql"># 创建 user 表：id 主键,自增；name 不允许空<br>DROP TABLE IF EXISTS `user`;<br>CREATE TABLE `user`(<br>  `id` INT PRIMARY KEY AUTO_INCREMENT,<br>  `name` VARCHAR(20) NOT NULL<br>) ENGINE=INNODB DEFAULT CHARSET=utf8;<br><br># 插入测试数据<br>INSERT INTO `user`(NAME) VALUES(&#x27;jack&#x27;);<br>INSERT INTO `user`(NAME) VALUES(&#x27;rose&#x27;);<br>INSERT INTO `user`(NAME) VALUES(&#x27;tom&#x27;);<br>INSERT INTO `user`(NAME) VALUES(&#x27;jerry&#x27;);<br><br>SELECT `id`,`name` FROM `user`;<br><br><br># 创建 user 表对应的备份表 user_log，记录 user 表中所有 DML 操作被触发器语句触发而记录的内容<br>DROP TABLE IF EXISTS `user_log`;<br>CREATE TABLE `user_log` (<br>  `id` INT(10) NOT NULL AUTO_INCREMENT,<br>  `create_time` TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP, # 该字段数据有变化的时候自动更新该时间<br>  `current_user` VARCHAR(20) DEFAULT NULL,<br>  `operation` VARCHAR(64) DEFAULT NULL,<br>  `name` VARCHAR(64) DEFAULT NULL,<br>  PRIMARY KEY (`id`)<br>) ENGINE=INNODB DEFAULT CHARSET=utf8;<br><br>SELECT * FROM `user_log`;<br><br><br># -- 【创建 INSERT 触发器】 -- #<br>DROP TRIGGER IF EXISTS `user_log_insert`;<br>DELIMITER $  # 设置 sql 语句的结束符为 $<br>CREATE TRIGGER user_log_insert AFTER INSERT ON `user` FOR EACH ROW<br>BEGIN<br>  DECLARE s1 VARCHAR(64) CHARACTER SET utf8; # 语句①：定义变量 s1，后面发现中文字符编码出现乱码时设置字符集<br>  SET s1 = &quot;新增&quot;;  # 语句②：为 s1 赋值<br>  INSERT INTO user_log(`current_user`, `operation`, `name`) VALUES(USER(), s1, NEW.name); # 语句③：NEW 关键字，代表即将插入 user 表的数据<br>END $  # 此时 CREATE 语句到此为一整句的结束<br>DELIMITER ;  # 恢复 sql 语句的结束符为默认的分号 ;<br><br># 显示所有触发器<br>SHOW TRIGGERS;<br><br># 插入一条数据，并查询备份表，测试触发器是否产生记录<br>INSERT INTO `user` (NAME) VALUES (&#x27;周杰伦&#x27;);<br>SELECT * FROM `user`;<br>SELECT * FROM `user_log`;<br><br><br># -- 【创建 DELETE 触发器】 -- #<br>DROP TRIGGER IF EXISTS `user_log_delete`;<br>DELIMITER $<br>CREATE TRIGGER user_log_delete AFTER DELETE ON `user` FOR EACH ROW<br>BEGIN<br>  DECLARE s1 VARCHAR(64) CHARACTER SET utf8; # 语句①：定义变量 s1，后面发现中文字符编码出现乱码时设置字符集<br>  SET s1 = &quot;删除&quot;;  # 语句②：为 s1 赋值<br>  INSERT INTO user_log(`current_user`, `operation`, `name`) VALUES(USER(), s1, OLD.name); # 语句③：OLD 关键字，代表未删除之前 user 表的数据<br>END $<br>DELIMITER ;<br><br># 显示所有触发器<br>SHOW TRIGGERS;<br><br># 删除一条数据，并查询备份表，测试触发器是否产生记录<br>DELETE FROM `user` WHERE `name`=&#x27;周杰伦&#x27;;<br>SELECT * FROM `user`;<br>SELECT * FROM `user_log`;<br><br><br># -- 【创建 UPDATE 触发器】 -- #<br>DROP TRIGGER IF EXISTS `user_log_update`;<br>DELIMITER $<br>CREATE TRIGGER user_log_update AFTER UPDATE ON `user` FOR EACH ROW<br>BEGIN<br>  DECLARE s1 VARCHAR(64) CHARACTER SET utf8;<br>  SET s1 = &quot;更新&quot;;<br>  INSERT INTO user_log(`current_user`, `operation`, `name`) VALUES(USER(), s1, CONCAT(OLD.name, &#x27; -&gt; &#x27;, NEW.name));<br>END $<br>DELIMITER ;<br><br># 显示所有触发器<br>SHOW TRIGGERS;<br><br># 更新一条数据，并查询备份表，测试触发器是否产生记录<br>UPDATE `user` SET NAME=&#x27;jay&#x27; WHERE id=1;<br>SELECT * FROM `user`;<br>SELECT * FROM `user_log`;<br></code></pre></td></tr></table></figure>
+
+
+
+<h3 id="3-Trigger-Demo2-For-Data"><a href="#3-Trigger-Demo2-For-Data" class="headerlink" title="3. Trigger Demo2 For Data"></a>3. Trigger Demo2 For Data</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br></pre></td><td class="code"><pre><code class="hljs mysql"># 创建班级表<br>DROP TABLE IF EXISTS `class`;<br>CREATE TABLE `class`(<br>    `cid` INT PRIMARY KEY AUTO_INCREMENT,<br>    `cname` VARCHAR(30) DEFAULT NULL,<br>    `num` INT DEFAULT 0<br>) ENGINE=INNODB DEFAULT CHARSET=utf8;<br>    <br>INSERT INTO class VALUES(1,&quot;小班&quot;,0);<br>INSERT INTO class VALUES(2,&quot;中班&quot;,0);<br>INSERT INTO class VALUES(3,&quot;大班&quot;,0);<br><br>SELECT * FROM class;<br><br># 创建学生表<br>DROP TABLE IF EXISTS `student`;<br>CREATE TABLE `student`(<br>    `sid` INT PRIMARY KEY AUTO_INCREMENT,<br>    `sname` VARCHAR(30) DEFAULT NULL,<br>    `age` INT DEFAULT 0,<br>    `cno` INT DEFAULT 0<br>) ENGINE=INNODB DEFAULT CHARSET=utf8;<br><br>SELECT * FROM student;<br><br># 学生表添加一条学生记录, 班级表字段 num 加 1<br>DROP TRIGGER IF EXISTS `trigger_add`;<br>DELIMITER $<br>CREATE TRIGGER trigger_add AFTER INSERT ON student FOR EACH ROW<br>BEGIN<br>  UPDATE class SET num = num + 1 WHERE cid = NEW.cno;<br>END $<br>DELIMITER ;<br><br>SHOW TRIGGERS;<br><br>INSERT INTO student VALUES(1, &quot;小三&quot;, 3, 1);<br>SELECT * FROM class;<br>SELECT * FROM student;<br>INSERT INTO student VALUES(2, &quot;小四&quot;, 4, 1);<br>INSERT INTO student VALUES(3, &quot;小五&quot;, 5, 1);<br><br><br># 学生表删除一条学生记录, 班级表字段 num 减1<br>DROP TRIGGER IF EXISTS `trigger_sub`;<br>DELIMITER $<br>CREATE TRIGGER trigger_sub AFTER DELETE ON student FOR EACH ROW<br>BEGIN<br>  UPDATE class SET num = num - 1 WHERE cid = OLD.cno;<br>END $<br>DELIMITER ;<br><br>SHOW TRIGGERS;<br><br>DELETE FROM student WHERE sname = &quot;小三&quot;;<br>SELECT * FROM class;<br>SELECT * FROM student;<br></code></pre></td></tr></table></figure>
+
+
+
+<h3 id="4-Trigger-总结"><a href="#4-Trigger-总结" class="headerlink" title="4. Trigger 总结"></a>4. Trigger 总结</h3><p>总结：<br>触发器是基于行触发的，所以删除、新增或者修改操作可能都会激活触发器，所以不要编写过于复杂的触发器，也不要增加过得的触发器，这样会对数据的插入、修改或者删除带来比较严重的影响，同时也会带来可移植性差的后果，所以在设计触发器的时候一定要有所考虑。</p>
+<p>触发器是一种特殊的存储过程，它在插入，删除或修改特定表中的数据时触发执行，它比数据库本身标准的功能有更精细和更复杂的数据控制能力。</p>
+<p>数据库触发器有以下的作用：</p>
+<ol>
+<li>安全性。可以基于数据库的值使用户具有操作数据库的某种权利。</li>
+</ol>
+<p>可以基于时间限制用户的操作，例如不允许下班后和节假日修改数据库数据。</p>
+<p>可以基于数据库中的数据限制用户的操作，例如不允许股票的价格的升幅一次超过10%。</p>
+<ol start="2">
+<li>审计。可以跟踪用户对数据库的操作。</li>
+</ol>
+<p>审计用户操作数据库的语句。</p>
+<p>把用户对数据库的更新写入审计表。</p>
+<ol start="3">
+<li>实现复杂的数据完整性规则</li>
+</ol>
+<p>实现非标准的数据完整性检查和约束。触发器可产生比规则更为复杂的限制。与规则不同，触发器可以引用列或数据库对象。例如，触发器可回退任何企图吃进超过自己保证金的期货。</p>
+<p>提供可变的缺省值。</p>
+<ol start="4">
+<li>实现复杂的非标准的数据库相关完整性规则。触发器可以对数据库中相关的表进行连环更新。例如，在auths表author_code列上的删除触发器可导致相应删除在其它表中的与之匹配的行。</li>
+</ol>
+<p>在修改或删除时级联修改或删除其它表中的与之匹配的行。</p>
+<p>在修改或删除时把其它表中的与之匹配的行设成NULL值。</p>
+<p>在修改或删除时把其它表中的与之匹配的行级联设成缺省值。</p>
+<p>触发器能够拒绝或回退那些破坏相关完整性的变化，取消试图进行数据更新的事务。当插入一个与其主健不匹配的外部键时，这种触发器会起作用。例如，可以在books.author_code 列上生成一个插入触发器，如果新值与auths.author_code列中的某值不匹配时，插入被回退。</p>
+<ol start="5">
+<li><p>同步实时地复制表中的数据。</p>
+</li>
+<li><p>自动计算数据值，如果数据的值达到了一定的要求，则进行特定的处理。例如，如果公司的帐号上的资金低于5万元则立即给财务人员发送警告数据。</p>
+</li>
+</ol>
+
+              
+            </div>
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/05-%E6%95%B0%E6%8D%AE%E5%BA%93/" class="category-chain-item">05_数据库</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/05-%E6%95%B0%E6%8D%AE%E5%BA%93/01-MySQL/" class="category-chain-item">01_MySQL</a>
+  
+  
+
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/MySQL/">#MySQL</a>
+      
+        <a href="/tags/%E8%A7%A6%E5%8F%91%E5%99%A8/">#触发器</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>10-数据库触发器</div>
+      <div>https://janycode.github.io/2017/06/18/05_数据库/01_MySQL/10-数据库触发器/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Jerry(姜源)</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2017年6月18日</div>
+        </div>
+      
+      
+      <div class="license-meta-item">
+        <div>许可协议</div>
+        <div>
+          
+            
+            
+              <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+              <span class="hint--top hint--rounded" aria-label="BY - 姜源">
+                <i class="iconfont icon-by"></i>
+              </span>
+              </a>
+            
+          
+        </div>
+      </div>
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2017/06/18/05_%E6%95%B0%E6%8D%AE%E5%BA%93/01_MySQL/09-%E7%B4%A2%E5%BC%95%E5%92%8C%E5%AD%98%E5%82%A8%E8%BF%87%E7%A8%8B/" title="09-索引和存储过程">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">09-索引和存储过程</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2017/06/18/05_%E6%95%B0%E6%8D%AE%E5%BA%93/01_MySQL/11-%E6%95%B0%E6%8D%AE%E5%BA%93%E4%B8%89%E5%A4%A7%E8%8C%83%E5%BC%8F/" title="11-数据库三大范式">
+                        <span class="hidden-mobile">11-数据库三大范式</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+  <article id="comments" lazyload>
+    
+  <div id="SOHUCS" sid='https://janycode.github.io/2017/06/18/05_%E6%95%B0%E6%8D%AE%E5%BA%93/01_MySQL/10-%E6%95%B0%E6%8D%AE%E5%BA%93%E8%A7%A6%E5%8F%91%E5%99%A8/'></div>
+  <script type="text/javascript">
+    Fluid.utils.loadComments('#SOHUCS', function() {
+      Fluid.utils.createScript("https://changyan.sohu.com/upload/changyan.js", function() {
+        window.changyan.api.config({"appid":"cyw5OHIcO","appkey":"fea3446b3df4b3f129f34da4cbc87e51"})
+      });
+    });
+  </script>
+  <noscript>Please enable JavaScript to view the comments</noscript>
+
+
+  </article>
+
+
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://simple.blog.csdn.net" target="_blank" rel="nofollow noopener"><span>CSDN</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/janycode" target="_blank" rel="nofollow noopener"><span>GitHub</span></a> <i class="iconfont icon-love"></i> <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="busuanzi_container_site_pv" style="display: none">
+        总访问量(PV) 
+        <span id="busuanzi_value_site_pv"></span>
+         次，
+      </span>
+    
+    
+      <span id="busuanzi_container_site_uv" style="display: none">
+        总访客数(UV) 
+        <span id="busuanzi_value_site_uv"></span>
+         人
+      </span>
+    
+    
+  
+</div>
+
+  
+  
+  
+</div>
+
+<!-- live2d 动画 -->
+<script src="https://eqcn.ajz.miesnfu.com/wp-content/plugins/wp-3d-pony/live2dw/lib/L2Dwidget.min.js"></script>
+<script>
+    L2Dwidget.init({
+        "model": {
+            jsonPath: "https://unpkg.com/live2d-widget-model-haruto@1.0.5/assets/haruto.model.json",
+            "scale": 1
+        },
+        "display": {
+            "position": "right",
+            "width": 100,
+            "height": 200,
+            "hOffset": 35,
+            "vOffset": -85
+        },
+        "mobile": {
+            "show": false,
+            "scale": 0.1
+        },
+        "react": {
+            "opacityDefault": 0.75,
+            "opacityOnHover": 0.2
+        }
+    });
+</script>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <!-- Baidu Analytics -->
+    <script defer>
+      if (!Fluid.ctx.dnt) {
+        var _hmt = _hmt || [];
+        (function() {
+          var hm = document.createElement("script");
+          hm.src = "https://hm.baidu.com/hm.js?bfff735c897eb60ea49b735096b20e47";
+          var s = document.getElementsByTagName("script")[0];
+          s.parentNode.insertBefore(hm, s);
+        })();
+      }
+    </script>
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.0/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      headingSelector : CONFIG.toc.headingSelector || 'h1,h2,h3,h4,h5,h6',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      collapseDepth   : CONFIG.toc.collapseDepth || 0,
+      scrollSmooth    : true,
+      headingsOffset  : -boardTop
+    });
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+  });
+</script>
+
+
+  <script>
+  (function() {
+    var enableLang = CONFIG.code_language.enable && CONFIG.code_language.default;
+    var enableCopy = CONFIG.copy_btn;
+    if (!enableLang && !enableCopy) {
+      return;
+    }
+
+    function getBgClass(ele) {
+      return Fluid.utils.getBackgroundLightness(ele) >= 0 ? 'code-widget-light' : 'code-widget-dark';
+    }
+
+    var copyTmpl = '';
+    copyTmpl += '<div class="code-widget">';
+    copyTmpl += 'LANG';
+    copyTmpl += '</div>';
+    jQuery('.markdown-body pre').each(function() {
+      var $pre = jQuery(this);
+      if ($pre.find('code.mermaid').length > 0) {
+        return;
+      }
+      if ($pre.find('span.line').length > 0) {
+        return;
+      }
+
+      var lang = '';
+
+      if (enableLang) {
+        lang = CONFIG.code_language.default;
+        if ($pre[0].children.length > 0 && $pre[0].children[0].classList.length >= 2 && $pre.children().hasClass('hljs')) {
+          lang = $pre[0].children[0].classList[1];
+        } else if ($pre[0].getAttribute('data-language')) {
+          lang = $pre[0].getAttribute('data-language');
+        } else if ($pre.parent().hasClass('sourceCode') && $pre[0].children.length > 0 && $pre[0].children[0].classList.length >= 2) {
+          lang = $pre[0].children[0].classList[1];
+          $pre.parent().addClass('code-wrapper');
+        } else if ($pre.parent().hasClass('markdown-body') && $pre[0].classList.length === 0) {
+          $pre.wrap('<div class="code-wrapper"></div>');
+        }
+        lang = lang.toUpperCase().replace('NONE', CONFIG.code_language.default);
+      }
+      $pre.append(copyTmpl.replace('LANG', lang).replace('code-widget">',
+        getBgClass($pre[0]) + (enableCopy ? ' code-widget copy-btn" data-clipboard-snippet><i class="iconfont icon-copy"></i>' : ' code-widget">')));
+
+      if (enableCopy) {
+        Fluid.utils.createScript('https://lib.baomitu.com/clipboard.js/2.0.10/clipboard.min.js', function() {
+          var clipboard = new window.ClipboardJS('.copy-btn', {
+            target: function(trigger) {
+              var nodes = trigger.parentNode.childNodes;
+              for (var i = 0; i < nodes.length; i++) {
+                if (nodes[i].tagName === 'CODE') {
+                  return nodes[i];
+                }
+              }
+            }
+          });
+          clipboard.on('success', function(e) {
+            e.clearSelection();
+            e.trigger.innerHTML = e.trigger.innerHTML.replace('icon-copy', 'icon-success');
+            setTimeout(function() {
+              e.trigger.innerHTML = e.trigger.innerHTML.replace('icon-success', 'icon-copy');
+            }, 2000);
+          });
+        });
+      }
+    });
+  })();
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script  src="/js/local-search.js" ></script>
+
+  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

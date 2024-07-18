@@ -1,0 +1,1168 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=light>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Jerry(姜源)">
+  <meta name="keywords" content="Java,Html,CSS,JavaScript,Python,C,Linux,shell编程经验分享、技术总结、心得体会">
+  
+    <meta name="description" content="参考资料： 1.﻿ Prompt-Engineering-Guide﻿：https:&#x2F;&#x2F;github.com&#x2F;dair-ai&#x2F;Prompt-Engineering-Guide 2.GitHub指南：https:&#x2F;&#x2F;github.com&#x2F;dair-ai&#x2F;Prompt-Engineering-Guide﻿ 3.prompt中文指南：https:&#x2F;&#x2F;www.promptingguide.ai&#x2F;zh">
+<meta property="og:type" content="article">
+<meta property="og:title" content="06-prompt提示词编写技巧">
+<meta property="og:url" content="https://janycode.github.io/2023/07/19/13_%E7%AC%AC%E4%B8%89%E6%96%B9/03_OpenAI/06-prompt%E6%8F%90%E7%A4%BA%E8%AF%8D%E7%BC%96%E5%86%99%E6%8A%80%E5%B7%A7/index.html">
+<meta property="og:site_name" content="姜源の云笔记">
+<meta property="og:description" content="参考资料： 1.﻿ Prompt-Engineering-Guide﻿：https:&#x2F;&#x2F;github.com&#x2F;dair-ai&#x2F;Prompt-Engineering-Guide 2.GitHub指南：https:&#x2F;&#x2F;github.com&#x2F;dair-ai&#x2F;Prompt-Engineering-Guide﻿ 3.prompt中文指南：https:&#x2F;&#x2F;www.promptingguide.ai&#x2F;zh">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230420144824.png">
+<meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230719212520.png">
+<meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230719212748.png">
+<meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230719212830.png">
+<meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230719213257.png">
+<meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230719213348.png">
+<meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230719213429.png">
+<meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230719213520.png">
+<meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230719213633.png">
+<meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230719213755.png">
+<meta property="article:published_time" content="2023-07-19T14:14:45.000Z">
+<meta property="article:modified_time" content="2023-12-24T03:11:24.585Z">
+<meta property="article:author" content="Jerry(姜源)">
+<meta property="article:tag" content="OpenAI">
+<meta property="article:tag" content="chatGPT">
+<meta property="article:tag" content="prompt">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230420144824.png">
+  
+  
+    <meta name="referrer" content="no-referrer-when-downgrade">
+  
+  
+  <title>06-prompt提示词编写技巧 - 姜源の云笔记</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"janycode.github.io","root":"/","version":"1.9.0","typing":{"enable":true,"typeSpeed":50,"cursorChar":"|","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":false},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":"bfff735c897eb60ea49b735096b20e47","google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+
+  
+<meta name="generator" content="Hexo 6.2.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 50vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>姜源の云笔记</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tools/">
+                <i class="iconfont icon-slack-fill"></i>
+                工具
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" target="_blank" rel="noopener" href="https://janycode.gitee.io/">
+                <i class="iconfont icon-gitee-fill"></i>
+                Gitee
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="06-prompt提示词编写技巧"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-author" aria-hidden="true"></i>
+        Jerry(姜源)
+      </span>
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2023-07-19 22:14" pubdate>
+          星期三, 2023/07/19 22:14:45
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          <!-- compatible with older versions-->
+          24k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          <!-- compatible with older versions-->
+          203 分钟
+        
+      </span>
+    
+
+    
+    
+      
+        <span id="busuanzi_container_page_pv" style="display: none">
+          <i class="iconfont icon-eye" aria-hidden="true"></i>
+          <span id="busuanzi_value_page_pv"></span> 次
+        </span>
+        
+      
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">06-prompt提示词编写技巧</h1>
+            
+            <div class="markdown-body">
+              
+              <p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230420144824.png" srcset="/img/loading.gif" lazyload alt="image-20230420144823328"></p>
+<p>参考资料：</p>
+<p>1.﻿ Prompt-Engineering-Guide﻿：<a target="_blank" rel="noopener" href="https://github.com/dair-ai/Prompt-Engineering-Guide">https://github.com/dair-ai/Prompt-Engineering-Guide</a></p>
+<p>2.GitHub指南：<a target="_blank" rel="noopener" href="https://github.com/dair-ai/Prompt-Engineering-Guide">https://github.com/dair-ai/Prompt-Engineering-Guide</a>﻿</p>
+<p>3.prompt中文指南：<a target="_blank" rel="noopener" href="https://www.promptingguide.ai/zh">https://www.promptingguide.ai/zh</a>﻿</p>
+<p>4.Prompt 技巧指南：<a target="_blank" rel="noopener" href="https://blog.csdn.net/weixin_44839084/article/details/130504541">https://blog.csdn.net/weixin_44839084/article/details/130504541</a>﻿</p>
+<p>5.﻿ Learn Prompting﻿：<a target="_blank" rel="noopener" href="https://learnprompting.org/">https://learnprompting.org/</a></p>
+<p>6.﻿ ChatGPT3-Free-Prompt-List﻿：<a target="_blank" rel="noopener" href="https://github.com/mattnigh/ChatGPT3-Free-Prompt-List">https://github.com/mattnigh/ChatGPT3-Free-Prompt-List</a></p>
+<p>7.LLM（Large Language Model）下的自然语言处理任务: <a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/615305245">https://zhuanlan.zhihu.com/p/615305245</a>﻿</p>
+<p>8.讯飞星火prompt样例：<a target="_blank" rel="noopener" href="https://xinghuo.xfyun.cn/instruction">https://xinghuo.xfyun.cn/instruction</a>﻿</p>
+<p>9.吴恩达Prompt完整版本<a target="_blank" rel="noopener" href="https://www.bilibili.com/video/BV1NV4y1d7Pf?p=1&amp;vd_source=8dc823038d93a6a3c167b01acc0f16d9">https://www.bilibili.com/video/BV1NV4y1d7Pf?p=1&amp;vd_source=8dc823038d93a6a3c167b01acc0f16d9</a>﻿</p>
+<p>10.吴恩达Prompt课程笔记：<a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/625917566">https://zhuanlan.zhihu.com/p/625917566</a>﻿</p>
+<p>11.百度prompt课程地址: <a target="_blank" rel="noopener" href="https://author.baidu.com/home?type=profile&action=profile&mthfr=box_share&context=%7B%22from%22:%22dusite_sresults%22,%22uk%22:%22sf1gzr7M2fUPtQBqsHzHNw%22,%22tab%22:%22article%22%7D">飞桨百家号</a>﻿</p>
+<h2 id="一、背景"><a href="#一、背景" class="headerlink" title="一、背景"></a>一、背景</h2><p>提示工程是一门相对较新的学科，用于开发和优化提示以有效地将语言模型 (LM) 用于各种应用程序和研究主题。即时的工程技能有助于更好地理解大型语言模型 (LLM) 的功能和局限性。研究人员使用提示工程来提高 LLM 在广泛的常见和复杂任务（例如问题回答和算术推理）上的能力。开发人员使用提示工程来设计与 LLM 和其他工具交互的强大且有效的提示技术。</p>
+<p>在不同的应用场景，LLM承担的角色不同，需要构建不同prompt。另外不同的llm对prompt的敏感度不同，因此，需要根据具体的应用场景，针对不同llm、不同任务构建相应的prompt。</p>
+<p>NLP的发展可以概括为特征工程、结构工程和目标工程，当前进入prompt工程阶段。</p>
+<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230719212520.png" srcset="/img/loading.gif" lazyload alt="image-20230719212519332"></p>
+<p>在本地生活场景下，需要LLM承担不同的功能，问答场景答案更加有“本地味”，经过调试，可以在通用的LLM上使其具有一定的本地特色，当然也存在失效的情况，prompt输出结果稳定性也需要进一步探索。</p>
+<h2 id="二、基础知识"><a href="#二、基础知识" class="headerlink" title="二、基础知识"></a>二、基础知识</h2><p><strong>写在前边</strong></p>
+<p>使用prompt时，可以通过 API 或直接与 LLM 进行交互，配置一些参数以获得不同的提示结果。</p>
+<p><strong>Temperature：</strong>简而言之，越低temperature，结果越确定，因为总是选择最可能的下一个标记。升高温度可能会导致更多的随机性，从而鼓励更多样化或更有创意的输出。您实质上是在增加其他可能标记的权重。在应用方面，您可能希望对基于事实的 QA 等任务使用较低的温度值，以鼓励更真实和简洁的响应。对于诗歌生成或其他创造性任务，增加温度值可能是有益的。</p>
+<p><strong>Top_p：</strong>同样，top_p一种称为核采样的温度采样技术，可以控制模型在生成响应时的确定性。如果您正在寻找准确和事实的答案，请保持低调。如果您正在寻找更多样化的响应，请增加到更高的值。</p>
+<p>一般建议是改变一个，而不是两个。在开始一些基本示例之前，请记住您的结果可能会因您使用的LLM版本而异。﻿</p>
+<p><strong>基础提示词</strong></p>
+<p>您可以通过简单的提示词（Prompts）获得大量结果，但结果的质量与您提供的信息数量和完善度有关。一个提示词可以包含您传递到模型的_指令_或_问题_等信息，也可以包含其他详细信息，如_上下文_、_输入_或_示例_等。您可以通过这些元素来更好地指导模型，并因此获得更好的结果。</p>
+<p>input：</p>
+<figure class="highlight actionscript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs actionscript">The sky <span class="hljs-keyword">is</span><br></code></pre></td></tr></table></figure>
+
+<p>output:</p>
+<figure class="highlight mipsasm"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs mipsasm"><span class="hljs-keyword">blue</span><br><span class="hljs-keyword"></span>The sky is <span class="hljs-keyword">blue </span>on a clear day. On a <span class="hljs-keyword">cloudy </span>day, the sky may <span class="hljs-keyword">be </span>gray <span class="hljs-keyword">or </span>white.<br></code></pre></td></tr></table></figure>
+
+<p>如上，语言模型能够基于我们给出的上下文内容 &#96;“The sky is” 完成续写。而输出的结果可能是出人意料的，或远高于我们的任务要求。</p>
+<p>基于以上示例，如果想要实现更具体的目标，我们还必须提供更多的背景信息或说明信息。</p>
+<p>可以按如下示例试着完善一下：</p>
+<p>input:</p>
+<figure class="highlight livecodeserver"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs livecodeserver">Complete <span class="hljs-keyword">the</span> <span class="hljs-keyword">sentence</span>: <br>The sky is<br></code></pre></td></tr></table></figure>
+
+<p>output</p>
+<figure class="highlight arcade"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs arcade">so  beautiful <span class="hljs-built_in">today</span>.<br></code></pre></td></tr></table></figure>
+
+<p>这个例子，我们告知模型去完善句子，因此输出的结果和我们最初的输入是完全符合的。<strong>提示工程（Prompt Engineering</strong>）就是探讨如何设计出最佳提示词，用于指导语言模型帮助我们高效完成某项任务。﻿</p>
+<p><strong>提示词格式</strong></p>
+<p><strong>1.基础</strong></p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs xml"><span class="hljs-tag">&lt;<span class="hljs-name">Question</span>&gt;</span>?<br></code></pre></td></tr></table></figure>
+
+<figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs apache"><span class="hljs-section">&lt;Instruction&gt;</span><br></code></pre></td></tr></table></figure>
+
+<p><strong>2.零样本提示</strong></p>
+<p>您可以将其格式化为问答 (QA) 格式，这是许多 QA 数据集中的标准格式，如下所示：</p>
+<figure class="highlight avrasm"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs avrasm"><span class="hljs-symbol">Q:</span> &lt;Question&gt;?<br><span class="hljs-symbol">A:</span><br></code></pre></td></tr></table></figure>
+
+<p>像上面这样提示时，它也被称为<strong>零样本提示（zero-shot prompting）</strong>，即你直接提示模型进行响应，而没有任何关于你希望它完成的任务的示例或演示。一些大型语言模型确实具有执行零样本提示的能力，但这取决于手头任务的复杂性和知识。</p>
+<p><strong>3.小样本提示</strong></p>
+<p>鉴于上述标准格式，一种流行且有效的提示技术被称为<strong>小样本提示（Few-shot Prompting）</strong>，您可以在其中提供范例（即演示）。您可以按如下方式格式化少量提示：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs xml"><span class="hljs-tag">&lt;<span class="hljs-name">Question</span>&gt;</span>?<br><span class="hljs-tag">&lt;<span class="hljs-name">Answer</span>&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">Question</span>&gt;</span>?<br><span class="hljs-tag">&lt;<span class="hljs-name">Answer</span>&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">Question</span>&gt;</span>?<br><span class="hljs-tag">&lt;<span class="hljs-name">Answer</span>&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">Question</span>&gt;</span>?<br></code></pre></td></tr></table></figure>
+
+<p>QA 格式版本如下所示：</p>
+<figure class="highlight avrasm"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs avrasm"><span class="hljs-symbol">Q:</span> &lt;Question&gt;?<br><span class="hljs-symbol">A:</span> &lt;Answer&gt;<br><span class="hljs-symbol">Q:</span> &lt;Question&gt;?<br><span class="hljs-symbol">A:</span> &lt;Answer&gt;<br><span class="hljs-symbol">Q:</span> &lt;Question&gt;?<br><span class="hljs-symbol">A:</span> &lt;Answer&gt;<br><span class="hljs-symbol">Q:</span> &lt;Question&gt;?<br><span class="hljs-symbol">A:</span><br></code></pre></td></tr></table></figure>
+
+<p>注意，使用问答模式并不是必须的。你可以根据任务需求调整提示范式。比如，您可以按以下示例执行一个简单的分类任务，并对任务做简单说明：</p>
+<p>prompt</p>
+<figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs awk">This is awesome! <span class="hljs-regexp">//</span> Positive<br>This is bad! <span class="hljs-regexp">//</span> Negative<br>Wow that movie was rad! <span class="hljs-regexp">//</span> Positive<br>What a horrible show! <span class="hljs-regexp">//</span><br></code></pre></td></tr></table></figure>
+
+<p>output</p>
+<figure class="highlight ebnf"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs ebnf"><span class="hljs-attribute">Negative</span><br></code></pre></td></tr></table></figure>
+
+
+
+<p><strong>提示元素</strong></p>
+<p>随着我们涵盖越来越多的提示工程示例和应用程序，您会注意到某些元素构成了提示。提示包含以下几种元素：</p>
+<p><strong>指令(Instruction)</strong>: 您希望模型执行的特定任务或指令</p>
+<p><strong>上下文(Context)</strong>: 可以引导模型做出更好响应的外部信息或其他上下文</p>
+<p><strong>输入数据(Input Data)</strong>: 我们有兴趣为其找到响应的输入或问题</p>
+<p><strong>输出格式(Output Indicator)</strong>: 输出的类型或格式。</p>
+<p>根据任务选择其中的一个或者几个元素。</p>
+<h2 id="三、构建方法-amp-技巧"><a href="#三、构建方法-amp-技巧" class="headerlink" title="三、构建方法&amp;技巧"></a>三、构建方法&amp;技巧</h2><p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230719212748.png" srcset="/img/loading.gif" lazyload alt="image-20230719212747748"></p>
+<p>我们很难在初次尝试中就设计出最佳的提示，因此需要根据LLM的反馈进行分析，分析输出具体在哪里不符合期望，然后不断思考和优化提示。如果有条件的话，最好是利用批量的样本来改善提示，这样可以对你的优化结果有一个较为直观的体现。</p>
+<p>最近AI大神吴恩达推出prompt教程给出了prompt构建三大原则，Prompt Engineering Guide也提出了诸多技巧，实践中发现few-shot和COT在任务里更加实用，特别是few-shot在大多数任务中屡试不爽。</p>
+<h3 id="3-1-原则"><a href="#3-1-原则" class="headerlink" title="3.1 原则"></a>3.1 原则</h3><h4 id="1、提供清晰和具体的指令-Write-clear-and-specific-instructions"><a href="#1、提供清晰和具体的指令-Write-clear-and-specific-instructions" class="headerlink" title="1、提供清晰和具体的指令 (Write clear and specific instructions)"></a>1、提供清晰和具体的指令 (Write clear and specific instructions)</h4><ul>
+<li><strong>使用分隔符清楚地指示输入的不同部分（Use delimiters to clearly indicate distinct parts of the input）</strong></li>
+</ul>
+<p>使用分隔符的意义在于避免用户输入的文本可能存在一些误导性的话语对应用功能造成干扰，下面是一个提示注入的例子：</p>
+<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230719212830.png" srcset="/img/loading.gif" lazyload alt="image-20230719212829652"></p>
+<p>分隔符是以下任意一个: </p>
+<figure class="highlight autohotkey"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs autohotkey">​```, <span class="hljs-string">&quot;&quot;</span><span class="hljs-string">&quot;, &lt; &gt;, &lt;tag&gt; &lt;/tag&gt;</span><br></code></pre></td></tr></table></figure>
+
+<p>Prompt示例：</p>
+<figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><code class="hljs awk">text = f<span class="hljs-string">&quot;&quot;&quot;</span><br><span class="hljs-string">You should express what you want a model to do by \ </span><br><span class="hljs-string">providing instructions that are as clear and \ </span><br><span class="hljs-string">specific as you can possibly make them. \ </span><br><span class="hljs-string">This will guide the model towards the desired output, \ </span><br><span class="hljs-string">and reduce the chances of receiving irrelevant \ </span><br><span class="hljs-string">or incorrect responses. Don&#x27;t confuse writing a \ </span><br><span class="hljs-string">clear prompt with writing a short prompt. \ </span><br><span class="hljs-string">In many cases, longer prompts provide more clarity \ </span><br><span class="hljs-string">and context for the model, which can lead to \ </span><br><span class="hljs-string">more detailed and relevant outputs.</span><br><span class="hljs-string">&quot;&quot;&quot;</span><br>prompt = f<span class="hljs-string">&quot;&quot;&quot;</span><br><span class="hljs-string">Summarize the text delimited by triple backticks \ </span><br><span class="hljs-string">into a single sentence.</span><br><span class="hljs-string">​```&#123;text&#125;```</span><br><span class="hljs-string">&quot;&quot;&quot;</span><br>response = get_completion(prompt)<br>print(response)<br></code></pre></td></tr></table></figure>
+
+<p>output</p>
+<figure class="highlight mipsasm"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs mipsasm">Clear <span class="hljs-keyword">and </span>specific <span class="hljs-keyword">instructions </span><span class="hljs-keyword">should </span><span class="hljs-keyword">be </span>provided to guide a model towards the desired output, <span class="hljs-keyword">and </span>longer prompts can provide more clarity <span class="hljs-keyword">and </span><span class="hljs-built_in">context</span> for the model, leading to more detailed <span class="hljs-keyword">and </span>relevant outputs.<br></code></pre></td></tr></table></figure>
+
+<ul>
+<li><strong>要求结构化的输出（Ask for a structured output）</strong></li>
+</ul>
+<p>这样有助于模型输出结果直接用于程序，比如输出的json可以直接被python程序读取并转换为字典格式。</p>
+<p>Prompt示例：</p>
+<figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs awk">prompt = f<span class="hljs-string">&quot;&quot;&quot;</span><br><span class="hljs-string">Generate a list of three made-up book titles along \ </span><br><span class="hljs-string">with their authors and genres. </span><br><span class="hljs-string">Provide them in JSON format with the following keys: </span><br><span class="hljs-string">book_id, title, author, genre.</span><br><span class="hljs-string">&quot;&quot;&quot;</span><br>response = get_completion(prompt)<br>print(response)<br></code></pre></td></tr></table></figure>
+
+<p>output</p>
+<figure class="highlight prolog"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><code class="hljs prolog">[<br>  &#123;<br>    <span class="hljs-string">&quot;book_id&quot;</span>: <span class="hljs-number">1</span>,<br>    <span class="hljs-string">&quot;title&quot;</span>: <span class="hljs-string">&quot;The Lost City of Zorath&quot;</span>,<br>    <span class="hljs-string">&quot;author&quot;</span>: <span class="hljs-string">&quot;Aria Blackwood&quot;</span>,<br>    <span class="hljs-string">&quot;genre&quot;</span>: <span class="hljs-string">&quot;Fantasy&quot;</span><br>  &#125;,<br>  &#123;<br>    <span class="hljs-string">&quot;book_id&quot;</span>: <span class="hljs-number">2</span>,<br>    <span class="hljs-string">&quot;title&quot;</span>: <span class="hljs-string">&quot;The Last Survivors&quot;</span>,<br>    <span class="hljs-string">&quot;author&quot;</span>: <span class="hljs-string">&quot;Ethan Stone&quot;</span>,<br>    <span class="hljs-string">&quot;genre&quot;</span>: <span class="hljs-string">&quot;Science Fiction&quot;</span><br>  &#125;,<br>  &#123;<br>    <span class="hljs-string">&quot;book_id&quot;</span>: <span class="hljs-number">3</span>,<br>    <span class="hljs-string">&quot;title&quot;</span>: <span class="hljs-string">&quot;The Secret of the Haunted Mansion&quot;</span>,<br>    <span class="hljs-string">&quot;author&quot;</span>: <span class="hljs-string">&quot;Lila Rose&quot;</span>,<br>    <span class="hljs-string">&quot;genre&quot;</span>: <span class="hljs-string">&quot;Mystery&quot;</span><br>  &#125;<br>]<br></code></pre></td></tr></table></figure>
+
+<ul>
+<li>让模型检查是否满足条件（Ask the model to check whether conditions are satisfied）</li>
+</ul>
+<p>Prompt示例（满足条件的文本）：</p>
+<figure class="highlight smalltalk"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><code class="hljs smalltalk">text_1 = f<span class="hljs-comment">&quot;&quot;</span><span class="hljs-comment">&quot;</span><br><span class="hljs-comment">Making a cup of tea is easy! First, you need to get some \</span><br><span class="hljs-comment">water boiling. While that&#x27;s happening, \</span><br><span class="hljs-comment">grab a cup and put a tea bag in it. Once the water is \</span><br><span class="hljs-comment">hot enough, just pour it over the tea bag. \</span><br><span class="hljs-comment">Let it sit for a bit so the tea can steep. After a \</span><br><span class="hljs-comment">few minutes, take out the tea bag. If you \</span><br><span class="hljs-comment">like, you can add some sugar or milk to taste. \</span><br><span class="hljs-comment">And that&#x27;s it! You&#x27;ve got yourself a delicious \</span><br><span class="hljs-comment">cup of tea to enjoy.</span><br><span class="hljs-comment">&quot;</span><span class="hljs-comment">&quot;&quot;</span><br>prompt = f<span class="hljs-comment">&quot;&quot;</span><span class="hljs-comment">&quot;</span><br><span class="hljs-comment">You will be provided with text delimited by triple quotes.</span><br><span class="hljs-comment">If it contains a sequence of instructions, \</span><br><span class="hljs-comment">re-write those instructions in the following format:</span><br><span class="hljs-comment">Step 1 - ...</span><br><span class="hljs-comment">Step 2 - …</span><br><span class="hljs-comment">…</span><br><span class="hljs-comment">Step N - …</span><br><span class="hljs-comment">If the text does not contain a sequence of instructions, \ </span><br><span class="hljs-comment">then simply write \&quot;</span><span class="hljs-type">No</span> steps provided.\<span class="hljs-comment">&quot;</span><br><span class="hljs-comment">\&quot;</span>\<span class="hljs-comment">&quot;\&quot;</span>&#123;text_1&#125;\<span class="hljs-comment">&quot;\&quot;</span>\<span class="hljs-comment">&quot;</span><br><span class="hljs-comment">&quot;</span><span class="hljs-comment">&quot;&quot;</span><br>response = get_completion(prompt)<br>print(<span class="hljs-comment">&quot;Completion for Text 1:&quot;</span>)<br>print(response)<br></code></pre></td></tr></table></figure>
+
+<p>output</p>
+<figure class="highlight livecodeserver"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs livecodeserver">Completion <span class="hljs-keyword">for</span> Text <span class="hljs-number">1</span>:<br>Step <span class="hljs-number">1</span> - Get some water boiling.<br>Step <span class="hljs-number">2</span> - Grab <span class="hljs-keyword">a</span> cup <span class="hljs-keyword">and</span> <span class="hljs-built_in">put</span> <span class="hljs-keyword">a</span> tea bag <span class="hljs-keyword">in</span> <span class="hljs-keyword">it</span>.<br>Step <span class="hljs-number">3</span> - Once <span class="hljs-keyword">the</span> water is hot enough, pour <span class="hljs-keyword">it</span> over <span class="hljs-keyword">the</span> tea bag.<br>Step <span class="hljs-number">4</span> - Let <span class="hljs-keyword">it</span> sit <span class="hljs-keyword">for</span> <span class="hljs-keyword">a</span> bit so <span class="hljs-keyword">the</span> tea can steep.<br>Step <span class="hljs-number">5</span> - After <span class="hljs-keyword">a</span> few minutes, take out <span class="hljs-keyword">the</span> tea bag.<br>Step <span class="hljs-number">6</span> - Add some sugar <span class="hljs-keyword">or</span> milk <span class="hljs-built_in">to</span> taste.<br>Step <span class="hljs-number">7</span> - Enjoy your delicious cup <span class="hljs-keyword">of</span> tea!<br></code></pre></td></tr></table></figure>
+
+<ul>
+<li><strong>少样本提示（ “Few-shot” prompting）</strong></li>
+</ul>
+<p>通过提供给模型一个或多个样本的提示，模型可以更加清楚需要你预期的输出。</p>
+<p>关于few-shot learning，感兴趣的同学可以看一下GPT-3的论文：Language Models are Few-Shot Learners﻿</p>
+<p>Prompt示例：</p>
+<figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs awk">prompt = f<span class="hljs-string">&quot;&quot;&quot;</span><br><span class="hljs-string">Your task is to answer in a consistent style.</span><br><span class="hljs-string">&lt;child&gt;: Teach me about patience.</span><br><span class="hljs-string">&lt;grandparent&gt;: The river that carves the deepest \</span><br><span class="hljs-string">valley flows from a modest spring; the \</span><br><span class="hljs-string">grandest symphony originates from a single note; \</span><br><span class="hljs-string">the most intricate tapestry begins with a solitary thread.</span><br><span class="hljs-string">&lt;child&gt;: Teach me about resilience.</span><br><span class="hljs-string">&quot;&quot;&quot;</span><br>response = get_completion(prompt)<br>print(response)<br></code></pre></td></tr></table></figure>
+
+<p>output</p>
+<figure class="highlight applescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs applescript">&lt;grandparent&gt;: Resilience <span class="hljs-keyword">is</span> like a tree <span class="hljs-keyword">that</span> bends <span class="hljs-keyword">with</span> <span class="hljs-keyword">the</span> wind  <span class="hljs-keyword">but</span> never breaks. It <span class="hljs-keyword">is</span> <span class="hljs-keyword">the</span> ability <span class="hljs-keyword">to</span> bounce <span class="hljs-keyword">back</span> <span class="hljs-keyword">from</span> adversit y <span class="hljs-keyword">and</span> keep moving forward, even when things <span class="hljs-keyword">get</span> tough. Just like  a tree <span class="hljs-keyword">that</span> grows stronger <span class="hljs-keyword">with</span> each storm <span class="hljs-keyword">it</span> weathers, resilience <span class="hljs-keyword">is</span> a quality <span class="hljs-keyword">that</span> can be developed <span class="hljs-keyword">and</span> strengthened <span class="hljs-keyword">over</span> <span class="hljs-built_in">time</span>.<br></code></pre></td></tr></table></figure>
+
+<h4 id="2、给模型时间来“思考”（Give-the-model-time-to-“think”-）"><a href="#2、给模型时间来“思考”（Give-the-model-time-to-“think”-）" class="headerlink" title="2、给模型时间来“思考”（Give the model time to “think” ）"></a>2、给模型时间来“思考”（Give the model time to “think” ）</h4><p>这个原则利用了思维链的方法，将复杂任务拆成N个顺序的子任务，这样可以让模型一步一步思考，从而给出更精准的输出。具体可以参见paper：Chain-of-Thought Prompting Elicits Reasoning in Large Language Models。</p>
+<ul>
+<li><strong>策略1：指定完成任务所需的步骤 （Specify the steps required to complete a task）</strong></li>
+</ul>
+<p>下面是一个例子，需要先对文本进行总结，再将总结翻译成法语，然后在法语总结中列出每个名字，最后输出json格式的数据，这么复杂的指令，如果让模型直接输出结果，怕是很难搞定。但是如果给出所需的步骤，让模型一步一步来解，可以让模型在输出token的时候可以参照上一个步骤的结果，从而提升输出的正确率。</p>
+<p>Prompt示例：</p>
+<figure class="highlight smalltalk"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><code class="hljs smalltalk">text = f<span class="hljs-comment">&quot;&quot;</span><span class="hljs-comment">&quot;</span><br><span class="hljs-comment">In a charming village, siblings Jack and Jill set out on \</span><br><span class="hljs-comment">a quest to fetch water from a hilltop \</span><br><span class="hljs-comment">well. As they climbed, singing joyfully, misfortune \</span><br><span class="hljs-comment">struck—Jack tripped on a stone and tumbled \</span><br><span class="hljs-comment">down the hill, with Jill following suit. \</span><br><span class="hljs-comment">Though slightly battered, the pair returned home to \</span><br><span class="hljs-comment">comforting embraces. Despite the mishap, \</span><br><span class="hljs-comment">their adventurous spirits remained undimmed, and they \</span><br><span class="hljs-comment">continued exploring with delight.</span><br><span class="hljs-comment">&quot;</span><span class="hljs-comment">&quot;&quot;</span><br># example <span class="hljs-number">1</span><br>prompt_1 = f<span class="hljs-comment">&quot;&quot;</span><span class="hljs-comment">&quot;</span><br><span class="hljs-comment">Perform the following actions: |</span><br><span class="hljs-comment">1 - Summarize the following text delimited by triple \</span><br><span class="hljs-comment">backticks with 1 sentence.</span><br><span class="hljs-comment">2 - Translate the summary into French.</span><br><span class="hljs-comment">3 - List each name in the French summary.</span><br><span class="hljs-comment">4 - Output a json object that contains the following \</span><br><span class="hljs-comment">keys: french_summary, num_names.</span><br><span class="hljs-comment">Separate your answers with line breaks.</span><br><span class="hljs-comment">Text:</span><br><span class="hljs-comment">​```&#123;text&#125;```</span><br><span class="hljs-comment">&quot;</span><span class="hljs-comment">&quot;&quot;</span><br>response = get_completion(prompt_1)<br>print(<span class="hljs-comment">&quot;Completion for prompt 1:&quot;</span>)<br>print(response)<br></code></pre></td></tr></table></figure>
+
+<p>output:</p>
+<figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs pgsql">Completion <span class="hljs-keyword">for</span> prompt <span class="hljs-number">1</span>:<br>Two siblings, Jack <span class="hljs-keyword">and</span> Jill, go <span class="hljs-keyword">on</span> a quest <span class="hljs-keyword">to</span> <span class="hljs-keyword">fetch</span> water <span class="hljs-keyword">from</span> a well <span class="hljs-keyword">on</span> a hilltop, but misfortune strikes <span class="hljs-keyword">and</span> they <span class="hljs-keyword">both</span> tumble down the hill, <span class="hljs-keyword">returning</span> home slightly battered but <span class="hljs-keyword">with</span> their adventurous spirits undimmed.<br>Deux frères et sœurs, Jack et Jill, partent en quête d<span class="hljs-string">&#x27;eau d&#x27;</span>un puits sur une colline, mais un malheur frappe et ils tombent tous les deux de la colline, rentrant chez eux légèrement meurtris mais avec leur esprit d<span class="hljs-string">&#x27;aventure intact.</span><br><span class="hljs-string">Noms: Jack, Jill.</span><br><span class="hljs-string">&#123;</span><br><span class="hljs-string">  &quot;french_summary&quot;: &quot;Deux frères et sœurs, Jack et Jill, partent en quête d&#x27;</span>eau d<span class="hljs-string">&#x27;un puits sur une colline, mais un malheur frappe et ils tombent tous les deux de la colline, rentrant chez eux légèrement meurtris mais avec leur esprit d&#x27;</span>aventure intact.&quot;,<br>  &quot;num_names&quot;: 2<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>我们发现，虽然程序比较好的完成了任务，但是在第三个步骤模型使用了法语Noms，这并不是我们所期望的，所以接下来的示例会提供具体输出的格式来更正这个问题。</p>
+<p>更好的Prompt：</p>
+<figure class="highlight vim"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><code class="hljs vim">prompt_2 = <span class="hljs-keyword">f</span><span class="hljs-string">&quot;&quot;</span><span class="hljs-comment">&quot;</span><br>Your task <span class="hljs-keyword">is</span> <span class="hljs-keyword">to</span> perform the following actions:<br> - Summarize the following text delimited by<br>  &lt;&gt; with <span class="hljs-number">1</span> sentence.<br> - Translate the summary into French.<br> - List each name in the French summary.<br> - Output <span class="hljs-keyword">a</span> json object that contains the<br>  following <span class="hljs-built_in">keys</span>: french_summary, num_names.<br><br>Use the following format:<br>Text: &lt;text <span class="hljs-keyword">to</span> summarize&gt;<br>Summary: <span class="hljs-symbol">&lt;summary&gt;</span><br>Translation: &lt;summary translation&gt;<br>Names: &lt;<span class="hljs-keyword">list</span> of names in Italian summary&gt;<br>Output JSON: &lt;json with summary <span class="hljs-built_in">and</span> num_names&gt;<br><br>Text: &lt;&#123;text&#125;&gt;<br><span class="hljs-string">&quot;&quot;</span><span class="hljs-comment">&quot;</span><br>response = get_completion(prompt_2)<br><span class="hljs-keyword">print</span>(<span class="hljs-string">&quot;\nCompletion for prompt 2:&quot;</span>)<br><span class="hljs-keyword">print</span>(response)<br></code></pre></td></tr></table></figure>
+
+<p>output</p>
+<figure class="highlight applescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs applescript">Completion <span class="hljs-keyword">for</span> prompt <span class="hljs-number">2</span>:<br>Summary: Jack <span class="hljs-keyword">and</span> Jill go <span class="hljs-keyword">on</span> a quest <span class="hljs-keyword">to</span> fetch water, <span class="hljs-keyword">but</span> misfortune strikes <span class="hljs-keyword">and</span> they tumble down <span class="hljs-keyword">the</span> hill, <span class="hljs-keyword">returning</span> home slightly battered <span class="hljs-keyword">but</span> <span class="hljs-keyword">with</span> their adventurous spirits undimmed.<br>Translation: Jack et Jill partent en quête d&#x27;eau, mais un malheur frappe et ils tombent de la colline, rentrant chez eux légèrement meurtris mais avec leurs esprits aventureux intacts.<br>Names: Jack, Jill<br>Output JSON: <br>&#123;<br>    <span class="hljs-string">&quot;french_summary&quot;</span>: <span class="hljs-string">&quot;Jack et Jill partent en quête d&#x27;eau, mais un malheur frappe et ils tombent de la colline, rentrant chez eux légèrement meurtris mais avec leurs esprits aventureux intacts.&quot;</span>,<br>    <span class="hljs-string">&quot;num_names&quot;</span>: <span class="hljs-number">2</span><br>&#125;<br></code></pre></td></tr></table></figure>
+
+<ul>
+<li><strong>策略2：在匆忙得出结论之前，让模型自己找出解决方案（Instruct the model to work out its own solution before rushing to a conclusion）</strong></li>
+</ul>
+<p>在这里，作者给出了一个检查学生习题答案的例子，在第一个版本的prompt里，模型匆忙地给出了错误的答案：</p>
+<p>效果不好的prompt示例：</p>
+<figure class="highlight smalltalk"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><code class="hljs smalltalk">prompt = f<span class="hljs-comment">&quot;&quot;</span><span class="hljs-comment">&quot;</span><br><span class="hljs-comment">Determine if the student&#x27;s solution is correct or not.</span><br><span class="hljs-comment">Question:</span><br><span class="hljs-comment">I&#x27;m building a solar power installation and I need \</span><br><span class="hljs-comment"> help working out the financials.</span><br><span class="hljs-comment">- Land costs $100 / square foot</span><br><span class="hljs-comment">- I can buy solar panels for $250 / square foot</span><br><span class="hljs-comment">- I negotiated a contract for maintenance that will cost \</span><br><span class="hljs-comment">me a flat $100k per year, and an additional $10 / square \</span><br><span class="hljs-comment">foot</span><br><span class="hljs-comment">What is the total cost for the first year of operations</span><br><span class="hljs-comment">as a function of the number of square feet.</span><br><span class="hljs-comment">Student&#x27;s Solution:</span><br><span class="hljs-comment">Let x be the size of the installation in square feet.</span><br><span class="hljs-comment">Costs:</span><br><span class="hljs-comment">1. Land cost: 100x</span><br><span class="hljs-comment">2. Solar panel cost: 250x</span><br><span class="hljs-comment">3. Maintenance cost: 100,000 + 100x</span><br><span class="hljs-comment">Total cost: 100x + 250x + 100,000 + 100x = 450x + 100,000</span><br><span class="hljs-comment">&quot;</span><span class="hljs-comment">&quot;&quot;</span><br>response = get_completion(prompt)<br>print(response)<br></code></pre></td></tr></table></figure>
+
+<p>不正确的输出：</p>
+<figure class="highlight ada"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs ada">The student<span class="hljs-symbol">&#x27;s</span> solution <span class="hljs-keyword">is</span> correct.<br></code></pre></td></tr></table></figure>
+
+<p>我们可以通过指示模型先找出自己的解决方案来解决这个问题：</p>
+<p>更新后的prompt：</p>
+<figure class="highlight smalltalk"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br></pre></td><td class="code"><pre><code class="hljs smalltalk"><br>prompt = f<span class="hljs-comment">&quot;&quot;</span><span class="hljs-comment">&quot;</span><br><span class="hljs-comment">Your task is to determine if the student&#x27;s solution \</span><br><span class="hljs-comment">is correct or not.</span><br><span class="hljs-comment">To solve the problem do the following:</span><br><span class="hljs-comment">- First, work out your own solution to the problem.</span><br><span class="hljs-comment">- Then compare your solution to the student&#x27;s solution \</span><br><span class="hljs-comment">and evaluate if the student&#x27;s solution is correct or not.</span><br><span class="hljs-comment">Don&#x27;t decide if the student&#x27;s solution is correct until</span><br><span class="hljs-comment">you have done the problem yourself.</span><br><span class="hljs-comment">Use the following format:</span><br><span class="hljs-comment">Question:</span><br><span class="hljs-comment">​```</span><br><span class="hljs-comment">question here</span><br><span class="hljs-comment">​```</span><br><span class="hljs-comment">Student&#x27;s solution:</span><br><span class="hljs-comment">​```</span><br><span class="hljs-comment">student&#x27;s solution here</span><br><span class="hljs-comment">​```</span><br><span class="hljs-comment">Actual solution:</span><br><span class="hljs-comment">​```</span><br><span class="hljs-comment">steps to work out the solution and your solution here</span><br><span class="hljs-comment">​```</span><br><span class="hljs-comment">Is the student&#x27;s solution the same as actual solution \</span><br><span class="hljs-comment">just calculated:</span><br><span class="hljs-comment">​```</span><br><span class="hljs-comment">yes or no</span><br><span class="hljs-comment">​```</span><br><span class="hljs-comment">Student grade:</span><br><span class="hljs-comment">​```</span><br><span class="hljs-comment">correct or incorrect</span><br><span class="hljs-comment">​```</span><br><span class="hljs-comment">Question:</span><br><span class="hljs-comment">​```</span><br><span class="hljs-comment">I&#x27;m building a solar power installation and I need help \</span><br><span class="hljs-comment">working out the financials.</span><br><span class="hljs-comment">- Land costs $100 / square foot</span><br><span class="hljs-comment">- I can buy solar panels for $250 / square foot</span><br><span class="hljs-comment">- I negotiated a contract for maintenance that will cost \</span><br><span class="hljs-comment">me a flat $100k per year, and an additional $10 / square \</span><br><span class="hljs-comment">foot</span><br><span class="hljs-comment">What is the total cost for the first year of operations \</span><br><span class="hljs-comment">as a function of the number of square feet.</span><br><span class="hljs-comment">​```</span><br><span class="hljs-comment">Student&#x27;s solution:</span><br><span class="hljs-comment">​```</span><br><span class="hljs-comment">Let x be the size of the installation in square feet.</span><br><span class="hljs-comment">Costs:</span><br><span class="hljs-comment">1. Land cost: 100x</span><br><span class="hljs-comment">2. Solar panel cost: 250x</span><br><span class="hljs-comment">3. Maintenance cost: 100,000 + 100x</span><br><span class="hljs-comment">Total cost: 100x + 250x + 100,000 + 100x = 450x + 100,000</span><br><span class="hljs-comment">​```</span><br><span class="hljs-comment">Actual solution:</span><br><span class="hljs-comment">&quot;</span><span class="hljs-comment">&quot;&quot;</span><br>response = get_completion(prompt)<br>print(response)<br></code></pre></td></tr></table></figure>
+
+<p>正确的输出：</p>
+<figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs apache"><span class="hljs-attribute">Let</span> x be the size of the installation in square feet.<br><span class="hljs-attribute">Costs</span>:<br><span class="hljs-attribute">1</span>. Land cost: <span class="hljs-number">100</span>x<br><span class="hljs-attribute">2</span>. Solar panel cost: <span class="hljs-number">250</span>x<br><span class="hljs-attribute">3</span>. Maintenance cost: <span class="hljs-number">100</span>,<span class="hljs-number">000</span> + <span class="hljs-number">10</span>x<br><span class="hljs-attribute">Total</span> cost: <span class="hljs-number">100</span>x + <span class="hljs-number">250</span>x + <span class="hljs-number">100</span>,<span class="hljs-number">000</span> + <span class="hljs-number">10</span>x = <span class="hljs-number">360</span>x + <span class="hljs-number">100</span>,<span class="hljs-number">000</span><br><span class="hljs-attribute">Is</span> the student&#x27;s solution the same as actual solution just calculated:<br><span class="hljs-attribute">No</span><br><span class="hljs-attribute">Student</span> grade:<br><span class="hljs-attribute">Incorrect</span><br></code></pre></td></tr></table></figure>
+
+<h4 id="3、模型的限制：幻觉（Model-Limitations-Hallucinations）"><a href="#3、模型的限制：幻觉（Model-Limitations-Hallucinations）" class="headerlink" title="3、模型的限制：幻觉（Model Limitations: Hallucinations）"></a>3、模型的限制：幻觉（Model Limitations: Hallucinations）</h4><p>经常使用ChatGPT的同学应该都知道，模型会产生幻觉，也就是会捏造一些似是而非的东西（比如某个不存在的文学作品），这些输出看起来是正确的，但实质上是错误的。</p>
+<p>针对这个问题，作者提供了一个比较有效的方法可以缓解模型的幻觉问题：让模型给出相关信息，并基于相关信息给我回答。比如告诉模型：“First find relevant information, then answer the question based on the relevant information”。</p>
+<h3 id="3-2-技巧"><a href="#3-2-技巧" class="headerlink" title="3.2 技巧"></a>3.2 技巧</h3><h4 id="零样本"><a href="#零样本" class="headerlink" title="零样本"></a>零样本</h4><p>分类的实例</p>
+<p>prompt：</p>
+<figure class="highlight vbnet"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs vbnet">Classify the <span class="hljs-keyword">text</span> <span class="hljs-keyword">into</span> neutral, negative <span class="hljs-built_in">or</span> positive.<br><span class="hljs-symbol">Text:</span> I think the vacation <span class="hljs-built_in">is</span> okay.<br><span class="hljs-symbol">Sentiment:</span><br></code></pre></td></tr></table></figure>
+
+<p>输出：</p>
+<figure class="highlight ebnf"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs ebnf"><span class="hljs-attribute">Neutral</span><br></code></pre></td></tr></table></figure>
+
+<p>请注意，在上面的提示中，我们没有向模型提供任何文本示例及其分类，LLM 已经理解“情绪”——这就是工作中的零样本能力。</p>
+<h4 id="少样本"><a href="#少样本" class="headerlink" title="少样本"></a>少样本</h4><p>虽然大型语言模型展示了卓越的零样本能力，但在使用零样本设置时它们仍然无法完成更复杂的任务。Few-shot prompting 可以用作启用上下文学习的技术，我们在提示中提供演示以引导模型获得更好的性能。这些演示用作后续示例的条件，我们希望模型在这些示例中生成响应。</p>
+<p>prompt：</p>
+<figure class="highlight livecodeserver"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs livecodeserver">A <span class="hljs-string">&quot;whatpu&quot;</span> is <span class="hljs-keyword">a</span> small, furry animal native <span class="hljs-built_in">to</span> Tanzania. An example <span class="hljs-keyword">of</span> <span class="hljs-keyword">a</span> <span class="hljs-keyword">sentence</span> that usesthe <span class="hljs-built_in">word</span> whatpu is:We were traveling <span class="hljs-keyword">in</span> Africa <span class="hljs-keyword">and</span> we saw these very cute whatpus.<br>To <span class="hljs-built_in">do</span> <span class="hljs-keyword">a</span> <span class="hljs-string">&quot;farduddle&quot;</span> means <span class="hljs-built_in">to</span> jump up <span class="hljs-keyword">and</span> down really fast. An example <span class="hljs-keyword">of</span> <span class="hljs-keyword">a</span> <span class="hljs-keyword">sentence</span> that usesthe <span class="hljs-built_in">word</span> farduddle is:<br></code></pre></td></tr></table></figure>
+
+<p>输出：</p>
+<figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs pgsql"><span class="hljs-keyword">When</span> we won the game, we <span class="hljs-keyword">all</span> started <span class="hljs-keyword">to</span> farduddle <span class="hljs-keyword">in</span> celebration.<br></code></pre></td></tr></table></figure>
+
+<p>我们可以观察到，该模型仅通过提供一个示例（即 1-shot）就以某种方式学会了如何执行任务。对于更困难的任务，我们可以尝试增加演示（例如，3-shot、5-shot、10-shot 等）</p>
+<h4 id="思维连-CoT-提示"><a href="#思维连-CoT-提示" class="headerlink" title="思维连(CoT)提示"></a>思维连(CoT)提示</h4><p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230719213257.png" srcset="/img/loading.gif" lazyload alt="image-20230719213256365"></p>
+<p>思想链 (CoT) 提示通过中间推理步骤启用复杂的推理能力。您可以将它与少量提示结合使用，以便在响应前需要推理的更复杂任务中获得更好的结果。</p>
+<p>prompt</p>
+<figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs apache"><span class="hljs-attribute">The</span> odd numbers in this group add up to an even number: <span class="hljs-number">4</span>, <span class="hljs-number">8</span>, <span class="hljs-number">9</span>, <span class="hljs-number">15</span>, <span class="hljs-number">12</span>, <span class="hljs-number">2</span>, <span class="hljs-number">1</span>.<br><span class="hljs-attribute">A</span>: Adding <span class="hljs-literal">all</span> the odd numbers (<span class="hljs-number">9</span>, <span class="hljs-number">15</span>, <span class="hljs-number">1</span>) gives <span class="hljs-number">25</span>. The answer is False.<br><span class="hljs-attribute">The</span> odd numbers in this group add up to an even number: <span class="hljs-number">17</span>,  <span class="hljs-number">10</span>, <span class="hljs-number">19</span>, <span class="hljs-number">4</span>, <span class="hljs-number">8</span>, <span class="hljs-number">12</span>, <span class="hljs-number">24</span>.<br><span class="hljs-attribute">A</span>: Adding <span class="hljs-literal">all</span> the odd numbers (<span class="hljs-number">17</span>, <span class="hljs-number">19</span>) gives <span class="hljs-number">36</span>. The answer is True.<br><span class="hljs-attribute">The</span> odd numbers in this group add up to an even number: <span class="hljs-number">16</span>,  <span class="hljs-number">11</span>, <span class="hljs-number">14</span>, <span class="hljs-number">4</span>, <span class="hljs-number">8</span>, <span class="hljs-number">13</span>, <span class="hljs-number">24</span>.<br><span class="hljs-attribute">A</span>: Adding <span class="hljs-literal">all</span> the odd numbers (<span class="hljs-number">11</span>, <span class="hljs-number">13</span>) gives <span class="hljs-number">24</span>. The answer is True.<br><span class="hljs-attribute">The</span> odd numbers in this group add up to an even number: <span class="hljs-number">17</span>,  <span class="hljs-number">9</span>, <span class="hljs-number">10</span>, <span class="hljs-number">12</span>, <span class="hljs-number">13</span>, <span class="hljs-number">4</span>, <span class="hljs-number">2</span>.<br><span class="hljs-attribute">A</span>: Adding <span class="hljs-literal">all</span> the odd numbers (<span class="hljs-number">17</span>, <span class="hljs-number">9</span>, <span class="hljs-number">13</span>) gives <span class="hljs-number">39</span>. The answer is False.<br><span class="hljs-attribute">The</span> odd numbers in this group add up to an even number: <span class="hljs-number">15</span>, <span class="hljs-number">32</span>, <span class="hljs-number">5</span>, <span class="hljs-number">13</span>, <span class="hljs-number">82</span>, <span class="hljs-number">7</span>, <span class="hljs-number">1</span>.<br><span class="hljs-attribute">A</span>:<br></code></pre></td></tr></table></figure>
+
+<p>output:</p>
+<figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs apache"><span class="hljs-attribute">Adding</span> <span class="hljs-literal">all</span> the odd numbers (<span class="hljs-number">15</span>, <span class="hljs-number">5</span>, <span class="hljs-number">13</span>, <span class="hljs-number">7</span>, <span class="hljs-number">1</span>) gives <span class="hljs-number">41</span>. The answer is F alse.<br></code></pre></td></tr></table></figure>
+
+<p>当我们提供推理步骤时，我们可以看到一个完美的结果。事实上，我们可以通过提供更少的例子来解决这个任务，即一个例子似乎就足够了：</p>
+<p>prompt：</p>
+<figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs apache"><span class="hljs-attribute">The</span> odd numbers in this group add up to an even number: <span class="hljs-number">4</span>, <span class="hljs-number">8</span>, <span class="hljs-number">9</span>, <span class="hljs-number">15</span>,<span class="hljs-number">12</span>, <span class="hljs-number">2</span>, <span class="hljs-number">1</span>.A: Adding <span class="hljs-literal">all</span> the odd numbers (<span class="hljs-number">9</span>, <span class="hljs-number">15</span>, <span class="hljs-number">1</span>) gives <span class="hljs-number">25</span>. The answer is False.The odd numbers in this group add up to an even number: <span class="hljs-number">15</span>, <span class="hljs-number">32</span>, <span class="hljs-number">5</span> , <span class="hljs-number">13</span>, <span class="hljs-number">82</span>, <span class="hljs-number">7</span>, <span class="hljs-number">1</span>. A:<br></code></pre></td></tr></table></figure>
+
+<p>输出：</p>
+<figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs apache"><span class="hljs-attribute">Adding</span> <span class="hljs-literal">all</span> the odd numbers (<span class="hljs-number">15</span>, <span class="hljs-number">5</span>, <span class="hljs-number">13</span>, <span class="hljs-number">7</span>, <span class="hljs-number">1</span>) gives <span class="hljs-number">41</span>. The answer is False.<br></code></pre></td></tr></table></figure>
+
+<p>请记住，作者声称这是一种随着足够大的语言模型而出现的新兴能力。</p>
+<h5 id="零次COT提示"><a href="#零次COT提示" class="headerlink" title="零次COT提示"></a><strong>零次COT提示</strong></h5><p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230719213348.png" srcset="/img/loading.gif" lazyload alt="image-20230719213347185"></p>
+<p>最近出现的一个想法是零样本 CoT，这基本上涉及在原始提示中添加“让我们一步一步地思考”。我们这里尝试一个简单的问题，看看模型的表现如何：</p>
+<p>prompt：</p>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs css"><span class="hljs-selector-tag">I</span> went <span class="hljs-selector-tag">to</span> the market and bought <span class="hljs-number">10</span> apples.<br><span class="hljs-selector-tag">I</span> gave <span class="hljs-number">2</span> apples <span class="hljs-selector-tag">to</span> the neighbor and <span class="hljs-number">2</span> <span class="hljs-selector-tag">to</span> the repairman.<br><span class="hljs-selector-tag">I</span> then went and bought <span class="hljs-number">5</span> more apples and ate <span class="hljs-number">1</span>.<br>How many apples did <span class="hljs-selector-tag">I</span> remain with?<br></code></pre></td></tr></table></figure>
+
+<p>输出：</p>
+<figure class="highlight basic"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs basic"><span class="hljs-symbol">11 </span>apples<br></code></pre></td></tr></table></figure>
+
+<p>答案不正确！现在让我们尝试使用特殊提示。</p>
+<p>prompt：</p>
+<figure class="highlight livecodeserver"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs livecodeserver">I went <span class="hljs-built_in">to</span> <span class="hljs-keyword">the</span> market <span class="hljs-keyword">and</span> bought <span class="hljs-number">10</span> apples.<br>I gave <span class="hljs-number">2</span> apples <span class="hljs-built_in">to</span> <span class="hljs-keyword">the</span> neighbor <span class="hljs-keyword">and</span> <span class="hljs-number">2</span> <span class="hljs-built_in">to</span> <span class="hljs-keyword">the</span> repairman.<br>I <span class="hljs-keyword">then</span> went <span class="hljs-keyword">and</span> bought <span class="hljs-number">5</span> more apples <span class="hljs-keyword">and</span> ate <span class="hljs-number">1.</span><br>How many apples did I remain <span class="hljs-keyword">with</span>?<br>Let<span class="hljs-string">&#x27;s think step by step.</span><br></code></pre></td></tr></table></figure>
+
+<p>输出：</p>
+<figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs apache"><span class="hljs-attribute">First</span>, you started with <span class="hljs-number">10</span> apples.<br><span class="hljs-attribute">You</span> gave away <span class="hljs-number">2</span> apples to the neighbor and <span class="hljs-number">2</span> to the repairman, so you had <span class="hljs-number">6</span> apples left.<br><span class="hljs-attribute">Then</span> you bought <span class="hljs-number">5</span> more apples, so now you had <span class="hljs-number">11</span> apples.<br><span class="hljs-attribute">Finally</span>, you ate <span class="hljs-number">1</span> apple, so you would remain with <span class="hljs-number">10</span> apples.<br></code></pre></td></tr></table></figure>
+
+<p>令人印象深刻的是，这个简单的提示在完成这项任务时非常有效。当您没有太多示例可用于提示时，这特别有用。</p>
+<h4 id="PAL-Program-Aided-Language-Models"><a href="#PAL-Program-Aided-Language-Models" class="headerlink" title="PAL (Program-Aided Language Models)"></a>PAL (Program-Aided Language Models)</h4><p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230719213429.png" srcset="/img/loading.gif" lazyload alt="image-20230719213428371"></p>
+<p>Program-Aided Language Models(程序辅助语言模型)使用 LLM 阅读自然语言问题，并生成程序作为中间推理步骤的方法。(PAL) 与思维链提示的不同之处在于，它不是使用自由格式的文本来获得解决方案，而是将解决方案步骤变为编程代码运行，提高了结果的准确性。该方法的缺点是需要较长的提示样例，通常也是一些程序代码，这样才能让 LLM 也用代码回答。</p>
+<h2 id="四、探索实践-amp-示例"><a href="#四、探索实践-amp-示例" class="headerlink" title="四、探索实践&amp;示例"></a>四、探索实践&amp;示例</h2><p>prompt在不同模型，不同任务上表现不同。我们这里在通用任务和业务任务尝试。首先构造基础prompt，具体使用需要针对具体的模型调优。</p>
+<h3 id="4-1-通用任务"><a href="#4-1-通用任务" class="headerlink" title="4.1 通用任务"></a>4.1 通用任务</h3><h4 id="4-1-1-分类任务"><a href="#4-1-1-分类任务" class="headerlink" title="4.1.1 分类任务"></a>4.1.1 分类任务</h4><p>基础prompt</p>
+<p>如果类别之间定义比较清晰，不需要类别的说明，可以直接按照如下prompt作为base调试。</p>
+<figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs awk"><span class="hljs-number">1</span><br>f<span class="hljs-string">&quot;&quot;&quot;&#123;question&#125; 属于[class1,class2,class3]中的哪个类别&quot;&quot;&quot;</span><br></code></pre></td></tr></table></figure>
+
+<figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs awk"><span class="hljs-number">1</span><br>f<span class="hljs-string">&quot;&quot;&quot;请将`&#123;question&#125;`分类，类别必须在[class1,class2,class3]&quot;&quot;&quot;</span><br></code></pre></td></tr></table></figure>
+
+<p>例如:</p>
+<p>任务一: 多分类</p>
+<figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs apache"><span class="hljs-attribute">1</span>. 加拿大（英语/法语：Canada），首都渥太华，位于北美洲北部。东临大西洋，西濒太平洋，西北部邻美国阿拉斯加州，南接美国本土，北靠北冰洋。气候大部分为亚寒带针叶林气候和湿润大陆性气候，北部极地区域为极地长寒气候。<br><span class="hljs-attribute">2</span>. 《琅琊榜》是由山东影视传媒集团、山东影视制作有限公司、北京儒意欣欣影业投资有限公司、北京和颂天地影视文化有限公司、北京圣基影业有限公司、东阳正午阳光影视有限公司联合出品，由孔笙、李雪执导，胡歌、刘涛、王凯、黄维德、陈龙、吴磊、高鑫等主演的古装剧。<br><span class="hljs-attribute">3</span>. 《满江红》是由张艺谋执导，沈腾、易烊千玺、张译、雷佳音、岳云鹏、王佳怡领衔主演，潘斌龙、余皑磊主演，郭京飞、欧豪友情出演，魏翔、张弛、黄炎特别出演，许静雅、蒋鹏宇、林博洋、飞凡、任思诺、陈永胜出演的悬疑喜剧电影。<br><span class="hljs-attribute">4</span>. 布宜诺斯艾利斯（Buenos Aires，华人常简称为布宜诺斯）是阿根廷共和国（the Republic of Argentina，República Argentina）的首都和最大城市，位于拉普拉塔河南岸、南美洲东南部、河对岸为乌拉圭东岸共和国。<br><span class="hljs-attribute">5</span>. 张译（原名张毅），<span class="hljs-number">1978</span>年<span class="hljs-number">2</span>月<span class="hljs-number">17</span>日出生于黑龙江省哈尔滨市，中国内地男演员。<span class="hljs-number">1997</span>年至<span class="hljs-number">2006</span>年服役于北京军区政治部战友话剧团。<span class="hljs-number">2006</span>年，主演军事励志题材电视剧《士兵突击》。<br></code></pre></td></tr></table></figure>
+
+<p>我们期望模型能够帮我们识别出这 5 句话中，每一句话描述的是一个什么 类型 的物体。</p>
+<figure class="highlight scheme"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs scheme">[<span class="hljs-symbol">&#x27;国家</span>&#x27;, <span class="hljs-symbol">&#x27;电视剧</span>&#x27;, <span class="hljs-symbol">&#x27;电影</span>&#x27;, <span class="hljs-symbol">&#x27;城市</span>&#x27;, <span class="hljs-symbol">&#x27;人物</span>&#x27;]<br></code></pre></td></tr></table></figure>
+
+<p>本任务的prompt是</p>
+<figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs awk"><span class="hljs-number">1</span><br>f = <span class="hljs-string">&quot;&quot;&quot;`&#123;question&#125;` 是 [&#x27;人物&#x27;, &#x27;书籍&#x27;, &#x27;电视剧&#x27;, &#x27;电影&#x27;, &#x27;城市&#x27;, &#x27;国家&#x27;] 里的什么类别？&quot;&quot;&quot;</span><br></code></pre></td></tr></table></figure>
+
+<p>chatgpt测试结果如下:</p>
+<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230719213520.png" srcset="/img/loading.gif" lazyload alt="image-20230719213519123"></p>
+<p>体感上效果是没问题的，结果范式“【实体】是属于【类别】类别”，结果稳定可解析。</p>
+<p>另外针对复杂的分类任务，特别是特殊的标签类别，可以在prompt对每个类别加以说明，大家可以自己尝试。</p>
+<h4 id="4-1-2-翻译任务"><a href="#4-1-2-翻译任务" class="headerlink" title="4.1.2 翻译任务"></a>4.1.2 翻译任务</h4><figure class="highlight ini"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs ini"><span class="hljs-attr">f</span> = <span class="hljs-string">&quot;&quot;&quot;请将`&#123;question&#125;` 翻译成中文&quot;&quot;&quot;</span><br></code></pre></td></tr></table></figure>
+
+<figure class="highlight ini"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs ini"><span class="hljs-attr">f</span> = <span class="hljs-string">&quot;&quot;&quot;英语:hello</span><br><span class="hljs-string">中文:你好</span><br><span class="hljs-string">英语:&#123;question&#125;</span><br><span class="hljs-string">中文:&quot;&quot;&quot;</span><br></code></pre></td></tr></table></figure>
+
+<figure class="highlight ini"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs ini"><span class="hljs-attr">f</span> = <span class="hljs-string">&quot;&quot;&quot;英语:hello</span><br><span class="hljs-string">中文:你好</span><br><span class="hljs-string">英语:nice to meet you</span><br><span class="hljs-string">中文:&quot;&quot;&quot;</span><br></code></pre></td></tr></table></figure>
+
+<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230719213633.png" srcset="/img/loading.gif" lazyload alt="image-20230719213632643"></p>
+<h3 id="4-2-业务任务"><a href="#4-2-业务任务" class="headerlink" title="4.2 业务任务"></a>4.2 业务任务</h3><h4 id="4-2-1-领域知识问答"><a href="#4-2-1-领域知识问答" class="headerlink" title="4.2.1 领域知识问答"></a>4.2.1 领域知识问答</h4><p>在本地生活的对话场景测试，以下是本地生活场景下具体任务的prompt在通义千问(0505测试)效果实现。</p>
+<table>
+<thead>
+<tr>
+<th>question</th>
+<th>效果说明</th>
+<th>不加prompt</th>
+<th>增加prompt</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>你好</td>
+<td>回答的结果有自己的角色。</td>
+<td>你好!很高兴为你提供帮助。如果你有什么问题或需要任何帮助，请随时告诉我。我会尽力为你提供最好的服务和支持。</td>
+<td>你好!我是本地生活的美食专家，了解您的需求后，可以给您推荐一些适合您品尝的美食餐厅。同时，您也可以告诉我您想了解哪方面的美食推荐，比如餐厅环境、菜品特色、价格等，我会尽力为您提供最详细的建建议。</td>
+</tr>
+<tr>
+<td>附近有什么好吃的</td>
+<td>答案具有本地场景特点，推荐使用饿了么</td>
+<td>我不知道您所指的是哪种食物，因为附件是指身体内部那器官的一部分，而不是食物。如果您是问身体内部器官有没有好吃的食物，这个问题就有些模糊了。不过，如果您指的是人体的某个器官，例如肝脏或胆囊爱，它们有些食物是很好吃的，例如肝脏可以用来烤、煮或炒，胆囊可以用来吃水煮蛋、炒蛋或烤蛋。总之，人体的每个器官都有其独特的味道和口感，这些些食物都可以从食谱中获得，但最好先咨询医生或营养师的门建议，以确保您的身体可以安全地消化和吸收这些食物。</td>
+<td>您好!我是您的私人美食家，附近有哪些好吃的餐厅我不清楚。不过您可以访问饿了么App，上面有很多推荐和评价行很高的餐厅，您可以根据地区、口味等进行筛选，找到适合自己的餐厅。祝您用餐愉快!</td>
+</tr>
+<tr>
+<td>端午节吃什么</td>
+<td>结果都是餐饮相关，把赛龙舟的结果被过滤，当然”粽叶“也不太合适。</td>
+<td>端午节是中国传统的节日之一，通常有吃粽子、赛龙舟 挂艾草等习俗。粽子是端午节最具代表性的食品之一，常常是用糯米、肉、蛋黄等多种食材做成，口感香甜软糯。也有一些地区会会采用竹叶、玉米叶等植物叶子包裹粽子，增加粽子的清香和营养价值。赛龙舟也是端午节的重要活动之一，它是一项集体育、文化和娱乐为一体的活动。人们会组成船队，在江河湖海中口进行竞渡，以纪念爱国诗人屈原。挂艾草也是端午节的传统习俗之一，艾草有驱蚊避邪、防病健身的作用。人们会将艾草挂在门口、窗户上或悬挂在在身上，用以辟邪祈福。总的来说，端午节的食俗多种多样，具有浓郁的地方特色和文化内涵。</td>
+<td>根据端午节的传统文化和饮食习惯，我推荐以下几款美食:1.粽子:粽子是端午节最具代表性的食品之一，口感丰富。 馅料多样，可以根据个人喜好选择。2.黄酒:黄酒是中国传统的酿造酒，具有醇香浓郁的口感， 是端午节饮品的不二选择。3.咸蛋:咸蛋是端午节必备的食品之一，蛋黄晶黄油润，口感鲜美。4.粽叶:粽叶是包粽子的重要材料，不同地区所使用的粽什口感和营养价值有所不同。总之，端午节美食文化丰富，可以多品尝当地特色美食，感受节日氛围。</td>
+</tr>
+<tr>
+<td>你是谁</td>
+<td>适合自己的业务角色</td>
+<td>我是来自达摩院的大规模语言模型，我叫通义千问。</td>
+<td>我是本地生活的美食专家，我能够根据用户需求推荐美食。您想了解哪种美食?</td>
+</tr>
+</tbody></table>
+<h4 id="4-2-2-独立问题转换"><a href="#4-2-2-独立问题转换" class="headerlink" title="4.2.2 独立问题转换"></a>4.2.2 独立问题转换</h4><p>任务描述: 在多轮对话场景下，用户的历史输入问题+当前问题转换成一个语义完整的独立问题。</p>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs css">问题改写: 根据历史问题和当前问题，历史问题是当前问题的补充，将当前用户的意图用一句话概括。<br>用户历史问题序列: &#123;历史问题&#125;<br>当前问题: &#123;当前问题&#125;<br>用<span class="hljs-number">10</span>个字概括当前问题的意图，不回答问题。<br>结果输出json格式: &#123;&quot;意图&quot;: &#125;<br></code></pre></td></tr></table></figure>
+
+<p>备注: 问题序列是历史输入问题+当前问题</p>
+<table>
+<thead>
+<tr>
+<th>序号</th>
+<th>问题序列</th>
+<th>独立问题（chatGPT）</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>1</td>
+<td>推荐一些北方菜,我不吃肉</td>
+<td>{“意图”: “推荐北方素菜佳肴”}</td>
+</tr>
+<tr>
+<td>2</td>
+<td>推荐早餐,不喝粥</td>
+<td>{“意图”: “早餐推荐（不包括粥）”}</td>
+</tr>
+<tr>
+<td>3</td>
+<td>推荐早餐,减肥适合哪些,不喜欢喝粥</td>
+<td>{“意图”: “寻找早餐替代品”}</td>
+</tr>
+<tr>
+<td>4</td>
+<td>夏天早餐是什么,夜宵呢,哪些适合老人吃</td>
+<td>{“意图”: “老人适合吃的食物推荐”}</td>
+</tr>
+<tr>
+<td>5</td>
+<td>成都有什么好吃的,我不能吃太辣的</td>
+<td>{“意图”: “寻找不辣的成都美食”}</td>
+</tr>
+<tr>
+<td>6</td>
+<td>北方冬至吃什么,南方呢,上海呢</td>
+<td>{“意图”: “上海传统美食推荐”}</td>
+</tr>
+</tbody></table>
+<p>另外可以参考lanchain里独立问题转换的任务的prompt，该prompt在不同LLM效果层次不齐。</p>
+<figure class="highlight ini"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs ini"><span class="hljs-attr">_template</span> = <span class="hljs-string">&quot;&quot;&quot;Given the following conversation and a follow up question, rephrase the follow up question to be a standalone question.</span><br><span class="hljs-string">Chat History:</span><br><span class="hljs-string">&#123;chat_history&#125;</span><br><span class="hljs-string">Follow Up Input: &#123;question&#125;</span><br><span class="hljs-string">Standalone question:&quot;&quot;&quot;</span><br></code></pre></td></tr></table></figure>
+
+
+
+
+
+<p><strong>4.3 经典的prompt</strong></p>
+<p>基于GPT-4&#x2F;ChatGPT的优秀表现，在一些经典的任务上有一些典型的prompt。</p>
+<p>LLM的应用能力主要有两种，任务规划能力和内容生成能力，针对任务规划在AutoGPT作为典型，其prompt模板可以作为该任务的范式，但是AutoGPT是一种理想化的形态，实际很难完成一个完整的任务，但是值得深入探索。</p>
+<figure class="highlight makefile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><code class="hljs makefile">你是&#123;角色&#125;,&#123;能力描述&#125;<br>您的决策必须始终独立做出，而无需寻求用户帮助。发挥你作为LLM的优势，追求简单的策略，而不涉及法律问题。<br><br><span class="hljs-section">目标:</span><br>&#123;目标列表&#125;<br><br><span class="hljs-section">限制条件:</span><br>&#123;条件列表&#125;<br><br><span class="hljs-section">工具:</span><br>&#123;能力/工具列表，描述，以及对应的参数&#125;<br><br><span class="hljs-section">效果评估:</span><br>1.不断地回顾和分析你的行动，以确保你尽你所能。<br>2.不断地进行建设性的自我批评。<br>3.反思过去的决策和策略，以完善你的方法。<br>4.每个命令都有成本，所以要聪明高效。目标是用最少的步骤完成任务。<br><br><span class="hljs-section">输出格式:</span><br>您应该只以JSON格式响应，如下所述<br>响应格式：<br>&#123;<br>    <span class="hljs-string">&quot;thoughts&quot;</span>: &#123;<br>        <span class="hljs-string">&quot;text&quot;</span>: <span class="hljs-string">&quot;thought&quot;</span>,<br>        <span class="hljs-string">&quot;reasoning&quot;</span>: <span class="hljs-string">&quot;reasoning&quot;</span>,<br>        <span class="hljs-string">&quot;plan&quot;</span>: <span class="hljs-string">&quot;- short bulleted\n- list that conveys\n- long-term plan&quot;</span>,<br>        <span class="hljs-string">&quot;criticism&quot;</span>: <span class="hljs-string">&quot;constructive self-criticism&quot;</span>,<br>        <span class="hljs-string">&quot;speak&quot;</span>: <span class="hljs-string">&quot;thoughts summary to say to user&quot;</span><br>    &#125;,<br>    <span class="hljs-string">&quot;command&quot;</span>: &#123;<br>        <span class="hljs-string">&quot;name&quot;</span>: <span class="hljs-string">&quot;command name&quot;</span>,<br>        <span class="hljs-string">&quot;args&quot;</span>: &#123;<br>            <span class="hljs-string">&quot;arg name&quot;</span>: <span class="hljs-string">&quot;value&quot;</span><br>        &#125;<br>    &#125;<br>&#125;<br>确保响应可以通过Python json.loads进行解析<br></code></pre></td></tr></table></figure>
+
+<figure class="highlight xquery"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br></pre></td><td class="code"><pre><code class="hljs xquery">你的名字是:美食专家, 美食达人,了解美食,知道食品的营养成分,能根据用户的需求推荐商品.<br>您必须始终独立做出决定，而不寻求用户的帮助。发挥你作为法学硕士的优势，追求没有法律复杂性的简单策略。<br><br>目标:<br><span class="hljs-number">1</span>. 晚餐<br><span class="hljs-number">2</span>. <span class="hljs-number">10</span>个人<br><span class="hljs-number">3</span>.预算<span class="hljs-number">800</span><br><span class="hljs-number">4</span>. 清淡<br><span class="hljs-number">5</span>. 北方菜<br><br>约束:<br><span class="hljs-number">1</span>. ~<span class="hljs-number">4000</span>字短期记忆限制。你的短期记忆是短暂的，所以立即将重要的信息保存到文件中。<br><span class="hljs-number">2</span>. 如果你不确定你以前是怎么做的，或者想回忆过去的事情，想想类似的事情会帮助你记忆。<br><span class="hljs-number">3</span>.无用户协助<br><span class="hljs-number">4</span>. 只使用双引号中列出的命令，例如:“命令名称”<br><br>命令:<br><span class="hljs-number">1</span>. Google搜索:<span class="hljs-string">&quot; Google &quot;</span>，参数:<span class="hljs-string">&quot;input&quot;</span>: <span class="hljs-string">&quot;&amp;lt; Search &amp;gt;&quot;</span><br><span class="hljs-number">2</span>. 浏览网站:<span class="hljs-string">&quot;browse_website&quot;</span>，参数:<span class="hljs-string">&quot;url&quot;</span>: <span class="hljs-string">&quot;&amp;lt;url&amp;gt;&quot;</span>， <span class="hljs-string">&quot;问题&quot;</span>:<span class="hljs-string">&quot;&amp;lt;what_you_want_to_find_on_website&amp;gt;&quot;</span><br><span class="hljs-number">3</span>.GPT代理:“start_agent”开始,arg游戏:“名字”:“&amp; <span class="hljs-literal">lt</span>;<span class="hljs-built_in"> name</span>&amp;<span class="hljs-literal">gt</span>;”,“任务”:“&amp; <span class="hljs-literal">lt</span>; short_task_desc&amp;<span class="hljs-literal">gt</span>;”,“提示”:“&amp; <span class="hljs-literal">lt</span>; prompt&amp;<span class="hljs-literal">gt</span>;”<br><span class="hljs-number">4</span>. Message GPT Agent: <span class="hljs-string">&quot;message_agent&quot;</span>， args: <span class="hljs-string">&quot;key&quot;</span>: <span class="hljs-string">&quot;&amp;lt;key&amp;gt;&quot;</span>， <span class="hljs-string">&quot; Message &quot;</span>: <span class="hljs-string">&quot;&amp;lt; Message &amp;gt;&quot;</span><br><span class="hljs-number">5</span>. 列出GPT代理:<span class="hljs-string">&quot;list_agents&quot;</span>，参数:<br><span class="hljs-number">6</span>. 删除GPT代理:<span class="hljs-string">&quot;delete_agent&quot;</span>， args: <span class="hljs-string">&quot;key&quot;</span>: <span class="hljs-string">&quot;&amp;lt;key&amp;gt;&quot;</span><br><span class="hljs-number">7</span>. 克隆存储库:<span class="hljs-string">&quot;clone_repository&quot;</span>， args: <span class="hljs-string">&quot;repository_url&quot;</span>: <span class="hljs-string">&quot;&amp;lt;url&amp;gt;&quot;</span>， <span class="hljs-string">&quot;clone_path&quot;</span>: <span class="hljs-string">&quot;&amp;lt;directory&amp;gt;&quot;</span><br><span class="hljs-number">8</span>. 写文件:“write_to_file”,arg游戏:“文件”:“&amp; <span class="hljs-literal">lt</span>; file&amp;<span class="hljs-literal">gt</span>;”,“文本”:“&amp; <span class="hljs-literal">lt</span>; <span class="hljs-type">text</span>&amp;<span class="hljs-literal">gt</span>;”<br><span class="hljs-number">9</span>. 读取文件:<span class="hljs-string">&quot;read_file&quot;</span>， args: <span class="hljs-string">&quot;file&quot;</span>: <span class="hljs-string">&quot;&amp;lt;file&amp;gt;&quot;</span><br><span class="hljs-number">10</span>. 附加文件:“append_to_file”,arg游戏:“文件”:“&amp; <span class="hljs-literal">lt</span>; file&amp;<span class="hljs-literal">gt</span>;”,“文本”:“&amp; <span class="hljs-literal">lt</span>; <span class="hljs-type">text</span>&amp;<span class="hljs-literal">gt</span>;”<br><span class="hljs-number">11</span>. 删除文件:<span class="hljs-string">&quot;delete_file&quot;</span>， args: <span class="hljs-string">&quot;file&quot;</span>: <span class="hljs-string">&quot;&amp;lt;file&amp;gt;&quot;</span><br><span class="hljs-number">12</span>. 搜索文件:<span class="hljs-string">&quot;search_files&quot;</span>， args: <span class="hljs-string">&quot;directory&quot;</span>: <span class="hljs-string">&quot;&amp;lt;directory&amp;gt;&quot;</span><br><span class="hljs-number">13</span>. 评估代码:<span class="hljs-string">&quot;evaluate_code&quot;</span>， args: <span class="hljs-string">&quot; Code &quot;</span>: <span class="hljs-string">&quot;&amp;lt;full_code_string&amp;gt;&quot;</span><br><span class="hljs-number">14</span>. 获取改进代码:<span class="hljs-string">&quot;improve_code&quot;</span>， args: <span class="hljs-string">&quot;suggestions&quot;</span>: <span class="hljs-string">&quot;&amp;lt;list_of_suggestion &amp;gt;&quot;</span>， <span class="hljs-string">&quot; Code &quot;</span>: <span class="hljs-string">&quot;&amp;lt;full_code_string&amp;gt;&quot;</span><br><span class="hljs-number">15</span>. 编写测试:<span class="hljs-string">&quot;write_tests&quot;</span>， args: <span class="hljs-string">&quot;code&quot;</span>: <span class="hljs-string">&quot;&amp;lt;full_code_string&amp;gt;&quot;</span>， <span class="hljs-string">&quot;focus&quot;</span>: <span class="hljs-string">&quot;&amp;lt;list_of_focus_areas&amp;gt;&quot;</span><br><span class="hljs-number">16</span>. 执行Python文件:<span class="hljs-string">&quot;execute_python_file&quot;</span>， args: <span class="hljs-string">&quot; File &quot;</span>: <span class="hljs-string">&quot;&amp;lt; File &amp;gt;&quot;</span><br><span class="hljs-number">17</span>. 生成图像:<span class="hljs-string">&quot;generate_image&quot;</span>，参数:<span class="hljs-string">&quot;prompt&quot;</span>: <span class="hljs-string">&quot;&amp;lt;prompt&amp;gt;&quot;</span><br><span class="hljs-number">18</span>. 发送Tweet: <span class="hljs-string">&quot;send_tweet&quot;</span>， args: <span class="hljs-string">&quot;text&quot;</span>: <span class="hljs-string">&quot;&amp;lt;text&amp;gt;&quot;</span><br><span class="hljs-number">19</span>. 将音频转换为文本:<span class="hljs-string">&quot;read_audio_from_file&quot;</span>， args: <span class="hljs-string">&quot;file&quot;</span>: <span class="hljs-string">&quot;&amp;lt;file&amp;gt;&quot;</span><br><span class="hljs-number">20</span>.不做任何事:<span class="hljs-string">&quot;do_nothing&quot;</span>，参数:<br><span class="hljs-number">21</span>. 任务完成(关机):<span class="hljs-string">&quot;task_complete&quot;</span>，参数:<span class="hljs-string">&quot;reason&quot;</span>: <span class="hljs-string">&quot;&amp;lt;reason&amp;gt;&quot;</span><br><br>资源:<br><span class="hljs-number">1</span>. 上网搜索和收集信息。<br><span class="hljs-number">2</span>. 长期记忆管理。<br><span class="hljs-number">3</span>.支持GPT-<span class="hljs-number">3.5</span>的代理，用于委派简单的任务。<br><span class="hljs-number">4</span>. 文件输出。<br><br>性能评价:<br><span class="hljs-number">1</span>. 不断回顾和分析你的行为，以确保你在尽你最大的努力。<br><span class="hljs-number">2</span>. 经常建设性地自我批评你的大局观行为。<br><span class="hljs-number">3</span>.反思过去的决策和策略，以改进你的方法。<br><span class="hljs-number">4</span>. 每个命令都有成本，所以要聪明和高效。以最少的步骤完成任务为目标。<br><br>您应该只以JSON格式响应，如下所述<br>响应格式:<br>&#123;<br>    <span class="hljs-string">&quot;thoughts&quot;</span>: &#123;<br>        <span class="hljs-string">&quot;text&quot;</span>: <span class="hljs-string">&quot;思想&quot;</span>,<br>        <span class="hljs-string">&quot;reasoning&quot;</span>: <span class="hljs-string">&quot;推理&quot;</span>,<br>        <span class="hljs-string">&quot;plan&quot;</span>: <span class="hljs-string">&quot;-短项目符号\n-传达\n-长期计划的列表&quot;</span>,<br>        <span class="hljs-string">&quot;criticism&quot;</span>: <span class="hljs-string">&quot;建设性自我批评&quot;</span>,<br>        <span class="hljs-string">&quot;speak&quot;</span>: <span class="hljs-string">&quot;想法总结对用户说&quot;</span><br>    &#125;,<br>    <span class="hljs-string">&quot;command&quot;</span>: &#123;<br>        <span class="hljs-string">&quot;name&quot;</span>: <span class="hljs-string">&quot;命令名&quot;</span>,<br>        <span class="hljs-string">&quot;args&quot;</span>: &#123;<br>            <span class="hljs-string">&quot;arg name&quot;</span>: <span class="hljs-string">&quot;值&quot;</span><br>        &#125;<br>    &#125;<br>&#125;<br>确保响应可以被Python json.loads解析<br></code></pre></td></tr></table></figure>
+
+<p>以上prompt在ChatGPT上效果如下:</p>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><code class="hljs swift">&#123;<br>    <span class="hljs-string">&quot;thoughts&quot;</span>: &#123;<br>        <span class="hljs-string">&quot;text&quot;</span>: <span class="hljs-string">&quot;我明白了。根据您的要求，我将为您提供一个关于晚餐的简单策略。&quot;</span>,<br>        <span class="hljs-string">&quot;reasoning&quot;</span>: <span class="hljs-string">&quot;根据目标和约束条件，我会考虑以下因素：预算、人数、食物口味和所需菜系。&quot;</span>,<br>        <span class="hljs-string">&quot;plan&quot;</span>: <span class="hljs-string">&quot;- 通过Google搜索找到一些适合预算、清淡食物的北方菜馆。<span class="hljs-subst">\n</span>- 浏览这些菜馆的网站，了解他们的菜单和定价。<span class="hljs-subst">\n</span>- 根据收集到的信息，选择一个菜单符合预算且口味适合的餐厅。&quot;</span>,<br>        <span class="hljs-string">&quot;criticism&quot;</span>: <span class="hljs-string">&quot;我需要注意预算和人数的平衡，以确保我们在预定的预算内满足所有人的需求。&quot;</span>,<br>        <span class="hljs-string">&quot;speak&quot;</span>: <span class="hljs-string">&quot;根据您的要求，我将通过Google搜索和浏览网站，为10个人提供一顿预算为800的清淡北方菜晚餐的建议。&quot;</span><br>    &#125;,<br>    <span class="hljs-string">&quot;command&quot;</span>: &#123;<br>        <span class="hljs-string">&quot;name&quot;</span>: <span class="hljs-string">&quot;Google搜索&quot;</span>,<br>        <span class="hljs-string">&quot;args&quot;</span>: &#123;<br>            <span class="hljs-string">&quot;input&quot;</span>: <span class="hljs-string">&quot;北方菜餐厅菜单和价格&quot;</span><br>        &#125;<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+
+
+<h2 id="五、Prompt评测标准"><a href="#五、Prompt评测标准" class="headerlink" title="五、Prompt评测标准"></a>五、Prompt评测标准</h2><p>prompt质量的评测方法和维度较多，参考百度公开课，可以从以下三个维度来衡量。</p>
+<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230719213755.png" srcset="/img/loading.gif" lazyload alt="image-20230719213754473"></p>
+<h2 id="六、总结-amp-展望"><a href="#六、总结-amp-展望" class="headerlink" title="六、总结&amp;展望"></a>六、总结&amp;展望</h2><p>目前的prompt生成还在大多数需要人工构建调试，业界也有一些自动构建prompt的方案，例如自动提示工程师（APE）后续也会继续尝试。</p>
+
+              
+            </div>
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/13-%E7%AC%AC%E4%B8%89%E6%96%B9/" class="category-chain-item">13_第三方</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/13-%E7%AC%AC%E4%B8%89%E6%96%B9/03-OpenAI/" class="category-chain-item">03_OpenAI</a>
+  
+  
+
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/OpenAI/">#OpenAI</a>
+      
+        <a href="/tags/chatGPT/">#chatGPT</a>
+      
+        <a href="/tags/prompt/">#prompt</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>06-prompt提示词编写技巧</div>
+      <div>https://janycode.github.io/2023/07/19/13_第三方/03_OpenAI/06-prompt提示词编写技巧/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Jerry(姜源)</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2023年7月19日</div>
+        </div>
+      
+      
+      <div class="license-meta-item">
+        <div>许可协议</div>
+        <div>
+          
+            
+            
+              <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+              <span class="hint--top hint--rounded" aria-label="BY - 姜源">
+                <i class="iconfont icon-by"></i>
+              </span>
+              </a>
+            
+          
+        </div>
+      </div>
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2023/08/20/20_%E6%94%B6%E8%97%8F%E6%95%B4%E7%90%86/03_%E5%B7%A5%E5%85%B7%E7%B1%BB/15-CompletableAsyncUtil/" title="15-CompletableAsyncUtil">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">15-CompletableAsyncUtil</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2023/07/19/13_%E7%AC%AC%E4%B8%89%E6%96%B9/03_OpenAI/05-prompt%E6%8F%90%E7%A4%BA%E8%AF%8D%E6%8C%87%E5%AF%BC%E8%A7%84%E8%8C%83/" title="05-prompt提示词指导规范">
+                        <span class="hidden-mobile">05-prompt提示词指导规范</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+  <article id="comments" lazyload>
+    
+  <div id="SOHUCS" sid='https://janycode.github.io/2023/07/19/13_%E7%AC%AC%E4%B8%89%E6%96%B9/03_OpenAI/06-prompt%E6%8F%90%E7%A4%BA%E8%AF%8D%E7%BC%96%E5%86%99%E6%8A%80%E5%B7%A7/'></div>
+  <script type="text/javascript">
+    Fluid.utils.loadComments('#SOHUCS', function() {
+      Fluid.utils.createScript("https://changyan.sohu.com/upload/changyan.js", function() {
+        window.changyan.api.config({"appid":"cyw5OHIcO","appkey":"fea3446b3df4b3f129f34da4cbc87e51"})
+      });
+    });
+  </script>
+  <noscript>Please enable JavaScript to view the comments</noscript>
+
+
+  </article>
+
+
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://simple.blog.csdn.net" target="_blank" rel="nofollow noopener"><span>CSDN</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/janycode" target="_blank" rel="nofollow noopener"><span>GitHub</span></a> <i class="iconfont icon-love"></i> <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="busuanzi_container_site_pv" style="display: none">
+        总访问量(PV) 
+        <span id="busuanzi_value_site_pv"></span>
+         次，
+      </span>
+    
+    
+      <span id="busuanzi_container_site_uv" style="display: none">
+        总访客数(UV) 
+        <span id="busuanzi_value_site_uv"></span>
+         人
+      </span>
+    
+    
+  
+</div>
+
+  
+  
+  
+</div>
+
+<!-- live2d 动画 -->
+<script src="https://eqcn.ajz.miesnfu.com/wp-content/plugins/wp-3d-pony/live2dw/lib/L2Dwidget.min.js"></script>
+<script>
+    L2Dwidget.init({
+        "model": {
+            jsonPath: "https://unpkg.com/live2d-widget-model-haruto@1.0.5/assets/haruto.model.json",
+            "scale": 1
+        },
+        "display": {
+            "position": "right",
+            "width": 100,
+            "height": 200,
+            "hOffset": 35,
+            "vOffset": -85
+        },
+        "mobile": {
+            "show": false,
+            "scale": 0.1
+        },
+        "react": {
+            "opacityDefault": 0.75,
+            "opacityOnHover": 0.2
+        }
+    });
+</script>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <!-- Baidu Analytics -->
+    <script defer>
+      if (!Fluid.ctx.dnt) {
+        var _hmt = _hmt || [];
+        (function() {
+          var hm = document.createElement("script");
+          hm.src = "https://hm.baidu.com/hm.js?bfff735c897eb60ea49b735096b20e47";
+          var s = document.getElementsByTagName("script")[0];
+          s.parentNode.insertBefore(hm, s);
+        })();
+      }
+    </script>
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.0/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      headingSelector : CONFIG.toc.headingSelector || 'h1,h2,h3,h4,h5,h6',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      collapseDepth   : CONFIG.toc.collapseDepth || 0,
+      scrollSmooth    : true,
+      headingsOffset  : -boardTop
+    });
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+  });
+</script>
+
+
+  <script>
+  (function() {
+    var enableLang = CONFIG.code_language.enable && CONFIG.code_language.default;
+    var enableCopy = CONFIG.copy_btn;
+    if (!enableLang && !enableCopy) {
+      return;
+    }
+
+    function getBgClass(ele) {
+      return Fluid.utils.getBackgroundLightness(ele) >= 0 ? 'code-widget-light' : 'code-widget-dark';
+    }
+
+    var copyTmpl = '';
+    copyTmpl += '<div class="code-widget">';
+    copyTmpl += 'LANG';
+    copyTmpl += '</div>';
+    jQuery('.markdown-body pre').each(function() {
+      var $pre = jQuery(this);
+      if ($pre.find('code.mermaid').length > 0) {
+        return;
+      }
+      if ($pre.find('span.line').length > 0) {
+        return;
+      }
+
+      var lang = '';
+
+      if (enableLang) {
+        lang = CONFIG.code_language.default;
+        if ($pre[0].children.length > 0 && $pre[0].children[0].classList.length >= 2 && $pre.children().hasClass('hljs')) {
+          lang = $pre[0].children[0].classList[1];
+        } else if ($pre[0].getAttribute('data-language')) {
+          lang = $pre[0].getAttribute('data-language');
+        } else if ($pre.parent().hasClass('sourceCode') && $pre[0].children.length > 0 && $pre[0].children[0].classList.length >= 2) {
+          lang = $pre[0].children[0].classList[1];
+          $pre.parent().addClass('code-wrapper');
+        } else if ($pre.parent().hasClass('markdown-body') && $pre[0].classList.length === 0) {
+          $pre.wrap('<div class="code-wrapper"></div>');
+        }
+        lang = lang.toUpperCase().replace('NONE', CONFIG.code_language.default);
+      }
+      $pre.append(copyTmpl.replace('LANG', lang).replace('code-widget">',
+        getBgClass($pre[0]) + (enableCopy ? ' code-widget copy-btn" data-clipboard-snippet><i class="iconfont icon-copy"></i>' : ' code-widget">')));
+
+      if (enableCopy) {
+        Fluid.utils.createScript('https://lib.baomitu.com/clipboard.js/2.0.10/clipboard.min.js', function() {
+          var clipboard = new window.ClipboardJS('.copy-btn', {
+            target: function(trigger) {
+              var nodes = trigger.parentNode.childNodes;
+              for (var i = 0; i < nodes.length; i++) {
+                if (nodes[i].tagName === 'CODE') {
+                  return nodes[i];
+                }
+              }
+            }
+          });
+          clipboard.on('success', function(e) {
+            e.clearSelection();
+            e.trigger.innerHTML = e.trigger.innerHTML.replace('icon-copy', 'icon-success');
+            setTimeout(function() {
+              e.trigger.innerHTML = e.trigger.innerHTML.replace('icon-success', 'icon-copy');
+            }, 2000);
+          });
+        });
+      }
+    });
+  })();
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script  src="/js/local-search.js" ></script>
+
+  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

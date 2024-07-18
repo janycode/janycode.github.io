@@ -1,0 +1,873 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=light>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Jerry(姜源)">
+  <meta name="keywords" content="Java,Html,CSS,JavaScript,Python,C,Linux,shell编程经验分享、技术总结、心得体会">
+  
+    <meta name="description" content="1. 调试Stream流java的stream编程给调试带来了极大的不便，idea 推出了streamtrace功能，可以详细看到每一步操作的关系、结果，非常方便进行调试。 初遇StreamTrace这里简单将字符串转成它的字符数，并设置断点开启debug模式。  如上图所示，可以看到每一步操作的元素个数、操作的结果、元素转换前后的对应关，非常清晰明了；还可以查看具体的对象内容。 使用Stream">
+<meta property="og:type" content="article">
+<meta property="og:title" content="12-IDEA-调试Stream和Thread">
+<meta property="og:url" content="https://janycode.github.io/2021/02/27/00_%E5%85%88%E5%88%A9%E5%85%B6%E5%99%A8/01_Intellij%20IDEA/12-IDEA-%E8%B0%83%E8%AF%95Stream%E5%92%8CThread/index.html">
+<meta property="og:site_name" content="姜源の云笔记">
+<meta property="og:description" content="1. 调试Stream流java的stream编程给调试带来了极大的不便，idea 推出了streamtrace功能，可以详细看到每一步操作的关系、结果，非常方便进行调试。 初遇StreamTrace这里简单将字符串转成它的字符数，并设置断点开启debug模式。  如上图所示，可以看到每一步操作的元素个数、操作的结果、元素转换前后的对应关，非常清晰明了；还可以查看具体的对象内容。 使用Stream">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230227160537.png">
+<meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230227160548.png">
+<meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230227160606.png">
+<meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230227160620.png">
+<meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230227160831.png">
+<meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230611203135.png">
+<meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230611203153.png">
+<meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230611204701.png">
+<meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230611204820.png">
+<meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230611205039.png">
+<meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230611205057.png">
+<meta property="article:published_time" content="2021-02-27T08:01:22.000Z">
+<meta property="article:modified_time" content="2023-12-24T03:11:24.105Z">
+<meta property="article:author" content="Jerry(姜源)">
+<meta property="article:tag" content="SpringBoot">
+<meta property="article:tag" content="IDEA">
+<meta property="article:tag" content="开发">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230227160537.png">
+  
+  
+    <meta name="referrer" content="no-referrer-when-downgrade">
+  
+  
+  <title>12-IDEA-调试Stream和Thread - 姜源の云笔记</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"janycode.github.io","root":"/","version":"1.9.0","typing":{"enable":true,"typeSpeed":50,"cursorChar":"|","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":false},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":"bfff735c897eb60ea49b735096b20e47","google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+
+  
+<meta name="generator" content="Hexo 6.2.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 50vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>姜源の云笔记</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tools/">
+                <i class="iconfont icon-slack-fill"></i>
+                工具
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" target="_blank" rel="noopener" href="https://janycode.gitee.io/">
+                <i class="iconfont icon-gitee-fill"></i>
+                Gitee
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="12-IDEA-调试Stream和Thread"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-author" aria-hidden="true"></i>
+        Jerry(姜源)
+      </span>
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2021-02-27 16:01" pubdate>
+          星期六, 2021/02/27 16:01:22
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          <!-- compatible with older versions-->
+          3k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          <!-- compatible with older versions-->
+          25 分钟
+        
+      </span>
+    
+
+    
+    
+      
+        <span id="busuanzi_container_page_pv" style="display: none">
+          <i class="iconfont icon-eye" aria-hidden="true"></i>
+          <span id="busuanzi_value_page_pv"></span> 次
+        </span>
+        
+      
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">12-IDEA-调试Stream和Thread</h1>
+            
+            <div class="markdown-body">
+              
+              <h3 id="1-调试Stream流"><a href="#1-调试Stream流" class="headerlink" title="1. 调试Stream流"></a>1. 调试Stream流</h3><p>java的stream编程给调试带来了极大的不便，idea 推出了streamtrace功能，可以详细看到每一步操作的关系、结果，非常方便进行调试。</p>
+<h4 id="初遇StreamTrace"><a href="#初遇StreamTrace" class="headerlink" title="初遇StreamTrace"></a>初遇StreamTrace</h4><p>这里简单将字符串转成它的字符数，并设置断点开启debug模式。</p>
+<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230227160537.png" srcset="/img/loading.gif" lazyload alt="image-20230227160535945"></p>
+<p>如上图所示，可以看到每一步操作的元素个数、操作的结果、元素转换前后的对应关，非常清晰明了；还可以查看具体的对象内容。</p>
+<h4 id="使用StreamTrace"><a href="#使用StreamTrace" class="headerlink" title="使用StreamTrace"></a>使用StreamTrace</h4><p>StreamTrace只有在debug模式下才能使用，当在Stream代码上设置断点后，启动debug，点击流按钮，如图所示。</p>
+<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230227160548.png" srcset="/img/loading.gif" lazyload alt="image-20230227160547020"></p>
+<p>点击后，默认Split 模式显示。</p>
+<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230227160606.png" srcset="/img/loading.gif" lazyload alt="image-20230227160605536"></p>
+<p>可以点击左下方按钮切换到 FlatMode 模式，当然也可以再切换回去。</p>
+<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230227160620.png" srcset="/img/loading.gif" lazyload alt="image-20230227160619492"></p>
+<h4 id="实战演示"><a href="#实战演示" class="headerlink" title="实战演示"></a>实战演示</h4><p>这里演示一段字符转长度并过滤长度小于5的stream操作：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@Test</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">TestTrace</span><span class="hljs-params">()</span> &#123;<br>    Stream.of(<span class="hljs-string">&quot;beijing&quot;</span>,<span class="hljs-string">&quot;tianjin&quot;</span>,<span class="hljs-string">&quot;shanghai&quot;</span>,<span class="hljs-string">&quot;wuhan&quot;</span>)<br>        .map(String::length)<br>        .filter(e-&gt;e&gt;<span class="hljs-number">5</span>)<br>        .collect(Collectors.toList());<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230227160831.png" srcset="/img/loading.gif" lazyload alt="image-20230227160830021"></p>
+<h3 id="2-调试Thread线程"><a href="#2-调试Thread线程" class="headerlink" title="2.调试Thread线程"></a>2.调试Thread线程</h3><h4 id="线程例子"><a href="#线程例子" class="headerlink" title="线程例子"></a>线程例子</h4><p>在这里，编写了一个多线程程序来计算此数学问题：<code>100! + 100000!</code>。即：100的阶乘 + 100000的阶乘。</p>
+<blockquote>
+<p>100 阶乘就是：1 * 2 * 3 * …… * 100 &#x3D; ？ ，简写为100！</p>
+</blockquote>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">import</span> java.math.BigInteger;<br><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">MathProblemSolver</span> &#123;<br><br>    <span class="hljs-comment">//开启两个线程</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">main</span><span class="hljs-params">(String arg[])</span> &#123;<br>        <span class="hljs-comment">//第一个线程计算 100!</span><br>        <span class="hljs-type">FactorialCalculatingThread</span> <span class="hljs-variable">thread1</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">FactorialCalculatingThread</span>(<span class="hljs-number">100</span>);<br>        <span class="hljs-comment">//第二个线程计算 100000!</span><br>        <span class="hljs-type">FactorialCalculatingThread</span> <span class="hljs-variable">thread2</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">FactorialCalculatingThread</span>(<span class="hljs-number">100000</span>);<br><br>        thread1.setName(<span class="hljs-string">&quot;Thread 1&quot;</span>);<br>        thread2.setName(<span class="hljs-string">&quot;Thread 2&quot;</span>);<br><br>        thread1.start();<br>        thread2.start();<br><br>        <span class="hljs-keyword">try</span> &#123;<br>            thread1.join(); <span class="hljs-comment">//线程Jion，以使主线程在“线程1”和“线程2”都返回结果之前不会进一步执行</span><br>            thread2.join();<br>        &#125; <span class="hljs-keyword">catch</span> (InterruptedException e) &#123;<br>            e.printStackTrace();<br>        &#125;<br><br>        <span class="hljs-type">BigInteger</span> <span class="hljs-variable">result</span> <span class="hljs-operator">=</span> thread1.getResult().add(thread2.getResult());<br>        System.out.println(<span class="hljs-string">&quot;将两个线程的计算结果相加等于：&quot;</span> + result);<br>    &#125;<br><br>    <span class="hljs-comment">//用于阶乘计算的线程类</span><br>    <span class="hljs-keyword">private</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">FactorialCalculatingThread</span> <span class="hljs-keyword">extends</span> <span class="hljs-title class_">Thread</span> &#123;<br>        <span class="hljs-keyword">private</span> <span class="hljs-type">BigInteger</span> <span class="hljs-variable">result</span> <span class="hljs-operator">=</span> BigInteger.ONE;<br>        <span class="hljs-keyword">private</span> <span class="hljs-type">long</span> num;<br><br>        <span class="hljs-keyword">public</span> <span class="hljs-title function_">FactorialCalculatingThread</span><span class="hljs-params">(<span class="hljs-type">long</span> num)</span> &#123;<br>            <span class="hljs-built_in">this</span>.num = num;<br>        &#125;<br><br>        <span class="hljs-meta">@Override</span><br>        <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">run</span><span class="hljs-params">()</span> &#123;<br>            System.out.println(Thread.currentThread().getName() + <span class="hljs-string">&quot; 开始阶乘的计算：&quot;</span> + num);<br>            factorialCalc(num);<br>            System.out.println(Thread.currentThread().getName() + <span class="hljs-string">&quot;执行完成&quot;</span>);<br>        &#125;<br><br>        <span class="hljs-comment">//数的阶乘计算方法</span><br>        <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">factorialCalc</span><span class="hljs-params">(<span class="hljs-type">long</span> num)</span> &#123;<br>            <span class="hljs-type">BigInteger</span> <span class="hljs-variable">f</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">BigInteger</span>(<span class="hljs-string">&quot;1&quot;</span>);<br>            <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> <span class="hljs-variable">i</span> <span class="hljs-operator">=</span> <span class="hljs-number">2</span>; i &lt;= num; i++)<br>                f = f.multiply(BigInteger.valueOf(i));<br>            result = f;<br>        &#125;<br><br>        <span class="hljs-keyword">public</span> BigInteger <span class="hljs-title function_">getResult</span><span class="hljs-params">()</span> &#123;<br>            <span class="hljs-keyword">return</span> result;<br>        &#125;<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<ul>
+<li>开启两个线程，“Thread 1”计算（100！）和“Thread 2”计算（100000！)</li>
+<li>在main()方法中启动两个线程，然后调用<code>thread1.join()</code>和<code>thread2.join()</code>，以使主线程在“线程1”和“线程2”都返回结果之前不会进一步执行。</li>
+<li>最后将两个线程的计算结果相加，得到<code>100! + 100000!</code></li>
+</ul>
+<h4 id="Frames-与-Thread-面板"><a href="#Frames-与-Thread-面板" class="headerlink" title="Frames 与 Thread 面板"></a>Frames 与 Thread 面板</h4><p>调试工具窗口的“<em>Frames”面板</em>包含一个下拉菜单。它的关注点在：由于断点而导致暂停的线程，并显示这些线程的调用堆栈信息。在下图中，断点位于main()方法中如图所示的位置，Frame显示了主线程的调用堆栈。</p>
+<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230611203135.png" srcset="/img/loading.gif" lazyload alt="image-20230611203133400"></p>
+<p>如果要检查其他线程的调用堆栈，则可以从下拉列表中进行选择。</p>
+<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230611203153.png" srcset="/img/loading.gif" lazyload alt="image-20230611203151704"></p>
+<p><em>Thread面板</em>显示当前处于活动状态的所有线程。参考上面的代码，在<code>thread1.join()</code>添加了一个断点。当应用程序在该断点处暂停时，应该在此窗格中至少看到三个线程“main”，“Thread 1”和“Thread 2”（请看下面的屏幕截图），可以双击每个线程以观察其调用堆栈。</p>
+<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230611204701.png" srcset="/img/loading.gif" lazyload alt="image-20230611204700143"></p>
+<h4 id="条件断点-只挂起符合条件的线程"><a href="#条件断点-只挂起符合条件的线程" class="headerlink" title="条件断点-只挂起符合条件的线程"></a>条件断点-只挂起符合条件的线程</h4><p>假设正在解决该程序中的错误，并且只需要在“Thread 2”开始运行时就暂停执行。这表明需要在FactorialCalculatingThread的run()方法的第一行上添加一个断点。因为开启的两个线程使用的是同一段代码，所以会遇到一个问题-使用该段代码的所有线程遇到断点都将被挂起,包括应用程序的“Thread 1”和“Thread 2”。不希望两个线程都暂停，该怎么做？</p>
+<p>可以使用条件断点功能。添加断点后，右键单击它，选中“suspend”并选择“Thread”。然后添加条件<code>currentThread().getName().equals(&quot;Thread 2&quot;)</code>。</p>
+<p>如下图所示，此条件确保调试器仅在当前线程的名称为“Thread 2”时才暂停当前线程：</p>
+<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230611204820.png" srcset="/img/loading.gif" lazyload alt="image-20230611204815376"></p>
+<p>现在执行调试程序，当应用暂停时，仅“Thread 2”被暂停。可以通过以下步骤确认“Thread 1”已执行并且没有被挂起：</p>
+<p>1.在控制台中，您可以通过日志来验证“Thread 1”已运行并退出。</p>
+<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230611205039.png" srcset="/img/loading.gif" lazyload alt="image-20230611205038725"></p>
+<p>2.在“Thread”面板中，可以看到此时已经没有“Thread 1”，已经运行完成了！</p>
+<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230611205057.png" srcset="/img/loading.gif" lazyload alt="image-20230611205056959"></p>
+<p>在不同的IDE版本中，配置条件断点的方式可能有所不同。</p>
+
+              
+            </div>
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/00-%E5%85%88%E5%88%A9%E5%85%B6%E5%99%A8/" class="category-chain-item">00_先利其器</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/00-%E5%85%88%E5%88%A9%E5%85%B6%E5%99%A8/01-Intellij-IDEA/" class="category-chain-item">01_Intellij IDEA</a>
+  
+  
+
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/SpringBoot/">#SpringBoot</a>
+      
+        <a href="/tags/IDEA/">#IDEA</a>
+      
+        <a href="/tags/%E5%BC%80%E5%8F%91/">#开发</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>12-IDEA-调试Stream和Thread</div>
+      <div>https://janycode.github.io/2021/02/27/00_先利其器/01_Intellij IDEA/12-IDEA-调试Stream和Thread/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Jerry(姜源)</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2021年2月27日</div>
+        </div>
+      
+      
+      <div class="license-meta-item">
+        <div>许可协议</div>
+        <div>
+          
+            
+            
+              <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+              <span class="hint--top hint--rounded" aria-label="BY - 姜源">
+                <i class="iconfont icon-by"></i>
+              </span>
+              </a>
+            
+          
+        </div>
+      </div>
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2021/03/05/17_%E5%88%86%E5%B8%83%E5%BC%8F/05_%E5%88%86%E5%B8%83%E5%BC%8F%E4%BB%BB%E5%8A%A1/01-XXL-JOB%E6%A1%86%E6%9E%B6/" title="01 XXL-JOB分布式任务调度框架">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">01 XXL-JOB分布式任务调度框架</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2021/02/18/17_%E5%88%86%E5%B8%83%E5%BC%8F/03_%E5%88%86%E5%B8%83%E5%BC%8F%E9%94%81/01-Setnx+%E8%BF%87%E6%9C%9F%E6%97%B6%E9%97%B4%E5%AE%9E%E7%8E%B0%E5%88%86%E5%B8%83%E5%BC%8F%E9%94%81/" title="01-Setnx+过期时间实现分布式锁">
+                        <span class="hidden-mobile">01-Setnx+过期时间实现分布式锁</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+  <article id="comments" lazyload>
+    
+  <div id="SOHUCS" sid='https://janycode.github.io/2021/02/27/00_%E5%85%88%E5%88%A9%E5%85%B6%E5%99%A8/01_Intellij%20IDEA/12-IDEA-%E8%B0%83%E8%AF%95Stream%E5%92%8CThread/'></div>
+  <script type="text/javascript">
+    Fluid.utils.loadComments('#SOHUCS', function() {
+      Fluid.utils.createScript("https://changyan.sohu.com/upload/changyan.js", function() {
+        window.changyan.api.config({"appid":"cyw5OHIcO","appkey":"fea3446b3df4b3f129f34da4cbc87e51"})
+      });
+    });
+  </script>
+  <noscript>Please enable JavaScript to view the comments</noscript>
+
+
+  </article>
+
+
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://simple.blog.csdn.net" target="_blank" rel="nofollow noopener"><span>CSDN</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/janycode" target="_blank" rel="nofollow noopener"><span>GitHub</span></a> <i class="iconfont icon-love"></i> <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="busuanzi_container_site_pv" style="display: none">
+        总访问量(PV) 
+        <span id="busuanzi_value_site_pv"></span>
+         次，
+      </span>
+    
+    
+      <span id="busuanzi_container_site_uv" style="display: none">
+        总访客数(UV) 
+        <span id="busuanzi_value_site_uv"></span>
+         人
+      </span>
+    
+    
+  
+</div>
+
+  
+  
+  
+</div>
+
+<!-- live2d 动画 -->
+<script src="https://eqcn.ajz.miesnfu.com/wp-content/plugins/wp-3d-pony/live2dw/lib/L2Dwidget.min.js"></script>
+<script>
+    L2Dwidget.init({
+        "model": {
+            jsonPath: "https://unpkg.com/live2d-widget-model-haruto@1.0.5/assets/haruto.model.json",
+            "scale": 1
+        },
+        "display": {
+            "position": "right",
+            "width": 100,
+            "height": 200,
+            "hOffset": 35,
+            "vOffset": -85
+        },
+        "mobile": {
+            "show": false,
+            "scale": 0.1
+        },
+        "react": {
+            "opacityDefault": 0.75,
+            "opacityOnHover": 0.2
+        }
+    });
+</script>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <!-- Baidu Analytics -->
+    <script defer>
+      if (!Fluid.ctx.dnt) {
+        var _hmt = _hmt || [];
+        (function() {
+          var hm = document.createElement("script");
+          hm.src = "https://hm.baidu.com/hm.js?bfff735c897eb60ea49b735096b20e47";
+          var s = document.getElementsByTagName("script")[0];
+          s.parentNode.insertBefore(hm, s);
+        })();
+      }
+    </script>
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.0/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      headingSelector : CONFIG.toc.headingSelector || 'h1,h2,h3,h4,h5,h6',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      collapseDepth   : CONFIG.toc.collapseDepth || 0,
+      scrollSmooth    : true,
+      headingsOffset  : -boardTop
+    });
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+  });
+</script>
+
+
+  <script>
+  (function() {
+    var enableLang = CONFIG.code_language.enable && CONFIG.code_language.default;
+    var enableCopy = CONFIG.copy_btn;
+    if (!enableLang && !enableCopy) {
+      return;
+    }
+
+    function getBgClass(ele) {
+      return Fluid.utils.getBackgroundLightness(ele) >= 0 ? 'code-widget-light' : 'code-widget-dark';
+    }
+
+    var copyTmpl = '';
+    copyTmpl += '<div class="code-widget">';
+    copyTmpl += 'LANG';
+    copyTmpl += '</div>';
+    jQuery('.markdown-body pre').each(function() {
+      var $pre = jQuery(this);
+      if ($pre.find('code.mermaid').length > 0) {
+        return;
+      }
+      if ($pre.find('span.line').length > 0) {
+        return;
+      }
+
+      var lang = '';
+
+      if (enableLang) {
+        lang = CONFIG.code_language.default;
+        if ($pre[0].children.length > 0 && $pre[0].children[0].classList.length >= 2 && $pre.children().hasClass('hljs')) {
+          lang = $pre[0].children[0].classList[1];
+        } else if ($pre[0].getAttribute('data-language')) {
+          lang = $pre[0].getAttribute('data-language');
+        } else if ($pre.parent().hasClass('sourceCode') && $pre[0].children.length > 0 && $pre[0].children[0].classList.length >= 2) {
+          lang = $pre[0].children[0].classList[1];
+          $pre.parent().addClass('code-wrapper');
+        } else if ($pre.parent().hasClass('markdown-body') && $pre[0].classList.length === 0) {
+          $pre.wrap('<div class="code-wrapper"></div>');
+        }
+        lang = lang.toUpperCase().replace('NONE', CONFIG.code_language.default);
+      }
+      $pre.append(copyTmpl.replace('LANG', lang).replace('code-widget">',
+        getBgClass($pre[0]) + (enableCopy ? ' code-widget copy-btn" data-clipboard-snippet><i class="iconfont icon-copy"></i>' : ' code-widget">')));
+
+      if (enableCopy) {
+        Fluid.utils.createScript('https://lib.baomitu.com/clipboard.js/2.0.10/clipboard.min.js', function() {
+          var clipboard = new window.ClipboardJS('.copy-btn', {
+            target: function(trigger) {
+              var nodes = trigger.parentNode.childNodes;
+              for (var i = 0; i < nodes.length; i++) {
+                if (nodes[i].tagName === 'CODE') {
+                  return nodes[i];
+                }
+              }
+            }
+          });
+          clipboard.on('success', function(e) {
+            e.clearSelection();
+            e.trigger.innerHTML = e.trigger.innerHTML.replace('icon-copy', 'icon-success');
+            setTimeout(function() {
+              e.trigger.innerHTML = e.trigger.innerHTML.replace('icon-success', 'icon-copy');
+            }, 2000);
+          });
+        });
+      }
+    });
+  })();
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script  src="/js/local-search.js" ></script>
+
+  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

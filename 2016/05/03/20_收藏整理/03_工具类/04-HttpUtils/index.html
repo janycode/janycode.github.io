@@ -1,0 +1,824 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=light>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Jerry(姜源)">
+  <meta name="keywords" content="Java,Html,CSS,JavaScript,Python,C,Linux,shell编程经验分享、技术总结、心得体会">
+  
+    <meta name="description" content="OkHttp3官网：https:&#x2F;&#x2F;square.github.io&#x2F;okhttp&#x2F; 基本使用参考：https:&#x2F;&#x2F;www.jianshu.com&#x2F;p&#x2F;da4a806e599b HttpUtils12345&lt;dependency&gt;    &lt;groupId&gt;org.apache.httpcomponents&lt;&#x2F;groupId&gt;    &lt;artifactId&amp;">
+<meta property="og:type" content="article">
+<meta property="og:title" content="04-HttpUtils">
+<meta property="og:url" content="https://janycode.github.io/2016/05/03/20_%E6%94%B6%E8%97%8F%E6%95%B4%E7%90%86/03_%E5%B7%A5%E5%85%B7%E7%B1%BB/04-HttpUtils/index.html">
+<meta property="og:site_name" content="姜源の云笔记">
+<meta property="og:description" content="OkHttp3官网：https:&#x2F;&#x2F;square.github.io&#x2F;okhttp&#x2F; 基本使用参考：https:&#x2F;&#x2F;www.jianshu.com&#x2F;p&#x2F;da4a806e599b HttpUtils12345&lt;dependency&gt;    &lt;groupId&gt;org.apache.httpcomponents&lt;&#x2F;groupId&gt;    &lt;artifactId&amp;">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2016-05-03T03:22:34.000Z">
+<meta property="article:modified_time" content="2023-12-24T03:11:24.690Z">
+<meta property="article:author" content="Jerry(姜源)">
+<meta property="article:tag" content="工具类">
+<meta name="twitter:card" content="summary_large_image">
+  
+  
+    <meta name="referrer" content="no-referrer-when-downgrade">
+  
+  
+  <title>04-HttpUtils - 姜源の云笔记</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"janycode.github.io","root":"/","version":"1.9.0","typing":{"enable":true,"typeSpeed":50,"cursorChar":"|","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":false},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":"bfff735c897eb60ea49b735096b20e47","google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+
+  
+<meta name="generator" content="Hexo 6.2.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 50vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>姜源の云笔记</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tools/">
+                <i class="iconfont icon-slack-fill"></i>
+                工具
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" target="_blank" rel="noopener" href="https://janycode.gitee.io/">
+                <i class="iconfont icon-gitee-fill"></i>
+                Gitee
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="04-HttpUtils"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-author" aria-hidden="true"></i>
+        Jerry(姜源)
+      </span>
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2016-05-03 11:22" pubdate>
+          星期二, 2016/05/03 11:22:34
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          <!-- compatible with older versions-->
+          14k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          <!-- compatible with older versions-->
+          113 分钟
+        
+      </span>
+    
+
+    
+    
+      
+        <span id="busuanzi_container_page_pv" style="display: none">
+          <i class="iconfont icon-eye" aria-hidden="true"></i>
+          <span id="busuanzi_value_page_pv"></span> 次
+        </span>
+        
+      
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">04-HttpUtils</h1>
+            
+            <div class="markdown-body">
+              
+              <h3 id="OkHttp3"><a href="#OkHttp3" class="headerlink" title="OkHttp3"></a>OkHttp3</h3><p>官网：<a target="_blank" rel="noopener" href="https://square.github.io/okhttp/">https://square.github.io/okhttp/</a></p>
+<p>基本使用参考：<a target="_blank" rel="noopener" href="https://www.jianshu.com/p/da4a806e599b">https://www.jianshu.com/p/da4a806e599b</a></p>
+<h3 id="HttpUtils"><a href="#HttpUtils" class="headerlink" title="HttpUtils"></a>HttpUtils</h3><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs xml"><span class="hljs-tag">&lt;<span class="hljs-name">dependency</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">groupId</span>&gt;</span>org.apache.httpcomponents<span class="hljs-tag">&lt;/<span class="hljs-name">groupId</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">artifactId</span>&gt;</span>httpclient<span class="hljs-tag">&lt;/<span class="hljs-name">artifactId</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">version</span>&gt;</span>4.5.13<span class="hljs-tag">&lt;/<span class="hljs-name">version</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">dependency</span>&gt;</span><br></code></pre></td></tr></table></figure>
+
+
+
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br><span class="line">169</span><br><span class="line">170</span><br><span class="line">171</span><br><span class="line">172</span><br><span class="line">173</span><br><span class="line">174</span><br><span class="line">175</span><br><span class="line">176</span><br><span class="line">177</span><br><span class="line">178</span><br><span class="line">179</span><br><span class="line">180</span><br><span class="line">181</span><br><span class="line">182</span><br><span class="line">183</span><br><span class="line">184</span><br><span class="line">185</span><br><span class="line">186</span><br><span class="line">187</span><br><span class="line">188</span><br><span class="line">189</span><br><span class="line">190</span><br><span class="line">191</span><br><span class="line">192</span><br><span class="line">193</span><br><span class="line">194</span><br><span class="line">195</span><br><span class="line">196</span><br><span class="line">197</span><br><span class="line">198</span><br><span class="line">199</span><br><span class="line">200</span><br><span class="line">201</span><br><span class="line">202</span><br><span class="line">203</span><br><span class="line">204</span><br><span class="line">205</span><br><span class="line">206</span><br><span class="line">207</span><br><span class="line">208</span><br><span class="line">209</span><br><span class="line">210</span><br><span class="line">211</span><br><span class="line">212</span><br><span class="line">213</span><br><span class="line">214</span><br><span class="line">215</span><br><span class="line">216</span><br><span class="line">217</span><br><span class="line">218</span><br><span class="line">219</span><br><span class="line">220</span><br><span class="line">221</span><br><span class="line">222</span><br><span class="line">223</span><br><span class="line">224</span><br><span class="line">225</span><br><span class="line">226</span><br><span class="line">227</span><br><span class="line">228</span><br><span class="line">229</span><br><span class="line">230</span><br><span class="line">231</span><br><span class="line">232</span><br><span class="line">233</span><br><span class="line">234</span><br><span class="line">235</span><br><span class="line">236</span><br><span class="line">237</span><br><span class="line">238</span><br><span class="line">239</span><br><span class="line">240</span><br><span class="line">241</span><br><span class="line">242</span><br><span class="line">243</span><br><span class="line">244</span><br><span class="line">245</span><br><span class="line">246</span><br><span class="line">247</span><br><span class="line">248</span><br><span class="line">249</span><br><span class="line">250</span><br><span class="line">251</span><br><span class="line">252</span><br><span class="line">253</span><br><span class="line">254</span><br><span class="line">255</span><br><span class="line">256</span><br><span class="line">257</span><br><span class="line">258</span><br><span class="line">259</span><br><span class="line">260</span><br><span class="line">261</span><br><span class="line">262</span><br><span class="line">263</span><br><span class="line">264</span><br><span class="line">265</span><br><span class="line">266</span><br><span class="line">267</span><br><span class="line">268</span><br><span class="line">269</span><br><span class="line">270</span><br><span class="line">271</span><br><span class="line">272</span><br><span class="line">273</span><br><span class="line">274</span><br><span class="line">275</span><br><span class="line">276</span><br><span class="line">277</span><br><span class="line">278</span><br><span class="line">279</span><br><span class="line">280</span><br><span class="line">281</span><br><span class="line">282</span><br><span class="line">283</span><br><span class="line">284</span><br><span class="line">285</span><br><span class="line">286</span><br><span class="line">287</span><br><span class="line">288</span><br><span class="line">289</span><br><span class="line">290</span><br><span class="line">291</span><br><span class="line">292</span><br><span class="line">293</span><br><span class="line">294</span><br><span class="line">295</span><br><span class="line">296</span><br><span class="line">297</span><br><span class="line">298</span><br><span class="line">299</span><br><span class="line">300</span><br><span class="line">301</span><br><span class="line">302</span><br><span class="line">303</span><br><span class="line">304</span><br><span class="line">305</span><br><span class="line">306</span><br><span class="line">307</span><br><span class="line">308</span><br><span class="line">309</span><br><span class="line">310</span><br><span class="line">311</span><br><span class="line">312</span><br><span class="line">313</span><br><span class="line">314</span><br><span class="line">315</span><br><span class="line">316</span><br><span class="line">317</span><br><span class="line">318</span><br><span class="line">319</span><br><span class="line">320</span><br><span class="line">321</span><br><span class="line">322</span><br><span class="line">323</span><br><span class="line">324</span><br><span class="line">325</span><br><span class="line">326</span><br><span class="line">327</span><br><span class="line">328</span><br><span class="line">329</span><br><span class="line">330</span><br><span class="line">331</span><br><span class="line">332</span><br><span class="line">333</span><br><span class="line">334</span><br><span class="line">335</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">import</span> org.apache.commons.lang3.StringUtils;<br><span class="hljs-keyword">import</span> org.apache.http.HttpEntity;<br><span class="hljs-keyword">import</span> org.apache.http.HttpStatus;<br><span class="hljs-keyword">import</span> org.apache.http.client.ClientProtocolException;<br><span class="hljs-keyword">import</span> org.apache.http.client.config.RequestConfig;<br><span class="hljs-keyword">import</span> org.apache.http.client.entity.UrlEncodedFormEntity;<br><span class="hljs-keyword">import</span> org.apache.http.client.methods.CloseableHttpResponse;<br><span class="hljs-keyword">import</span> org.apache.http.client.methods.HttpGet;<br><span class="hljs-keyword">import</span> org.apache.http.client.methods.HttpPost;<br><span class="hljs-keyword">import</span> org.apache.http.client.methods.HttpUriRequest;<br><span class="hljs-keyword">import</span> org.apache.http.client.utils.URIBuilder;<br><span class="hljs-keyword">import</span> org.apache.http.config.Registry;<br><span class="hljs-keyword">import</span> org.apache.http.config.RegistryBuilder;<br><span class="hljs-keyword">import</span> org.apache.http.conn.socket.ConnectionSocketFactory;<br><span class="hljs-keyword">import</span> org.apache.http.conn.socket.PlainConnectionSocketFactory;<br><span class="hljs-keyword">import</span> org.apache.http.conn.ssl.SSLConnectionSocketFactory;<br><span class="hljs-keyword">import</span> org.apache.http.conn.ssl.TrustSelfSignedStrategy;<br><span class="hljs-keyword">import</span> org.apache.http.entity.ContentType;<br><span class="hljs-keyword">import</span> org.apache.http.entity.StringEntity;<br><span class="hljs-keyword">import</span> org.apache.http.impl.client.CloseableHttpClient;<br><span class="hljs-keyword">import</span> org.apache.http.impl.client.DefaultHttpRequestRetryHandler;<br><span class="hljs-keyword">import</span> org.apache.http.impl.client.HttpClients;<br><span class="hljs-keyword">import</span> org.apache.http.impl.conn.PoolingHttpClientConnectionManager;<br><span class="hljs-keyword">import</span> org.apache.http.message.BasicNameValuePair;<br><span class="hljs-keyword">import</span> org.apache.http.ssl.SSLContextBuilder;<br><span class="hljs-keyword">import</span> org.apache.http.util.EntityUtils;<br><br><span class="hljs-keyword">import</span> java.io.IOException;<br><span class="hljs-keyword">import</span> java.io.UnsupportedEncodingException;<br><span class="hljs-keyword">import</span> java.net.URI;<br><span class="hljs-keyword">import</span> java.net.URISyntaxException;<br><span class="hljs-keyword">import</span> java.nio.charset.Charset;<br><span class="hljs-keyword">import</span> java.security.KeyManagementException;<br><span class="hljs-keyword">import</span> java.security.KeyStoreException;<br><span class="hljs-keyword">import</span> java.security.NoSuchAlgorithmException;<br><span class="hljs-keyword">import</span> java.util.ArrayList;<br><span class="hljs-keyword">import</span> java.util.List;<br><span class="hljs-keyword">import</span> java.util.Map;<br><span class="hljs-keyword">import</span> java.util.concurrent.TimeUnit;<br><br><span class="hljs-comment">/**</span><br><span class="hljs-comment"> * Http Client 请求工具</span><br><span class="hljs-comment"> *</span><br><span class="hljs-comment"> * <span class="hljs-doctag">@Author</span> Jerry(姜源)</span><br><span class="hljs-comment"> * <span class="hljs-doctag">@Date</span> 2016-05-03 11:22:34</span><br><span class="hljs-comment"> */</span><br><span class="hljs-meta">@SuppressWarnings(&quot;all&quot;)</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">HttpUtils</span> &#123;<br>    <span class="hljs-keyword">private</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">final</span> <span class="hljs-type">String</span> <span class="hljs-variable">DEFAULT_CHARSET</span> <span class="hljs-operator">=</span> <span class="hljs-string">&quot;UTF-8&quot;</span>;<br>    <span class="hljs-keyword">private</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">final</span> <span class="hljs-type">String</span> <span class="hljs-variable">DEFAULT_POST_CONTENTTYPE</span> <span class="hljs-operator">=</span> <span class="hljs-string">&quot;application/x-www-form-urlencoded&quot;</span>;<br>    <span class="hljs-keyword">private</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">final</span> <span class="hljs-type">String</span> <span class="hljs-variable">JSON_CONTENTTYPE</span> <span class="hljs-operator">=</span> <span class="hljs-string">&quot;application/json&quot;</span>;<br>    <span class="hljs-keyword">private</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">final</span> <span class="hljs-type">int</span> <span class="hljs-variable">REQUEST_TIMEOUT</span> <span class="hljs-operator">=</span> <span class="hljs-number">60</span> * <span class="hljs-number">1000</span>;<span class="hljs-comment">// 设置请求超时5秒钟</span><br>    <span class="hljs-keyword">private</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">final</span> <span class="hljs-type">int</span> <span class="hljs-variable">SO_TIMEOUT</span> <span class="hljs-operator">=</span> <span class="hljs-number">60</span> * <span class="hljs-number">1000</span>; <span class="hljs-comment">// 设置等待数据超时时间5秒钟</span><br>    <span class="hljs-keyword">private</span> <span class="hljs-keyword">static</span> RequestConfig requestConfig;<br>    <span class="hljs-comment">// 池化管理</span><br>    <span class="hljs-keyword">private</span> <span class="hljs-keyword">static</span> <span class="hljs-type">PoolingHttpClientConnectionManager</span> <span class="hljs-variable">poolConnManager</span> <span class="hljs-operator">=</span> <span class="hljs-literal">null</span>;<br><br>    <span class="hljs-keyword">private</span> <span class="hljs-keyword">static</span> CloseableHttpClient httpClient;<br><br>    <span class="hljs-keyword">private</span> <span class="hljs-keyword">static</span> String userAgent;<br><br>    <span class="hljs-keyword">static</span> &#123;<br>        requestConfig = RequestConfig.custom()<br>                .setConnectionRequestTimeout(REQUEST_TIMEOUT)<br>                .setConnectTimeout(SO_TIMEOUT)<br>                .build();<br>        userAgent = <span class="hljs-string">&quot;Mozilla/5.0 (Windows; U; Windows NT 6.1; rv:2.2) Gecko/20110201&quot;</span>;<br><br>        <span class="hljs-keyword">try</span> &#123;<br>            <span class="hljs-type">SSLContextBuilder</span> <span class="hljs-variable">builder</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">SSLContextBuilder</span>();<br>            builder.loadTrustMaterial(<span class="hljs-literal">null</span>, <span class="hljs-keyword">new</span> <span class="hljs-title class_">TrustSelfSignedStrategy</span>());<br>            <span class="hljs-type">SSLConnectionSocketFactory</span> <span class="hljs-variable">sslsf</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">SSLConnectionSocketFactory</span>(<br>                    builder.build());<br>            <span class="hljs-comment">// 配置同时支持 HTTP 和 HTPPS</span><br>            Registry&lt;ConnectionSocketFactory&gt; socketFactoryRegistry = RegistryBuilder.&lt;ConnectionSocketFactory&gt;create().register(<br>                    <span class="hljs-string">&quot;http&quot;</span>, PlainConnectionSocketFactory.getSocketFactory()).register(<br>                    <span class="hljs-string">&quot;https&quot;</span>, sslsf).build();<br>            <span class="hljs-comment">// 初始化连接管理器</span><br>            poolConnManager = <span class="hljs-keyword">new</span> <span class="hljs-title class_">PoolingHttpClientConnectionManager</span>(<br>                    socketFactoryRegistry);<br>            <span class="hljs-comment">// 将最大连接数增加到200，实际项目最好从配置文件中读取这个值</span><br>            poolConnManager.setMaxTotal(<span class="hljs-number">1000</span>);<br>            <span class="hljs-comment">// 设置最大路由</span><br>            poolConnManager.setDefaultMaxPerRoute(<span class="hljs-number">20</span>);<br>            <span class="hljs-comment">// 根据默认超时限制初始化requestConfig</span><br>            <span class="hljs-type">int</span> <span class="hljs-variable">socketTimeout</span> <span class="hljs-operator">=</span> <span class="hljs-number">10000</span>;<br>            <span class="hljs-type">int</span> <span class="hljs-variable">connectTimeout</span> <span class="hljs-operator">=</span> <span class="hljs-number">10000</span>;<br>            <span class="hljs-type">int</span> <span class="hljs-variable">connectionRequestTimeout</span> <span class="hljs-operator">=</span> <span class="hljs-number">10000</span>;<br>            requestConfig = RequestConfig.custom().setConnectionRequestTimeout(<br>                    connectionRequestTimeout).setSocketTimeout(socketTimeout).setConnectTimeout(<br>                    connectTimeout).build();<br><br>            <span class="hljs-comment">// 初始化httpClient</span><br>            httpClient = getConnection();<br><br>            <span class="hljs-comment">// System.out.println(&quot;初始化HttpClient~~~结束&quot;);</span><br>        &#125; <span class="hljs-keyword">catch</span> (NoSuchAlgorithmException e) &#123;<br>            e.printStackTrace();<br>        &#125; <span class="hljs-keyword">catch</span> (KeyStoreException e) &#123;<br>            e.printStackTrace();<br>        &#125; <span class="hljs-keyword">catch</span> (KeyManagementException e) &#123;<br>            e.printStackTrace();<br>        &#125;<br><br>    &#125;<br><br>    <span class="hljs-comment">/**</span><br><span class="hljs-comment">     * http do get with params</span><br><span class="hljs-comment">     *</span><br><span class="hljs-comment">     * <span class="hljs-doctag">@param</span> url</span><br><span class="hljs-comment">     * <span class="hljs-doctag">@param</span> parameterMap</span><br><span class="hljs-comment">     * <span class="hljs-doctag">@return</span></span><br><span class="hljs-comment">     */</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> String <span class="hljs-title function_">doGet</span><span class="hljs-params">(String url, Map&lt;String, Object&gt; parameterMap)</span> &#123;<br>        <span class="hljs-type">long</span> <span class="hljs-variable">start</span> <span class="hljs-operator">=</span> System.currentTimeMillis();<br>        <span class="hljs-type">CloseableHttpClient</span> <span class="hljs-variable">client</span> <span class="hljs-operator">=</span> buildClient();<br>        <span class="hljs-type">String</span> <span class="hljs-variable">uri</span> <span class="hljs-operator">=</span> buildURI(url, parameterMap);<br>        <span class="hljs-type">String</span> <span class="hljs-variable">res</span> <span class="hljs-operator">=</span> getEntityString(client, <span class="hljs-keyword">new</span> <span class="hljs-title class_">HttpGet</span>(uri), <span class="hljs-literal">null</span>);<br>        <span class="hljs-keyword">return</span> res;<br>    &#125;<br><br>    <span class="hljs-comment">/**</span><br><span class="hljs-comment">     * http do get with param and parse response with charset name</span><br><span class="hljs-comment">     *</span><br><span class="hljs-comment">     * <span class="hljs-doctag">@param</span> url</span><br><span class="hljs-comment">     * <span class="hljs-doctag">@param</span> parameterMap</span><br><span class="hljs-comment">     * <span class="hljs-doctag">@param</span> resCharSet</span><br><span class="hljs-comment">     * <span class="hljs-doctag">@return</span></span><br><span class="hljs-comment">     */</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> String <span class="hljs-title function_">doGetForceResCharset</span><span class="hljs-params">(String url, Map&lt;String, Object&gt; parameterMap, String resCharSet)</span> &#123;<br>        <span class="hljs-type">CloseableHttpClient</span> <span class="hljs-variable">client</span> <span class="hljs-operator">=</span> buildClient();<br>        <span class="hljs-type">String</span> <span class="hljs-variable">uri</span> <span class="hljs-operator">=</span> buildURI(url, parameterMap);<br>        <span class="hljs-type">Charset</span> <span class="hljs-variable">charSet</span> <span class="hljs-operator">=</span> Charset.forName(resCharSet);<br>        <span class="hljs-keyword">return</span> getEntityString(client, <span class="hljs-keyword">new</span> <span class="hljs-title class_">HttpGet</span>(uri), charSet);<br>    &#125;<br><br>    <span class="hljs-comment">/**</span><br><span class="hljs-comment">     * http post with params</span><br><span class="hljs-comment">     *</span><br><span class="hljs-comment">     * <span class="hljs-doctag">@param</span> url</span><br><span class="hljs-comment">     * <span class="hljs-doctag">@param</span> parameterMap</span><br><span class="hljs-comment">     * <span class="hljs-doctag">@return</span></span><br><span class="hljs-comment">     */</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> String <span class="hljs-title function_">doPost</span><span class="hljs-params">(String url, Map&lt;String, Object&gt; parameterMap)</span> &#123;<br>        <span class="hljs-keyword">return</span> doPostWithEncoding(url, parameterMap, DEFAULT_CHARSET);<br>    &#125;<br><br>    <span class="hljs-comment">/**</span><br><span class="hljs-comment">     * http post with params</span><br><span class="hljs-comment">     *</span><br><span class="hljs-comment">     * <span class="hljs-doctag">@param</span> url</span><br><span class="hljs-comment">     * <span class="hljs-doctag">@param</span> parameterMap</span><br><span class="hljs-comment">     * <span class="hljs-doctag">@return</span></span><br><span class="hljs-comment">     */</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> String <span class="hljs-title function_">doPost</span><span class="hljs-params">(String url, Map&lt;String, Object&gt; headerMap, String json)</span> &#123;<br>        <span class="hljs-keyword">return</span> doPostJsonWithHeader(url, headerMap, json, DEFAULT_CHARSET);<br>    &#125;<br><br>    <span class="hljs-comment">/**</span><br><span class="hljs-comment">     * http post with json as data body</span><br><span class="hljs-comment">     *</span><br><span class="hljs-comment">     * <span class="hljs-doctag">@param</span> url</span><br><span class="hljs-comment">     * <span class="hljs-doctag">@param</span> json</span><br><span class="hljs-comment">     * <span class="hljs-doctag">@return</span></span><br><span class="hljs-comment">     */</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> String <span class="hljs-title function_">doPost</span><span class="hljs-params">(String url, String json)</span> &#123;<br>        <span class="hljs-keyword">return</span> doPostJsonWithCharset(url, json, DEFAULT_CHARSET);<br>    &#125;<br><br>    <span class="hljs-comment">/**</span><br><span class="hljs-comment">     * http post with json as data body and the header charset</span><br><span class="hljs-comment">     *</span><br><span class="hljs-comment">     * <span class="hljs-doctag">@param</span> url</span><br><span class="hljs-comment">     * <span class="hljs-doctag">@param</span> json</span><br><span class="hljs-comment">     * <span class="hljs-doctag">@param</span> charset</span><br><span class="hljs-comment">     * <span class="hljs-doctag">@return</span></span><br><span class="hljs-comment">     */</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> String <span class="hljs-title function_">doPostJsonWithCharset</span><span class="hljs-params">(String url, String json, String charset)</span> &#123;<br>        <span class="hljs-keyword">return</span> getEntityString(buildClient(),<br>                buildHttpPost(url, <span class="hljs-literal">null</span>, <span class="hljs-literal">null</span>, charset, JSON_CONTENTTYPE, json), <span class="hljs-literal">null</span>);<br>    &#125;<br><br>    <span class="hljs-comment">/**</span><br><span class="hljs-comment">     * http post with json as data body and the header</span><br><span class="hljs-comment">     *</span><br><span class="hljs-comment">     * <span class="hljs-doctag">@param</span> url</span><br><span class="hljs-comment">     * <span class="hljs-doctag">@param</span> json</span><br><span class="hljs-comment">     * <span class="hljs-doctag">@param</span> charset</span><br><span class="hljs-comment">     * <span class="hljs-doctag">@return</span></span><br><span class="hljs-comment">     */</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> String <span class="hljs-title function_">doPostJsonWithHeader</span><span class="hljs-params">(String url, Map&lt;String, Object&gt; headerMap, String json, String charset)</span> &#123;<br>        <span class="hljs-keyword">return</span> getEntityString(buildClient(),<br>                buildHttpPost(url, headerMap, <span class="hljs-literal">null</span>, charset, JSON_CONTENTTYPE, json), <span class="hljs-literal">null</span>);<br>    &#125;<br><br>    <span class="hljs-comment">/**</span><br><span class="hljs-comment">     * http post with param and charset</span><br><span class="hljs-comment">     *</span><br><span class="hljs-comment">     * <span class="hljs-doctag">@param</span> url</span><br><span class="hljs-comment">     * <span class="hljs-doctag">@param</span> parameterMap</span><br><span class="hljs-comment">     * <span class="hljs-doctag">@param</span> charset</span><br><span class="hljs-comment">     * <span class="hljs-doctag">@return</span></span><br><span class="hljs-comment">     */</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> String <span class="hljs-title function_">doPostWithEncoding</span><span class="hljs-params">(String url, Map&lt;String, Object&gt; parameterMap,</span><br><span class="hljs-params">                                            String charset)</span> &#123;<br>        <span class="hljs-type">CloseableHttpClient</span> <span class="hljs-variable">client</span> <span class="hljs-operator">=</span> buildClient();<br>        <span class="hljs-type">HttpPost</span> <span class="hljs-variable">post</span> <span class="hljs-operator">=</span> buildHttpPost(url, <span class="hljs-literal">null</span>, parameterMap, charset, <span class="hljs-literal">null</span>, <span class="hljs-literal">null</span>);<br>        <span class="hljs-keyword">return</span> getEntityString(client, post, <span class="hljs-literal">null</span>);<br>    &#125;<br><br><br>    <span class="hljs-comment">/**</span><br><span class="hljs-comment">     * get the HttpPost instance with configuritions</span><br><span class="hljs-comment">     *</span><br><span class="hljs-comment">     * <span class="hljs-doctag">@param</span> url</span><br><span class="hljs-comment">     * <span class="hljs-doctag">@param</span> parameterMap</span><br><span class="hljs-comment">     * <span class="hljs-doctag">@param</span> charset      if null, set to DEFAULT_CHARSET</span><br><span class="hljs-comment">     * <span class="hljs-doctag">@param</span> contentType  if null, set to DEFAULT_POST_CONTENTTYPE</span><br><span class="hljs-comment">     * <span class="hljs-doctag">@param</span> body         if not null and contentType is &quot;application/json&quot;, use StringEntity</span><br><span class="hljs-comment">     * <span class="hljs-doctag">@return</span></span><br><span class="hljs-comment">     */</span><br>    <span class="hljs-keyword">private</span> <span class="hljs-keyword">static</span> HttpPost <span class="hljs-title function_">buildHttpPost</span><span class="hljs-params">(String url, Map&lt;String, Object&gt; headerMap, Map&lt;String, Object&gt; parameterMap,</span><br><span class="hljs-params">                                          String charset, String contentType, String body)</span> &#123;<br><br>        <span class="hljs-type">HttpPost</span> <span class="hljs-variable">post</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">HttpPost</span>(url);<br>        charset = <span class="hljs-literal">null</span> == charset ? DEFAULT_CHARSET : charset;<br>        contentType = <span class="hljs-literal">null</span> == contentType ? DEFAULT_POST_CONTENTTYPE : contentType;<br>        post.setHeader(<span class="hljs-string">&quot;Content-Type&quot;</span>, contentType + <span class="hljs-string">&quot;; charset=&quot;</span> + charset);<br>        <span class="hljs-comment">//自定义的部分(易观接口使用)</span><br>        <span class="hljs-keyword">if</span> (<span class="hljs-literal">null</span> != headerMap) &#123;<br>            <span class="hljs-keyword">if</span> (<span class="hljs-literal">null</span> != headerMap.get(<span class="hljs-string">&quot;token&quot;</span>)) &#123;<br>                post.setHeader(<span class="hljs-string">&quot;token&quot;</span>, headerMap.get(<span class="hljs-string">&quot;token&quot;</span>).toString());<br>            &#125;<br>            <span class="hljs-keyword">if</span> (<span class="hljs-literal">null</span> != headerMap.get(<span class="hljs-string">&quot;appKey&quot;</span>)) &#123;<br>                post.setHeader(<span class="hljs-string">&quot;appKey&quot;</span>, headerMap.get(<span class="hljs-string">&quot;appKey&quot;</span>).toString());<br>            &#125;<br>        &#125;<br>        <span class="hljs-keyword">if</span> (<span class="hljs-literal">null</span> != body &amp;&amp; contentType == <span class="hljs-string">&quot;application/json&quot;</span> &amp;&amp; <span class="hljs-literal">null</span> == parameterMap) &#123;<br>            <span class="hljs-type">StringEntity</span> <span class="hljs-variable">stringEntity</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">StringEntity</span>(body, charset);<br>            post.setEntity(stringEntity);<br>        &#125; <span class="hljs-keyword">else</span> &#123;<br>            <span class="hljs-keyword">try</span> &#123;<br>                <span class="hljs-type">UrlEncodedFormEntity</span> <span class="hljs-variable">entity</span> <span class="hljs-operator">=</span><br>                        <span class="hljs-keyword">new</span> <span class="hljs-title class_">UrlEncodedFormEntity</span>(mapToNameValueList(parameterMap), charset);<br>                post.setEntity(entity);<br>            &#125; <span class="hljs-keyword">catch</span> (UnsupportedEncodingException e) &#123;<br>                e.printStackTrace();<br>            &#125;<br>        &#125;<br>        <span class="hljs-keyword">return</span> post;<br>    &#125;<br><br>    <span class="hljs-keyword">private</span> <span class="hljs-keyword">static</span> CloseableHttpClient <span class="hljs-title function_">buildClient</span><span class="hljs-params">()</span> &#123;<br>        <span class="hljs-keyword">return</span> httpClient;<br>    &#125;<br><br>    <span class="hljs-keyword">private</span> <span class="hljs-keyword">static</span> String <span class="hljs-title function_">buildURI</span><span class="hljs-params">(String url, Map&lt;String, Object&gt; parameterMap)</span> &#123;<br>        URIBuilder builder;<br>        <span class="hljs-keyword">try</span> &#123;<br>            builder = <span class="hljs-keyword">new</span> <span class="hljs-title class_">URIBuilder</span>(url);<br>            <span class="hljs-keyword">if</span> (<span class="hljs-literal">null</span> != parameterMap) &#123;<br>                <span class="hljs-keyword">for</span> (String key : parameterMap.keySet()) &#123;<br>                    builder.addParameter(key, parameterMap.get(key).toString());<br>                &#125;<br>            &#125;<br>            <span class="hljs-type">URI</span> <span class="hljs-variable">uri</span> <span class="hljs-operator">=</span> builder.build();<br>            <span class="hljs-keyword">return</span> uri.toString();<br>        &#125; <span class="hljs-keyword">catch</span> (URISyntaxException e) &#123;<br>            e.printStackTrace();<br>        &#125;<br>        <span class="hljs-keyword">return</span> StringUtils.EMPTY;<br>    &#125;<br><br>    <span class="hljs-keyword">private</span> <span class="hljs-keyword">static</span> String <span class="hljs-title function_">getEntityString</span><span class="hljs-params">(CloseableHttpClient client, HttpUriRequest request, Charset forceCharset)</span> &#123;<br>        <span class="hljs-type">CloseableHttpResponse</span> <span class="hljs-variable">response</span> <span class="hljs-operator">=</span> <span class="hljs-literal">null</span>;<br>        <span class="hljs-type">String</span> <span class="hljs-variable">res</span> <span class="hljs-operator">=</span> <span class="hljs-string">&quot;&quot;</span>;<br>        request.setHeader(<span class="hljs-string">&quot;Connection&quot;</span>, <span class="hljs-string">&quot;close&quot;</span>);<br>        <span class="hljs-keyword">try</span> &#123;<br>            response = client.execute(request);<br><br>            <span class="hljs-keyword">if</span> (response.getStatusLine().getStatusCode() != HttpStatus.SC_OK) &#123;<br>                request.abort();<br>            &#125; <span class="hljs-keyword">else</span> &#123;<br>                <span class="hljs-type">HttpEntity</span> <span class="hljs-variable">entity</span> <span class="hljs-operator">=</span> response.getEntity();<br>                <span class="hljs-type">ContentType</span> <span class="hljs-variable">contentType</span> <span class="hljs-operator">=</span> ContentType.getOrDefault(entity);<br>                <span class="hljs-type">Charset</span> <span class="hljs-variable">charSet</span> <span class="hljs-operator">=</span> contentType.getCharset();<br>                charSet = ensureCharset(charSet, forceCharset);<br>                res = EntityUtils.toString(entity, charSet);<br>            &#125;<br>        &#125; <span class="hljs-keyword">catch</span> (ClientProtocolException e) &#123;<br>            e.printStackTrace();<br>        &#125; <span class="hljs-keyword">catch</span> (IOException e) &#123;<br>            e.printStackTrace();<br>        &#125; <span class="hljs-keyword">finally</span> &#123;<br>            <span class="hljs-keyword">try</span> &#123;<br>                <span class="hljs-keyword">if</span> (response != <span class="hljs-literal">null</span>)<br>                    response.close();<br>            &#125; <span class="hljs-keyword">catch</span> (IOException e) &#123;<br>                e.printStackTrace();<br>            &#125;<br>            client.getConnectionManager().closeIdleConnections(<span class="hljs-number">0</span>, TimeUnit.SECONDS);<br>        &#125;<br>        <span class="hljs-keyword">return</span> res;<br>    &#125;<br><br>    <span class="hljs-keyword">private</span> <span class="hljs-keyword">static</span> Charset <span class="hljs-title function_">ensureCharset</span><span class="hljs-params">(Charset charSet, Charset forceCharset)</span> &#123;<br>        <span class="hljs-keyword">if</span> (forceCharset != <span class="hljs-literal">null</span>)<br>            charSet = forceCharset;<br>        <span class="hljs-keyword">if</span> (charSet == <span class="hljs-literal">null</span>)<br>            charSet = Charset.forName(DEFAULT_CHARSET);<br>        <span class="hljs-keyword">return</span> charSet;<br>    &#125;<br><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> CloseableHttpClient <span class="hljs-title function_">getConnection</span><span class="hljs-params">()</span> &#123;<br>        <span class="hljs-type">CloseableHttpClient</span> <span class="hljs-variable">httpClient</span> <span class="hljs-operator">=</span> HttpClients.custom()<br>                <span class="hljs-comment">// 设置连接池管理</span><br>                .setConnectionManager(poolConnManager)<br>                <span class="hljs-comment">// 设置请求配置</span><br>                .setDefaultRequestConfig(requestConfig)<br>                <span class="hljs-comment">// 设置重试次数</span><br>                .setRetryHandler(<span class="hljs-keyword">new</span> <span class="hljs-title class_">DefaultHttpRequestRetryHandler</span>(<span class="hljs-number">0</span>, <span class="hljs-literal">false</span>))<br>                .build();<br><br>        <span class="hljs-keyword">return</span> httpClient;<br>    &#125;<br><br><br>    <span class="hljs-keyword">private</span> <span class="hljs-keyword">static</span> List&lt;BasicNameValuePair&gt; <span class="hljs-title function_">mapToNameValueList</span><span class="hljs-params">(Map&lt;String, Object&gt; parameterMap)</span> &#123;<br>        List&lt;BasicNameValuePair&gt; list = <span class="hljs-keyword">new</span> <span class="hljs-title class_">ArrayList</span>&lt;BasicNameValuePair&gt;();<br>        <span class="hljs-keyword">for</span> (String key : parameterMap.keySet()) &#123;<br>            list.add(<span class="hljs-keyword">new</span> <span class="hljs-title class_">BasicNameValuePair</span>(key, parameterMap.get(key).toString()));<br>        &#125;<br>        <span class="hljs-keyword">return</span> list;<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<h3 id="HttpClient"><a href="#HttpClient" class="headerlink" title="HttpClient"></a>HttpClient</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">HttpClient</span> &#123;<br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> String <span class="hljs-title function_">get</span><span class="hljs-params">(String sUrl, HashMap&lt;String, String&gt; paramMap, <span class="hljs-type">int</span> timeOut)</span> &#123;<br><br><span class="hljs-comment">//		hainaids=9997&amp;act=0&amp;</span><br>        <span class="hljs-type">String</span> <span class="hljs-variable">line</span> <span class="hljs-operator">=</span> <span class="hljs-string">&quot;&quot;</span>;<br>        <span class="hljs-type">StringBuilder</span> <span class="hljs-variable">sb</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">StringBuilder</span>();<br>        <span class="hljs-type">HttpURLConnection</span> <span class="hljs-variable">httpConn</span> <span class="hljs-operator">=</span> <span class="hljs-literal">null</span>;<br>        <span class="hljs-keyword">try</span> &#123;<br>            <span class="hljs-keyword">if</span> (paramMap.size() &gt; <span class="hljs-number">0</span>) &#123;<br>                sUrl += <span class="hljs-string">&quot;?temp=1&quot;</span>;<br>                <span class="hljs-keyword">for</span> (String key : paramMap.keySet()) &#123;<br>                    sUrl += <span class="hljs-string">&quot;&amp;&quot;</span> + key + <span class="hljs-string">&quot;=&quot;</span> + paramMap.get(key);<br>                &#125;<br>            &#125;<br><span class="hljs-comment">//			System.out.println(&quot;url:&quot;+sUrl);</span><br>            <span class="hljs-type">URL</span> <span class="hljs-variable">url</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">URL</span>(sUrl);<br>            <span class="hljs-type">Proxy</span> <span class="hljs-variable">proxy</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">Proxy</span>(Proxy.Type.HTTP, <span class="hljs-keyword">new</span> <span class="hljs-title class_">InetSocketAddress</span>(<span class="hljs-string">&quot;web-proxy.oa.com&quot;</span>, <span class="hljs-number">8080</span>));<br>            httpConn = (HttpURLConnection) url.openConnection(proxy);<br>            httpConn.setRequestMethod(<span class="hljs-string">&quot;GET&quot;</span>);<br>            httpConn.setConnectTimeout(timeOut);<br>            httpConn.setDoOutput(<span class="hljs-literal">true</span>);<br>            <span class="hljs-type">BufferedReader</span> <span class="hljs-variable">in</span> <span class="hljs-operator">=</span> <span class="hljs-literal">null</span>;<br>            <span class="hljs-keyword">if</span> (httpConn.getResponseCode() == <span class="hljs-number">200</span>) &#123;<br>                in = <span class="hljs-keyword">new</span> <span class="hljs-title class_">BufferedReader</span>(<span class="hljs-keyword">new</span> <span class="hljs-title class_">InputStreamReader</span>(httpConn.getInputStream(), <span class="hljs-string">&quot;UTF-8&quot;</span>));<br>                <span class="hljs-keyword">while</span> ((line = in.readLine()) != <span class="hljs-literal">null</span>) &#123;<br>                    sb.append(line);<br>                &#125;<br>            &#125;<br>            httpConn.disconnect();<br>            <span class="hljs-keyword">return</span> sb.toString();<br>        &#125; <span class="hljs-keyword">catch</span> (Exception e) &#123;<br>            <span class="hljs-comment">// 关闭连接</span><br>            httpConn.disconnect();<br>            e.printStackTrace();<br>            <span class="hljs-keyword">return</span> <span class="hljs-string">&quot;&quot;</span>;<br>        &#125;<br>    &#125;<br><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> String <span class="hljs-title function_">post</span><span class="hljs-params">(String sUrl, String postData, <span class="hljs-type">int</span> timeOut)</span> &#123;<br>        <span class="hljs-type">HttpURLConnection</span> <span class="hljs-variable">httpUrlConn</span> <span class="hljs-operator">=</span> <span class="hljs-literal">null</span>;<br>        <span class="hljs-type">BufferedReader</span> <span class="hljs-variable">in</span> <span class="hljs-operator">=</span> <span class="hljs-literal">null</span>;<br>        <span class="hljs-type">InputStreamReader</span> <span class="hljs-variable">reader</span> <span class="hljs-operator">=</span> <span class="hljs-literal">null</span>;<br>        <span class="hljs-keyword">try</span> &#123;<br>            <span class="hljs-type">String</span> <span class="hljs-variable">line</span> <span class="hljs-operator">=</span> <span class="hljs-string">&quot;&quot;</span>;<br>            <span class="hljs-type">StringBuilder</span> <span class="hljs-variable">sb</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">StringBuilder</span>();<br>            <span class="hljs-type">URL</span> <span class="hljs-variable">url</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">URL</span>(sUrl);<br>            <span class="hljs-type">Proxy</span> <span class="hljs-variable">proxy</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">Proxy</span>(Proxy.Type.HTTP, <span class="hljs-keyword">new</span> <span class="hljs-title class_">InetSocketAddress</span>(<span class="hljs-string">&quot;web-proxy.oa.com&quot;</span>, <span class="hljs-number">8080</span>));<br>            httpUrlConn = (HttpURLConnection) url.openConnection(proxy);<br>            httpUrlConn.setRequestMethod(<span class="hljs-string">&quot;POST&quot;</span>);<br>            httpUrlConn.setDoInput(<span class="hljs-literal">true</span>);<br>            httpUrlConn.setDoOutput(<span class="hljs-literal">true</span>);<br>            httpUrlConn.setConnectTimeout(timeOut);<br>            httpUrlConn.setRequestProperty(<span class="hljs-string">&quot;Content-Type&quot;</span>, <span class="hljs-string">&quot;application/json; charset=UTF-8&quot;</span>);<br>            httpUrlConn.setRequestProperty(<span class="hljs-string">&quot;Content-Length&quot;</span>, Integer.toString(postData.length()));<br>            <span class="hljs-type">OutputStream</span> <span class="hljs-variable">os</span> <span class="hljs-operator">=</span> httpUrlConn.getOutputStream();<br>            <span class="hljs-type">OutputStreamWriter</span> <span class="hljs-variable">osw</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">OutputStreamWriter</span>(os, <span class="hljs-string">&quot;utf-8&quot;</span>);<br>            osw.write(postData);<br>            osw.flush();<br>            osw.close();<br><br>            <span class="hljs-keyword">if</span> (httpUrlConn.getResponseCode() == <span class="hljs-number">200</span>) &#123;<br>                reader = <span class="hljs-keyword">new</span> <span class="hljs-title class_">InputStreamReader</span>(httpUrlConn.getInputStream(), <span class="hljs-string">&quot;UTF-8&quot;</span>);<br>                in = <span class="hljs-keyword">new</span> <span class="hljs-title class_">BufferedReader</span>(reader);<br>                <span class="hljs-keyword">while</span> ((line = in.readLine()) != <span class="hljs-literal">null</span>) &#123;<br>                    sb.append(line);<br>                &#125;<br><span class="hljs-comment">//				 sb.append(&quot;OK&quot;);</span><br>            &#125;<br>            <span class="hljs-keyword">return</span> sb.toString();<br>        &#125; <span class="hljs-keyword">catch</span> (Exception e) &#123;<br>            System.out.println(<span class="hljs-string">&quot;sendSoapToWebService error&quot;</span> + e.getMessage());<br>            <span class="hljs-keyword">return</span> <span class="hljs-string">&quot;false:&quot;</span> + e.getMessage();<br>        &#125; <span class="hljs-keyword">finally</span> &#123;<br>            <span class="hljs-keyword">try</span> &#123;<br>                <span class="hljs-keyword">if</span> (in != <span class="hljs-literal">null</span>) &#123;<br>                    in.close();<br>                &#125;<br>                <span class="hljs-keyword">if</span> (reader != <span class="hljs-literal">null</span>) &#123;<br>                    reader.close();<br>                &#125;<br>                <span class="hljs-keyword">if</span> (httpUrlConn != <span class="hljs-literal">null</span>) &#123;<br>                    httpUrlConn.disconnect();<br>                &#125;<br>            &#125; <span class="hljs-keyword">catch</span> (IOException e) &#123;<br>            &#125;<br>        &#125;<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+
+              
+            </div>
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/20-%E6%94%B6%E8%97%8F%E6%95%B4%E7%90%86/" class="category-chain-item">20_收藏整理</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/20-%E6%94%B6%E8%97%8F%E6%95%B4%E7%90%86/03-%E5%B7%A5%E5%85%B7%E7%B1%BB/" class="category-chain-item">03_工具类</a>
+  
+  
+
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/%E5%B7%A5%E5%85%B7%E7%B1%BB/">#工具类</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>04-HttpUtils</div>
+      <div>https://janycode.github.io/2016/05/03/20_收藏整理/03_工具类/04-HttpUtils/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Jerry(姜源)</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2016年5月3日</div>
+        </div>
+      
+      
+      <div class="license-meta-item">
+        <div>许可协议</div>
+        <div>
+          
+            
+            
+              <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+              <span class="hint--top hint--rounded" aria-label="BY - 姜源">
+                <i class="iconfont icon-by"></i>
+              </span>
+              </a>
+            
+          
+        </div>
+      </div>
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2016/05/03/20_%E6%94%B6%E8%97%8F%E6%95%B4%E7%90%86/03_%E5%B7%A5%E5%85%B7%E7%B1%BB/03-MyBatisUtils/" title="03-MyBatisUtils">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">03-MyBatisUtils</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2016/05/03/20_%E6%94%B6%E8%97%8F%E6%95%B4%E7%90%86/03_%E5%B7%A5%E5%85%B7%E7%B1%BB/05-EncryptUtil/" title="05-EncryptUtil">
+                        <span class="hidden-mobile">05-EncryptUtil</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+  <article id="comments" lazyload>
+    
+  <div id="SOHUCS" sid='https://janycode.github.io/2016/05/03/20_%E6%94%B6%E8%97%8F%E6%95%B4%E7%90%86/03_%E5%B7%A5%E5%85%B7%E7%B1%BB/04-HttpUtils/'></div>
+  <script type="text/javascript">
+    Fluid.utils.loadComments('#SOHUCS', function() {
+      Fluid.utils.createScript("https://changyan.sohu.com/upload/changyan.js", function() {
+        window.changyan.api.config({"appid":"cyw5OHIcO","appkey":"fea3446b3df4b3f129f34da4cbc87e51"})
+      });
+    });
+  </script>
+  <noscript>Please enable JavaScript to view the comments</noscript>
+
+
+  </article>
+
+
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://simple.blog.csdn.net" target="_blank" rel="nofollow noopener"><span>CSDN</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/janycode" target="_blank" rel="nofollow noopener"><span>GitHub</span></a> <i class="iconfont icon-love"></i> <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="busuanzi_container_site_pv" style="display: none">
+        总访问量(PV) 
+        <span id="busuanzi_value_site_pv"></span>
+         次，
+      </span>
+    
+    
+      <span id="busuanzi_container_site_uv" style="display: none">
+        总访客数(UV) 
+        <span id="busuanzi_value_site_uv"></span>
+         人
+      </span>
+    
+    
+  
+</div>
+
+  
+  
+  
+</div>
+
+<!-- live2d 动画 -->
+<script src="https://eqcn.ajz.miesnfu.com/wp-content/plugins/wp-3d-pony/live2dw/lib/L2Dwidget.min.js"></script>
+<script>
+    L2Dwidget.init({
+        "model": {
+            jsonPath: "https://unpkg.com/live2d-widget-model-haruto@1.0.5/assets/haruto.model.json",
+            "scale": 1
+        },
+        "display": {
+            "position": "right",
+            "width": 100,
+            "height": 200,
+            "hOffset": 35,
+            "vOffset": -85
+        },
+        "mobile": {
+            "show": false,
+            "scale": 0.1
+        },
+        "react": {
+            "opacityDefault": 0.75,
+            "opacityOnHover": 0.2
+        }
+    });
+</script>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <!-- Baidu Analytics -->
+    <script defer>
+      if (!Fluid.ctx.dnt) {
+        var _hmt = _hmt || [];
+        (function() {
+          var hm = document.createElement("script");
+          hm.src = "https://hm.baidu.com/hm.js?bfff735c897eb60ea49b735096b20e47";
+          var s = document.getElementsByTagName("script")[0];
+          s.parentNode.insertBefore(hm, s);
+        })();
+      }
+    </script>
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.0/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      headingSelector : CONFIG.toc.headingSelector || 'h1,h2,h3,h4,h5,h6',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      collapseDepth   : CONFIG.toc.collapseDepth || 0,
+      scrollSmooth    : true,
+      headingsOffset  : -boardTop
+    });
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+  });
+</script>
+
+
+  <script>
+  (function() {
+    var enableLang = CONFIG.code_language.enable && CONFIG.code_language.default;
+    var enableCopy = CONFIG.copy_btn;
+    if (!enableLang && !enableCopy) {
+      return;
+    }
+
+    function getBgClass(ele) {
+      return Fluid.utils.getBackgroundLightness(ele) >= 0 ? 'code-widget-light' : 'code-widget-dark';
+    }
+
+    var copyTmpl = '';
+    copyTmpl += '<div class="code-widget">';
+    copyTmpl += 'LANG';
+    copyTmpl += '</div>';
+    jQuery('.markdown-body pre').each(function() {
+      var $pre = jQuery(this);
+      if ($pre.find('code.mermaid').length > 0) {
+        return;
+      }
+      if ($pre.find('span.line').length > 0) {
+        return;
+      }
+
+      var lang = '';
+
+      if (enableLang) {
+        lang = CONFIG.code_language.default;
+        if ($pre[0].children.length > 0 && $pre[0].children[0].classList.length >= 2 && $pre.children().hasClass('hljs')) {
+          lang = $pre[0].children[0].classList[1];
+        } else if ($pre[0].getAttribute('data-language')) {
+          lang = $pre[0].getAttribute('data-language');
+        } else if ($pre.parent().hasClass('sourceCode') && $pre[0].children.length > 0 && $pre[0].children[0].classList.length >= 2) {
+          lang = $pre[0].children[0].classList[1];
+          $pre.parent().addClass('code-wrapper');
+        } else if ($pre.parent().hasClass('markdown-body') && $pre[0].classList.length === 0) {
+          $pre.wrap('<div class="code-wrapper"></div>');
+        }
+        lang = lang.toUpperCase().replace('NONE', CONFIG.code_language.default);
+      }
+      $pre.append(copyTmpl.replace('LANG', lang).replace('code-widget">',
+        getBgClass($pre[0]) + (enableCopy ? ' code-widget copy-btn" data-clipboard-snippet><i class="iconfont icon-copy"></i>' : ' code-widget">')));
+
+      if (enableCopy) {
+        Fluid.utils.createScript('https://lib.baomitu.com/clipboard.js/2.0.10/clipboard.min.js', function() {
+          var clipboard = new window.ClipboardJS('.copy-btn', {
+            target: function(trigger) {
+              var nodes = trigger.parentNode.childNodes;
+              for (var i = 0; i < nodes.length; i++) {
+                if (nodes[i].tagName === 'CODE') {
+                  return nodes[i];
+                }
+              }
+            }
+          });
+          clipboard.on('success', function(e) {
+            e.clearSelection();
+            e.trigger.innerHTML = e.trigger.innerHTML.replace('icon-copy', 'icon-success');
+            setTimeout(function() {
+              e.trigger.innerHTML = e.trigger.innerHTML.replace('icon-success', 'icon-copy');
+            }, 2000);
+          });
+        });
+      }
+    });
+  })();
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script  src="/js/local-search.js" ></script>
+
+  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

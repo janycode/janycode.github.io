@@ -1,0 +1,1058 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=light>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Jerry(姜源)">
+  <meta name="keywords" content="Java,Html,CSS,JavaScript,Python,C,Linux,shell编程经验分享、技术总结、心得体会">
+  
+    <meta name="description" content="参考资料：Spring Boot 官网文档 《37. Validation》 参考资料：@Valid 与 @Validated 注解用法详解 1.情景展示SpringBoot，SpringMvc 常用参数校验用法详解 在实际开发过程中，针对前端请求参数的校验是一个不小的工作量。 什么时候需要对请求参数进行校验？ 情形1：前后端分离 前后端分离，虽然会提高项目的开发进度，但同样也存在前后端开发人员">
+<meta property="og:type" content="article">
+<meta property="og:title" content="02-@Validated和@Valid用法详解">
+<meta property="og:url" content="https://janycode.github.io/2021/11/28/08_%E6%A1%86%E6%9E%B6%E6%8A%80%E6%9C%AF/02_Spring/05_Validation/02-@Validated%E5%92%8C@Valid%E7%94%A8%E6%B3%95%E8%AF%A6%E8%A7%A3/index.html">
+<meta property="og:site_name" content="姜源の云笔记">
+<meta property="og:description" content="参考资料：Spring Boot 官网文档 《37. Validation》 参考资料：@Valid 与 @Validated 注解用法详解 1.情景展示SpringBoot，SpringMvc 常用参数校验用法详解 在实际开发过程中，针对前端请求参数的校验是一个不小的工作量。 什么时候需要对请求参数进行校验？ 情形1：前后端分离 前后端分离，虽然会提高项目的开发进度，但同样也存在前后端开发人员">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20200708160946.png">
+<meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20231224102555.png">
+<meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20231224102617.png">
+<meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20231224102629.png">
+<meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20231224102639.png">
+<meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20231224102700.png">
+<meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20231224102732.png">
+<meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20231224102751.png">
+<meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20231224102856.png">
+<meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20231224102908.png">
+<meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20231224102925.png">
+<meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20231224102939.png">
+<meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20231224102957.png">
+<meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20231224103011.png">
+<meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20231224103024.png">
+<meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20231224103048.png">
+<meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20231224103059.png">
+<meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20231224103327.png">
+<meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20231224103341.png">
+<meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20231224103356.png">
+<meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20231224103412.png">
+<meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20231224103432.png">
+<meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20231224103449.png">
+<meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20231224103500.png">
+<meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20231224103513.png">
+<meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20231224104010.png">
+<meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20231224104134.png">
+<meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20231224104148.png">
+<meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20231224104204.png">
+<meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20231224104224.png">
+<meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20231224104237.png">
+<meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20231224104429.png">
+<meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20231224104440.png">
+<meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20231224104452.png">
+<meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20231224104501.png">
+<meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20231224104510.png">
+<meta property="article:published_time" content="2021-11-28T02:24:23.000Z">
+<meta property="article:modified_time" content="2023-12-24T03:11:24.473Z">
+<meta property="article:author" content="Jerry(姜源)">
+<meta property="article:tag" content="Spring">
+<meta property="article:tag" content="注解">
+<meta property="article:tag" content="参数校验">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20200708160946.png">
+  
+  
+    <meta name="referrer" content="no-referrer-when-downgrade">
+  
+  
+  <title>02-@Validated和@Valid用法详解 - 姜源の云笔记</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"janycode.github.io","root":"/","version":"1.9.0","typing":{"enable":true,"typeSpeed":50,"cursorChar":"|","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":false},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":"bfff735c897eb60ea49b735096b20e47","google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+
+  
+<meta name="generator" content="Hexo 6.2.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 50vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>姜源の云笔记</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tools/">
+                <i class="iconfont icon-slack-fill"></i>
+                工具
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" target="_blank" rel="noopener" href="https://janycode.gitee.io/">
+                <i class="iconfont icon-gitee-fill"></i>
+                Gitee
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="02-@Validated和@Valid用法详解"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-author" aria-hidden="true"></i>
+        Jerry(姜源)
+      </span>
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2021-11-28 10:24" pubdate>
+          星期日, 2021/11/28 10:24:23
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          <!-- compatible with older versions-->
+          12k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          <!-- compatible with older versions-->
+          104 分钟
+        
+      </span>
+    
+
+    
+    
+      
+        <span id="busuanzi_container_page_pv" style="display: none">
+          <i class="iconfont icon-eye" aria-hidden="true"></i>
+          <span id="busuanzi_value_page_pv"></span> 次
+        </span>
+        
+      
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">02-@Validated和@Valid用法详解</h1>
+            
+            <div class="markdown-body">
+              
+              <p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20200708160946.png" srcset="/img/loading.gif" lazyload alt="image-20200708160944615"></p>
+<p>参考资料：<a target="_blank" rel="noopener" href="https://docs.spring.io/spring-boot/docs/2.1.7.RELEASE/reference/htmlsingle/#boot-features-validation">Spring Boot 官网文档 《37. Validation》</a></p>
+<p>参考资料：<a target="_blank" rel="noopener" href="https://www.cnblogs.com/Marydon20170307/p/15707793.html">@Valid 与 @Validated 注解用法详解</a></p>
+<h3 id="1-情景展示"><a href="#1-情景展示" class="headerlink" title="1.情景展示"></a>1.情景展示</h3><p>SpringBoot，SpringMvc 常用参数校验用法详解</p>
+<p>在实际开发过程中，针对前端请求参数的校验是一个不小的工作量。</p>
+<p>什么时候需要对请求参数进行校验？</p>
+<p><strong>情形1：前后端分离</strong></p>
+<p>前后端分离，虽然会提高项目的开发进度，但同样也存在前后端开发人员交流不及时等问题。</p>
+<p>比方说：性别参数，后端要求只能传1或2，前端非要给你传男或女，当前后端对于数据的要求标准不一致时，就会出现问题。</p>
+<p>后台对入参进行校验，一方面，可以提高数据的规范性；另一方面，也可以增加数据的安全性（比如：数据在传输过程中被篡改）。</p>
+<p><strong>情形2：对外提供接口</strong></p>
+<p>本质上，前后端分离，后台提供请求，也是属于接口，这里特指的是后台对后台。</p>
+<p>也就是说，别的项目或者公司需要调用咱们写的接口，这个时候，参数的校验就显得格外重要，不想前后端那种，后台加不加校验都没有太大的影响。</p>
+<h3 id="2-准备工作"><a href="#2-准备工作" class="headerlink" title="2.准备工作"></a>2.准备工作</h3><p>关于校验标准，可供java使用的一共有两套：</p>
+<p>  一种是：Java API规范 (JSR303) 定义了Bean校验的标准validation-api，但没有提供实现。</p>
+<p>  另一种是：hibernate validation是对这个规范的实现，并增加了校验注解如@Email、@Length等。</p>
+<p>  Spring Validation是对hibernate validation的二次封装，用于支持spring mvc参数自动校验。</p>
+<p>  接下来，以spring-boot项目为例，介绍Spring Validation的使用。</p>
+<p><strong>关于jar包的引用</strong></p>
+<p>  如果spring-boot版本小于2.3.x，spring-boot-starter-web会自动传入hibernate-validator依赖；</p>
+<p>  如果spring-boot版本大于2.3.x，则需要手动引入依赖：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs xml"><span class="hljs-comment">&lt;!--spring对参数进行校验：hibernate validator--&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">dependency</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">groupId</span>&gt;</span>org.hibernate<span class="hljs-tag">&lt;/<span class="hljs-name">groupId</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">artifactId</span>&gt;</span>hibernate-validator<span class="hljs-tag">&lt;/<span class="hljs-name">artifactId</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">version</span>&gt;</span>6.0.18.Final<span class="hljs-tag">&lt;/<span class="hljs-name">version</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">dependency</span>&gt;</span><br></code></pre></td></tr></table></figure>
+
+<p>现在网络上都是旧的内容，用的是：</p>
+<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20231224102555.png" srcset="/img/loading.gif" lazyload alt="image-20231224102554480"></p>
+<p>完全没有必要，使用第一个jar包就可以了。</p>
+<p>关于jar包的区别，文末会进行详细解说。</p>
+<p><strong>@Valid和@Validated的区别</strong></p>
+<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20231224102617.png" srcset="/img/loading.gif" lazyload alt="image-20231224102616717"></p>
+<h3 id="3-具体实现"><a href="#3-具体实现" class="headerlink" title="3.具体实现"></a>3.具体实现</h3><h4 id="用法1：requestParam参数校验"><a href="#用法1：requestParam参数校验" class="headerlink" title="用法1：requestParam参数校验"></a>用法1：requestParam参数校验</h4><p>描述：通常用于get请求或者请求参数比较少的情形。</p>
+<p><strong>校验生效的前提：</strong></p>
+<p>必须在Controller类上标注@Validated注解，在方法或者参数前添加无效！</p>
+<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20231224102629.png" srcset="/img/loading.gif" lazyload alt="image-20231224102628702"></p>
+<p>如果校验失败，会抛出ConstraintViolationException异常。</p>
+<p>用法：</p>
+<p>将请求入参一一在请求方法()内，进行罗列，并将校验注解添加在对应入参的前面。</p>
+<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20231224102639.png" srcset="/img/loading.gif" lazyload alt="image-20231224102638705"></p>
+<p>@RequestParam注解的required属性的默认值为true，也就是，要求该参数是必传项；</p>
+<p>如果可以为空的话，需要将其值改成false：</p>
+<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20231224102700.png" srcset="/img/loading.gif" lazyload alt="image-20231224102659680"></p>
+<p>否则的话，会报非空错误！</p>
+<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20231224102732.png" srcset="/img/loading.gif" lazyload alt="image-20231224102731176"></p>
+<p>另外，如果请求参数与自己定义的接收的变量名称不一样的话，可以进行映射；</p>
+<p>即：只要@RequestParam里面的名称和请求入参名称保持一致即可。</p>
+<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20231224102751.png" srcset="/img/loading.gif" lazyload alt="image-20231224102750470"></p>
+<p>可以看到，只要对照好参数映射关系，就能接收到数据。</p>
+<p>说明：</p>
+<p>请求参数，的后台不用@RequestParam修饰参数名，并不影响前端发送get请求（form表单格式数据：param1&#x3D;value1&amp;param2&#x3D;value2&amp;…）。</p>
+<p>另外，没有@RequestParam注解也是可以进行校验的。</p>
+<p>所以说，不用@RequestParam注解也是可以的，用不用的区别就在于：方便knife4j识别接口类型是不是application&#x2F;x-www-form-urlencoded。</p>
+<p>如果接收请求入参的变量被@RequestParam注解修饰，knife4j就将接口类型展示为：form表单格式；</p>
+<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20231224102856.png" srcset="/img/loading.gif" lazyload alt="image-20231224102856206"></p>
+<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20231224102908.png" srcset="/img/loading.gif" lazyload alt="image-20231224102908148"></p>
+<p>当没有@RequestParam注解修饰时，展示为JSON格式。</p>
+<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20231224102925.png" srcset="/img/loading.gif" lazyload alt="image-20231224102924325"></p>
+<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20231224102939.png" srcset="/img/loading.gif" lazyload alt="image-20231224102938824"></p>
+<h4 id="用法2：pathVariable参数校验"><a href="#用法2：pathVariable参数校验" class="headerlink" title="用法2：pathVariable参数校验"></a>用法2：pathVariable参数校验</h4><p>描述：通过{}来动态配置请求路径，并将请求路径当成方法的入参之一。</p>
+<p><strong>校验生效的前提：</strong></p>
+<p>必须在Controller类上标注@Validated注解，在方法或者参数前添加无效！</p>
+<p>如果校验失败，会抛出ConstraintViolationException异常。</p>
+<p>用法：校验注解可以放在@PathVariable前面也可以放在它的后面。</p>
+<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20231224102957.png" srcset="/img/loading.gif" lazyload alt="image-20231224102956628"></p>
+<h4 id="用法3：responseBody参数校验（application-x2F-json）"><a href="#用法3：responseBody参数校验（application-x2F-json）" class="headerlink" title="用法3：responseBody参数校验（application&#x2F;json）"></a>用法3：responseBody参数校验（application&#x2F;json）</h4><p>当请求方法入参有@RequestBody注解的时候，spring会将它识别成JSON格式的请求，要求调用方必须发送application&#x2F;json格式的数据；</p>
+<p><strong>第1步：在实体类的字段上加上约束注解；</strong></p>
+<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20231224103011.png" srcset="/img/loading.gif" lazyload alt="image-20231224103010708"></p>
+<p><strong>第2步：在方法参数上声明校验注解。</strong></p>
+<p>格式：@RequestBody+@Validated+实体类</p>
+<p>或者：@RequestBody+@Valid+实体类</p>
+<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20231224103024.png" srcset="/img/loading.gif" lazyload alt="image-20231224103023594"></p>
+<p>这种情况下，使用@Valid和@Validated都可以（只能用@Valid或@Validated的地方，下面会讲）。</p>
+<h4 id="用法4：responseBody参数校验（application-x2F-x-www-form-urlencoded）"><a href="#用法4：responseBody参数校验（application-x2F-x-www-form-urlencoded）" class="headerlink" title="用法4：responseBody参数校验（application&#x2F;x-www-form-urlencoded）"></a>用法4：responseBody参数校验（application&#x2F;x-www-form-urlencoded）</h4><p>当请求方法入参只有实体类接收的时候，spring会将它识别成FORM表单请求，要求调用方必须发送application&#x2F;x-www-form-urlencoded格式的数据；</p>
+<p><strong>第1步：在实体类的字段上加上约束注解；</strong></p>
+<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20231224103048.png" srcset="/img/loading.gif" lazyload alt="image-20231224103047412"></p>
+<p><strong>第2步：在方法参数上声明校验注解。</strong></p>
+<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20231224103059.png" srcset="/img/loading.gif" lazyload alt="image-20231224103059109"></p>
+<p>同样地，使用@Valid和@Validated都可以。</p>
+<h3 id="4-参数校验配置（校验失败，立即抛出异常）"><a href="#4-参数校验配置（校验失败，立即抛出异常）" class="headerlink" title="4.参数校验配置（校验失败，立即抛出异常）"></a>4.参数校验配置（校验失败，立即抛出异常）</h3><p>Hibernate Validator有以下两种验证模式：</p>
+<p><strong>普通模式</strong>：会校验完所有的属性，然后返回所有的验证失败信息。</p>
+<p><strong>快速失败返回模式</strong>：只要有一个验证失败，则返回。</p>
+<p>默认是普通模式，可以通过一些简单的配置，开启Fali Fast模式，一旦校验失败就立即返回。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">import</span> org.hibernate.validator.HibernateValidator;<br><span class="hljs-keyword">import</span> org.springframework.context.annotation.Bean;<br><span class="hljs-keyword">import</span> org.springframework.context.annotation.Configuration;<br><span class="hljs-keyword">import</span> org.springframework.validation.beanvalidation.MethodValidationPostProcessor;<br><br><span class="hljs-keyword">import</span> javax.validation.Validation;<br><span class="hljs-keyword">import</span> javax.validation.Validator;<br><span class="hljs-keyword">import</span> javax.validation.ValidatorFactory;<br><br><span class="hljs-comment">/**</span><br><span class="hljs-comment"> * 请求参数校验配置</span><br><span class="hljs-comment"> */</span><br><span class="hljs-meta">@Configuration</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">WebParamValidateConfig</span> &#123;<br>    <span class="hljs-meta">@Bean</span><br>    <span class="hljs-keyword">public</span> Validator <span class="hljs-title function_">validator</span><span class="hljs-params">()</span> &#123;<br>        <span class="hljs-type">ValidatorFactory</span> <span class="hljs-variable">validatorFactory</span> <span class="hljs-operator">=</span> Validation.byProvider(HibernateValidator.class)<br>                .configure()<br>                <span class="hljs-comment">//failFast的意思只要出现校验失败的情况，就立即结束校验，不再进行后续的校验。</span><br>                <span class="hljs-comment">//.failFast(true)</span><br>                .addProperty(<span class="hljs-string">&quot;hibernate.validator.fail_fast&quot;</span>, <span class="hljs-string">&quot;true&quot;</span>)<br>                .buildValidatorFactory();<br>        <span class="hljs-keyword">return</span> validatorFactory.getValidator();<br>    &#125;<br><br>    <span class="hljs-meta">@Bean</span><br>    <span class="hljs-keyword">public</span> MethodValidationPostProcessor <span class="hljs-title function_">methodValidationPostProcessor</span><span class="hljs-params">()</span> &#123;<br>        <span class="hljs-type">MethodValidationPostProcessor</span> <span class="hljs-variable">methodValidationPostProcessor</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">MethodValidationPostProcessor</span>();<br>        methodValidationPostProcessor.setValidator(validator());<br>        <span class="hljs-keyword">return</span> methodValidationPostProcessor;<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+
+
+<h3 id="5-统一异常处理"><a href="#5-统一异常处理" class="headerlink" title="5.统一异常处理"></a>5.统一异常处理</h3><p>如果校验失败，会抛出异常，需要对异常进行管理，以便返回一个更友好的提示。</p>
+<p>下面是我总结的异常拦截配置类：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">import</span> org.jetbrains.annotations.NotNull;<br><span class="hljs-keyword">import</span> org.springframework.context.support.DefaultMessageSourceResolvable;<br><span class="hljs-keyword">import</span> org.springframework.http.converter.HttpMessageNotReadableException;<br><span class="hljs-keyword">import</span> org.springframework.validation.BindException;<br><span class="hljs-keyword">import</span> org.springframework.web.HttpMediaTypeNotSupportedException;<br><span class="hljs-keyword">import</span> org.springframework.web.HttpRequestMethodNotSupportedException;<br><span class="hljs-keyword">import</span> org.springframework.web.bind.MethodArgumentNotValidException;<br><span class="hljs-keyword">import</span> org.springframework.web.bind.annotation.ExceptionHandler;<br><span class="hljs-keyword">import</span> org.springframework.web.bind.annotation.RestControllerAdvice;<br><br><span class="hljs-keyword">import</span> javax.validation.ConstraintViolation;<br><span class="hljs-keyword">import</span> javax.validation.ConstraintViolationException;<br><span class="hljs-keyword">import</span> java.util.stream.Collectors;<br><br><span class="hljs-comment">/**</span><br><span class="hljs-comment"> * 全局异常处理器</span><br><span class="hljs-comment"> * <span class="hljs-doctag">@description</span>: <span class="hljs-doctag">@ControllerAdvice</span>默认会对所有的请求进行处理；</span><br><span class="hljs-comment"> * 对请求入参的校验异常，根本进不到Controller的方法体内，所以，只能在这拦截异常后返回友好错误提示</span><br><span class="hljs-comment"> * 加basePackages，可以只对具体包名下面的请求进行处理</span><br><span class="hljs-comment"> * <span class="hljs-doctag">@ControllerAdvice</span>是一个增强的 Controller。使用这个 Controller，可以实现三个方面的功能：</span><br><span class="hljs-comment"> * 全局异常处理</span><br><span class="hljs-comment"> * 全局数据绑定</span><br><span class="hljs-comment"> * 全局数据预处理</span><br><span class="hljs-comment"> * 只拦截Controller，不会拦截Interceptor的异常</span><br><span class="hljs-comment"> */</span><br><span class="hljs-meta">@RestControllerAdvice(basePackages = &#123;&quot;com.xx&quot;, &quot;com.yy&quot;&#125;)</span>  <span class="hljs-comment">// 异常拦截位置</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">CzWebExceptionHandler</span> &#123;<br><br>    <span class="hljs-comment">//处理Get请求中 使用@Valid 验证路径中请求实体校验失败后抛出的异常，详情继续往下看代码</span><br>    <span class="hljs-meta">@ExceptionHandler(BindException.class)</span><br>    <span class="hljs-keyword">public</span> CzResponseDto&lt;JSONObject&gt; <span class="hljs-title function_">BindExceptionHandler</span><span class="hljs-params">(<span class="hljs-meta">@NotNull</span> BindException e)</span> &#123;<br>        <span class="hljs-type">String</span> <span class="hljs-variable">errorMsg</span> <span class="hljs-operator">=</span> e.getBindingResult().getAllErrors().stream().map(DefaultMessageSourceResolvable::getDefaultMessage).collect(Collectors.joining());<br>        <span class="hljs-keyword">return</span> CzResult.error(<span class="hljs-string">&quot;接口调取失败：&quot;</span> + errorMsg, <span class="hljs-literal">null</span>);<br>    &#125;<br><br>    <span class="hljs-comment">//处理请求参数格式错误 @RequestParam上validate失败后抛出的异常是javax.validation.ConstraintViolationException</span><br>    <span class="hljs-meta">@ExceptionHandler(ConstraintViolationException.class)</span><br>    <span class="hljs-keyword">public</span> CzResponseDto&lt;JSONObject&gt; <span class="hljs-title function_">ConstraintViolationExceptionHandler</span><span class="hljs-params">(<span class="hljs-meta">@NotNull</span> ConstraintViolationException e)</span> &#123;<br>        <span class="hljs-type">String</span> <span class="hljs-variable">errorMsg</span> <span class="hljs-operator">=</span> e.getConstraintViolations().stream().map(ConstraintViolation::getMessage).collect(Collectors.joining());<br>        <span class="hljs-keyword">return</span> CzResult.error(<span class="hljs-string">&quot;接口调取失败：&quot;</span> + errorMsg, <span class="hljs-literal">null</span>);<br>    &#125;<br><br>    <span class="hljs-comment">//处理请求参数格式错误 @RequestBody上validate失败后抛出的异常是MethodArgumentNotValidException异常。</span><br>    <span class="hljs-meta">@ExceptionHandler(MethodArgumentNotValidException.class)</span><br>    <span class="hljs-keyword">public</span> CzResponseDto&lt;JSONObject&gt; <span class="hljs-title function_">MethodArgumentNotValidExceptionHandler</span><span class="hljs-params">(<span class="hljs-meta">@NotNull</span> MethodArgumentNotValidException e)</span> &#123;<br>        <span class="hljs-type">String</span> <span class="hljs-variable">errorMsg</span> <span class="hljs-operator">=</span> e.getBindingResult().getAllErrors().stream().map(DefaultMessageSourceResolvable::getDefaultMessage).collect(Collectors.joining());<br>        <span class="hljs-keyword">return</span> CzResult.error(<span class="hljs-string">&quot;接口调取失败：&quot;</span> + errorMsg, <span class="hljs-literal">null</span>);<br>    &#125;<br><br>    <span class="hljs-comment">// 要求Content-type为application/json，但是内容类型却是text/plain或者text时会被该异常捕获</span><br>    <span class="hljs-meta">@ExceptionHandler(HttpMediaTypeNotSupportedException.class)</span><br>    <span class="hljs-keyword">public</span> CzResponseDto&lt;JSONObject&gt; <span class="hljs-title function_">HttpMediaTypeNotSupportedExceptionHandler</span><span class="hljs-params">(<span class="hljs-meta">@NotNull</span> HttpMediaTypeNotSupportedException e)</span> &#123;<br>        <span class="hljs-type">String</span> <span class="hljs-variable">errorMsg</span> <span class="hljs-operator">=</span> <span class="hljs-string">&quot;本接口不接收application/json以外格式的数据，请检查入参是否是标准的json数据！\n&quot;</span> + e.getMessage();<br>        <span class="hljs-keyword">return</span> CzResult.error(<span class="hljs-string">&quot;接口调取失败：&quot;</span> + errorMsg, <span class="hljs-literal">null</span>);<br>    &#125;<br><br>    <span class="hljs-meta">@ExceptionHandler(Exception.class)</span><br>    <span class="hljs-keyword">public</span> CzResponseDto&lt;JSONObject&gt; <span class="hljs-title function_">handleException</span><span class="hljs-params">(<span class="hljs-meta">@NotNull</span> Exception e)</span> &#123;<br>        <span class="hljs-type">String</span> <span class="hljs-variable">errorMsg</span> <span class="hljs-operator">=</span> <span class="hljs-string">&quot;系统异常，请联系开发人员Marydon进行排错！\n&quot;</span> + e.getMessage();<br>        <span class="hljs-keyword">return</span> CzResult.error(<span class="hljs-string">&quot;接口调取失败：&quot;</span> + errorMsg, <span class="hljs-literal">null</span>);<br>    &#125;<br><br>    <span class="hljs-comment">// 运行异常</span><br>    <span class="hljs-meta">@ExceptionHandler(RuntimeException.class)</span><br>    <span class="hljs-keyword">public</span> CzResponseDto&lt;JSONObject&gt; <span class="hljs-title function_">handleRuntimeException</span><span class="hljs-params">(<span class="hljs-meta">@NotNull</span> Exception e)</span> &#123;<br>        <span class="hljs-keyword">return</span> CzResult.error(<span class="hljs-string">&quot;接口调取失败：&quot;</span> + e.getMessage(), <span class="hljs-literal">null</span>);<br>    &#125;<br><br>    <span class="hljs-comment">// 服务异常</span><br>    <span class="hljs-meta">@ExceptionHandler(ServiceException.class)</span><br>    <span class="hljs-keyword">public</span> CzResponseDto&lt;JSONObject&gt; <span class="hljs-title function_">handleServiceException</span><span class="hljs-params">(<span class="hljs-meta">@NotNull</span> Exception e)</span> &#123;<br>        <span class="hljs-keyword">return</span> CzResult.error(<span class="hljs-string">&quot;接口调取失败：&quot;</span> + e.getMessage(), <span class="hljs-literal">null</span>);<br>    &#125;<br><br>    <span class="hljs-comment">// 请求方式异常（仅支持post请求）</span><br>    <span class="hljs-meta">@ExceptionHandler(HttpRequestMethodNotSupportedException.class)</span><br>    <span class="hljs-keyword">public</span> CzResponseDto&lt;JSONObject&gt; <span class="hljs-title function_">handleHttpRequestMethodNotSupportedException</span><span class="hljs-params">(<span class="hljs-meta">@NotNull</span> Exception e)</span> &#123;<br>        <span class="hljs-keyword">return</span> CzResult.error(<span class="hljs-string">&quot;接口调取失败：&quot;</span> + e.getMessage(), <span class="hljs-literal">null</span>);<br>    &#125;<br><br>    <span class="hljs-comment">// 不存在的请求方法InterfaceMethod，在CzRequestParams可以查看支持的接口</span><br>    <span class="hljs-comment">// 注意：当请求数据格式为非text或text/plain时，也会抛出该异常（application/javascript,application/xml,text/xml,text/html）</span><br>    <span class="hljs-comment">// 无请求入参时也会抛出该异常</span><br>    <span class="hljs-meta">@ExceptionHandler(HttpMessageNotReadableException.class)</span><br>    <span class="hljs-keyword">public</span> CzResponseDto&lt;JSONObject&gt; <span class="hljs-title function_">handleHttpMessageNotReadableException</span><span class="hljs-params">(<span class="hljs-meta">@NotNull</span> Exception e)</span> &#123;<br>        <span class="hljs-comment">// return CzResult.error(&quot;接口调取失败：未知的接口方法，请仔细核对入参InterfaceMethod的值！&quot;, null);</span><br>        <span class="hljs-keyword">return</span> CzResult.error(<span class="hljs-string">&quot;接口调取失败：&quot;</span> + e.getMessage(), <span class="hljs-literal">null</span>);<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>仅供参考。</p>
+<h3 id="6-常用注解"><a href="#6-常用注解" class="headerlink" title="6.常用注解"></a>6.常用注解</h3><h4 id="NotBlank"><a href="#NotBlank" class="headerlink" title="@NotBlank"></a>@NotBlank</h4><p>@NotBlank：只用在String上，表示：传进来的值不能为null，而且调用trim()后，长度必须大于0，即：必须有实际字符；</p>
+<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20231224103327.png" srcset="/img/loading.gif" lazyload alt="image-20231224103326583"></p>
+<h4 id="NotNull"><a href="#NotNull" class="headerlink" title="@NotNull"></a>@NotNull</h4><p>@NotNull：不能为null，但值可以为empty(分配了内存空间)，只能校验String类型和对象；</p>
+<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20231224103341.png" srcset="/img/loading.gif" lazyload alt="image-20231224103340529"></p>
+<p>不能校验：八大基本数据类型（因为基本数据类型有默认值：byte,short,int,long,double,flot,char,boolean）;</p>
+<p>即该参数是必传项，但其值可以为空。</p>
+<p>如果非得用基础数据类型接收的话</p>
+<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20231224103356.png" srcset="/img/loading.gif" lazyload alt="image-20231224103355614"></p>
+<p>那就只能和基本数据类型的默认值比较，进行判断啦。</p>
+<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20231224103412.png" srcset="/img/loading.gif" lazyload alt="image-20231224103411873"></p>
+<p>或者：把基本数据类型改成String，然后，在需要的时候，再将其进行数据类型转换，转成自己所需的数据类型。</p>
+<h4 id="NotEmpty"><a href="#NotEmpty" class="headerlink" title="@NotEmpty"></a>@NotEmpty</h4><p>@NotEmpty：不能为null，而且长度必须大于0，只能校验字符串。</p>
+<h4 id="Max"><a href="#Max" class="headerlink" title="@Max"></a>@Max</h4><p>@Max：最大值，限制该参数的最大值。</p>
+<h4 id="Min"><a href="#Min" class="headerlink" title="@Min"></a>@Min</h4><p>@Min：最小值，限制该参数的最小值。</p>
+<p>说明：</p>
+<p>@Max和@Min只能校验数值类型，也就是说，限制该参数的数据类型只能为数字！</p>
+<p>这两个注解，通常一块使用，可以单独使用；</p>
+<p>用于接收的数据类型既可以是数值类型，也可以是字符串类型。</p>
+<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20231224103432.png" srcset="/img/loading.gif" lazyload alt="image-20231224103431289"></p>
+<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20231224103449.png" srcset="/img/loading.gif" lazyload alt="image-20231224103448681"></p>
+<h4 id="Length"><a href="#Length" class="headerlink" title="@Length"></a>@Length</h4><p>@Length：校验字符串长度。</p>
+<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20231224103500.png" srcset="/img/loading.gif" lazyload alt="image-20231224103500221"></p>
+<p>@Size：校验数组、集合大小（java，经测试无效）；</p>
+<h4 id="Pattern"><a href="#Pattern" class="headerlink" title="@Pattern"></a>@Pattern</h4><p>@Pattern：正则表达式校验（只能用于校验字符串，即String类型，不能定义成Integer或Long类型，否则报错）</p>
+<p>使用标准的正则表达式用法，带反斜杠\的会自动转义。</p>
+<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20231224103513.png" srcset="/img/loading.gif" lazyload alt="image-20231224103513040"></p>
+<h4 id="常用正则表达式"><a href="#常用正则表达式" class="headerlink" title="常用正则表达式"></a><strong>常用正则表达式</strong></h4><p>固定字符：regexp &#x3D; <code>&quot;^(门诊|住院|资往)$&quot;</code>；</p>
+<p>可以为空或8个数字：regexp &#x3D; <code>&quot;^(\s&#123;0&#125;|\d&#123;8&#125;)$&quot;</code>；</p>
+<p>长度必须为6的字符串：regexp &#x3D; <code>&quot;^([0-9a-z]&#123;6&#125;)$&quot;</code>；</p>
+<p>可以为空或者正整数[1,99]：regexp &#x3D; <code>&quot;^(\s&#123;0&#125;|[1-9]\d&#123;0,1&#125;)$&quot;</code>；</p>
+<p>校验手机号：regexp &#x3D; <code>&quot;^1(3[0-9]|4[5,7]|5[0,1,2,3,5,6,7,8,9]|6[2,5,6,7]|7[0,1,7,8]|8[0-9]|9[1,8,9])\d&#123;8&#125;$&quot;</code></p>
+<p>身份证号校验：regexp &#x3D; <code>&quot;^[1-9]\d&#123;5&#125;(18|19|20)\d&#123;2&#125;((0[1-9])|(1[0-2]))(([0-2][1-9])|10|20|30|31)\d&#123;3&#125;[0-9Xx]$&quot;</code></p>
+<p>密码校验：</p>
+<p>​    密码设定规则：8-16位，其中必须包含数字、小写字母、大写字母；字符仅支持<code>“！@#¥%”</code>，不支持空格  </p>
+<p>  1、<code>(?!.*[！·（）&#123;&#125;【】“”：；，》￥、。‘’——\\s-……%\\n])</code>  表示的是不含中文的特殊字符，以及空格与回车，里面的符合可以自动补充或删除；<br>  2、<code>(?=.*[a-zA-Z])</code>  表示含小写或大写的英文字母<br>  3、<code>(?=.*\\d)</code>  表示必须匹配到数字  ;小写字母<code>(?=.*[a-z])</code>;大写字母<code>(?=.*[A-Z])</code><br>  4、<code>(?=.*[~!@#$%^&amp;*()_+\\-=&#123;&#125;:\&quot;;&#39;&lt;&gt;?,.\\/])</code>  表示含英文的特殊字符，里面的符合可以自动补充或删除<br>  5、<code>[^\\u4e00-\\u9fa5]</code>  表示不允许有中文  ；表示允许有中文的，即：<code>[\\u4e00-\\u9fa5]</code><br>  6、<code>&#123;8,16&#125;</code>  表示长度要求，8~16位</p>
+<p>正整数的正则表达式(不包括0): <code>^[1-9]\d*$</code></p>
+<p>可为空值或其它：<code>^$|^</code>这里写其它表达式<code>$</code></p>
+<h3 id="7-扩展延伸"><a href="#7-扩展延伸" class="headerlink" title="7.扩展延伸"></a>7.扩展延伸</h3><h4 id="延伸1：分组校验"><a href="#延伸1：分组校验" class="headerlink" title="延伸1：分组校验"></a>延伸1：分组校验</h4><p>在实际项目中，可能多个方法需要使用同一个实体类来接收参数，而不同方法的校验规则很可能是不一样的；</p>
+<p>这个时候，简单地在实体的字段上加约束注解无法解决这个问题。</p>
+<p>因此，spring-validation支持了分组校验的功能，专门用来解决这类问题。</p>
+<p>举个栗子：</p>
+<p>A方法要求参数1的值必须为1，B方法则要求其值必须为2，如何实现？</p>
+<p><strong>第1步：在实体类当中添加接口类；</strong></p>
+<p>把接口类用作分组的依据；</p>
+<p>注意：在实体类当中添加的接口，没有实际意义，仅仅将其作为分组依据；</p>
+<p>由于spring校验的groups只能这样用，没有办法。</p>
+<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20231224104010.png" srcset="/img/loading.gif" lazyload alt="image-20231224104009267"></p>
+<p><strong>第1步：在约束注解里，添加该注解生效的的分组信息groups。</strong></p>
+<p>多个组之间使用逗号隔开；</p>
+<p>并且，组必须以”.class”进行结尾。</p>
+<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20231224104134.png" srcset="/img/loading.gif" lazyload alt="image-20231224104133498"></p>
+<p>针对不同的组，可以添加不同的校验规则。</p>
+<p><strong>第2步：@Validated注解上指定校验分组。</strong></p>
+<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20231224104148.png" srcset="/img/loading.gif" lazyload alt="image-20231224104147962"></p>
+<p>注意：分组校验只能使用注解@Validated，不能使用@Valid！</p>
+<p>另外，方法上使用了分组校验，实体类需要多组共用的字段规则校验，也必须添加组，即使是：校验规则一致的。</p>
+<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20231224104204.png" srcset="/img/loading.gif" lazyload alt="image-20231224104203277"></p>
+<p>否则的话，该校验规则将会失效。</p>
+<h4 id="延伸2：嵌套校验"><a href="#延伸2：嵌套校验" class="headerlink" title="延伸2：嵌套校验"></a>延伸2：嵌套校验</h4><p>当入参实体类的某字段也是对象时，这时，需要对该对象里的字段进行校验时，这就牵扯到了：嵌套校验；</p>
+<p>此时，入参实体类的对应的字段对象，必须标记@Valid注解。</p>
+<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20231224104224.png" srcset="/img/loading.gif" lazyload alt="image-20231224104223668"></p>
+<p>嵌套的实体类，示例：</p>
+<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20231224104237.png" srcset="/img/loading.gif" lazyload alt="image-20231224104236896"></p>
+<h4 id="延伸3：集合校验（list）"><a href="#延伸3：集合校验（list）" class="headerlink" title="延伸3：集合校验（list）"></a>延伸3：集合校验（list）</h4><p>如果请求体直接传递了json数组给后台，并希望对数组中的每一项都进行参数校验。</p>
+<p>此时，如果直接使用java.util.Collection下的list或者set来接收数据，参数校验并不会生效！</p>
+<p>可以使用自定义list集合来接收参数：</p>
+<p><strong>第1步：包装List类型，并声明@Valid注解；</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">ValidationList</span>&lt;E&gt; <span class="hljs-keyword">implements</span> <span class="hljs-title class_">List</span>&lt;E&gt; &#123;<br>    <span class="hljs-meta">@Delegate</span><br>    <span class="hljs-meta">@Valid</span><br>    <span class="hljs-keyword">public</span> List&lt;E&gt; list = <span class="hljs-keyword">new</span> <span class="hljs-title class_">ArrayList</span>&lt;&gt;();<br><br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-keyword">public</span> String <span class="hljs-title function_">toString</span><span class="hljs-params">()</span> &#123;<br>        <span class="hljs-keyword">return</span> list.toString();<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>@Delegate注解受lombok版本限制，1.18.6以上版本可支持；</p>
+<p>如果校验不通过，会抛出NotReadablePropertyException，同样可以使用统一异常进行处理。</p>
+<p><strong>第2步：校验调用</strong></p>
+<p>格式：@Validated + ValidationList&lt;实体类&gt;。</p>
+<p>比如，需要一次性保存多个User对象，Controller层的方法可以这么写：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@PostMapping(&quot;/saveList&quot;)</span><br><span class="hljs-keyword">public</span> Result <span class="hljs-title function_">saveList</span><span class="hljs-params">(<span class="hljs-meta">@RequestBody</span> <span class="hljs-meta">@Validated(UserDTO.Save.class)</span> ValidationList&lt;UserDTO&gt; userList)</span> &#123;<br>    <span class="hljs-keyword">return</span> Result.ok();<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>说明：后端如果想要使用list接收数据的话，必须加上注解@RequestBody；</p>
+<p>前端必须发送json请求：application&#x2F;json，也就说前端的参数格式为：JsonArray。</p>
+<h4 id="延伸4：自定义校验"><a href="#延伸4：自定义校验" class="headerlink" title="延伸4：自定义校验"></a>延伸4：自定义校验</h4><p>校验规则是可以自己定义的，也就是说可以自己写注解类。 具体写法参考：<a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/261020040">Java Bean Validation 2.0 (二): 自定义校验规则</a></p>
+<h4 id="延伸5：编程式校验"><a href="#延伸5：编程式校验" class="headerlink" title="延伸5：编程式校验"></a>延伸5：编程式校验</h4><p><a target="_blank" rel="noopener" href="https://juejin.cn/post/7086093314256011294">@Valid和@Validated的编程式调用，手动触发参数校验</a></p>
+<h3 id="8-hibernate-validator-jar详细介绍"><a href="#8-hibernate-validator-jar详细介绍" class="headerlink" title="8.hibernate-validator.jar详细介绍"></a>8.hibernate-validator.jar详细介绍</h3><p>当spring-boot-starter-web.jar的版本为1.X时，该jar包依赖的有：hibernate-validator.jar；</p>
+<p>hibernate-validator.jar又依赖了：validation-api.jar。</p>
+<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20231224104429.png" srcset="/img/loading.gif" lazyload alt="image-20231224104429080"></p>
+<p>当spring-boot-starter-web.jar的版本为2.X时，该jar包没有依赖hibernate-validator.jar，也没有依赖：validation-api.jar；</p>
+<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20231224104440.png" srcset="/img/loading.gif" lazyload alt="image-20231224104439849"></p>
+<p>此时只能使用注解@Validated</p>
+<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20231224104452.png" srcset="/img/loading.gif" lazyload alt="image-20231224104451544"></p>
+<p>但是，只有它的话，并不能完成参数的校验。</p>
+<p>由开篇了解到：参数校验，要么用hibernate校验，要么使用java校验。</p>
+<p>hibernate-validator.jar包的引入有两种方式：</p>
+<p><strong>方式一：org.hibernate.validator</strong></p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs xml"><span class="hljs-comment">&lt;!--spring对参数进行校验：hibernate validator--&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">dependency</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">groupId</span>&gt;</span>org.hibernate.validator<span class="hljs-tag">&lt;/<span class="hljs-name">groupId</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">artifactId</span>&gt;</span>hibernate-validator<span class="hljs-tag">&lt;/<span class="hljs-name">artifactId</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">version</span>&gt;</span>6.0.18.Final<span class="hljs-tag">&lt;/<span class="hljs-name">version</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">dependency</span>&gt;</span><br></code></pre></td></tr></table></figure>
+
+<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20231224104501.png" srcset="/img/loading.gif" lazyload alt="image-20231224104501159"></p>
+<p><strong>方式二：org.hibernate</strong></p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs xml"><span class="hljs-comment">&lt;!--spring对参数进行校验：hibernate validator--&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">dependency</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">groupId</span>&gt;</span>org.hibernate<span class="hljs-tag">&lt;/<span class="hljs-name">groupId</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">artifactId</span>&gt;</span>hibernate-validator<span class="hljs-tag">&lt;/<span class="hljs-name">artifactId</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">version</span>&gt;</span>6.0.8.Final<span class="hljs-tag">&lt;/<span class="hljs-name">version</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">dependency</span>&gt;</span><br></code></pre></td></tr></table></figure>
+
+<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20231224104510.png" srcset="/img/loading.gif" lazyload alt="image-20231224104509910"></p>
+<p>可以看到：这两种方式引入的hibernate-validator.jar都对jakarta.validation-api.jar有依赖；</p>
+<p>因此，无需额外引入依赖：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs xml"><span class="hljs-tag">&lt;<span class="hljs-name">dependency</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">groupId</span>&gt;</span>javax.validation<span class="hljs-tag">&lt;/<span class="hljs-name">groupId</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">artifactId</span>&gt;</span>validation-api<span class="hljs-tag">&lt;/<span class="hljs-name">artifactId</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">version</span>&gt;</span>2.0.1.Final<span class="hljs-tag">&lt;/<span class="hljs-name">version</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">dependency</span>&gt;</span><br></code></pre></td></tr></table></figure>
+
+<p><strong>小结：</strong></p>
+<p>当spring-boot-starter-web.jar的版本为1.X时，该jar包依赖的有：hibernate-validator.jar，无需额外引入；</p>
+<p>当spring-boot-starter-web.jar的版本为2.X时，该jar包需要引入依赖：hibernate-validator.jar（以上两种引入方式均可）。</p>
+
+              
+            </div>
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/08-%E6%A1%86%E6%9E%B6%E6%8A%80%E6%9C%AF/" class="category-chain-item">08_框架技术</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/08-%E6%A1%86%E6%9E%B6%E6%8A%80%E6%9C%AF/02-Spring/" class="category-chain-item">02_Spring</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/08-%E6%A1%86%E6%9E%B6%E6%8A%80%E6%9C%AF/02-Spring/05-Validation/" class="category-chain-item">05_Validation</a>
+  
+  
+
+  
+
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/Spring/">#Spring</a>
+      
+        <a href="/tags/%E6%B3%A8%E8%A7%A3/">#注解</a>
+      
+        <a href="/tags/%E5%8F%82%E6%95%B0%E6%A0%A1%E9%AA%8C/">#参数校验</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>02-@Validated和@Valid用法详解</div>
+      <div>https://janycode.github.io/2021/11/28/08_框架技术/02_Spring/05_Validation/02-@Validated和@Valid用法详解/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Jerry(姜源)</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2021年11月28日</div>
+        </div>
+      
+      
+      <div class="license-meta-item">
+        <div>许可协议</div>
+        <div>
+          
+            
+            
+              <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+              <span class="hint--top hint--rounded" aria-label="BY - 姜源">
+                <i class="iconfont icon-by"></i>
+              </span>
+              </a>
+            
+          
+        </div>
+      </div>
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2021/12/30/02_%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/01_Java/01_JavaSE/05_%E5%B9%B6%E5%8F%91%E5%92%8C%E9%94%81/06-40%E8%A1%8C%E4%BB%A3%E7%A0%81%E6%90%9E%E9%80%8F%E7%BA%BF%E7%A8%8B%E6%B1%A0/" title="06-40行代码搞透线程池">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">06-40行代码搞透线程池</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2021/11/25/16_%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96/02_%E6%95%B0%E6%8D%AE%E5%BA%93%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96/01-MySQL%E6%9C%80%E5%85%A8%E4%BC%98%E5%8C%96%E7%BB%8F%E9%AA%8C/" title="01-MySQL最全优化经验">
+                        <span class="hidden-mobile">01-MySQL最全优化经验</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+  <article id="comments" lazyload>
+    
+  <div id="SOHUCS" sid='https://janycode.github.io/2021/11/28/08_%E6%A1%86%E6%9E%B6%E6%8A%80%E6%9C%AF/02_Spring/05_Validation/02-@Validated%E5%92%8C@Valid%E7%94%A8%E6%B3%95%E8%AF%A6%E8%A7%A3/'></div>
+  <script type="text/javascript">
+    Fluid.utils.loadComments('#SOHUCS', function() {
+      Fluid.utils.createScript("https://changyan.sohu.com/upload/changyan.js", function() {
+        window.changyan.api.config({"appid":"cyw5OHIcO","appkey":"fea3446b3df4b3f129f34da4cbc87e51"})
+      });
+    });
+  </script>
+  <noscript>Please enable JavaScript to view the comments</noscript>
+
+
+  </article>
+
+
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://simple.blog.csdn.net" target="_blank" rel="nofollow noopener"><span>CSDN</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/janycode" target="_blank" rel="nofollow noopener"><span>GitHub</span></a> <i class="iconfont icon-love"></i> <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="busuanzi_container_site_pv" style="display: none">
+        总访问量(PV) 
+        <span id="busuanzi_value_site_pv"></span>
+         次，
+      </span>
+    
+    
+      <span id="busuanzi_container_site_uv" style="display: none">
+        总访客数(UV) 
+        <span id="busuanzi_value_site_uv"></span>
+         人
+      </span>
+    
+    
+  
+</div>
+
+  
+  
+  
+</div>
+
+<!-- live2d 动画 -->
+<script src="https://eqcn.ajz.miesnfu.com/wp-content/plugins/wp-3d-pony/live2dw/lib/L2Dwidget.min.js"></script>
+<script>
+    L2Dwidget.init({
+        "model": {
+            jsonPath: "https://unpkg.com/live2d-widget-model-haruto@1.0.5/assets/haruto.model.json",
+            "scale": 1
+        },
+        "display": {
+            "position": "right",
+            "width": 100,
+            "height": 200,
+            "hOffset": 35,
+            "vOffset": -85
+        },
+        "mobile": {
+            "show": false,
+            "scale": 0.1
+        },
+        "react": {
+            "opacityDefault": 0.75,
+            "opacityOnHover": 0.2
+        }
+    });
+</script>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <!-- Baidu Analytics -->
+    <script defer>
+      if (!Fluid.ctx.dnt) {
+        var _hmt = _hmt || [];
+        (function() {
+          var hm = document.createElement("script");
+          hm.src = "https://hm.baidu.com/hm.js?bfff735c897eb60ea49b735096b20e47";
+          var s = document.getElementsByTagName("script")[0];
+          s.parentNode.insertBefore(hm, s);
+        })();
+      }
+    </script>
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.0/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      headingSelector : CONFIG.toc.headingSelector || 'h1,h2,h3,h4,h5,h6',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      collapseDepth   : CONFIG.toc.collapseDepth || 0,
+      scrollSmooth    : true,
+      headingsOffset  : -boardTop
+    });
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+  });
+</script>
+
+
+  <script>
+  (function() {
+    var enableLang = CONFIG.code_language.enable && CONFIG.code_language.default;
+    var enableCopy = CONFIG.copy_btn;
+    if (!enableLang && !enableCopy) {
+      return;
+    }
+
+    function getBgClass(ele) {
+      return Fluid.utils.getBackgroundLightness(ele) >= 0 ? 'code-widget-light' : 'code-widget-dark';
+    }
+
+    var copyTmpl = '';
+    copyTmpl += '<div class="code-widget">';
+    copyTmpl += 'LANG';
+    copyTmpl += '</div>';
+    jQuery('.markdown-body pre').each(function() {
+      var $pre = jQuery(this);
+      if ($pre.find('code.mermaid').length > 0) {
+        return;
+      }
+      if ($pre.find('span.line').length > 0) {
+        return;
+      }
+
+      var lang = '';
+
+      if (enableLang) {
+        lang = CONFIG.code_language.default;
+        if ($pre[0].children.length > 0 && $pre[0].children[0].classList.length >= 2 && $pre.children().hasClass('hljs')) {
+          lang = $pre[0].children[0].classList[1];
+        } else if ($pre[0].getAttribute('data-language')) {
+          lang = $pre[0].getAttribute('data-language');
+        } else if ($pre.parent().hasClass('sourceCode') && $pre[0].children.length > 0 && $pre[0].children[0].classList.length >= 2) {
+          lang = $pre[0].children[0].classList[1];
+          $pre.parent().addClass('code-wrapper');
+        } else if ($pre.parent().hasClass('markdown-body') && $pre[0].classList.length === 0) {
+          $pre.wrap('<div class="code-wrapper"></div>');
+        }
+        lang = lang.toUpperCase().replace('NONE', CONFIG.code_language.default);
+      }
+      $pre.append(copyTmpl.replace('LANG', lang).replace('code-widget">',
+        getBgClass($pre[0]) + (enableCopy ? ' code-widget copy-btn" data-clipboard-snippet><i class="iconfont icon-copy"></i>' : ' code-widget">')));
+
+      if (enableCopy) {
+        Fluid.utils.createScript('https://lib.baomitu.com/clipboard.js/2.0.10/clipboard.min.js', function() {
+          var clipboard = new window.ClipboardJS('.copy-btn', {
+            target: function(trigger) {
+              var nodes = trigger.parentNode.childNodes;
+              for (var i = 0; i < nodes.length; i++) {
+                if (nodes[i].tagName === 'CODE') {
+                  return nodes[i];
+                }
+              }
+            }
+          });
+          clipboard.on('success', function(e) {
+            e.clearSelection();
+            e.trigger.innerHTML = e.trigger.innerHTML.replace('icon-copy', 'icon-success');
+            setTimeout(function() {
+              e.trigger.innerHTML = e.trigger.innerHTML.replace('icon-success', 'icon-copy');
+            }, 2000);
+          });
+        });
+      }
+    });
+  })();
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script  src="/js/local-search.js" ></script>
+
+  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

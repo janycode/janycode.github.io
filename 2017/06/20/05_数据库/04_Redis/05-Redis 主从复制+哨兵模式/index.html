@@ -1,0 +1,942 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=light>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Jerry(姜源)">
+  <meta name="keywords" content="Java,Html,CSS,JavaScript,Python,C,Linux,shell编程经验分享、技术总结、心得体会">
+  
+    <meta name="description" content="官网教程：https:&#x2F;&#x2F;www.redis.net.cn&#x2F;tutorial&#x2F;3515.html 1. Redis 主从复制主从复制是指将一台 Redis 服务器的数据，复制到其它的 Redis 服务器。 前者称为主节点(master)，后者称为从节点(slave)；数据的复制是单向的，只能由主节点到从节点。 默认情况下，每台 Redis 服务器都是主节点，且一个主节点可以有多个从节点（或没有从">
+<meta property="og:type" content="article">
+<meta property="og:title" content="05-Redis 主从复制+哨兵模式">
+<meta property="og:url" content="https://janycode.github.io/2017/06/20/05_%E6%95%B0%E6%8D%AE%E5%BA%93/04_Redis/05-Redis%20%E4%B8%BB%E4%BB%8E%E5%A4%8D%E5%88%B6+%E5%93%A8%E5%85%B5%E6%A8%A1%E5%BC%8F/index.html">
+<meta property="og:site_name" content="姜源の云笔记">
+<meta property="og:description" content="官网教程：https:&#x2F;&#x2F;www.redis.net.cn&#x2F;tutorial&#x2F;3515.html 1. Redis 主从复制主从复制是指将一台 Redis 服务器的数据，复制到其它的 Redis 服务器。 前者称为主节点(master)，后者称为从节点(slave)；数据的复制是单向的，只能由主节点到从节点。 默认情况下，每台 Redis 服务器都是主节点，且一个主节点可以有多个从节点（或没有从">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20200815230440.png">
+<meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20200707201558.png">
+<meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20200707205024.png">
+<meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20200707205851.png">
+<meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20200707201907.png">
+<meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20200707211159.png">
+<meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20200707212356.png">
+<meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20200707212600.png">
+<meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20200707212831.png">
+<meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20200707213019.png">
+<meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20200707213537.png">
+<meta property="article:published_time" content="2017-06-20T15:04:05.000Z">
+<meta property="article:modified_time" content="2023-12-24T03:11:24.345Z">
+<meta property="article:author" content="Jerry(姜源)">
+<meta property="article:tag" content="Redis">
+<meta property="article:tag" content="哨兵">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20200815230440.png">
+  
+  
+    <meta name="referrer" content="no-referrer-when-downgrade">
+  
+  
+  <title>05-Redis 主从复制+哨兵模式 - 姜源の云笔记</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"janycode.github.io","root":"/","version":"1.9.0","typing":{"enable":true,"typeSpeed":50,"cursorChar":"|","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":false},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":"bfff735c897eb60ea49b735096b20e47","google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+
+  
+<meta name="generator" content="Hexo 6.2.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 50vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>姜源の云笔记</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tools/">
+                <i class="iconfont icon-slack-fill"></i>
+                工具
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" target="_blank" rel="noopener" href="https://janycode.gitee.io/">
+                <i class="iconfont icon-gitee-fill"></i>
+                Gitee
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="05-Redis 主从复制+哨兵模式"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-author" aria-hidden="true"></i>
+        Jerry(姜源)
+      </span>
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2017-06-20 23:04" pubdate>
+          星期二, 2017/06/20 23:04:05
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          <!-- compatible with older versions-->
+          4.7k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          <!-- compatible with older versions-->
+          39 分钟
+        
+      </span>
+    
+
+    
+    
+      
+        <span id="busuanzi_container_page_pv" style="display: none">
+          <i class="iconfont icon-eye" aria-hidden="true"></i>
+          <span id="busuanzi_value_page_pv"></span> 次
+        </span>
+        
+      
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">05-Redis 主从复制+哨兵模式</h1>
+            
+            <div class="markdown-body">
+              
+              <p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20200815230440.png" srcset="/img/loading.gif" lazyload alt="image-20200815230439632"></p>
+<p>官网教程：<a target="_blank" rel="noopener" href="https://www.redis.net.cn/tutorial/3515.html">https://www.redis.net.cn/tutorial/3515.html</a></p>
+<h3 id="1-Redis-主从复制"><a href="#1-Redis-主从复制" class="headerlink" title="1. Redis 主从复制"></a>1. Redis 主从复制</h3><p>主从复制是指将一台 Redis 服务器的数据，复制到其它的 Redis 服务器。</p>
+<p>前者称为主节点(<code>master</code>)，后者称为从节点(<code>slave</code>)；数据的复制是单向的，只能由主节点到从节点。</p>
+<p>默认情况下，每台 Redis 服务器都是主节点，且一个主节点可以有多个从节点（或没有从节点），但一个从节点只能有一个主节点。</p>
+<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20200707201558.png" srcset="/img/loading.gif" lazyload alt="img"></p>
+<p>主从复制的作用：</p>
+<ol>
+<li><p><code>数据冗余</code>：主从复制实现了数据的热备份，是持久化之外的一种数据冗余方式</p>
+</li>
+<li><p><code>故障恢复</code>：当主节点出现问题时，可以由从节点提供服务，实现快速的故障恢复，但实际上是一种服务的冗余</p>
+</li>
+<li><p><code>负载均衡</code>：在主从复制的基础上，配合读写分离，可以由主节点提供写服务，由从节点提供读服务（即写Redis数据时应用连接主节点，读Redis数据时应用连接从节点），分担服务器负载；尤其是在写少读多的场景下，通过多个从节点分担读负载，可以大大提高Redis服务器的并发量</p>
+</li>
+<li><p><code>高可用</code>：主从复制还是<strong>哨兵</strong>和<strong>集群</strong>能够实施的基础，因此说主从复制是Redis高可用的基础</p>
+</li>
+</ol>
+<h4 id="1-1-配置步骤"><a href="#1-1-配置步骤" class="headerlink" title="1.1 配置步骤"></a>1.1 配置步骤</h4><p>三台 CentOS 虚拟机：<code>192.168.247.128</code>、<code>192.168.247.129</code>、<code>192.168.247.130</code></p>
+<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20200707205024.png" srcset="/img/loading.gif" lazyload alt="image-20200707205023182"></p>
+<p>XShell 同时开启三台虚拟机的 3 个 SSH 窗口：</p>
+<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20200707205851.png" srcset="/img/loading.gif" lazyload alt="image-20200707205849119"></p>
+<ol>
+<li>查看当前库的信息：<br> (ip后缀128)[ &#x2F;usr&#x2F;local&#x2F;redis-5.0.4&#x2F;bin]# <code>./redis-server</code><br> (ip后缀128 新 SSH)[ &#x2F;usr&#x2F;local&#x2F;redis-5.0.4&#x2F;bin]# <code>./redis-cli</code><br> (ip后缀128) 127.0.0.1:6379&gt; <code>info replication</code>  (默认 server 启动为单线程主机角色)</li>
+</ol>
+<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20200707201907.png" srcset="/img/loading.gif" lazyload alt="img"></p>
+<ol start="2">
+<li><p>拷贝配置并修改配置：<br> (ip后缀128)[ &#x2F;usr&#x2F;local&#x2F;redis-5.0.4&#x2F;bin]# <code>cp ../redis.conf .</code><br> 修改配置为：</p>
+ <figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs sh"><span class="hljs-comment">#bind 127.0.0.1    # 注释掉 ip 绑定</span><br>protected-mode no  <span class="hljs-comment"># 关闭保护模式</span><br>daemonize <span class="hljs-built_in">yes</span>      <span class="hljs-comment"># 打开后台启动</span><br></code></pre></td></tr></table></figure>
+
+<p> (ip后缀129和130)[ &#x2F;usr&#x2F;local&#x2F;redis-5.0.4&#x2F;bin]# <code>cp ../redis.conf .</code><br> 两台均修改配置为：</p>
+ <figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs sh"><span class="hljs-comment">#bind 127.0.0.1    # 注释掉 ip 绑定</span><br>protected-mode no  <span class="hljs-comment"># 关闭保护模式</span><br>daemonize <span class="hljs-built_in">yes</span>      <span class="hljs-comment"># 打开后台启动</span><br>replicaof 192.168.247.128 6379  <span class="hljs-comment"># 设置主机 ip 和 port</span><br></code></pre></td></tr></table></figure>
+</li>
+<li><p>启动服务器：<br> (3台)[ &#x2F;usr&#x2F;local&#x2F;redis-5.0.4&#x2F;bin]# <code>./redis-server redis.conf</code></p>
+<p> (3台)[ &#x2F;usr&#x2F;local&#x2F;redis-5.0.4&#x2F;bin]# <code>./redis-cli</code> （本地连接开启的 redis-server 查看主从信息）<br> <strong>128主机</strong>：127.0.0.1:6379&gt; <code>info replication</code></p>
+ <figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs sh"><span class="hljs-comment"># Replication</span><br>role:master  <span class="hljs-comment"># 角色：主机</span><br>connected_slaves:2<br>slave0:ip=192.168.247.129,port=6379,state=online,offset=56,lag=0  <span class="hljs-comment"># 从机0</span><br>slave1:ip=192.168.247.130,port=6379,state=online,offset=56,lag=1  <span class="hljs-comment"># 从机1</span><br>master_replid:647d2d5e7e065a2be71fb0181a78aa74cdbbc438<br>master_replid2:0000000000000000000000000000000000000000<br>master_repl_offset:56<br>second_repl_offset:-1<br>repl_backlog_active:1<br>repl_backlog_size:1048576<br>repl_backlog_first_byte_offset:1<br>repl_backlog_histlen:56<br></code></pre></td></tr></table></figure>
+
+<p> <strong>129和130从机</strong>：127.0.0.1:6379&gt; <code>info replication</code></p>
+ <figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><code class="hljs sh"><span class="hljs-comment"># Replication</span><br>role:slave  <span class="hljs-comment"># 角色：从机</span><br>master_host:192.168.247.128  <span class="hljs-comment"># 主机地址信息</span><br>master_port:6379<br>master_link_status:up  <span class="hljs-comment"># 主机连接状态 up(开启)</span><br>master_last_io_seconds_ago:7<br>master_sync_in_progress:0<br>slave_repl_offset:196<br>slave_priority:100<br>slave_read_only:1<br>connected_slaves:0<br>master_replid:647d2d5e7e065a2be71fb0181a78aa74cdbbc438<br>master_replid2:0000000000000000000000000000000000000000<br>master_repl_offset:196<br>second_repl_offset:-1<br>repl_backlog_active:1<br>repl_backlog_size:1048576<br>repl_backlog_first_byte_offset:1<br>repl_backlog_histlen:196<br></code></pre></td></tr></table></figure>
+</li>
+<li><p>测试主从复制：<br> <strong>128主机</strong>：127.0.0.1:6379&gt; <code>set key1 hello,everyone!</code></p>
+ <figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs sh">OK<br></code></pre></td></tr></table></figure>
+
+<p> <strong>129和130从机</strong>：127.0.0.1:6379&gt; <code>get key1</code></p>
+ <figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs sh"><span class="hljs-string">&quot;hello,everyone!&quot;</span><br></code></pre></td></tr></table></figure></li>
+</ol>
+<p>即使主机断开链接（127.0.0.1:6379&gt;<code>shutdown</code>），从机仍然可以连接到主机，如果使用的是命令行配置的从机，从机一旦断开链接后，就会变回主机了，如果再次变回从机，仍旧可以获取主机中的值。</p>
+<p>如果主机断开链接，从机可以使用命令：127.0.0.1:6380&gt; <code>slaveof no one</code> 使自己成为主机。</p>
+<h4 id="1-2-主从复制原理"><a href="#1-2-主从复制原理" class="headerlink" title="1.2 主从复制原理"></a>1.2 主从复制原理</h4><p>Slave 启动成功连接到 master 后会发送一个 sync 同步命令，Master 接到命令后，会启动后台的存盘进程，同时收集所有接收到的用于修改数据集命令，在后台进程执行完毕后，master 将传送整个数据文件到 salve，并完成一次完整的同步。</p>
+<p><code>全量复制</code>：salve服务在接收到数据库文件数据后，将其存盘并加载到内存中</p>
+<p><code>增量复制</code>：master继续将新的所有收集到的修改命令依次传递给salve，完成同步</p>
+<h3 id="2-Redis-哨兵模式"><a href="#2-Redis-哨兵模式" class="headerlink" title="2. Redis 哨兵模式"></a>2. Redis 哨兵模式</h3><h4 id="2-1-高可用"><a href="#2-1-高可用" class="headerlink" title="2.1 高可用"></a>2.1 高可用</h4><p>当主服务器宕机后，并且我们并没有及时发现，这时候就可能会出现数据丢失或程序无法运行。此时，redis 的哨兵模式就派上用场了，可以用它<code>来做 redis 的高可用</code>。</p>
+<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20200707211159.png" srcset="/img/loading.gif" lazyload alt="img"></p>
+<p>功能作用：</p>
+<ol>
+<li><p><code>监控</code>(monitoring)：Sentinel 会不断地检查你的主服务器和从服务器是否运作正常。</p>
+</li>
+<li><p><code>提醒</code>(Notifation)：当被监控的某个 Redis 服务器出现问题时， Sentinel 可以通过 API 向管理员或者其他应用程序发送通知。</p>
+</li>
+<li><p><code>自动故障转移</code>(Automatic failover)：当一个主服务器不能正常工作时， Sentinel 会开始一次自动故障迁移操作，它会将失效主服务器的其中一个从服务器升级为新的主服务器， 并让失效主服务器的其他从服务器改为复制新的主服务器； 当客户端试图连接失效的主服务器时， 集群也会向客户端返回新主服务器的地址， 使得集群可以使用新主服务器代替失效服务器。</p>
+</li>
+</ol>
+<h4 id="2-1-配置步骤"><a href="#2-1-配置步骤" class="headerlink" title="2.1 配置步骤"></a>2.1 配置步骤</h4><ol>
+<li><p>需配置好主从关系的 redis 服务器，如本人配置3台 CentOS （ip后缀 128-主、129-从、130-从）</p>
+</li>
+<li><p>从机创建哨兵配置文件<br> (ip后缀129和130)[ &#x2F;usr&#x2F;local&#x2F;redis-5.0.4&#x2F;bin]# <code>cp ../sentinel.conf .</code><br> 均修改该哨兵配置文件 sentinel.conf：</p>
+ <figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs sh">sentinel monitor mymaster 192.168.247.128 6379 1<br>sentinel down-after-milliseconds mymaster 5000<br>sentinel failover-timeout mymaster 900000<br>sentinel parallel-syncs mymaster 2<br></code></pre></td></tr></table></figure>
+
+<blockquote>
+<p>sentinel monitor mymaster 192.168.247.128 6379 1</p>
+<p>：哨兵监视器(名为 mymaster,ip,port,1表示主机挂了 slave 会投票选举成为主机)</p>
+<p>sentinel down-after-milliseconds mymaster 5000</p>
+<p>：主机 down 掉后经过 5s 后哨兵开始投票选举谁成为主机</p>
+<p>sentinel failover-timeout mymaster 900000</p>
+<p>：当一个slave从一个错误的master那里同步数据的计算时间为 900s</p>
+<p>sentinel parallel-syncs mymaster 2</p>
+<p>：指定在发生failover主备切换时最多可以有多少个slave同时对新的master进行数据同步</p>
+<p>Redis 的哨兵配置参数详解：<a target="_blank" rel="noopener" href="https://simple.blog.csdn.net/article/details/107208175">https://simple.blog.csdn.net/article/details/107208175</a></p>
+</blockquote>
+</li>
+<li><p>从机启动哨兵监控程序<br> (ip后缀129和130)[ &#x2F;usr&#x2F;local&#x2F;redis-5.0.4&#x2F;bin]# <code>./redis-server sentinel.conf --sentinel &amp;</code><br> (ip后缀129 SSH)[ &#x2F;usr&#x2F;local&#x2F;redis-5.0.4&#x2F;bin]# <code>./redis-cli -h 192.168.247.129 -p 26379 info sentinel</code> (此命令用于查看哨兵相关信息)<br> (ip后缀130 SSH)[ &#x2F;usr&#x2F;local&#x2F;redis-5.0.4&#x2F;bin]# <code>./redis-cli -h 192.168.247.130 -p 26379 info sentinel</code> (此命令用于查看哨兵相关信息)</p>
+</li>
+</ol>
+<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20200707212356.png" srcset="/img/loading.gif" lazyload alt="image-20200707212354803"></p>
+<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20200707212600.png" srcset="/img/loading.gif" lazyload alt="image-20200707212559944"></p>
+<ol start="4">
+<li>主机模拟宕机，查看从机被投票成为新的主机<br> <strong>128主机</strong>：127.0.0.1:6379&gt; <code>shutdown</code><br> not connected&gt;<br> 129从机与130从机 哨兵 日志信息：<code>已自动投票将 130 ip的设置为主机，剩余从机1台即 129 ip</code></li>
+</ol>
+<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20200707212831.png" srcset="/img/loading.gif" lazyload alt="image-20200707212830057"></p>
+<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20200707213019.png" srcset="/img/loading.gif" lazyload alt="image-20200707213018917"></p>
+<blockquote>
+<p>【注意事项】</p>
+<p>此时如果恢复 ip 为 128 的宕机的原主机，启动 redis-server 后，会自动成为 从机（只读）；</p>
+<p>130 的被投票选为主机的身份不会发生变化，可读可写；</p>
+<p>129 依然为从机。</p>
+</blockquote>
+<p>如下图：</p>
+<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20200707213537.png" srcset="/img/loading.gif" lazyload alt="image-20200707213535994"></p>
+<h4 id="2-3-哨兵模式优缺点"><a href="#2-3-哨兵模式优缺点" class="headerlink" title="2.3 哨兵模式优缺点"></a>2.3 哨兵模式优缺点</h4><p><strong>优点</strong></p>
+<ol>
+<li><p>哨兵集群模式是基于主从模式的，所有主从的优点，哨兵模式同样具有。</p>
+</li>
+<li><p>主从可以切换，故障可以转移，系统可用性更好。</p>
+</li>
+<li><p>哨兵模式是主从模式的升级，系统更健壮，可用性更高。</p>
+</li>
+</ol>
+<p><strong>缺点</strong></p>
+<ol>
+<li><p>Redis较难支持在线扩容，在集群容量达到上限时在线扩容会变得很复杂。</p>
+</li>
+<li><p>实现哨兵模式的配置也不简单，甚至可以说有些繁琐。</p>
+</li>
+</ol>
+
+              
+            </div>
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/05-%E6%95%B0%E6%8D%AE%E5%BA%93/" class="category-chain-item">05_数据库</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/05-%E6%95%B0%E6%8D%AE%E5%BA%93/03-Redis/" class="category-chain-item">03_Redis</a>
+  
+  
+
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/Redis/">#Redis</a>
+      
+        <a href="/tags/%E5%93%A8%E5%85%B5/">#哨兵</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>05-Redis 主从复制+哨兵模式</div>
+      <div>https://janycode.github.io/2017/06/20/05_数据库/04_Redis/05-Redis 主从复制+哨兵模式/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Jerry(姜源)</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2017年6月20日</div>
+        </div>
+      
+      
+      <div class="license-meta-item">
+        <div>许可协议</div>
+        <div>
+          
+            
+            
+              <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+              <span class="hint--top hint--rounded" aria-label="BY - 姜源">
+                <i class="iconfont icon-by"></i>
+              </span>
+              </a>
+            
+          
+        </div>
+      </div>
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2017/06/20/05_%E6%95%B0%E6%8D%AE%E5%BA%93/04_Redis/04-Redis%20%E4%BA%8B%E5%8A%A1+%E6%8C%81%E4%B9%85%E5%8C%96+%E8%AE%A2%E9%98%85/" title="04-Redis 事务+持久化+订阅">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">04-Redis 事务+持久化+订阅</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2017/06/20/05_%E6%95%B0%E6%8D%AE%E5%BA%93/04_Redis/07-Redis%20%E7%A9%BF%E9%80%8F,%E5%87%BB%E7%A9%BF,%E9%9B%AA%E5%B4%A9,%E5%80%BE%E6%96%9C,%E6%B7%98%E6%B1%B0,%E5%88%A0%E9%99%A4/" title="07-Redis 穿透,击穿,雪崩,倾斜,淘汰,删除">
+                        <span class="hidden-mobile">07-Redis 穿透,击穿,雪崩,倾斜,淘汰,删除</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+  <article id="comments" lazyload>
+    
+  <div id="SOHUCS" sid='https://janycode.github.io/2017/06/20/05_%E6%95%B0%E6%8D%AE%E5%BA%93/04_Redis/05-Redis%20%E4%B8%BB%E4%BB%8E%E5%A4%8D%E5%88%B6+%E5%93%A8%E5%85%B5%E6%A8%A1%E5%BC%8F/'></div>
+  <script type="text/javascript">
+    Fluid.utils.loadComments('#SOHUCS', function() {
+      Fluid.utils.createScript("https://changyan.sohu.com/upload/changyan.js", function() {
+        window.changyan.api.config({"appid":"cyw5OHIcO","appkey":"fea3446b3df4b3f129f34da4cbc87e51"})
+      });
+    });
+  </script>
+  <noscript>Please enable JavaScript to view the comments</noscript>
+
+
+  </article>
+
+
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://simple.blog.csdn.net" target="_blank" rel="nofollow noopener"><span>CSDN</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/janycode" target="_blank" rel="nofollow noopener"><span>GitHub</span></a> <i class="iconfont icon-love"></i> <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="busuanzi_container_site_pv" style="display: none">
+        总访问量(PV) 
+        <span id="busuanzi_value_site_pv"></span>
+         次，
+      </span>
+    
+    
+      <span id="busuanzi_container_site_uv" style="display: none">
+        总访客数(UV) 
+        <span id="busuanzi_value_site_uv"></span>
+         人
+      </span>
+    
+    
+  
+</div>
+
+  
+  
+  
+</div>
+
+<!-- live2d 动画 -->
+<script src="https://eqcn.ajz.miesnfu.com/wp-content/plugins/wp-3d-pony/live2dw/lib/L2Dwidget.min.js"></script>
+<script>
+    L2Dwidget.init({
+        "model": {
+            jsonPath: "https://unpkg.com/live2d-widget-model-haruto@1.0.5/assets/haruto.model.json",
+            "scale": 1
+        },
+        "display": {
+            "position": "right",
+            "width": 100,
+            "height": 200,
+            "hOffset": 35,
+            "vOffset": -85
+        },
+        "mobile": {
+            "show": false,
+            "scale": 0.1
+        },
+        "react": {
+            "opacityDefault": 0.75,
+            "opacityOnHover": 0.2
+        }
+    });
+</script>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <!-- Baidu Analytics -->
+    <script defer>
+      if (!Fluid.ctx.dnt) {
+        var _hmt = _hmt || [];
+        (function() {
+          var hm = document.createElement("script");
+          hm.src = "https://hm.baidu.com/hm.js?bfff735c897eb60ea49b735096b20e47";
+          var s = document.getElementsByTagName("script")[0];
+          s.parentNode.insertBefore(hm, s);
+        })();
+      }
+    </script>
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.0/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      headingSelector : CONFIG.toc.headingSelector || 'h1,h2,h3,h4,h5,h6',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      collapseDepth   : CONFIG.toc.collapseDepth || 0,
+      scrollSmooth    : true,
+      headingsOffset  : -boardTop
+    });
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+  });
+</script>
+
+
+  <script>
+  (function() {
+    var enableLang = CONFIG.code_language.enable && CONFIG.code_language.default;
+    var enableCopy = CONFIG.copy_btn;
+    if (!enableLang && !enableCopy) {
+      return;
+    }
+
+    function getBgClass(ele) {
+      return Fluid.utils.getBackgroundLightness(ele) >= 0 ? 'code-widget-light' : 'code-widget-dark';
+    }
+
+    var copyTmpl = '';
+    copyTmpl += '<div class="code-widget">';
+    copyTmpl += 'LANG';
+    copyTmpl += '</div>';
+    jQuery('.markdown-body pre').each(function() {
+      var $pre = jQuery(this);
+      if ($pre.find('code.mermaid').length > 0) {
+        return;
+      }
+      if ($pre.find('span.line').length > 0) {
+        return;
+      }
+
+      var lang = '';
+
+      if (enableLang) {
+        lang = CONFIG.code_language.default;
+        if ($pre[0].children.length > 0 && $pre[0].children[0].classList.length >= 2 && $pre.children().hasClass('hljs')) {
+          lang = $pre[0].children[0].classList[1];
+        } else if ($pre[0].getAttribute('data-language')) {
+          lang = $pre[0].getAttribute('data-language');
+        } else if ($pre.parent().hasClass('sourceCode') && $pre[0].children.length > 0 && $pre[0].children[0].classList.length >= 2) {
+          lang = $pre[0].children[0].classList[1];
+          $pre.parent().addClass('code-wrapper');
+        } else if ($pre.parent().hasClass('markdown-body') && $pre[0].classList.length === 0) {
+          $pre.wrap('<div class="code-wrapper"></div>');
+        }
+        lang = lang.toUpperCase().replace('NONE', CONFIG.code_language.default);
+      }
+      $pre.append(copyTmpl.replace('LANG', lang).replace('code-widget">',
+        getBgClass($pre[0]) + (enableCopy ? ' code-widget copy-btn" data-clipboard-snippet><i class="iconfont icon-copy"></i>' : ' code-widget">')));
+
+      if (enableCopy) {
+        Fluid.utils.createScript('https://lib.baomitu.com/clipboard.js/2.0.10/clipboard.min.js', function() {
+          var clipboard = new window.ClipboardJS('.copy-btn', {
+            target: function(trigger) {
+              var nodes = trigger.parentNode.childNodes;
+              for (var i = 0; i < nodes.length; i++) {
+                if (nodes[i].tagName === 'CODE') {
+                  return nodes[i];
+                }
+              }
+            }
+          });
+          clipboard.on('success', function(e) {
+            e.clearSelection();
+            e.trigger.innerHTML = e.trigger.innerHTML.replace('icon-copy', 'icon-success');
+            setTimeout(function() {
+              e.trigger.innerHTML = e.trigger.innerHTML.replace('icon-success', 'icon-copy');
+            }, 2000);
+          });
+        });
+      }
+    });
+  })();
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script  src="/js/local-search.js" ></script>
+
+  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

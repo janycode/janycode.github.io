@@ -1,0 +1,939 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=light>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Jerry(姜源)">
+  <meta name="keywords" content="Java,Html,CSS,JavaScript,Python,C,Linux,shell编程经验分享、技术总结、心得体会">
+  
+    <meta name="description" content="参考资料：  Distributed locks with Redis Redisson Distributed locks and synchronizers  一、实现原理1.1 基本原理JDK 原生的锁可以让不同线程之间以互斥的方式来访问共享资源，但如果想要在不同进程之间以互斥的方式来访问共享资源，JDK 原生的锁就无能为力了。此时可以使用 Redis 来实现分布式锁。 Redis 实现分">
+<meta property="og:type" content="article">
+<meta property="og:title" content="03-Redis分布式锁原理">
+<meta property="og:url" content="https://janycode.github.io/2021/11/18/17_%E5%88%86%E5%B8%83%E5%BC%8F/03_%E5%88%86%E5%B8%83%E5%BC%8F%E9%94%81/03-Redis%E5%88%86%E5%B8%83%E5%BC%8F%E9%94%81%E5%8E%9F%E7%90%86/index.html">
+<meta property="og:site_name" content="姜源の云笔记">
+<meta property="og:description" content="参考资料：  Distributed locks with Redis Redisson Distributed locks and synchronizers  一、实现原理1.1 基本原理JDK 原生的锁可以让不同线程之间以互斥的方式来访问共享资源，但如果想要在不同进程之间以互斥的方式来访问共享资源，JDK 原生的锁就无能为力了。此时可以使用 Redis 来实现分布式锁。 Redis 实现分">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20220207094645.png">
+<meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230531132137.png">
+<meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230531134510.png">
+<meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230531134529.png">
+<meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230531134556.png">
+<meta property="article:published_time" content="2021-11-18T05:10:51.000Z">
+<meta property="article:modified_time" content="2023-12-24T03:11:24.632Z">
+<meta property="article:author" content="Jerry(姜源)">
+<meta property="article:tag" content="Redis">
+<meta property="article:tag" content="架构">
+<meta property="article:tag" content="分布式锁">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20220207094645.png">
+  
+  
+    <meta name="referrer" content="no-referrer-when-downgrade">
+  
+  
+  <title>03-Redis分布式锁原理 - 姜源の云笔记</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"janycode.github.io","root":"/","version":"1.9.0","typing":{"enable":true,"typeSpeed":50,"cursorChar":"|","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":false},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":"bfff735c897eb60ea49b735096b20e47","google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+
+  
+<meta name="generator" content="Hexo 6.2.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 50vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>姜源の云笔记</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tools/">
+                <i class="iconfont icon-slack-fill"></i>
+                工具
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" target="_blank" rel="noopener" href="https://janycode.gitee.io/">
+                <i class="iconfont icon-gitee-fill"></i>
+                Gitee
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="03-Redis分布式锁原理"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-author" aria-hidden="true"></i>
+        Jerry(姜源)
+      </span>
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2021-11-18 13:10" pubdate>
+          星期四, 2021/11/18 13:10:51
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          <!-- compatible with older versions-->
+          8.3k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          <!-- compatible with older versions-->
+          70 分钟
+        
+      </span>
+    
+
+    
+    
+      
+        <span id="busuanzi_container_page_pv" style="display: none">
+          <i class="iconfont icon-eye" aria-hidden="true"></i>
+          <span id="busuanzi_value_page_pv"></span> 次
+        </span>
+        
+      
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">03-Redis分布式锁原理</h1>
+            
+            <div class="markdown-body">
+              
+              <p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20220207094645.png" srcset="/img/loading.gif" lazyload alt="image-20220207094644153"></p>
+<p>参考资料：</p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://redis.io/topics/distlock">Distributed locks with Redis</a></li>
+<li><a target="_blank" rel="noopener" href="https://github.com/redisson/redisson/wiki/8.-distributed-locks-and-synchronizers">Redisson Distributed locks and synchronizers</a></li>
+</ul>
+<h2 id="一、实现原理"><a href="#一、实现原理" class="headerlink" title="一、实现原理"></a>一、实现原理</h2><h3 id="1-1-基本原理"><a href="#1-1-基本原理" class="headerlink" title="1.1 基本原理"></a>1.1 基本原理</h3><p>JDK 原生的锁可以让不同<strong>线程</strong>之间以互斥的方式来访问共享资源，但如果想要在不同<strong>进程</strong>之间以互斥的方式来访问共享资源，JDK 原生的锁就无能为力了。此时可以使用 Redis 来实现分布式锁。</p>
+<p>Redis 实现分布式锁的核心命令如下：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs shell">SETNX key value<br></code></pre></td></tr></table></figure>
+
+<p><strong>SETNX 命令的作用</strong>：如果指定的 key 不存在，则创建并为其设置值，然后返回状态码 1；如果指定的 key 存在，则直接返回 0。<code>如果返回值为 1，代表获得该锁；此时其他进程再次尝试创建时，由于 key 已经存在，则都会返回 0 ，代表锁已经被占用</code>。</p>
+<p>当获得锁的进程处理完成业务后，再通过 <code>del</code> 命令将该 key 删除，其他进程就可以再次竞争性地进行创建，获得该锁。</p>
+<p>通常为了避免死锁，我们会为锁设置一个超时时间，在 Redis 中可以通过 <code>expire</code> 命令来进行实现：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs shell">EXPIRE key seconds<br></code></pre></td></tr></table></figure>
+
+<p>这里我们将两者结合起来，并使用 Jedis 客户端来进行实现，其代码如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-type">Long</span> <span class="hljs-variable">result</span> <span class="hljs-operator">=</span> jedis.setnx(<span class="hljs-string">&quot;lockKey&quot;</span>, <span class="hljs-string">&quot;lockValue&quot;</span>);<br><span class="hljs-keyword">if</span> (result == <span class="hljs-number">1</span>) &#123;<br>    <span class="hljs-comment">// 如果此处程序被异常终止（如直接kill -9进程），则设置超时的操作就无法进行，该锁就会出现死锁</span><br>    jedis.expire(<span class="hljs-string">&quot;lockKey&quot;</span>, <span class="hljs-number">3</span>);<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>上面的代码存在原子性问题，即 <code>setnx + expire 操作是非原子性的</code>，如果在设置超时时间前，程序被异常终止，则程序就会出现死锁。此时可以<strong>将 SETNX 和 EXPIRE 两个命令写在同一个 Lua 脚本中</strong>，然后通过调用 Jedis 的 <code>eval()</code> 方法来执行，并由 Redis 来保证整个 Lua 脚本操作的原子性。这种方式实现比较繁琐，因此官方文档中推荐了另外一种更加优雅的实现方法：</p>
+<h3 id="1-2-官方推荐"><a href="#1-2-官方推荐" class="headerlink" title="1.2 官方推荐"></a>1.2 官方推荐</h3><p><a target="_blank" rel="noopener" href="https://redis.io/topics/distlock">官方文档</a> 中推荐直接使用 set 命令来进行实现：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs shell">SET key value [EX seconds|PX milliseconds] [NX|XX] [KEEPTTL]<br></code></pre></td></tr></table></figure>
+
+<p>这里我们主要关注以下四个参数：</p>
+<ul>
+<li><strong>EX</strong> ：设置超时时间，单位是秒；</li>
+<li><strong>PX</strong> ：设置超时时间，单位是毫秒；</li>
+<li><strong>NX</strong> ：当且仅当对应的 Key 不存在时才进行设置；</li>
+<li><strong>XX</strong>：当且仅当对应的 Key 存在时才进行设置。</li>
+</ul>
+<p>这四个参数从 Redis 2.6.12 版本开始支持，因为当前大多数在用的 Redis 都已经高于这个版本，所以推荐直接使用该命令来实现分布式锁。对应的 Jedis 代码如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs java">jedis.set(<span class="hljs-string">&quot;lockKey&quot;</span>, <span class="hljs-string">&quot;lockValue&quot;</span>, SetParams.setParams().nx().ex(<span class="hljs-number">3</span>));<br></code></pre></td></tr></table></figure>
+
+<p>此时一条命令就可以完成值和超时时间的设置，并且因为只有一条命令，因此其原子性也得到了保证。但因为引入了超时时间来避免死锁，同时也引出了其它两个问题：</p>
+<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230531132137.png" srcset="/img/loading.gif" lazyload alt="image-20230531132135941"></p>
+<ul>
+<li><strong>问题一</strong>：当业务处理的时间超过过期时间后（图中进程 A），由于锁已经被释放，此时其他进程就可以获得该锁（图中进程 B），这意味着有两个进程（A 和 B）同时进入了临界区，此时分布式锁就失效了；</li>
+<li><strong>问题二</strong>：如上图所示，当进程 A 业务处理完成后，此时删除的是进程 B 的锁，进而导致分布式锁又一次失效，让进程 B 和 进程 C 同时进入了临界区。</li>
+</ul>
+<p>针对问题二，我们可以在创建锁时为其指定一个唯一的标识作为 Key 的 Value，这里假设我们采用 <code>UUID + 线程ID</code> 来作为唯一标识：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-type">String</span> <span class="hljs-variable">identifier</span> <span class="hljs-operator">=</span> UUID.randomUUID() + <span class="hljs-string">&quot;:&quot;</span> + Thread.currentThread().getId();<br>jedis.set(<span class="hljs-string">&quot;LockKey&quot;</span>, identifier, SetParams.setParams().nx().ex(<span class="hljs-number">3</span>));<br></code></pre></td></tr></table></figure>
+
+<p>然后在删除锁前，先将该唯一标识与锁的 Value 值进行比较，如果不相等，证明该锁不属于当前的操作对象，此时不执行删除操作。为保证判断操作和删除操作整体的原子性，这里需要使用 Lua 脚本来执行：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs shell">if redis.call(&quot;get&quot;,KEYS[1]) == ARGV[1] then<br>    return redis.call(&quot;del&quot;,KEYS[1])<br>else<br>    return 0<br>end<br></code></pre></td></tr></table></figure>
+
+<p>这段脚本的意思是如果 value 的值与给定的值相同，则执行删除命令，否则直接返回状态码 0 。对应使用 Jedis 实现的代码如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-type">String</span> <span class="hljs-variable">script</span> <span class="hljs-operator">=</span> <span class="hljs-string">&quot;if redis.call(&#x27;get&#x27;, KEYS[1]) == ARGV[1] then return redis.call(&#x27;del&#x27;, KEYS[1]) else return 0 end&quot;</span>;<br>jedis.eval(script, <br>           Collections.singletonList(<span class="hljs-string">&quot;LockKey&quot;</span>),  <span class="hljs-comment">// keys的集合</span><br>           Collections.singletonList(identifier)  <span class="hljs-comment">// args的集合</span><br>          );<br></code></pre></td></tr></table></figure>
+
+<p>接着再看问题一，问题一最简单的解决方法是：你可以估计业务的最大处理时间，然后保证设置的过期时间大于最大处理时间。但是由于业务会面临各种复杂的情况，因此可能无法保证业务每一次都能在规定的过期时间内处理完成，此时可以使用延长锁时效的策略。</p>
+<h3 id="1-3-延长锁时效"><a href="#1-3-延长锁时效" class="headerlink" title="1.3  延长锁时效"></a>1.3  延长锁时效</h3><p>延长锁时效的方案如下：假设锁超时时间是 30 秒，此时程序需要每隔一段时间去扫描一下该锁是否还存在，扫描时间需要小于超时时间，通常可以设置为超时时间的 1&#x2F;3，在这里也就是 10 秒扫描一次。如果锁还存在，则重置其超时时间恢复到 30 秒。通过这种方案，只要业务还没有处理完成，锁就会一直有效；而当业务一旦处理完成，程序也会马上删除该锁。</p>
+<p>Redis 的 Java 客户端 <code>Redisson 提供的分布式锁就支持类似的延长锁时效的策略，称为 WatchDog</code>，直译过来就是 “看门狗” 机制。</p>
+<p>以上讨论的都是单机环境下的 Redis 分布式锁，而想要保证 Redis 分布式锁是高可用，首先 Redis 得是高可用的，Redis 的高可用模式主要有两种：哨兵模式和集群模式。</p>
+<h2 id="二、哨兵模式与分布式锁"><a href="#二、哨兵模式与分布式锁" class="headerlink" title="二、哨兵模式与分布式锁"></a>二、哨兵模式与分布式锁</h2><p>哨兵模式是主从模式的升级版，能够在故障发生时自动进行故障切换，选举出新的主节点。但由于 Redis 的复制机制是异步的，因此在哨兵模式下实现的分布式锁是不可靠的，原因如下：</p>
+<ul>
+<li>由于主从之间的复制操作是异步的，当主节点上创建好锁后，此时从节点上的锁可能尚未创建。而如果此时主节点发生了宕机，从节点上将不会创建该分布式锁；</li>
+<li>从节点晋升为主节点后，其他进程（或线程）仍然可以在该新主节点创建分布式锁，此时就存在多个进程（或线程）同时进入了临界区，分布式锁就失效了。</li>
+</ul>
+<p>因此在哨兵模式下，无法避免锁失效的问题。因此想要实现高可用的分布式锁，可以采取 Redis 的另一个高可用方案 —— Redis 集群模式。</p>
+<h2 id="三、集群模式与分布式锁"><a href="#三、集群模式与分布式锁" class="headerlink" title="三、集群模式与分布式锁"></a>三、集群模式与分布式锁</h2><h3 id="3-1-RedLock-方案"><a href="#3-1-RedLock-方案" class="headerlink" title="3.1 RedLock 方案"></a>3.1 RedLock 方案</h3><p>想要在集群模式下实现分布式锁，Redis 提供了一种称为 RedLock 的方案，假设我们有 N 个 Redis 实例，此时客户端的执行过程如下：</p>
+<ul>
+<li>以毫秒为单位记录当前的时间，作为开始时间；</li>
+<li>接着采用和单机版相同的方式，依次尝试在每个实例上创建锁。为了避免客户端长时间与某个故障的 Redis 节点通讯而导致阻塞，这里采用快速轮询的方式：假设创建锁时设置的超时时间为 10 秒，则访问每个 Redis 实例的超时时间可能在 5 到 50 毫秒之间，如果在这个时间内还没有建立通信，则尝试连接下一个实例；</li>
+<li>如果在至少 N&#x2F;2+1 个实例上都成功创建了锁。并且 <code>当前时间 - 开始时间 &lt; 锁的超时时间</code> ，则认为已经获取了锁，锁的有效时间等于 <code>超时时间 - 花费时间</code>（如果考虑不同 Redis 实例所在服务器的时钟漂移，则还需要减去时钟漂移）；</li>
+<li>如果少于 N&#x2F;2+1 个实例，则认为创建分布式锁失败，此时需要删除这些实例上已创建的锁，以便其他客户端进行创建。</li>
+<li>该客户端在失败后，可以等待一个随机的时间后，再次进行重试。</li>
+</ul>
+<p>以上就是 RedLock 的实现方案，可以看到主要是由客户端来实现的，并不真正涉及到 Redis 集群相关的功能。因此这里的 N 个 Redis 实例并不要求是一个真正的 Redis 集群，它们彼此之间可以是完全独立的，但由于只需要半数节点获得锁就能真正获得锁，因此其仍然具备容错性和高可用性。</p>
+<h3 id="3-2-低延迟通讯"><a href="#3-2-低延迟通讯" class="headerlink" title="3.2 低延迟通讯"></a>3.2 低延迟通讯</h3><p>另外实现 RedLock 方案的客户端与所有 Redis 实例进行通讯时，必须要保证低延迟，而且最好能使用多路复用技术来保证一次性将 SET 命令发送到所有 Redis 节点上，并获取到对应的执行结果。如果网络延迟较高，假设客户端 A 和 B 都在尝试创建锁：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs shell">SET key 随机数A EX 3 NX  #A客户端<br>SET key 随机数B EX 3 NX  #B客户端<br></code></pre></td></tr></table></figure>
+
+<p>此时可能客户端 A 在一半节点上创建了锁，而客户端 B 在另外一半节点上创建了锁，那么两个客户端都将无法获取到锁。如果并发很高，则可能存在多个客户端分别在部分节点上创建了锁，而没有一个客户端的数量超过 N&#x2F;2+1。这也就是上面过程的最后一步中，强调一旦客户端失败后，需要等待一个随机时间后再进行重试的原因，如果是一个固定时间，则所有失败的客户端又同时发起重试，情况就还是一样。</p>
+<p>因此最佳的实现就是客户端的 SET 命令能几乎同时到达所有节点，并几乎同时接受到所有执行结果。 想要保证这一点，<code>低延迟的网络通信</code>极为关键，如 <strong>Redisson 就采用 Netty 框架来保证这一功能的实现</strong>。</p>
+<h3 id="3-3-持久化与高可用"><a href="#3-3-持久化与高可用" class="headerlink" title="3.3 持久化与高可用"></a>3.3 持久化与高可用</h3><p>为了保证高可用，所有 Redis 节点还需要开启持久化。假设不开启持久化，假设进程 A 获得锁后正在处理业务逻辑，此时节点宕机重启，因为锁数据丢失了，其他进程便可以再次创建该锁，因此所有 Redis 节点都需要开启 <code>AOF</code> 的持久化方式。</p>
+<p>AOF 默认的同步机制为 <code>everysec</code>，即每秒进程一次持久化，此时能够兼顾性能与数据安全，发生意外宕机的时间，最多会丢失一秒的数据。但如果碰巧就是在这一秒的时间内进程 A 创建了锁，并由于宕机而导致数据丢失。此时其他进程还可以创建该锁，锁的互斥性也就失效了。想要解决这个问题有两种方式：</p>
+<ul>
+<li><strong>方式一</strong>：修改 Redis.conf 中 <code>appendfsync</code> 的值为 <code>always</code>，即每次命令后都进行持久化，此时会降低 Redis 性能，进而也会降低分布式锁的性能，但锁的互斥性得到了绝对的保证；</li>
+<li><strong>方式二</strong>：一旦节点宕机了，需要等到锁的超时时间过了之后才进行重启，此时相当于原有锁自然失效（但你首先需要保证业务能在设定的超时时间内完成），这种方案也称为<strong>延时重启</strong>。</li>
+</ul>
+<h2 id="四、Redisson"><a href="#四、Redisson" class="headerlink" title="四、Redisson"></a>四、Redisson</h2><p>Redisson 是 Redis 的 Java 客户端，它提供了各种的 Redis 分布式锁的实现，如可重入锁、公平锁、RedLock、读写锁等等，并且在实现上考虑得也更加全面，适用于生产环境下使用。</p>
+<h3 id="4-1-分布式锁"><a href="#4-1-分布式锁" class="headerlink" title="4.1 分布式锁"></a>4.1 分布式锁</h3><p>使用 Redisson 来创建单机版本分布式锁非常简单，示例如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-comment">// 1.创建RedissonClient,如果与spring集成，可以将RedissonClient声明为Bean,在使用时注入即可</span><br><span class="hljs-type">Config</span> <span class="hljs-variable">config</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">Config</span>();<br>config.useSingleServer().setAddress(<span class="hljs-string">&quot;redis://192.168.0.100:6379&quot;</span>);<br><span class="hljs-type">RedissonClient</span> <span class="hljs-variable">redissonClient</span> <span class="hljs-operator">=</span> Redisson.create(config);<br><br><span class="hljs-comment">// 2.创建锁实例</span><br><span class="hljs-type">RLock</span> <span class="hljs-variable">lock</span> <span class="hljs-operator">=</span> redissonClient.getLock(<span class="hljs-string">&quot;myLock&quot;</span>);<br><span class="hljs-keyword">try</span> &#123;<br>    <span class="hljs-comment">//3.尝试获取分布式锁，第一个参数为等待时间，第二个参数为锁过期时间</span><br>    <span class="hljs-type">boolean</span> <span class="hljs-variable">isLock</span> <span class="hljs-operator">=</span> lock.tryLock(<span class="hljs-number">10</span>, <span class="hljs-number">30</span>, TimeUnit.SECONDS);<br>    <span class="hljs-keyword">if</span> (isLock) &#123;<br>        <span class="hljs-comment">// 4.模拟业务处理</span><br>        System.out.println(<span class="hljs-string">&quot;处理业务逻辑&quot;</span>);<br>        Thread.sleep(<span class="hljs-number">20</span> * <span class="hljs-number">1000</span>);<br>    &#125;<br>&#125; <span class="hljs-keyword">catch</span> (Exception e) &#123;<br>    e.printStackTrace();<br>&#125; <span class="hljs-keyword">finally</span> &#123;<br>    <span class="hljs-comment">//5.释放锁</span><br>    lock.unlock();<br>&#125;<br>redissonClient.shutdown();<br></code></pre></td></tr></table></figure>
+
+<p>此时对应在 Redis 中的数据结构如下：</p>
+<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230531134510.png" srcset="/img/loading.gif" lazyload alt="image-20230531134508770"></p>
+<p>可以看到 key 就是代码中设置的锁名，而 value 值的类型是 hash，其中键 <code>9280e909-c86b-43ec-b11d-6e5a7745e2e9:13</code>  的格式为 <code>UUID + 线程ID</code> ；键对应的值为 1，代表加锁的次数。之所以要采用 hash 这种格式，主要是因为 Redisson 创建的锁是具有重入性的，即你可以多次进行加锁：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-type">boolean</span> <span class="hljs-variable">isLock1</span> <span class="hljs-operator">=</span> lock.tryLock(<span class="hljs-number">0</span>, <span class="hljs-number">30</span>, TimeUnit.SECONDS);<br><span class="hljs-type">boolean</span> <span class="hljs-variable">isLock2</span> <span class="hljs-operator">=</span> lock.tryLock(<span class="hljs-number">0</span>, <span class="hljs-number">30</span>, TimeUnit.SECONDS);<br></code></pre></td></tr></table></figure>
+
+<p>此时对应的值就会变成 2，代表加了两次锁：</p>
+<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230531134529.png" srcset="/img/loading.gif" lazyload alt="image-20230531134528228"></p>
+<p>当然和其他重入锁一样，需要保证解锁的次数和加锁的次数一样，才能完全解锁：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs java">lock.unlock();<br>lock.unlock();<br></code></pre></td></tr></table></figure>
+
+
+
+<h3 id="4-2-RedLock"><a href="#4-2-RedLock" class="headerlink" title="4.2 RedLock"></a>4.2 RedLock</h3><p>Redisson 也实现了 Redis 官方推荐的 RedLock 方案，这里启动三个 Redis 实例进行演示，它们彼此之间可以是完全独立的，并不需要进行集群的相关配置：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs shell"><span class="hljs-meta prompt_">$ </span><span class="language-bash">./redis-server ../redis.conf</span><br><span class="hljs-meta prompt_">$ </span><span class="language-bash">./redis-server ../redis.conf --port 6380</span><br><span class="hljs-meta prompt_">$ </span><span class="language-bash">./redis-server ../redis.conf --port 6381</span><br></code></pre></td></tr></table></figure>
+
+<p>对应的代码示例如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-comment">// 1.创建RedissonClient</span><br><span class="hljs-type">Config</span> <span class="hljs-variable">config01</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">Config</span>();<br>config01.useSingleServer().setAddress(<span class="hljs-string">&quot;redis://192.168.0.100:6379&quot;</span>);<br><span class="hljs-type">RedissonClient</span> <span class="hljs-variable">redissonClient01</span> <span class="hljs-operator">=</span> Redisson.create(config01);<br><span class="hljs-type">Config</span> <span class="hljs-variable">config02</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">Config</span>();<br>config02.useSingleServer().setAddress(<span class="hljs-string">&quot;redis://192.168.0.100:6380&quot;</span>);<br><span class="hljs-type">RedissonClient</span> <span class="hljs-variable">redissonClient02</span> <span class="hljs-operator">=</span> Redisson.create(config02);<br><span class="hljs-type">Config</span> <span class="hljs-variable">config03</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">Config</span>();<br>config03.useSingleServer().setAddress(<span class="hljs-string">&quot;redis://192.168.0.100:6381&quot;</span>);<br><span class="hljs-type">RedissonClient</span> <span class="hljs-variable">redissonClient03</span> <span class="hljs-operator">=</span> Redisson.create(config03);<br><br><span class="hljs-comment">// 2.创建锁实例</span><br><span class="hljs-type">String</span> <span class="hljs-variable">lockName</span> <span class="hljs-operator">=</span> <span class="hljs-string">&quot;myLock&quot;</span>;<br><span class="hljs-type">RLock</span> <span class="hljs-variable">lock01</span> <span class="hljs-operator">=</span> redissonClient01.getLock(lockName);<br><span class="hljs-type">RLock</span> <span class="hljs-variable">lock02</span> <span class="hljs-operator">=</span> redissonClient02.getLock(lockName);<br><span class="hljs-type">RLock</span> <span class="hljs-variable">lock03</span> <span class="hljs-operator">=</span> redissonClient03.getLock(lockName);<br><br><span class="hljs-comment">// 3. 创建 RedissonRedLock</span><br><span class="hljs-type">RedissonRedLock</span> <span class="hljs-variable">redLock</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">RedissonRedLock</span>(lock01, lock02, lock03);<br><br><span class="hljs-keyword">try</span> &#123;<br>    <span class="hljs-type">boolean</span> <span class="hljs-variable">isLock</span> <span class="hljs-operator">=</span> redLock.tryLock(<span class="hljs-number">10</span>, <span class="hljs-number">300</span>, TimeUnit.SECONDS);<br>    <span class="hljs-keyword">if</span> (isLock) &#123;<br>        <span class="hljs-comment">// 4.模拟业务处理</span><br>        System.out.println(<span class="hljs-string">&quot;处理业务逻辑&quot;</span>);<br>        Thread.sleep(<span class="hljs-number">200</span> * <span class="hljs-number">1000</span>);<br>    &#125;<br>&#125; <span class="hljs-keyword">catch</span> (Exception e) &#123;<br>    e.printStackTrace();<br>&#125; <span class="hljs-keyword">finally</span> &#123;<br>    <span class="hljs-comment">//5.释放锁</span><br>    redLock.unlock();<br>&#125;<br><br>redissonClient01.shutdown();<br>redissonClient02.shutdown();<br>redissonClient03.shutdown();<br></code></pre></td></tr></table></figure>
+
+<p>此时每个 Redis 实例上锁的情况如下：</p>
+<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230531134556.png" srcset="/img/loading.gif" lazyload alt="image-20230531134555029"></p>
+<p>可以看到每个实例上都获得了锁。</p>
+<h3 id="4-3-延长锁时效"><a href="#4-3-延长锁时效" class="headerlink" title="4.3 延长锁时效"></a>4.3 延长锁时效</h3><p>最后，介绍一下 Redisson 的 WatchDog 机制，它可以用来延长锁时效，示例如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-type">Config</span> <span class="hljs-variable">config</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">Config</span>();<br><span class="hljs-comment">// 1.设置WatchdogTimeout</span><br>config.setLockWatchdogTimeout(<span class="hljs-number">30</span> * <span class="hljs-number">1000</span>);<br>config.useSingleServer().setAddress(<span class="hljs-string">&quot;redis://192.168.0.100:6379&quot;</span>);<br><span class="hljs-type">RedissonClient</span> <span class="hljs-variable">redissonClient</span> <span class="hljs-operator">=</span> Redisson.create(config);<br><br><span class="hljs-comment">// 2.创建锁实例</span><br><span class="hljs-type">RLock</span> <span class="hljs-variable">lock</span> <span class="hljs-operator">=</span> redissonClient.getLock(<span class="hljs-string">&quot;myLock&quot;</span>);<br><span class="hljs-keyword">try</span> &#123;<br>    <span class="hljs-comment">//3.尝试获取分布式锁，第一个参数为等待时间</span><br>    <span class="hljs-type">boolean</span> <span class="hljs-variable">isLock</span> <span class="hljs-operator">=</span> lock.tryLock(<span class="hljs-number">0</span>, TimeUnit.SECONDS);<br>    <span class="hljs-keyword">if</span> (isLock) &#123;<br>        <span class="hljs-comment">// 4.模拟业务处理</span><br>        System.out.println(<span class="hljs-string">&quot;处理业务逻辑&quot;</span>);<br>        Thread.sleep(<span class="hljs-number">60</span> * <span class="hljs-number">1000</span>);<br>        System.out.println(<span class="hljs-string">&quot;锁剩余的生存时间：&quot;</span> + lock.remainTimeToLive());<br>    &#125;<br>&#125; <span class="hljs-keyword">catch</span> (Exception e) &#123;<br>    e.printStackTrace();<br>&#125; <span class="hljs-keyword">finally</span> &#123;<br>    <span class="hljs-comment">//5.释放锁</span><br>    lock.unlock();<br>&#125;<br>redissonClient.shutdown();<br></code></pre></td></tr></table></figure>
+
+<p>首先 Redisson 的 WatchDog 机制只会对那些没有设置锁超时时间的锁生效，所以我们这里调用的是两个参数的 <code>tryLock()</code> 方法：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-type">boolean</span> <span class="hljs-title function_">tryLock</span><span class="hljs-params">(<span class="hljs-type">long</span> time, TimeUnit unit)</span> <span class="hljs-keyword">throws</span> InterruptedException;<br></code></pre></td></tr></table></figure>
+
+<p>而不是包含超时时间的三个参数的 <code>tryLock()</code> 方法：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-type">boolean</span> <span class="hljs-title function_">tryLock</span><span class="hljs-params">(<span class="hljs-type">long</span> waitTime, <span class="hljs-type">long</span> leaseTime, TimeUnit unit)</span> <span class="hljs-keyword">throws</span> InterruptedException;<br></code></pre></td></tr></table></figure>
+
+<p>其次我们通过 <code>config.setLockWatchdogTimeout(30 * 1000)</code> 将 lockWatchdogTimeout 的值设置为 30000 毫秒（默认值也是 30000 毫秒）。此时 Redisson 的 WatchDog 机制会以 lockWatchdogTimeout 的 1&#x2F;3 时长为周期（在这里就是 10 秒）对所有未设置超时时间的锁进行检查，如果业务尚未处理完成（也就是锁还没有被程序主动删除），Redisson 就会将锁的超时时间重置为 lockWatchdogTimeout 指定的值（在这里就是设置的 30 秒），直到锁被程序主动删除位置。因此在上面的例子中可以看到，不论将模拟业务的睡眠时间设置为多长，其锁都会存在一定的剩余生存时间，直至业务处理完成。</p>
+<p>反之，如果明确的指定了锁的超时时间 leaseTime，则以 leaseTime 的时间为准，因为 WatchDog 机制对明确指定超时时间的锁不会生效。</p>
+
+              
+            </div>
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/17-%E5%88%86%E5%B8%83%E5%BC%8F/" class="category-chain-item">17_分布式</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/17-%E5%88%86%E5%B8%83%E5%BC%8F/03-%E5%88%86%E5%B8%83%E5%BC%8F%E9%94%81/" class="category-chain-item">03_分布式锁</a>
+  
+  
+
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/Redis/">#Redis</a>
+      
+        <a href="/tags/%E6%9E%B6%E6%9E%84/">#架构</a>
+      
+        <a href="/tags/%E5%88%86%E5%B8%83%E5%BC%8F%E9%94%81/">#分布式锁</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>03-Redis分布式锁原理</div>
+      <div>https://janycode.github.io/2021/11/18/17_分布式/03_分布式锁/03-Redis分布式锁原理/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Jerry(姜源)</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2021年11月18日</div>
+        </div>
+      
+      
+      <div class="license-meta-item">
+        <div>许可协议</div>
+        <div>
+          
+            
+            
+              <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+              <span class="hint--top hint--rounded" aria-label="BY - 姜源">
+                <i class="iconfont icon-by"></i>
+              </span>
+              </a>
+            
+          
+        </div>
+      </div>
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2021/11/25/16_%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96/02_%E6%95%B0%E6%8D%AE%E5%BA%93%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96/01-MySQL%E6%9C%80%E5%85%A8%E4%BC%98%E5%8C%96%E7%BB%8F%E9%AA%8C/" title="01-MySQL最全优化经验">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">01-MySQL最全优化经验</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2021/11/18/17_%E5%88%86%E5%B8%83%E5%BC%8F/03_%E5%88%86%E5%B8%83%E5%BC%8F%E9%94%81/02-Redisson%E5%AE%9E%E7%8E%B0%E5%88%86%E5%B8%83%E5%BC%8F%E9%94%81/" title="02-Redisson实现分布式锁">
+                        <span class="hidden-mobile">02-Redisson实现分布式锁</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+  <article id="comments" lazyload>
+    
+  <div id="SOHUCS" sid='https://janycode.github.io/2021/11/18/17_%E5%88%86%E5%B8%83%E5%BC%8F/03_%E5%88%86%E5%B8%83%E5%BC%8F%E9%94%81/03-Redis%E5%88%86%E5%B8%83%E5%BC%8F%E9%94%81%E5%8E%9F%E7%90%86/'></div>
+  <script type="text/javascript">
+    Fluid.utils.loadComments('#SOHUCS', function() {
+      Fluid.utils.createScript("https://changyan.sohu.com/upload/changyan.js", function() {
+        window.changyan.api.config({"appid":"cyw5OHIcO","appkey":"fea3446b3df4b3f129f34da4cbc87e51"})
+      });
+    });
+  </script>
+  <noscript>Please enable JavaScript to view the comments</noscript>
+
+
+  </article>
+
+
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://simple.blog.csdn.net" target="_blank" rel="nofollow noopener"><span>CSDN</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/janycode" target="_blank" rel="nofollow noopener"><span>GitHub</span></a> <i class="iconfont icon-love"></i> <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="busuanzi_container_site_pv" style="display: none">
+        总访问量(PV) 
+        <span id="busuanzi_value_site_pv"></span>
+         次，
+      </span>
+    
+    
+      <span id="busuanzi_container_site_uv" style="display: none">
+        总访客数(UV) 
+        <span id="busuanzi_value_site_uv"></span>
+         人
+      </span>
+    
+    
+  
+</div>
+
+  
+  
+  
+</div>
+
+<!-- live2d 动画 -->
+<script src="https://eqcn.ajz.miesnfu.com/wp-content/plugins/wp-3d-pony/live2dw/lib/L2Dwidget.min.js"></script>
+<script>
+    L2Dwidget.init({
+        "model": {
+            jsonPath: "https://unpkg.com/live2d-widget-model-haruto@1.0.5/assets/haruto.model.json",
+            "scale": 1
+        },
+        "display": {
+            "position": "right",
+            "width": 100,
+            "height": 200,
+            "hOffset": 35,
+            "vOffset": -85
+        },
+        "mobile": {
+            "show": false,
+            "scale": 0.1
+        },
+        "react": {
+            "opacityDefault": 0.75,
+            "opacityOnHover": 0.2
+        }
+    });
+</script>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <!-- Baidu Analytics -->
+    <script defer>
+      if (!Fluid.ctx.dnt) {
+        var _hmt = _hmt || [];
+        (function() {
+          var hm = document.createElement("script");
+          hm.src = "https://hm.baidu.com/hm.js?bfff735c897eb60ea49b735096b20e47";
+          var s = document.getElementsByTagName("script")[0];
+          s.parentNode.insertBefore(hm, s);
+        })();
+      }
+    </script>
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.0/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      headingSelector : CONFIG.toc.headingSelector || 'h1,h2,h3,h4,h5,h6',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      collapseDepth   : CONFIG.toc.collapseDepth || 0,
+      scrollSmooth    : true,
+      headingsOffset  : -boardTop
+    });
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+  });
+</script>
+
+
+  <script>
+  (function() {
+    var enableLang = CONFIG.code_language.enable && CONFIG.code_language.default;
+    var enableCopy = CONFIG.copy_btn;
+    if (!enableLang && !enableCopy) {
+      return;
+    }
+
+    function getBgClass(ele) {
+      return Fluid.utils.getBackgroundLightness(ele) >= 0 ? 'code-widget-light' : 'code-widget-dark';
+    }
+
+    var copyTmpl = '';
+    copyTmpl += '<div class="code-widget">';
+    copyTmpl += 'LANG';
+    copyTmpl += '</div>';
+    jQuery('.markdown-body pre').each(function() {
+      var $pre = jQuery(this);
+      if ($pre.find('code.mermaid').length > 0) {
+        return;
+      }
+      if ($pre.find('span.line').length > 0) {
+        return;
+      }
+
+      var lang = '';
+
+      if (enableLang) {
+        lang = CONFIG.code_language.default;
+        if ($pre[0].children.length > 0 && $pre[0].children[0].classList.length >= 2 && $pre.children().hasClass('hljs')) {
+          lang = $pre[0].children[0].classList[1];
+        } else if ($pre[0].getAttribute('data-language')) {
+          lang = $pre[0].getAttribute('data-language');
+        } else if ($pre.parent().hasClass('sourceCode') && $pre[0].children.length > 0 && $pre[0].children[0].classList.length >= 2) {
+          lang = $pre[0].children[0].classList[1];
+          $pre.parent().addClass('code-wrapper');
+        } else if ($pre.parent().hasClass('markdown-body') && $pre[0].classList.length === 0) {
+          $pre.wrap('<div class="code-wrapper"></div>');
+        }
+        lang = lang.toUpperCase().replace('NONE', CONFIG.code_language.default);
+      }
+      $pre.append(copyTmpl.replace('LANG', lang).replace('code-widget">',
+        getBgClass($pre[0]) + (enableCopy ? ' code-widget copy-btn" data-clipboard-snippet><i class="iconfont icon-copy"></i>' : ' code-widget">')));
+
+      if (enableCopy) {
+        Fluid.utils.createScript('https://lib.baomitu.com/clipboard.js/2.0.10/clipboard.min.js', function() {
+          var clipboard = new window.ClipboardJS('.copy-btn', {
+            target: function(trigger) {
+              var nodes = trigger.parentNode.childNodes;
+              for (var i = 0; i < nodes.length; i++) {
+                if (nodes[i].tagName === 'CODE') {
+                  return nodes[i];
+                }
+              }
+            }
+          });
+          clipboard.on('success', function(e) {
+            e.clearSelection();
+            e.trigger.innerHTML = e.trigger.innerHTML.replace('icon-copy', 'icon-success');
+            setTimeout(function() {
+              e.trigger.innerHTML = e.trigger.innerHTML.replace('icon-success', 'icon-copy');
+            }, 2000);
+          });
+        });
+      }
+    });
+  })();
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script  src="/js/local-search.js" ></script>
+
+  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

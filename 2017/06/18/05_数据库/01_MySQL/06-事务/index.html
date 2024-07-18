@@ -1,0 +1,902 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=light>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Jerry(姜源)">
+  <meta name="keywords" content="Java,Html,CSS,JavaScript,Python,C,Linux,shell编程经验分享、技术总结、心得体会">
+  
+    <meta name="description" content="● 事务的隔离级别 ●  读未提交：一个事务可以看到其他事务未提交的修改。允许脏读 读已提交：一个事务能看到其他事务已经提交的修改。允许不可重复读和幻读 可重复读：保证同一个事务多次读取的数据是一致的。MySQL innoDB默认隔离级别，不会出现幻读 串行化：并发事务之间是串行化。读取需要获取共享锁，更新需要获取排它锁————最高隔离级别  脏读：一个事务读到了另一个事务未提交的数据 不可重复">
+<meta property="og:type" content="article">
+<meta property="og:title" content="06-事务">
+<meta property="og:url" content="https://janycode.github.io/2017/06/18/05_%E6%95%B0%E6%8D%AE%E5%BA%93/01_MySQL/06-%E4%BA%8B%E5%8A%A1/index.html">
+<meta property="og:site_name" content="姜源の云笔记">
+<meta property="og:description" content="● 事务的隔离级别 ●  读未提交：一个事务可以看到其他事务未提交的修改。允许脏读 读已提交：一个事务能看到其他事务已经提交的修改。允许不可重复读和幻读 可重复读：保证同一个事务多次读取的数据是一致的。MySQL innoDB默认隔离级别，不会出现幻读 串行化：并发事务之间是串行化。读取需要获取共享锁，更新需要获取排它锁————最高隔离级别  脏读：一个事务读到了另一个事务未提交的数据 不可重复">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20200812132738.png">
+<meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230420144233.png">
+<meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230420144324.png">
+<meta property="article:published_time" content="2017-06-18T15:04:05.000Z">
+<meta property="article:modified_time" content="2023-06-02T14:48:41.651Z">
+<meta property="article:author" content="Jerry(姜源)">
+<meta property="article:tag" content="MySQL">
+<meta property="article:tag" content="事务">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20200812132738.png">
+  
+  
+    <meta name="referrer" content="no-referrer-when-downgrade">
+  
+  
+  <title>06-事务 - 姜源の云笔记</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"janycode.github.io","root":"/","version":"1.9.0","typing":{"enable":true,"typeSpeed":50,"cursorChar":"|","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":false},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":"bfff735c897eb60ea49b735096b20e47","google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+
+  
+<meta name="generator" content="Hexo 6.2.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 50vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>姜源の云笔记</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tools/">
+                <i class="iconfont icon-slack-fill"></i>
+                工具
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" target="_blank" rel="noopener" href="https://janycode.gitee.io/">
+                <i class="iconfont icon-gitee-fill"></i>
+                Gitee
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="06-事务"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-author" aria-hidden="true"></i>
+        Jerry(姜源)
+      </span>
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2017-06-18 23:04" pubdate>
+          星期日, 2017/06/18 23:04:05
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          <!-- compatible with older versions-->
+          5.8k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          <!-- compatible with older versions-->
+          49 分钟
+        
+      </span>
+    
+
+    
+    
+      
+        <span id="busuanzi_container_page_pv" style="display: none">
+          <i class="iconfont icon-eye" aria-hidden="true"></i>
+          <span id="busuanzi_value_page_pv"></span> 次
+        </span>
+        
+      
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">06-事务</h1>
+            
+            <div class="markdown-body">
+              
+              <p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20200812132738.png" srcset="/img/loading.gif" lazyload alt="image-20200812132737977"></p>
+<p>● <strong><code>事务的隔离级别</code></strong> ● </p>
+<p><strong>读未提交</strong>：一个事务可以看到其他事务未提交的修改。<code>允许脏读</code></p>
+<p><strong>读已提交</strong>：一个事务能看到其他事务已经提交的修改。<code>允许不可重复读和幻读</code></p>
+<p><strong>可重复读</strong>：保证同一个事务多次读取的数据是一致的。<code>MySQL innoDB默认隔离级别，不会出现幻读</code></p>
+<p><strong>串行化</strong>：并发事务之间是串行化。<code>读取需要获取共享锁，更新需要获取排它锁————最高隔离级别</code></p>
+<ul>
+<li>脏读：一个事务读到了另一个事务未提交的数据</li>
+<li>不可重复读：一个事务读到了另一个事务已经提交的数据，导致前后不一致</li>
+<li>幻读：select 某记录是否存在，结果是不存在，准备插入此记录，但执行 insert 时发现此记录已存在（因刚好被另一个事务 insert），无法插入，此时 select 过程发生幻读。</li>
+</ul>
+<h3 id="1-1-模拟转账"><a href="#1-1-模拟转账" class="headerlink" title="1.1 模拟转账"></a>1.1 模拟转账</h3><blockquote>
+<p>生活当中转账是转账方账户扣钱，收账方账户加钱。我们用数据库操作来模拟现实转账。</p>
+</blockquote>
+<h4 id="1-1-1-数据库模拟转账"><a href="#1-1-1-数据库模拟转账" class="headerlink" title="1.1.1 数据库模拟转账"></a>1.1.1 数据库模拟转账</h4><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><code class="hljs sql"># 模拟转账<br><span class="hljs-keyword">CREATE</span> <span class="hljs-keyword">TABLE</span> account(<br>    id <span class="hljs-type">INT</span>,<br>    money <span class="hljs-keyword">DOUBLE</span><br>)CHARSET <span class="hljs-operator">=</span> utf8;<br><span class="hljs-keyword">SELECT</span> <span class="hljs-operator">*</span> <span class="hljs-keyword">FROM</span> account;<br><span class="hljs-keyword">INSERT</span> <span class="hljs-keyword">INTO</span> account(id, money) <span class="hljs-keyword">VALUES</span>(<span class="hljs-number">1</span>, <span class="hljs-number">20000</span>);<br><span class="hljs-keyword">INSERT</span> <span class="hljs-keyword">INTO</span> account(id, money) <span class="hljs-keyword">VALUES</span>(<span class="hljs-number">2</span>, <span class="hljs-number">2000</span>);<br><br># 账户<span class="hljs-number">1</span> 转给 账户<span class="hljs-number">2</span> 金额 <span class="hljs-number">5000</span>，账户<span class="hljs-number">1</span> <span class="hljs-number">-5000</span>，账户<span class="hljs-number">2</span> <span class="hljs-operator">+</span><span class="hljs-number">5000</span><br><span class="hljs-keyword">UPDATE</span> account <span class="hljs-keyword">SET</span> money <span class="hljs-operator">=</span> money <span class="hljs-operator">-</span> <span class="hljs-number">5000</span> <span class="hljs-keyword">WHERE</span> id <span class="hljs-operator">=</span> <span class="hljs-number">1</span>; # 可能出现错误，需要回滚<br><span class="hljs-keyword">UPDATE</span> account <span class="hljs-keyword">SET</span> money <span class="hljs-operator">=</span> money <span class="hljs-operator">+</span> <span class="hljs-number">5000</span> <span class="hljs-keyword">WHERE</span> id <span class="hljs-operator">=</span> <span class="hljs-number">2</span>;<br></code></pre></td></tr></table></figure>
+
+<ul>
+<li>上述代码完成了两个账户之间转账的操作。</li>
+</ul>
+<h4 id="1-1-2-模拟转账错误"><a href="#1-1-2-模拟转账错误" class="headerlink" title="1.1.2 模拟转账错误"></a>1.1.2 模拟转账错误</h4><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs sql"># A 账户转账给 B 账户 <span class="hljs-number">1000</span> 元。<br># A 账户减 <span class="hljs-number">1000</span> 元<br><span class="hljs-keyword">UPDATE</span> account <span class="hljs-keyword">SET</span> MONEY <span class="hljs-operator">=</span> MONEY<span class="hljs-number">-1000</span> <span class="hljs-keyword">WHERE</span> id<span class="hljs-operator">=</span><span class="hljs-number">1</span>;<br># 断电、异常、出错...<br><br># B 账户加 <span class="hljs-number">1000</span> 元<br><span class="hljs-keyword">UPDATE</span> account <span class="hljs-keyword">SET</span> MONEY <span class="hljs-operator">=</span> MONEY<span class="hljs-operator">+</span><span class="hljs-number">1000</span> <span class="hljs-keyword">WHERE</span> id<span class="hljs-operator">=</span><span class="hljs-number">2</span>;<br></code></pre></td></tr></table></figure>
+
+<ul>
+<li>上述代码在减操作后过程中出现了<code>异常或出错</code>，会发现，减钱仍旧是成功的，而加钱失败了！</li>
+<li>注意：每条 SQL 语句都是一个独立的操作，<code>一个操作执行完对数据库是永久性的影响</code>。</li>
+</ul>
+<h3 id="1-2-事务的概念"><a href="#1-2-事务的概念" class="headerlink" title="1.2 事务的概念"></a>1.2 事务的概念</h3><blockquote>
+<p><code>事务，是一个原子操作，是一个最小执行单元，可以由一个或多个SQL语句组成</code>。在同一个事务当中，所有的SQL语句都成功执行时，整个事务成功，有一个SQL语句执行失败，整个事务都执行失败。</p>
+</blockquote>
+<h3 id="1-3-事务的起始"><a href="#1-3-事务的起始" class="headerlink" title="1.3 事务的起始"></a>1.3 事务的起始</h3><blockquote>
+<p>开始：上一个事务结束后的第一条增删改的语句，即事务的开始。</p>
+<p>结束：</p>
+<p>​	1).	提交：</p>
+<p>​			a.	显示提交：<code>COMMIT</code>;</p>
+<p>​			b.	隐式提交：一条创建&#x2F;删除的语句，正常退出（客户端退出连接）;</p>
+<p>​	2).	回滚：</p>
+<p>​			a.	显示回滚：<code>ROLLBACK</code>;</p>
+<p>​			b.	隐式回滚：非正常退出（断电&#x2F;宕机）执行了创建&#x2F;删除语句，但是失败了，会为这个无效的语句执行回滚。</p>
+</blockquote>
+<h3 id="1-4-事务的原理"><a href="#1-4-事务的原理" class="headerlink" title="1.4 事务的原理"></a>1.4 事务的原理</h3><blockquote>
+<p>数据库会为每一个客户端都维护一个<code>空间独立的缓存区</code>(回滚段)，一个事务中所有的增删改语句的<code>执行结果都会缓存在回滚段</code>中，只有当事务中所有 SQL 语句均<code>正常结束</code>（commit），才会将回滚段中的数据同步到数据库。否则无论因为哪种原因失败，整个事务将回滚（rollback）。</p>
+</blockquote>
+<h3 id="1-5-事务的特性（ACID）"><a href="#1-5-事务的特性（ACID）" class="headerlink" title="1.5 事务的特性（ACID）"></a>1.5 事务的特性（ACID）</h3><blockquote>
+<ul>
+<li><code>Atomicity(原子性)</code></li>
+</ul>
+<p>　　表示<strong>一个事务内的所有操作是一个整体</strong>，要么全部成功，要么全部失败。</p>
+<ul>
+<li><code>Consistency(一致性)</code></li>
+</ul>
+<p>　　表示一个事务内有一个操作失败时，所有的更改过的数据都必须<strong>回滚到修改前状态</strong>。</p>
+<ul>
+<li><code>Isolation(隔离性)</code></li>
+</ul>
+<p>　　事务查看数据操作时数据所处的状态，要么是另一并发事务<strong>修改它之前</strong>的状态，要么是另一事务<strong>修改它之后</strong>的状态，<strong>事务不会查看中间状态的数据</strong>。</p>
+<ul>
+<li><code>Durability(持久性)</code></li>
+</ul>
+<p>　　持久性事务完成之后，它<strong>对于系统的影响是永久性的</strong>。</p>
+</blockquote>
+<h3 id="1-6-事务应用"><a href="#1-6-事务应用" class="headerlink" title="1.6 事务应用"></a>1.6 事务应用</h3><blockquote>
+<p>应用环境：基于增删改语句的操作结果（均返回操作后受影响的行数）可通过程序逻辑手动控制事务提交或回滚。</p>
+</blockquote>
+<h4 id="1-6-1-事务完成转账"><a href="#1-6-1-事务完成转账" class="headerlink" title="1.6.1 事务完成转账"></a>1.6.1 事务完成转账</h4><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><code class="hljs sql"># 账户<span class="hljs-number">1</span> 给 账户<span class="hljs-number">2</span> 转账（开启事务方式任选其一）<br># <span class="hljs-number">1.</span>开启事务 方式一：<br><span class="hljs-keyword">START</span> TRANSACTION;<br># <span class="hljs-number">1.</span>开启事务 方式二： (autoCommit <span class="hljs-operator">=</span> <span class="hljs-number">0</span> 关闭自动提交，<span class="hljs-number">1</span> 开启自动提交)<br><span class="hljs-keyword">SET</span> autoCommit <span class="hljs-operator">=</span> <span class="hljs-number">0</span>;<br><br><span class="hljs-keyword">UPDATE</span> account <span class="hljs-keyword">SET</span> money <span class="hljs-operator">=</span> money <span class="hljs-operator">-</span> <span class="hljs-number">1000</span> <span class="hljs-keyword">WHERE</span> id <span class="hljs-operator">=</span> <span class="hljs-number">1</span>;<br><span class="hljs-keyword">UPDATE</span> account <span class="hljs-keyword">SET</span> money <span class="hljs-operator">=</span> money <span class="hljs-operator">+</span> <span class="hljs-number">1000</span> <span class="hljs-keyword">WHERE</span> id <span class="hljs-operator">=</span> <span class="hljs-number">2</span>;<br><br># <span class="hljs-number">2.</span>事务内数据操作语句<br><span class="hljs-keyword">UPDATE</span> ACCOUNT <span class="hljs-keyword">SET</span> MONEY <span class="hljs-operator">=</span> MONEY <span class="hljs-operator">-</span> <span class="hljs-number">1000</span> <span class="hljs-keyword">WHERE</span> ID <span class="hljs-operator">=</span> <span class="hljs-number">1</span>;<br><span class="hljs-keyword">UPDATE</span> ACCOUNT <span class="hljs-keyword">SET</span> MONEY <span class="hljs-operator">=</span> MONEY <span class="hljs-operator">+</span> <span class="hljs-number">1000</span> <span class="hljs-keyword">WHERE</span> ID <span class="hljs-operator">=</span> <span class="hljs-number">2</span>;<br># <span class="hljs-number">3.</span>事务内语句都成功了，执行 <span class="hljs-keyword">COMMIT</span>；<br><span class="hljs-keyword">COMMIT</span>;<br># <span class="hljs-number">4.</span>事务内如果出现错误，执行 <span class="hljs-keyword">ROLLBACK</span>;<br><span class="hljs-keyword">ROLLBACK</span>;<br></code></pre></td></tr></table></figure>
+
+<ul>
+<li>注意：开启事务后，执行的语句均属于<code>当前事务，成功再执行 COMIIT，失败要进行 ROLLBACK</code>。</li>
+</ul>
+<h3 id="1-7-多线程事务回滚"><a href="#1-7-多线程事务回滚" class="headerlink" title="1.7 多线程事务回滚"></a>1.7 多线程事务回滚</h3><p>使用 <code>sqlSession 控制手动提交事务</code>：</p>
+<h4 id="1-7-1-事务回滚示例"><a href="#1-7-1-事务回滚示例" class="headerlink" title="1.7.1 事务回滚示例"></a>1.7.1 事务回滚示例</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br></pre></td><td class="code"><pre><code class="hljs java"> <span class="hljs-meta">@Resource</span><br>  SqlContext sqlContext;<br><br> <span class="hljs-comment">/**</span><br><span class="hljs-comment"> * 测试多线程事务.</span><br><span class="hljs-comment"> * <span class="hljs-doctag">@param</span> employeeDOList</span><br><span class="hljs-comment"> */</span><br><span class="hljs-meta">@Override</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">saveThread</span><span class="hljs-params">(List&lt;EmployeeDO&gt; employeeDOList)</span> <span class="hljs-keyword">throws</span> SQLException &#123;<br>    <span class="hljs-comment">// 获取数据库连接,获取会话(内部自有事务)</span><br>    <span class="hljs-type">SqlSession</span> <span class="hljs-variable">sqlSession</span> <span class="hljs-operator">=</span> sqlContext.getSqlSession();<br>    <span class="hljs-type">Connection</span> <span class="hljs-variable">connection</span> <span class="hljs-operator">=</span> sqlSession.getConnection();<br>    <span class="hljs-keyword">try</span> &#123;<br>        <span class="hljs-comment">// 设置手动提交</span><br>        connection.setAutoCommit(<span class="hljs-literal">false</span>);<br>        <span class="hljs-comment">//获取mapper</span><br>        <span class="hljs-type">EmployeeMapper</span> <span class="hljs-variable">employeeMapper</span> <span class="hljs-operator">=</span> sqlSession.getMapper(EmployeeMapper.class);<br>        <span class="hljs-comment">//先做删除操作</span><br>        employeeMapper.delete(<span class="hljs-literal">null</span>);<br>        <span class="hljs-comment">//获取执行器</span><br>        <span class="hljs-type">ExecutorService</span> <span class="hljs-variable">service</span> <span class="hljs-operator">=</span> ExecutorConfig.getThreadPool();<br>        List&lt;Callable&lt;Integer&gt;&gt; callableList  = <span class="hljs-keyword">new</span> <span class="hljs-title class_">ArrayList</span>&lt;&gt;();<br>        <span class="hljs-comment">//拆分list</span><br>        List&lt;List&lt;EmployeeDO&gt;&gt; lists=averageAssign(employeeDOList, <span class="hljs-number">5</span>);<br>        <span class="hljs-type">AtomicBoolean</span> <span class="hljs-variable">atomicBoolean</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">AtomicBoolean</span>(<span class="hljs-literal">true</span>);<br>        <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> <span class="hljs-variable">i</span> <span class="hljs-operator">=</span><span class="hljs-number">0</span>;i&lt;lists.size();i++)&#123;<br>            <span class="hljs-keyword">if</span> (i==lists.size()-<span class="hljs-number">1</span>)&#123;<br>                atomicBoolean.set(<span class="hljs-literal">false</span>);<br>            &#125;<br>            List&lt;EmployeeDO&gt; list  = lists.get(i);<br>            <span class="hljs-comment">//使用返回结果的callable去执行,</span><br>            Callable&lt;Integer&gt; callable = () -&gt; &#123;<br>                <span class="hljs-comment">//让最后一个线程抛出异常</span><br>                <span class="hljs-keyword">if</span> (!atomicBoolean.get())&#123;<br>                    <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">ServiceException</span>(<span class="hljs-string">&quot;001&quot;</span>,<span class="hljs-string">&quot;出现异常&quot;</span>);<br>                &#125;<br>              <span class="hljs-keyword">return</span> employeeMapper.saveBatch(list);<br>            &#125;;<br>            callableList.add(callable);<br>        &#125;<br>        <span class="hljs-comment">//执行子线程</span><br>       List&lt;Future&lt;Integer&gt;&gt; futures = service.invokeAll(callableList);<br>        <span class="hljs-keyword">for</span> (Future&lt;Integer&gt; future:futures) &#123;<br>        <span class="hljs-comment">//如果有一个执行不成功,则全部回滚</span><br>            <span class="hljs-keyword">if</span> (future.get()&lt;=<span class="hljs-number">0</span>)&#123;<br>                connection.rollback();<br>                 <span class="hljs-keyword">return</span>;<br>            &#125;<br>        &#125;<br>        connection.commit();<br>        System.out.println(<span class="hljs-string">&quot;添加完毕&quot;</span>);<br>    &#125;<span class="hljs-keyword">catch</span> (Exception e)&#123;<br>        connection.rollback();<br>        log.info(<span class="hljs-string">&quot;error&quot;</span>,e);<br>        <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">ServiceException</span>(<span class="hljs-string">&quot;002&quot;</span>,<span class="hljs-string">&quot;出现异常&quot;</span>);<br>    &#125;<span class="hljs-keyword">finally</span> &#123;<br>         connection.close();<br>     &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><code class="hljs xml"><span class="hljs-tag">&lt;<span class="hljs-name">insert</span> <span class="hljs-attr">id</span>=<span class="hljs-string">&quot;saveBatch&quot;</span> <span class="hljs-attr">parameterType</span>=<span class="hljs-string">&quot;List&quot;</span>&gt;</span><br> INSERT INTO<br> employee (employee_id,age,employee_name,birth_date,gender,id_number,creat_time,update_time,status)<br> values<br>     <span class="hljs-tag">&lt;<span class="hljs-name">foreach</span> <span class="hljs-attr">collection</span>=<span class="hljs-string">&quot;list&quot;</span> <span class="hljs-attr">item</span>=<span class="hljs-string">&quot;item&quot;</span> <span class="hljs-attr">index</span>=<span class="hljs-string">&quot;index&quot;</span> <span class="hljs-attr">separator</span>=<span class="hljs-string">&quot;,&quot;</span>&gt;</span><br>     (<br>     #&#123;item.employeeId&#125;,<br>     #&#123;item.age&#125;,<br>     #&#123;item.employeeName&#125;,<br>     #&#123;item.birthDate&#125;,<br>     #&#123;item.gender&#125;,<br>     #&#123;item.idNumber&#125;,<br>     #&#123;item.creatTime&#125;,<br>     #&#123;item.updateTime&#125;,<br>     #&#123;item.status&#125;<br>         )<br>     <span class="hljs-tag">&lt;/<span class="hljs-name">foreach</span>&gt;</span><br> <span class="hljs-tag">&lt;/<span class="hljs-name">insert</span>&gt;</span><br></code></pre></td></tr></table></figure>
+
+<p>测试结果：抛出异常</p>
+<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230420144233.png" srcset="/img/loading.gif" lazyload alt="image-20230420144232857"></p>
+<p>数据库中的数据：删除操作的数据回滚了，数据库中的数据依旧存在，说明事务成功了。</p>
+<h4 id="1-7-2-事务提交示例"><a href="#1-7-2-事务提交示例" class="headerlink" title="1.7.2 事务提交示例"></a>1.7.2 事务提交示例</h4><p>成功执行操作。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@Resource</span><br>SqlContext sqlContext;<br><br><span class="hljs-comment">/**</span><br><span class="hljs-comment"> * 测试多线程事务.</span><br><span class="hljs-comment"> * <span class="hljs-doctag">@param</span> employeeDOList</span><br><span class="hljs-comment"> */</span><br><span class="hljs-meta">@Override</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">saveThread</span><span class="hljs-params">(List&lt;EmployeeDO&gt; employeeDOList)</span> <span class="hljs-keyword">throws</span> SQLException &#123;<br>    <span class="hljs-comment">//获取数据库连接,获取会话(内部自有事务)</span><br>    <span class="hljs-type">SqlSession</span> <span class="hljs-variable">sqlSession</span> <span class="hljs-operator">=</span> sqlContext.getSqlSession();<br>    <span class="hljs-type">Connection</span> <span class="hljs-variable">connection</span> <span class="hljs-operator">=</span> sqlSession.getConnection();<br>    <span class="hljs-keyword">try</span> &#123;<br>        <span class="hljs-comment">//设置手动提交</span><br>        connection.setAutoCommit(<span class="hljs-literal">false</span>);<br>        <span class="hljs-type">EmployeeMapper</span> <span class="hljs-variable">employeeMapper</span> <span class="hljs-operator">=</span> sqlSession.getMapper(EmployeeMapper.class);<br>        <span class="hljs-comment">//先做删除操作</span><br>        employeeMapper.delete(<span class="hljs-literal">null</span>);<br>        <span class="hljs-type">ExecutorService</span> <span class="hljs-variable">service</span> <span class="hljs-operator">=</span> ExecutorConfig.getThreadPool();<br>        List&lt;Callable&lt;Integer&gt;&gt; callableList  = <span class="hljs-keyword">new</span> <span class="hljs-title class_">ArrayList</span>&lt;&gt;();<br>        List&lt;List&lt;EmployeeDO&gt;&gt; lists=averageAssign(employeeDOList, <span class="hljs-number">5</span>);<br>        <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> <span class="hljs-variable">i</span> <span class="hljs-operator">=</span><span class="hljs-number">0</span>;i&lt;lists.size();i++)&#123;<br>            List&lt;EmployeeDO&gt; list  = lists.get(i);<br>            Callable&lt;Integer&gt; callable = () -&gt; employeeMapper.saveBatch(list);<br>            callableList.add(callable);<br>        &#125;<br>        <span class="hljs-comment">//执行子线程</span><br>       List&lt;Future&lt;Integer&gt;&gt; futures = service.invokeAll(callableList);<br>        <span class="hljs-keyword">for</span> (Future&lt;Integer&gt; future:futures) &#123;<br>            <span class="hljs-keyword">if</span> (future.get()&lt;=<span class="hljs-number">0</span>)&#123;<br>                connection.rollback();<br>                 <span class="hljs-keyword">return</span>;<br>            &#125;<br>        &#125;<br>        connection.commit();<br>        System.out.println(<span class="hljs-string">&quot;添加完毕&quot;</span>);<br>    &#125;<span class="hljs-keyword">catch</span> (Exception e)&#123;<br>        connection.rollback();<br>        log.info(<span class="hljs-string">&quot;error&quot;</span>,e);<br>        <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">ServiceException</span>(<span class="hljs-string">&quot;002&quot;</span>,<span class="hljs-string">&quot;出现异常&quot;</span>);<br>        <span class="hljs-comment">//throw new ServiceException(ExceptionCodeEnum.EMPLOYEE_SAVE_OR_UPDATE_ERROR);</span><br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>测试结果：</p>
+<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230420144324.png" srcset="/img/loading.gif" lazyload alt="image-20230420144323377"></p>
+<p>数据库中数据：删除的删除了，添加的添加成功了，测试成功。</p>
+
+              
+            </div>
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/05-%E6%95%B0%E6%8D%AE%E5%BA%93/" class="category-chain-item">05_数据库</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/05-%E6%95%B0%E6%8D%AE%E5%BA%93/01-MySQL/" class="category-chain-item">01_MySQL</a>
+  
+  
+
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/MySQL/">#MySQL</a>
+      
+        <a href="/tags/%E4%BA%8B%E5%8A%A1/">#事务</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>06-事务</div>
+      <div>https://janycode.github.io/2017/06/18/05_数据库/01_MySQL/06-事务/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Jerry(姜源)</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2017年6月18日</div>
+        </div>
+      
+      
+      <div class="license-meta-item">
+        <div>许可协议</div>
+        <div>
+          
+            
+            
+              <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+              <span class="hint--top hint--rounded" aria-label="BY - 姜源">
+                <i class="iconfont icon-by"></i>
+              </span>
+              </a>
+            
+          
+        </div>
+      </div>
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2017/06/18/05_%E6%95%B0%E6%8D%AE%E5%BA%93/01_MySQL/03-DML%E5%A2%9E%E5%88%A0%E6%94%B9/" title="03-DML增删改">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">03-DML增删改</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2017/06/18/05_%E6%95%B0%E6%8D%AE%E5%BA%93/01_MySQL/04-%E5%BA%93%E8%A1%A8%E5%88%9B%E5%88%A0%E6%94%B9/" title="04-库表创删改">
+                        <span class="hidden-mobile">04-库表创删改</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+  <article id="comments" lazyload>
+    
+  <div id="SOHUCS" sid='https://janycode.github.io/2017/06/18/05_%E6%95%B0%E6%8D%AE%E5%BA%93/01_MySQL/06-%E4%BA%8B%E5%8A%A1/'></div>
+  <script type="text/javascript">
+    Fluid.utils.loadComments('#SOHUCS', function() {
+      Fluid.utils.createScript("https://changyan.sohu.com/upload/changyan.js", function() {
+        window.changyan.api.config({"appid":"cyw5OHIcO","appkey":"fea3446b3df4b3f129f34da4cbc87e51"})
+      });
+    });
+  </script>
+  <noscript>Please enable JavaScript to view the comments</noscript>
+
+
+  </article>
+
+
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://simple.blog.csdn.net" target="_blank" rel="nofollow noopener"><span>CSDN</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/janycode" target="_blank" rel="nofollow noopener"><span>GitHub</span></a> <i class="iconfont icon-love"></i> <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="busuanzi_container_site_pv" style="display: none">
+        总访问量(PV) 
+        <span id="busuanzi_value_site_pv"></span>
+         次，
+      </span>
+    
+    
+      <span id="busuanzi_container_site_uv" style="display: none">
+        总访客数(UV) 
+        <span id="busuanzi_value_site_uv"></span>
+         人
+      </span>
+    
+    
+  
+</div>
+
+  
+  
+  
+</div>
+
+<!-- live2d 动画 -->
+<script src="https://eqcn.ajz.miesnfu.com/wp-content/plugins/wp-3d-pony/live2dw/lib/L2Dwidget.min.js"></script>
+<script>
+    L2Dwidget.init({
+        "model": {
+            jsonPath: "https://unpkg.com/live2d-widget-model-haruto@1.0.5/assets/haruto.model.json",
+            "scale": 1
+        },
+        "display": {
+            "position": "right",
+            "width": 100,
+            "height": 200,
+            "hOffset": 35,
+            "vOffset": -85
+        },
+        "mobile": {
+            "show": false,
+            "scale": 0.1
+        },
+        "react": {
+            "opacityDefault": 0.75,
+            "opacityOnHover": 0.2
+        }
+    });
+</script>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <!-- Baidu Analytics -->
+    <script defer>
+      if (!Fluid.ctx.dnt) {
+        var _hmt = _hmt || [];
+        (function() {
+          var hm = document.createElement("script");
+          hm.src = "https://hm.baidu.com/hm.js?bfff735c897eb60ea49b735096b20e47";
+          var s = document.getElementsByTagName("script")[0];
+          s.parentNode.insertBefore(hm, s);
+        })();
+      }
+    </script>
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.0/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      headingSelector : CONFIG.toc.headingSelector || 'h1,h2,h3,h4,h5,h6',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      collapseDepth   : CONFIG.toc.collapseDepth || 0,
+      scrollSmooth    : true,
+      headingsOffset  : -boardTop
+    });
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+  });
+</script>
+
+
+  <script>
+  (function() {
+    var enableLang = CONFIG.code_language.enable && CONFIG.code_language.default;
+    var enableCopy = CONFIG.copy_btn;
+    if (!enableLang && !enableCopy) {
+      return;
+    }
+
+    function getBgClass(ele) {
+      return Fluid.utils.getBackgroundLightness(ele) >= 0 ? 'code-widget-light' : 'code-widget-dark';
+    }
+
+    var copyTmpl = '';
+    copyTmpl += '<div class="code-widget">';
+    copyTmpl += 'LANG';
+    copyTmpl += '</div>';
+    jQuery('.markdown-body pre').each(function() {
+      var $pre = jQuery(this);
+      if ($pre.find('code.mermaid').length > 0) {
+        return;
+      }
+      if ($pre.find('span.line').length > 0) {
+        return;
+      }
+
+      var lang = '';
+
+      if (enableLang) {
+        lang = CONFIG.code_language.default;
+        if ($pre[0].children.length > 0 && $pre[0].children[0].classList.length >= 2 && $pre.children().hasClass('hljs')) {
+          lang = $pre[0].children[0].classList[1];
+        } else if ($pre[0].getAttribute('data-language')) {
+          lang = $pre[0].getAttribute('data-language');
+        } else if ($pre.parent().hasClass('sourceCode') && $pre[0].children.length > 0 && $pre[0].children[0].classList.length >= 2) {
+          lang = $pre[0].children[0].classList[1];
+          $pre.parent().addClass('code-wrapper');
+        } else if ($pre.parent().hasClass('markdown-body') && $pre[0].classList.length === 0) {
+          $pre.wrap('<div class="code-wrapper"></div>');
+        }
+        lang = lang.toUpperCase().replace('NONE', CONFIG.code_language.default);
+      }
+      $pre.append(copyTmpl.replace('LANG', lang).replace('code-widget">',
+        getBgClass($pre[0]) + (enableCopy ? ' code-widget copy-btn" data-clipboard-snippet><i class="iconfont icon-copy"></i>' : ' code-widget">')));
+
+      if (enableCopy) {
+        Fluid.utils.createScript('https://lib.baomitu.com/clipboard.js/2.0.10/clipboard.min.js', function() {
+          var clipboard = new window.ClipboardJS('.copy-btn', {
+            target: function(trigger) {
+              var nodes = trigger.parentNode.childNodes;
+              for (var i = 0; i < nodes.length; i++) {
+                if (nodes[i].tagName === 'CODE') {
+                  return nodes[i];
+                }
+              }
+            }
+          });
+          clipboard.on('success', function(e) {
+            e.clearSelection();
+            e.trigger.innerHTML = e.trigger.innerHTML.replace('icon-copy', 'icon-success');
+            setTimeout(function() {
+              e.trigger.innerHTML = e.trigger.innerHTML.replace('icon-success', 'icon-copy');
+            }, 2000);
+          });
+        });
+      }
+    });
+  })();
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script  src="/js/local-search.js" ></script>
+
+  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>
