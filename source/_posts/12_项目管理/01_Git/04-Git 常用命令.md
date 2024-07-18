@@ -12,7 +12,7 @@ categories:
 
 ## 1. 同步操作
 
-```sh
+```bash
 下载代码：git clone [.git path]
 同步本地：git pull
 工作状态：git status [path]
