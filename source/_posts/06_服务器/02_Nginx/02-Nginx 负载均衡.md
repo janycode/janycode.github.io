@@ -1,5 +1,5 @@
 ---
-title: 01-Nginx 负载均衡
+title: 02-Nginx 负载均衡
 date: 2018-3-28 23:06:42
 tags:
 - Nginx
