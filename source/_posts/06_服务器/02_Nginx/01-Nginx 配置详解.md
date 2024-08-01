@@ -1,5 +1,5 @@
 ---
-title: 02-Nginx 负载均衡
+title: 01-Nginx 配置详解
 date: 2018-3-28 18:09:54
 tags:
 - Nginx
@@ -18,20 +18,58 @@ categories:
 * 官网：http://www.nginx.org/
 * 源码：https://trac.nginx.org/nginx/browser
 * 在线配置：https://nginxconfig.io/
-* 在线格式化：https://nginxbeautifier.github.io/  （设置 Use Space 4）
+* 在线格式化：https://nginxbeautifier.github.io/  （设置使用4个空格：Use Space 4 和 Don't join curly bracket）
 
 > Nginx (engine x) 是一个轻量级高性能的HTTP和反向代理服务器，同时也是一个通用 代理服务器 （TCP/UDP/IMAP/POP3/SMTP），最初由俄罗斯人Igor Sysoev编写。
+
+## 下载
+
+官网下载地址：https://nginx.org/en/download.html
+
+![image-20240730090645157](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20240730090646.png)
+
+如下载 1.18.0
+
+```bash
+#创建nginx（可选）
+mkdir nginx
+
+#下载nginx
+wget https://nginx.org/download/nginx-1.18.0.tar.gz
+
+#解压到指定位置
+tar -xvf nginx-1.10.0.tar.gz -C /usr/local/
+mv nginx-1.10.0 nginx
+cd nginx
+
+#安装依赖
+yum -y install gcc-c++
+yum -y install pcre pcre-devel
+yum -y install zlib zlib-devel
+yum -y install openssl openssl-devel
+
+#全部采用默认安装
+./configure
+make && make install
+
+#查看nginx安装位置 和 版本
+whereis nginx
+nginx -v
+```
+
+
 
 ## 基本命令
 
 ```bash
-nginx -t              检查配置文件是否有语法错误
-nginx -s reload       热加载，重新加载配置文件
-nginx -s stop         快速关闭
-nginx -s quit         等待工作进程处理完成后关闭
+nginx -t                  检查配置文件是否有语法错误
+nginx -c /xxx/nginx.conf  指定配置文件启动
+nginx -s reload           热加载，重新加载配置文件
+nginx -s stop             快速关闭
+nginx -s quit             等待工作进程处理完成后关闭
 ```
 
-搭建好nginx服务器并启动过后，我们先看nginx默认配置，再逐个介绍不同使用场景。
+
 
 ## 默认配置
 
