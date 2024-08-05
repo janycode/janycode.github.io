@@ -48,6 +48,29 @@ Docker 的思想：
 
 #### 2.1 安装 Docker 客户端
 
+* 常规安装方法（推荐）：- 按顺序执行
+
+```bash
+#检查docker是否有运行
+ps -ef | grep docker
+#指定安装docker的来源镜像（系统默认没有安装该命令，通过 yum -y install yum-utils 安装）
+yum-config-manager --add-repo http://mirrors.aliyun.com/docker-ce/linux/centos/docker-ce.repo
+#安装docker客户端docker-ce
+yum -y install docker-ce
+#验证docker命令：查看版本
+docker -v
+#启动为systemctl接管进程：后续通过 systemctl start docker 来启动
+service docker start
+#检查运行状态
+ps -ef |grep docker
+#检查服务启动状态
+systemctl status docker
+```
+
+
+
+* 其他安装方式（可选）：
+
 > 安装前准备：
 >
 > * 禁用 PackageKit 的后台自启，因为它会占用锁定 yum 的 pid 导致无法安装其他。
@@ -109,38 +132,37 @@ sudo service docker start
 您可以通过修改 daemon 配置文件 `/etc/docker/daemon.json` 来使用加速器
 
 ```sh
-sudo mkdir -p /etc/docker
-
-sudo tee /etc/docker/daemon.json <<-'EOF'
+#创建目录
+mkdir -p /etc/docker
+#配置镜像加速
+tee /etc/docker/daemon.json <<-'EOF'
 {
   "registry-mirrors": ["https://7cptp8wl.mirror.aliyuncs.com"]
 }
 EOF
-
-sudo systemctl daemon-reload
-
-sudo systemctl restart docker
+#重新加载所有systemctl接管服务的配置文件
+systemctl daemon-reload
+#重启
+systemctl restart docker
 ```
 
 #### 2.3 启动 Docker 并测试
 
 ```sh
-# 查看是否安装成功
+#查看是否安装成功
 docker -v
-
-# 启动 docker 服务
+#启动 docker 服务（已启动则跳过）
 systemctl start docker
-
-# 查看 docker 状态
+#查看 docker 状态
 systemctl status docker
 
-# 设置开机自动启动
+#设置开机自动启动
 systemctl enable docker
 ```
 
 
 
-### 3. 阿里云 Docker 安装
+### 3. 阿里云 Docker 安装（可选）
 
 ```sh
 #1. 下载docker-ce的repo

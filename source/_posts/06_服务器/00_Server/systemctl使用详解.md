@@ -21,7 +21,7 @@ Systemd是一个系统管理守护进程、工具和库的集合，用于取代S
 
 ## systemd 和 systemctl
 
-### **01.检查安装版本**
+### 01.检查安装版本
 
 ```bash
 # systemd --version
@@ -31,7 +31,7 @@ systemd 215
 
 从上面的例子可以清楚地看出，我们已经安装了systemd 215版本。
 
-### **02.检查二进制文件和库的安装位置**
+### 02.检查二进制文件和库的安装位置
 
 ```bash
 # whereis systemd 
@@ -41,7 +41,7 @@ systemd: /usr/lib/systemd /etc/systemd /usr/share/systemd /usr/share/man/man1/sy
 systemctl: /usr/bin/systemctl /usr/share/man/man1/systemctl.1.gz
 ```
 
-### **03.检查是否正在运行**
+### 03.检查是否正在运行
 
 ```bash
 # ps -eaf | grep [s]ystemd
@@ -56,14 +56,14 @@ dbus       556     1  0 16:27 ?        00:00:00 /bin/dbus-daemon --system --addr
 
 另请注意上面示例中的方括号以及其他示例。 Square Bracket表达式是grep的字符类模式匹配的一部分。
 
-### **04.分析启动过程**
+### 04.分析启动过程
 
 ```bash
 # systemd-analyze
 Startup finished in 487ms (kernel) + 2.776s (initrd) + 20.229s (userspace) = 23.493s
 ```
 
-### **05.分析每个进程在引导时间**
+### 05.分析每个进程在引导时间
 
 ```bash
 # systemd-analyze blame
@@ -80,7 +80,7 @@ Startup finished in 487ms (kernel) + 2.776s (initrd) + 20.229s (userspace) = 23.
 ....
 ```
 
-### **06.分析启动时的关键链**
+### 06.分析启动时的关键链
 
 ```bash
 # systemd-analyze critical-chain
@@ -108,7 +108,7 @@ multi-user.target @20.222s
 
 > 重要：Systemctl接受服务（.service），挂载点（.mount），套接字（.socket）和设备（.device）作为单位。
 
-### **07.列出所有可用的单位**
+### 07.列出所有可用的单位
 
 ```bash
 # systemctl list-unit-files
@@ -125,7 +125,7 @@ brandbot.path                               disabled
 .....
 ```
 
-### **08.列出所有运行单元**
+### 08.列出所有运行单元
 
 ```bash
 # systemctl list-units
@@ -147,7 +147,7 @@ sys-module-configfs.device                  loaded active plugged   /sys/module/
 ...
 ```
 
-### **09.列出所有失败的单元**
+### 09.列出所有失败的单元
 
 ```bash
 # systemctl --failed
@@ -160,14 +160,14 @@ SUB    = The low-level unit activation state, values depend on unit type.
 To show all installed unit files use 'systemctl list-unit-files'.
 ```
 
-### **10.检查单元(cron.service)是否启用?**
+### 10.检查单元(cron.service)是否启用?
 
 ```bash
 # systemctl is-enabled crond.service
 enabled
 ```
 
-### **11.检查单元或服务是否正在运行？**
+### 11.检查单元或服务是否正在运行？
 
 ```bash
 # systemctl status firewalld.service
@@ -185,7 +185,7 @@ Apr 28 16:27:55 tecmint systemd[1]: Started firewalld - dynamic firewall daemon.
 
 ## 控制和管理服务
 
-### **12.列出所有服务（包括启用和禁用）**
+### 12.列出所有服务（包括启用和禁用）
 
 ```bash
 # systemctl list-unit-files --type=service
@@ -204,7 +204,7 @@ dbus-org.fedoraproject.FirewallD1.service   enabled
 ....
 ```
 
-### **13.如何在Linux中启动，重新启动，停止，重新加载和检查服务（httpd.service）的状态**
+### 13.如何在Linux中启动，重新启动，停止，重新加载和检查服务（httpd.service）的状态
 
 ```bash
 # systemctl start httpd.service        #启动服务
@@ -234,7 +234,7 @@ Apr 28 17:21:30 tecmint systemd[1]: Started The Apache HTTP Server.
 
 > 注意：当我们使用systemctl等启动，重启，停止和重载等命令时，我们将不会在终端上获得任何输出，只有status命令会打印输出。
 
-### **14.如何在引导时激活服务并启用或禁用服务（系统引导时自动启动服务）**
+### 14.如何在引导时激活服务并启用或禁用服务（系统引导时自动启动服务）
 
 ```bash
 # systemctl is-active httpd.service   #是否开机自启
@@ -242,7 +242,7 @@ Apr 28 17:21:30 tecmint systemd[1]: Started The Apache HTTP Server.
 # systemctl disable httpd.service     #禁用开机自启
 ```
 
-### **15.如何屏蔽（使其无法启动）或取消屏蔽服务（httpd.service)**
+### 15.如何屏蔽（使其无法启动）或取消屏蔽服务（httpd.service)
 
 ```bash
 ln -s '/dev/null' '/etc/systemd/system/httpd.service'
@@ -250,7 +250,7 @@ ln -s '/dev/null' '/etc/systemd/system/httpd.service'
 rm '/etc/systemd/system/httpd.service'
 ```
 
-### **16.如何使用systemctl命令终止服务**
+### 16.如何使用systemctl命令终止服务
 
 ```bash
 # systemctl kill httpd
@@ -277,7 +277,7 @@ Hint: Some lines were ellipsized, use -l to show in full.
 
 ## 控制和管理挂载点
 
-### **17.列出所有系统安装点**
+### 17.列出所有系统安装点
 
 ```bash
 # systemctl list-unit-files --type=mount
@@ -291,7 +291,7 @@ sys-kernel-debug.mount        static
 tmp.mount                     disabled
 ```
 
-### **18.如何装载，卸载，重新装载，重新装载系统装载点，以及检查系统上装载点的状态**
+### 18.如何装载，卸载，重新装载，重新装载系统装载点，以及检查系统上装载点的状态
 
 ```bash
 # systemctl start tmp.mount
@@ -418,7 +418,7 @@ CPUShares=2000
 
  
 
-### **27.检查服务的所有配置详细信息**
+### 27.检查服务的所有配置详细信息
 
 ```bash
 # systemctl show httpd
@@ -438,7 +438,7 @@ FragmentPath=/usr/lib/systemd/system/httpd.service
 ....
 ```
 
-### **28.分析服务的关键链（httpd）**
+### 28.分析服务的关键链（httpd）
 
 ```bash
 # systemd-analyze critical-chain httpd.service
@@ -463,7 +463,7 @@ httpd.service +142ms
 └─dev-disk-by\x2duuid-79f594ad\x2da332\x2d4730\x2dbb5f\x2d85d196080964.device @4.092s
 ```
 
-### **29.获取服务的依赖项列表（httpd）**
+### 29.获取服务的依赖项列表（httpd）
 
 ```bash
 # systemctl list-dependencies httpd.service
@@ -486,7 +486,7 @@ httpd.service
 ....
 ```
 
-### **30.按层次列出控制组**
+### 30.按层次列出控制组
 
 ```bash
 # systemd-cgls
@@ -511,7 +511,7 @@ httpd.service
 ....
 ```
 
-### **31.根据CPU，内存，输入和输出列出控制组**
+### 31.根据CPU，内存，输入和输出列出控制组
 
 ```bash
 # systemd-cgtop
@@ -527,7 +527,7 @@ Path                                                              Tasks   %CPU  
 
 ## 控制系统运行级别
 
-### **32.如何启动系统救援模式**
+### 32.如何启动系统救援模式
 
 ```bash
 # systemctl rescue
@@ -544,14 +544,14 @@ system logs, "systemctl reboot" to reboot, "systemctl default" to try again
 to boot into default mode.
 ```
 
-### **34.列出当前使用的运行级别**
+### 34.列出当前使用的运行级别
 
 ```bash
 # systemctl get-default
 multi-user.target
 ```
 
-### **5.如何启动Runlevel 5 aka图形模式。**
+### 5.如何启动Runlevel 5 aka图形模式。
 
 ```bash
 # systemctl isolate runlevel5.target
@@ -559,7 +559,7 @@ OR
 # systemctl isolate graphical.target
 ```
 
-### **36.如何启动Runlevel 3又称多用户模式（命令行）**
+### 36.如何启动Runlevel 3又称多用户模式（命令行）
 
 ```bash
 # systemctl isolate runlevel3.target
@@ -567,7 +567,7 @@ OR
 # systemctl isolate multiuser.target
 ```
 
-### **36.如何将多用户模式或图形模式设置为默认运行级别**
+### 36.如何将多用户模式或图形模式设置为默认运行级别
 
 ```bash
 # systemctl set-default runlevel3.target
@@ -581,7 +581,7 @@ OR
 - 运行级别5：多用户，图形系统。
 - 运行级别6：关闭并重新启动机器。
 
-### **37.如何重启，暂停，暂停，休眠或将系统置于混合睡眠状态**
+### 37.如何重启，暂停，暂停，休眠或将系统置于混合睡眠状态
 
 ```bash
 # systemctl reboot
