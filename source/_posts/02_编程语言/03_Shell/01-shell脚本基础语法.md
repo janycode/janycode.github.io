@@ -55,7 +55,7 @@ env | grep WELCOME // 查询变量
 shell用户变量：
 linux下支持用户自定义变量，使用' = '进行赋值，即  **变量名=变量值**
 
-```shell
+```bash
 /* 代码演示 */
 #! /bin/sh
 
@@ -70,7 +70,7 @@ echo \$VAR  // $VAR
 
 ### 变量扩展
 变量扩展符号：'$'
-```shell
+```bash
 例如：
 echo hey$VAR   // heyhello
 echo hey$VAR123   // hey【错误，无法正确使用变量扩展】
@@ -83,7 +83,7 @@ echo hey${VAR}123 // heyhello123 【正确实现变量扩展】
 【字符串截断】
 左截断 '#'(3)
 例如：
-```shell
+```bash
 $ MYVAR=foodforthought.jpg
 $ echo ${MYVAR##*fo}
 rthought.jpg // 双#加上*fo是从左侧截断到最后一个fo最长的子字符串，输出剩余字符
@@ -95,7 +95,7 @@ odforthought.jpg // 单#加上*fo是从左侧截断到最短的一个fo的子字
 
 右截断 '%'(5)
 例如：
-```shell
+```bash
 $ MYFOO="chickensoup.tar.gz"
 $ echo ${MYFOO%%.*}
 chickensoup // 双%加上.*是从右侧截断到最长的子字符串，输出剩余字符
@@ -116,7 +116,7 @@ else
 fi
 
 <文件比较运算符>
-```shell
+```bash
 -e filename  // 如果filename存在，则为真 [ -e /var/log/syslog ]
 -d filename  // 如果filename为目录，则为真 [ -d /tmp/mydir ]
 -f filename  // 如果filename为常规文件，则为真 [ -f /usr/bin/grep ]
@@ -129,7 +129,7 @@ filename1 -ot filename2  // 如果filename1比filename2旧，则为真 [ /tmp/se
 
 
 <字符串比较运算符> '注意引号的使用，防止空格扰乱代码的好方法'
-```shell
+```bash
 -z string  // 如果string长度为0，则为真 [ -z "$myvar" ]
 -n string  // 如果string长度非0，则为真 [ -n "$myvar" ]
 string1 = string2  // 如果string1与string2相同，则为真 [ "$myvar" = "one two three" ]
@@ -138,7 +138,7 @@ string1 != string2  // 如果string1与string2不同，则为真 [ "$myvar" != "
 
 
 <算术比较运算符>
-```shell
+```bash
 num1 -eq num2  // 等于 [ 3 -eq $mynum]
 num1 -ne num2  // 不等于 [ 3 -ne $mynum]
 num1 -lt num2  // 小于 [ 3 -lt $mynum]
@@ -147,7 +147,7 @@ num1 -gt num2  // 大于 [ 3 -gt $mynum]
 num1 -ge num2  // 大于或等于 [ 3 -ge $mynum]
 ```
 
-```shell
+```bash
 /* 代码演示 */
 #! /bin/sh
 MYVAR=3
@@ -181,7 +181,7 @@ esac
 
 如果每个都匹配不到，则会在最后放置一个*，相当于c语言中的default
 
-```shell
+```bash
 /* 代码演示 */
 Test=test.tar.gz
 case "${Test##*.}" in
@@ -203,7 +203,7 @@ do
   ...
 done
 
-```shell
+```bash
 /* 代码演示 */
 #! /bin/sh
 MYNUM=0
@@ -224,7 +224,7 @@ do
   ...
 done
 
-```shell
+```bash
 /* 代码演示 */
 for x in one two three four   # 变量循环4次
 do
@@ -244,7 +244,7 @@ done
 
 \>> 实验1：自动备份源代码
 
-```shell
+```bash
 /* 代码演示 */
 #!/bin/sh
 
@@ -305,7 +305,7 @@ exit $?
 
 \>> 实验2：自动解包分类并统计文件
 
-```shell
+```bash
 /* 代码演示 */
 clear
 echo "================================="
@@ -389,13 +389,13 @@ echo "================================="
 
 ### 后台运行且不输出日志
 
-```shell
+```bash
 脚本路径/脚本名 >/dev/null 2>&1
 ```
 
 或
 
-```
+```bash
 nohup 脚本名 &
 ```
 
@@ -405,7 +405,7 @@ nohup 脚本名 &
 
 如创建MP4文件夹，查找当前目录(递归子目录)下的.mp4文件，并拷贝到创建的MP4文件夹：
 
-```shell
+```bash
 mkdir ./MP4/ && find . -name "*.mp4" |xargs -i cp {} ./MP4/
 ```
 
@@ -464,7 +464,7 @@ echo
 
 目录结构：
 
-```
+```bash
 E:
 ├── janycode.blog
 │   ├── markdown

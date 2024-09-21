@@ -18,9 +18,9 @@ categories:
 
 
 
-# 1.     **概念与流程**
+# 1.     概念与流程
 
-## **1.1 概念**
+## 1.1 概念
 
 * 应用分类
 
@@ -62,9 +62,9 @@ categories:
 
 
 
-## **1.2 流程**
+## 1.2 流程
 
-### **1.2.1 全局流程**
+### 1.2.1 全局流程
 
 https://doc.weixin.qq.com/flowchart-addon
 
@@ -74,7 +74,7 @@ https://doc.weixin.qq.com/flowchart-addon
 
 
 
-### **1.2.2 应用配置**
+### 1.2.2 应用配置
 
 参考如下图。
 
@@ -84,7 +84,7 @@ https://doc.weixin.qq.com/flowchart-addon
 >
 > 两个 getData 接口，一个是 GET 请求，一个是 POST 请求。
 
-### **1.2.3 数据流程**
+### 1.2.3 数据流程
 
 参考文档：[企业微信应用接入指引 - 接口文档 - 企业微信开发者中心](https://developer.work.weixin.qq.com/document/path/90568)
 
@@ -104,7 +104,7 @@ https://doc.weixin.qq.com/flowchart-addon
 >
 > 6.拼接安装应用的授权页面：https://developer.work.weixin.qq.com/document/path/90597
 >
-> 7.授权成功拿到临时授权码页面 eg: `https://redirect_uri?auth_code=xxx&expires_in=600&state=xx`
+> 7.授权成功拿到临时授权码页面 eg: `redirect_uri?auth_code=xxx&expires_in=600&state=xx`
 >
 > 8.获取永久授权码和企业信息: https://developer.work.weixin.qq.com/document/path/90603
 >
@@ -112,13 +112,13 @@ https://doc.weixin.qq.com/flowchart-addon
 >
 > 10.拼接应用内用户自动登录授权页面: https://developer.work.weixin.qq.com/document/path/91120
 >
-> 11.授权成功拿到授权码页面 eg: `redirect_uri?auth_code=xxx&expires_in=600&state=xx`
+> 11.授权成功拿到授权码页面 eg: `redirect_uri?code=CODE&state=STATE`
 >
 > End
 
 
 
-#             **2.**     **核心文档**
+#             2.     核心文档
 
 第三方应用开发前提：[成为企业微信的服务商 - 企业微信开发者中心](https://developer.work.weixin.qq.com/document/path/90568#成为企业微信的服务商)
 
@@ -126,13 +126,13 @@ https://doc.weixin.qq.com/flowchart-addon
 
 申请成为服务商：[企业微信申请成为服务商](https://open.work.weixin.qq.com/wwopen/login?login_type=service_register)
 
-## **2.1 理解第三方应用开发流程和概念**
+## 2.1 理解第三方应用开发流程和概念
 
 从第三方应用整个项目周期的接入流程来看，主要分成两个阶段：2.1.1 & 2.1.2
 
 ![image-20240920182119904](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20240920182121.png)
 
-### **2.1.1 应用开发阶段**
+### 2.1.1 应用开发阶段
 
 ​            1.     创建应用，配置基本信息
 
@@ -140,7 +140,7 @@ https://doc.weixin.qq.com/flowchart-addon
 
 ​            3.     上线应用，提交审核信息
 
-### **2.1.2 应用推广阶段**
+### 2.1.2 应用推广阶段
 
 ​            1.     服务商自有渠道推广
 
@@ -150,7 +150,7 @@ https://doc.weixin.qq.com/flowchart-addon
 
 
 
-### **2.1.3 基本流程**
+### 2.1.3 基本流程
 
 官方流程图参考：
 
@@ -158,23 +158,23 @@ https://doc.weixin.qq.com/flowchart-addon
 
 整体为四个阶段：
 
-#### **1）前期应用准备**
+#### 1）前期应用准备
 
 ​            1.     创建应用
 
 ​            2.     获取 suite_id 与 suite_scret
 
-#### **2）基础环境搭建**
+#### 2）基础环境搭建
 
 ​            1.     获取第三方应用凭证
 
-#### **3）企业授权安装**
+#### 3）企业授权安装
 
 ​            1.     获取临时授权码
 
 ​            2.     获取永久授权码
 
-#### **4）调用企业接口**
+#### 4）调用企业接口
 
 ​            1.     获取登陆用户身份
 
@@ -182,31 +182,31 @@ https://doc.weixin.qq.com/flowchart-addon
 
 参考文档：[理解第三方应用开发的流程与概念](https://developer.work.weixin.qq.com/tutorial/detail/36)
 
-## **2.2 如何创建第三方应用**
+## 2.2 如何创建第三方应用
 
 参考文档：[一：如何创建第三方应用](https://developer.work.weixin.qq.com/tutorial/detail/37)
 
-## **2.3 如何接受企业微信回调**
+## 2.3 如何接受企业微信回调
 
 参考文档：[二：如何接收企业微信回调](https://developer.work.weixin.qq.com/tutorial/detail/38)
 
-## **2.4 如何获取第三方应用凭证**
+## 2.4 如何获取第三方应用凭证
 
 参考文档：[三：如何获取第三方应用凭证](https://developer.work.weixin.qq.com/tutorial/detail/39)
 
-## **2.5 如何将应用安装到企业工作台**
+## 2.5 如何将应用安装到企业工作台
 
 参考文档：[四：如何将应用安装到企业工作台](https://developer.work.weixin.qq.com/tutorial/detail/40)
 
-## **2.6 如何获取登陆用户信息**
+## 2.6 如何获取登陆用户信息
 
 参考文档：[五：如何获取登录用户信息](https://developer.work.weixin.qq.com/tutorial/detail/41)
 
-## **2.7 如何向成员发送消息**
+## 2.7 如何向成员发送消息
 
 参考文档：[六：如何向成员发送消息](https://developer.work.weixin.qq.com/tutorial/detail/42)
 
-## **2.8 如何提交上架**
+## 2.8 如何提交上架
 
 参考文档：[七：如何提交上线第三方应用](https://developer.work.weixin.qq.com/tutorial/detail/43)
 

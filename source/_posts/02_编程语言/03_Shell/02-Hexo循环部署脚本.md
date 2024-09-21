@@ -64,7 +64,7 @@ echo
 
 目录结构：
 
-```shell
+```bash
 E:
 ├── janycode.blog
 │   ├── markdown
