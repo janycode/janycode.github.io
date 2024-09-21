@@ -96,11 +96,11 @@ exit 0
 把脚本加到计划任务就可以了：
 
 ```shell
-# crontab -e
-0 9 * * 1-6 /root/.notice/bug-notice.sh
+$ crontab -e
+0 9 * * 1-6 /root/.notice/bug-notice.sh  #每周的周1~周6上午9点执行一次脚本
 ```
 
-> 每周的周1~周6上午9点执行一次脚本。
+
 
 效果展示：
 ![image-20240814100143795](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20240814100146.png)
