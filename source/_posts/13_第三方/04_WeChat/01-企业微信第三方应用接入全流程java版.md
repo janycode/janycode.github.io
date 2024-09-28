@@ -2015,7 +2015,9 @@ postman测试结果：
 
 
 
-#             附： 验证第三方应用api接入调用流程
+#             附1： 验证第三方应用api接入调用流程
+
+![企微第三方应用接口设计与数据流程思维导图](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20240927103158.png)
 
 ```json
 ①刷新ticket凭证： 服务商管理后台应用中【刷新ticket】（手动，线上10分钟自动）
@@ -2052,7 +2054,7 @@ curl https://qyapi.weixin.qq.com/cgi-bin/service/get_pre_auth_code?suite_access_
 
 ⑤拼接第三方应用安装地址，拿临时授权码：
 https://open.work.weixin.qq.com/3rdapp/install?suite_id=xxx&pre_auth_code=xxx&redirect_uri=https%3a%2f%2fwww.xxx.com&state=STATE
-用户（也就是默认的管理员）操作安装应用
+用户（也就是默认的管理员）操作安装应用（注意：不要从企业微信打开，要贴到浏览器中访问！！！）
 重定向后拿到 auth_code：
 https://www.xxx.com/?auth_code=xxx&state=STATE&expires_in=1200#/login?redirect=%2Findex
 
@@ -2142,7 +2144,7 @@ https://qyapi.weixin.qq.com/cgi-bin/service/get_permanent_code?suite_access_toke
     "expires_in": 7200
 }
 
-⑧应用内自动登录的用户授权地址拼接：
+⑧应用内自动登录的用户授权地址拼接（此时的appid为第三方应用的suiteId）：
 https://open.weixin.qq.com/connect/oauth2/authorize?appid=xxx&redirect_uri=https%3a%2f%2fwww.xxx.com&response_type=code&scope=snsapi_privateinfo&state=STATE#wechat_redirect
 用户同意：
 https://www.xxx.com/?code=xxx&state=STATE#/login?redirect=%2Findex
@@ -2179,3 +2181,19 @@ code: xxx
     "open_userid": "xxx"
 }
 ```
+
+
+
+# 附2：接口逻辑代码实现
+
+回调中处理业务逻辑。
+
+```java
+回调：
+GET  /corpWx/callback/getData
+POST /corpWx/callback/getData
+自动登录：
+POST  /qyWeChat/getUserInfoByCode
+POST  /login （通过企业微信 userid 自动登录返回token）
+```
+
