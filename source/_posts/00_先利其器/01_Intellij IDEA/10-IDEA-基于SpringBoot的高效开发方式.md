@@ -51,7 +51,7 @@ mybatisplus 通过方法名规则生成所需方法(不需要写mapper.xml中的
 
 `restfulTool 插件`
 
-扫描所有的接口路径，以及展示方法的返回 json 字符串。`Ctrl + Alt + /` 快速搜索接口名。
+扫描所有的接口路径，以及展示方法的返回 json 字符串。`Ctrl + Alt + \` 快速搜索接口名。
 
 ![image-20210106230127887](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20210106230129.png)
 
