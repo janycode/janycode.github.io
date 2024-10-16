@@ -234,13 +234,75 @@ Apr 28 17:21:30 tecmint systemd[1]: Started The Apache HTTP Server.
 
 > 注意：当我们使用systemctl等启动，重启，停止和重载等命令时，我们将不会在终端上获得任何输出，只有status命令会打印输出。
 
-### 14.如何在引导时激活服务并启用或禁用服务（系统引导时自动启动服务）
+### 14.如何在引导时激活服务并启用或禁用服务（系统引导时自动启动服务-开机自启）
 
 ```bash
 # systemctl is-active httpd.service   #是否开机自启
 # systemctl enable httpd.service      #设置开机自启
 # systemctl disable httpd.service     #禁用开机自启
 ```
+
+在 CentOS 服务器上，单独设置自定义脚本的`开机自启`：
+
+**一、创建脚本**
+
+首先创建你要在重启时执行的脚本文件，例如`my_script.sh`，确保该脚本具有可执行权限。如果脚本需要特定的解释器（如`bash`），在脚本的开头添加相应的解释器声明，例如：
+
+```bash
+#!/bin/bash
+# 你的脚本内容
+```
+
+**二、使用`systemd`配置**
+
+1. 创建一个
+
+   ```
+   systemd
+   ```
+
+   服务单元文件：
+
+   - 以 root 用户身份创建一个服务单元文件，例如`/etc/systemd/system/my_script.service`，内容如下：
+
+```ini
+   [Unit]
+   Description=My Script on Boot
+   After=network.target
+
+   [Service]
+   Type=simple
+   ExecStart=/path/to/my_script.sh
+   RemainAfterExit=yes
+
+   [Install]
+   WantedBy=multi-user.target
+```
+
+- 将`/path/to/my_script.sh`替换为你的脚本的实际路径。
+
+1. 启用并启动服务：
+   - 重新加载`systemd`配置：
+
+```bash
+     sudo systemctl daemon-reload
+```
+
+- 启用服务，使其在系统启动时自动启动：
+
+```bash
+     sudo systemctl enable my_script.service
+```
+
+- 可以启动服务以立即测试：
+
+```bash
+     sudo systemctl start my_script.service
+```
+
+这样配置后，每次 CentOS 服务器重启时，`my_script.sh`脚本将会自动执行。
+
+
 
 ### 15.如何屏蔽（使其无法启动）或取消屏蔽服务（httpd.service)
 

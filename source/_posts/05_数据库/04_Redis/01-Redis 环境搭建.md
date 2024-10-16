@@ -122,6 +122,10 @@ Redis 是一个 `key-value` 存储系统，和 Memcached 类似，它支持存�
 
 
 
+
+
+
+
 #### 3.2 性能测试
 
 redis-benchmark官方自带的性能测试工具：

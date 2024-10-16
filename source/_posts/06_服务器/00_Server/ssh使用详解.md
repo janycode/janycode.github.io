@@ -100,6 +100,16 @@ cat id_rsa.pub >> authorized_keys
 
 然后再 ssh ip地址 就可以连接主机了，或者 ssh执行远程命令也没问题了。
 
+## 默认进入目录
+
+在 SSH 连接后默认进入的目录可以通过以下几种方法进行修改：
+修改用户主目录下的 `.bash_profile` 或 `.bashrc`
+
+```bash
+# 设置默认进入的目录
+cd /new/dir/
+```
+
 
 
 ## scp客户端

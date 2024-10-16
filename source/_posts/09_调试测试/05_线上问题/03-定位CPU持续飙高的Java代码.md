@@ -29,11 +29,3 @@ jstack 线程id | grep 十六进制线程id -A 5
 
 
 
-
-小知识：测试服务器内存不够用怎么办？（使用类似虚拟内存的方式设置一部分硬盘空间为交换内存）
-
-![image-20240929171434533](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20240929171443.png)
-
-
-
-![image-20240929171539325](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20240929171540.png)
