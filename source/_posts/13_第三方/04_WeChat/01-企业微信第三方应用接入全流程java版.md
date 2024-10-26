@@ -1,6 +1,7 @@
 ---
 title: 01-企业微信第三方应用接入全流程java版
 date: 2024-9-21 19:54:51
+index_img: https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20241026114427.png
 tags:
 - 企业微信
 - 第三方应用

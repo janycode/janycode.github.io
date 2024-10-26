@@ -1,6 +1,7 @@
 ---
 title: 02-阿里云云效：一站式DevOps平台
 date: 2024-10-07 10:38:59
+index_img: https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20241026114718.png
 tags:
 - 项目管理
 - 能效平台
@@ -8,8 +9,6 @@ categories:
 - 12_项目管理
 - 06_PMP
 ---
-
-
 
 参考资料: https://devops.aliyun.com/
 
