@@ -1,6 +1,7 @@
 ---
 title: 02-Hexo循环部署脚本
 date: 2024-3-21 22:48:42
+index_img: https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20241024151141.png
 tags:
 - shell
 - 语法

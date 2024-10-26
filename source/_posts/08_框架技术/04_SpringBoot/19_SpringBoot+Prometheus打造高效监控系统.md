@@ -1,6 +1,7 @@
 ---
 title: 19_SpringBoot+Prometheus打造高效监控系统
 date: 2024-05-27 14:53:26
+index_img: https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20241024154522.png
 tags:
 - SpringBoot
 - Prometheus

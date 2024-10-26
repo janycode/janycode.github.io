@@ -1,6 +1,7 @@
 ---
 title: systemctl使用详解
 date: 2024-5-25 12:43:31
+index_img: https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20241024153859.png
 tags: 
 - 服务器
 - systemctl
@@ -8,8 +9,6 @@ categories:
 - 06_服务器
 - 00_Server
 ---
-
-
 
 ## systemctl 介绍
 

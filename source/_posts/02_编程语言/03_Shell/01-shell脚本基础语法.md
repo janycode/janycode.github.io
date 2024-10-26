@@ -1,6 +1,7 @@
 ---
 title: 01-shell脚本基础语法
 date: 2017-4-28 22:21:04
+index_img: https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20241024151751.png
 tags:
 - shell
 - 语法

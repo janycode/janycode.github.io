@@ -1,6 +1,6 @@
 ---
 title: 02-阿里云云效：一站式DevOps平台
-date: 2024-10-21 19:38:59
+date: 2024-10-07 10:38:59
 tags:
 - 项目管理
 - 能效平台
@@ -94,6 +94,12 @@ categories:
 自动化规则配置：https://help.aliyun.com/zh/yunxiao/user-guide/automation-rules
 
 ![image-20241021150120317](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20241021150121.png)
+
+
+
+![image-20241023090100001](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20241023090101.png)
+
+
 
 ![image-20241021150254141](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20241021150255.png)
 
@@ -248,3 +254,13 @@ categories:
 - 迭代进展群内定时通知、开发任务状态自动流转：https://help.aliyun.com/zh/yunxiao/use-cases/this-simple-little-function-saves-213-hours-for-our-production-and-research-team-in-half-a-year
 - 如何制定科学有效的需求流程规范：https://help.aliyun.com/zh/yunxiao/use-cases/how-to-develop-scientific-and-effective-requirements-process-specification
 - 使用代码检测提升代码质量和安全：https://help.aliyun.com/zh/yunxiao/use-cases/improve-code-quality-and-security-with-code-inspection
+
+
+
+# 附：PPT版教程
+
+通过百度网盘分享的文件：
+
+【能效平台】阿里云效介绍与使用.pptx
+链接：https://pan.baidu.com/s/1koXifca5VVYp37DJb733Rw?pwd=9shz 
+提取码：9shz

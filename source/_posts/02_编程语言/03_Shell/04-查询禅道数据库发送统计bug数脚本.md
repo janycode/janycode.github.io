@@ -1,6 +1,7 @@
 ---
 title: 04-查询禅道数据库发送统计bug数脚本
 date: 2024-8-14 12:34:13
+index_img: https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20241024151751.png
 tags:
 - shell
 - 语法

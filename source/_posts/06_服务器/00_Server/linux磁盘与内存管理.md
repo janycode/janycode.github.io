@@ -1,6 +1,7 @@
 ---
 title: linux磁盘与内存管理
 date: 2024-5-25 15:00:58
+index_img: https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20241024154332.png
 tags: 
 - 服务器
 - 磁盘
@@ -9,8 +10,6 @@ categories:
 - 06_服务器
 - 00_Server
 ---
-
-
 
 ## 磁盘管理
 
