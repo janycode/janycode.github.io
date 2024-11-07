@@ -1,0 +1,859 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=light>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Jerry(姜源)">
+  <meta name="keywords" content="Java,Html,CSS,JavaScript,Python,C,Linux,shell编程经验分享、技术总结、心得体会">
+  
+    <meta name="description" content="参考资料： GitHub - beyondfengyu&#x2F;SnowFlake: Twitter的雪花算法SnowFlake，使用Java语言实现。 唯一ID工具-IdUtil (hutool.cn) 1. ID组成结构  1位，不用。 二进制中最高位为1的都是负数，但是我们生成的id一般都使用整数，所以这个最高位固定是0。  41位，用来记录时间戳（毫秒）。  * 41位可以表示$2^&amp;">
+<meta property="og:type" content="article">
+<meta property="og:title" content="01-SnowFlake雪花算法">
+<meta property="og:url" content="https://janycode.github.io/2020/04/05/15_%E5%88%86%E5%B8%83%E5%BC%8F/01_%E5%88%86%E5%B8%83%E5%BC%8FID/01-SnowFlake%E9%9B%AA%E8%8A%B1%E7%AE%97%E6%B3%95/index.html">
+<meta property="og:site_name" content="姜源の云笔记">
+<meta property="og:description" content="参考资料： GitHub - beyondfengyu&#x2F;SnowFlake: Twitter的雪花算法SnowFlake，使用Java语言实现。 唯一ID工具-IdUtil (hutool.cn) 1. ID组成结构  1位，不用。 二进制中最高位为1的都是负数，但是我们生成的id一般都使用整数，所以这个最高位固定是0。  41位，用来记录时间戳（毫秒）。  * 41位可以表示$2^&amp;">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20220205110805.png">
+<meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20220205111906.png">
+<meta property="article:published_time" content="2020-04-05T02:51:30.000Z">
+<meta property="article:modified_time" content="2024-11-07T05:50:38.534Z">
+<meta property="article:author" content="Jerry(姜源)">
+<meta property="article:tag" content="架构">
+<meta property="article:tag" content="分布式">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20220205110805.png">
+  
+  
+    <meta name="referrer" content="no-referrer-when-downgrade">
+  
+  
+  <title>01-SnowFlake雪花算法 - 姜源の云笔记</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"janycode.github.io","root":"/","version":"1.9.0","typing":{"enable":true,"typeSpeed":50,"cursorChar":"|","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":false},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":"bfff735c897eb60ea49b735096b20e47","google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+
+  
+<meta name="generator" content="Hexo 6.2.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 50vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>姜源の云笔记</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tools/">
+                <i class="iconfont icon-slack-fill"></i>
+                工具
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" target="_blank" rel="noopener" href="https://yuancodes.github.io/">
+                <i class="iconfont icon-notebook"></i>
+                Docsify
+              </a>
+            </li>
+          
+        
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="01-SnowFlake雪花算法"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-author" aria-hidden="true"></i>
+        Jerry(姜源)
+      </span>
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2020-04-05 10:51" pubdate>
+          星期日, 2020/04/05 10:51:30
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          <!-- compatible with older versions-->
+          9.5k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          <!-- compatible with older versions-->
+          79 分钟
+        
+      </span>
+    
+
+    
+    
+      
+        <span id="busuanzi_container_page_pv" style="display: none">
+          <i class="iconfont icon-eye" aria-hidden="true"></i>
+          <span id="busuanzi_value_page_pv"></span> 次
+        </span>
+        
+      
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">01-SnowFlake雪花算法</h1>
+            
+            <div class="markdown-body">
+              
+              <p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20220205110805.png" srcset="/img/loading.gif" lazyload alt="image-20220205110804463"></p>
+<p>参考资料：</p>
+<p><a target="_blank" rel="noopener" href="https://github.com/beyondfengyu/SnowFlake">GitHub - beyondfengyu&#x2F;SnowFlake: Twitter的雪花算法SnowFlake，使用Java语言实现。</a></p>
+<p><a target="_blank" rel="noopener" href="https://www.hutool.cn/docs/#/core/%E5%B7%A5%E5%85%B7%E7%B1%BB/%E5%94%AF%E4%B8%80ID%E5%B7%A5%E5%85%B7-IdUtil?id=%E4%BD%BF%E7%94%A8">唯一ID工具-IdUtil (hutool.cn)</a></p>
+<h3 id="1-ID组成结构"><a href="#1-ID组成结构" class="headerlink" title="1. ID组成结构"></a>1. ID组成结构</h3><p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20220205111906.png" srcset="/img/loading.gif" lazyload alt="20200727173229821"></p>
+<ul>
+<li><p><strong>1位，不用。</strong></p>
+<p>二进制中最高位为1的都是负数，但是我们生成的id一般都使用整数，所以这个最高位固定是0。</p>
+</li>
+<li><p><strong>41位，用来记录时间戳（毫秒）</strong>。</p>
+<pre><code class="hljs"> * 41位可以表示$2^&#123;41&#125;-1$个数字
+     * 如果只用来表示正整数（计算机中正数包含0），可以表示的数值范围是：0 至 $2^&#123;41&#125;-1$，减1是因为可表示的数值范围是从0开始算的，而不是1。
+     * 也就是说41位可以表示$2^&#123;41&#125;-1$个毫秒的值，转化成单位年则是$(2^&#123;41&#125;-1) / (1000 * 60 * 60 * 24 * 365) = 69$年。
+</code></pre>
+</li>
+<li><p><strong>10位，用来记录工作机器id</strong>。<br> * 可以部署在$2^{10} &#x3D; 1024$个节点，包括 5位datacenterId 和 5位workerId。<br>     * 5位（bit）可以表示的最大正整数是$2^{5}-1 &#x3D; 31$，即可以用0、1、2、3、….31这32个数字，来表示不同的datecenterId或workerId。</p>
+</li>
+<li><p><strong>12位，序列号，用来记录同毫秒内产生的不同id</strong>。</p>
+<pre><code class="hljs"> * 12位（bit）可以表示的最大正整数是$2^&#123;12&#125;-1 = 4095$，即可以用0、1、2、3、....4094这4095个数字，来表示同一机器同一时间截（毫秒)内产生的4095个ID序号。
+</code></pre>
+</li>
+</ul>
+<p>由于在Java中64bit的整数是long类型，所以在Java中SnowFlake算法生成的id就是long来存储的。</p>
+<p>SnowFlake可以保证：</p>
+<p>​        ●  所有生成的id按时间趋势递增</p>
+<p>​        ●  整个分布式系统内不会产生重复id（因为有datacenterId和workerId来做区分）</p>
+<h3 id="2-存在问题和解决"><a href="#2-存在问题和解决" class="headerlink" title="2. 存在问题和解决"></a>2. 存在问题和解决</h3><ul>
+<li><p><em>时间回拨问题</em>：由于机器的时间是动态的调整的，有可能会出现时间跑到之前几毫秒，如果这个时候获取到了这种时间，则会出现数据重复</p>
+</li>
+<li><p><em>机器id分配及回收问题</em>：目前机器id需要每台机器不一样，这样的方式分配需要有方案进行处理，同时也要考虑，如果改机器宕机了，对应的workerId分配后的回收问题</p>
+</li>
+<li><p><em>机器id上限</em>：机器id是固定的bit，那么也就是对应的机器个数是有上限的，在有些业务场景下，需要所有机器共享同一个业务空间，那么10bit表示的1024台机器是不够的。</p>
+</li>
+</ul>
+<p>参考资料：<a target="_blank" rel="noopener" href="https://github.com/SimonAlong/Butterfly">https://github.com/SimonAlong/Butterfly</a></p>
+<p>Butterfly（蝴蝶）是一个超高性能的发号器框架。框架通过引入多种新的方案不仅解决了雪花算法存在的所有问题，而且还能够提供比雪花算法更高的性能。</p>
+<ol>
+<li><p>时间回拨问题</p>
+<p>这里采用新的方案：大概思路是：时间戳采用的是<code>历史时间</code>，每次请求只增序列值，序列值增满，然后“历史时间”增1，序列值归0，其中”历史时间”的初始值是应用启动时候的当前时间。</p>
+</li>
+<li><p>机器id分配和回收</p>
+<p>这里机器id分配和回收具体有两种方案：<code>zookeeper</code>和<code>db</code>。理论上分配方案zk是通过哈希和扩容机器，而db是通过查找机制。回收方案，zk采用的是永久节点，节点中存储下次过期时间，客户端定时上报（设置心跳），db是添加过期时间字段，查找时候判断过期字段。</p>
+</li>
+<li><p>机器id上限</p>
+<p>这个采用将<code>改造版雪花+zookeeper分配id</code>方案作为服务端的节点，客户端采用双Buffer+异步获取提高性能，服务端采用每次请求时间戳增1。</p>
+</li>
+</ol>
+<h3 id="3-ID生成使用"><a href="#3-ID生成使用" class="headerlink" title="3. ID生成使用"></a>3. ID生成使用</h3><p>Hutool工具中：</p>
+<p>分布式系统中，有一些需要使用全局唯一ID的场景，有些时候我们希望能使用一种简单一些的ID，并且希望ID能够按照时间有序生成。Twitter的Snowflake 算法就是这种生成器。</p>
+<p>使用方法如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-comment">//参数1为终端ID, 参数2为数据中心ID</span><br><span class="hljs-type">Snowflake</span> <span class="hljs-variable">snowflake</span> <span class="hljs-operator">=</span> IdUtil.getSnowflake(<span class="hljs-number">1</span>, <span class="hljs-number">1</span>);<br><span class="hljs-type">long</span> <span class="hljs-variable">id</span> <span class="hljs-operator">=</span> snowflake.nextId();<br></code></pre></td></tr></table></figure>
+
+<blockquote>
+<p>注意 <code>IdUtil.createSnowflake</code>每次调用会创建一个新的Snowflake对象，不同的Snowflake对象创建的ID可能会有重复，因此请自行维护此对象为单例，或者使用<code>IdUtil.getSnowflake</code>使用<code>全局单例对象</code>。</p>
+</blockquote>
+<p>网上的教程一般存在两个问题：<br>                1. 机器ID（5位）和数据中心ID（5位）配置没有解决，分布式部署的时候会使用相同的配置，任然有ID重复的风险。<br>                2. 使用的时候要实例化对象，没有形成开箱即用的工具类。</p>
+<p>本文针对上面两个问题进行解决，笔者的解决方案是，workId使用服务器hostName生成，dataCenterId使用IP生成，这样可以最大限度防止10位机器码重复，但是由于两个ID都不能超过32，只能取余数，还是难免产生重复，但是实际使用中，hostName和IP的配置一般连续或相近，只要不是刚好相隔32位，就不会有问题，况且，hostName和IP同时相隔32的情况更加是几乎不可能的事，平时做的分布式部署，一般也不会超过10台容器。</p>
+<p>使用上面的方法可以零配置使用雪花算法，雪花算法10位机器码的设定理论上可以有1024个节点，生产上使用docker配置一般是一次编译，然后分布式部署到不同容器，不会有不同的配置，这里不知道其他公司是如何解决的，即使有方法使用一套配置，然后运行时根据不同容器读取不同的配置，但是给每个容器编配ID，1024个（大部分情况下没有这么多），似乎也不太可能，此问题留待日后解决后再行补充。</p>
+<p> 具体生成 workId 和 dataCenterId 的方法如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">private</span> <span class="hljs-keyword">static</span> Long <span class="hljs-title function_">getWorkId</span><span class="hljs-params">()</span>&#123;<br>       <span class="hljs-keyword">try</span> &#123;<br>           <span class="hljs-type">String</span> <span class="hljs-variable">hostAddress</span> <span class="hljs-operator">=</span> Inet4Address.getLocalHost().getHostAddress();<br>           <span class="hljs-type">int</span>[] ints = StringUtils.toCodePoints(hostAddress);<br>           <span class="hljs-type">int</span> <span class="hljs-variable">sums</span> <span class="hljs-operator">=</span> <span class="hljs-number">0</span>;<br>           <span class="hljs-keyword">for</span>(<span class="hljs-type">int</span> b : ints)&#123;<br>               sums += b;<br>           &#125;<br>           <span class="hljs-keyword">return</span> (<span class="hljs-type">long</span>)(sums % <span class="hljs-number">32</span>);<br>       &#125; <span class="hljs-keyword">catch</span> (UnknownHostException e) &#123;<br>           <span class="hljs-comment">//如果获取失败，则使用随机数备用</span><br>           <span class="hljs-keyword">return</span> RandomUtils.nextLong(<span class="hljs-number">0</span>,<span class="hljs-number">31</span>);<br>       &#125;<br>   &#125;<br><br>   <span class="hljs-keyword">private</span> <span class="hljs-keyword">static</span> Long <span class="hljs-title function_">getDataCenterId</span><span class="hljs-params">()</span>&#123;<br>       <span class="hljs-type">int</span>[] ints = StringUtils.toCodePoints(SystemUtils.getHostName());<br>       <span class="hljs-type">int</span> <span class="hljs-variable">sums</span> <span class="hljs-operator">=</span> <span class="hljs-number">0</span>;<br>       <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> i: ints) &#123;<br>           sums += i;<br>       &#125;<br>       <span class="hljs-keyword">return</span> (<span class="hljs-type">long</span>)(sums % <span class="hljs-number">32</span>);<br>   &#125;<br></code></pre></td></tr></table></figure>
+
+<p>使用上面的方法需要增加Apache Commons lang3 的依赖，这也是此方法的缺点，但是在实际使用的时候，lang3这个类一般也是要引入的，非常非常好用，提高效率的利器 (注意：<code>这里的commons-lang3必须是 3.8版本或者更高版本，否则低于这个版本会报没有toCodePoints(CharSequence str) 和 getHostName()方法</code>)。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs java">&lt;dependency&gt;<br>    &lt;groupId&gt;org.apache.commons&lt;/groupId&gt;<br>    &lt;artifactId&gt;commons-lang3&lt;/artifactId&gt;<br>    &lt;version&gt;<span class="hljs-number">3.8</span>&lt;/version&gt;<br>&lt;/dependency&gt;<br></code></pre></td></tr></table></figure>
+
+<p>最终完整代码如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br><span class="line">169</span><br><span class="line">170</span><br><span class="line">171</span><br><span class="line">172</span><br><span class="line">173</span><br><span class="line">174</span><br><span class="line">175</span><br><span class="line">176</span><br><span class="line">177</span><br><span class="line">178</span><br><span class="line">179</span><br><span class="line">180</span><br><span class="line">181</span><br><span class="line">182</span><br><span class="line">183</span><br><span class="line">184</span><br><span class="line">185</span><br><span class="line">186</span><br><span class="line">187</span><br><span class="line">188</span><br><span class="line">189</span><br><span class="line">190</span><br><span class="line">191</span><br><span class="line">192</span><br><span class="line">193</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">import</span> org.apache.commons.lang3.RandomUtils;<br><span class="hljs-keyword">import</span> org.apache.commons.lang3.StringUtils;<br><span class="hljs-keyword">import</span> org.apache.commons.lang3.SystemUtils;<br> <br><span class="hljs-keyword">import</span> java.net.Inet4Address;<br><span class="hljs-keyword">import</span> java.net.UnknownHostException;<br> <br><span class="hljs-comment">/**</span><br><span class="hljs-comment"> * Twitter_Snowflake&lt;br&gt;</span><br><span class="hljs-comment"> * SnowFlake的结构如下(每部分用-分开):&lt;br&gt;</span><br><span class="hljs-comment"> * 0 - 0000000000 0000000000 0000000000 0000000000 0 - 00000 - 00000 - 000000000000 &lt;br&gt;</span><br><span class="hljs-comment"> * 1位标识，由于long基本类型在Java中是带符号的，最高位是符号位，正数是0，负数是1，所以id一般是正数，最高位是0&lt;br&gt;</span><br><span class="hljs-comment"> * 41位时间截(毫秒级)，注意，41位时间截不是存储当前时间的时间截，而是存储时间截的差值（当前时间截 - 开始时间截)</span><br><span class="hljs-comment"> * 得到的值），这里的的开始时间截，一般是我们的id生成器开始使用的时间，由我们程序来指定的（如下下面程序IdWorker类的startTime属性）。41位的时间截，可以使用69年，年T = (1L &lt;&lt; 41) / (1000L * 60 * 60 * 24 * 365) = 69&lt;br&gt;</span><br><span class="hljs-comment"> * 10位的数据机器位，可以部署在1024个节点，包括5位datacenterId和5位workerId&lt;br&gt;</span><br><span class="hljs-comment"> * 12位序列，毫秒内的计数，12位的计数顺序号支持每个节点每毫秒(同一机器，同一时间截)产生4096个ID序号&lt;br&gt;</span><br><span class="hljs-comment"> * 加起来刚好64位，为一个Long型。&lt;br&gt;</span><br><span class="hljs-comment"> * SnowFlake的优点是，整体上按照时间自增排序，并且整个分布式系统内不会产生ID碰撞(由数据中心ID和机器ID作区分)，并且效率较高，经测试，SnowFlake在我本地每秒能够产生26万ID左右。</span><br><span class="hljs-comment"> */</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">SnowflakeIdWorker</span> &#123;<br> <br>    <span class="hljs-comment">// ==============================Fields===========================================</span><br>    <span class="hljs-comment">/** 开始时间截 (2015-01-01) */</span><br>    <span class="hljs-keyword">private</span> <span class="hljs-keyword">final</span> <span class="hljs-type">long</span> <span class="hljs-variable">twepoch</span> <span class="hljs-operator">=</span> <span class="hljs-number">1489111610226L</span>;<br> <br>    <span class="hljs-comment">/** 机器id所占的位数 */</span><br>    <span class="hljs-keyword">private</span> <span class="hljs-keyword">final</span> <span class="hljs-type">long</span> <span class="hljs-variable">workerIdBits</span> <span class="hljs-operator">=</span> <span class="hljs-number">5L</span>;<br> <br>    <span class="hljs-comment">/** 数据标识id所占的位数 */</span><br>    <span class="hljs-keyword">private</span> <span class="hljs-keyword">final</span> <span class="hljs-type">long</span> <span class="hljs-variable">dataCenterIdBits</span> <span class="hljs-operator">=</span> <span class="hljs-number">5L</span>;<br> <br>    <span class="hljs-comment">/** 支持的最大机器id，结果是31 (这个移位算法可以很快的计算出几位二进制数所能表示的最大十进制数) */</span><br>    <span class="hljs-keyword">private</span> <span class="hljs-keyword">final</span> <span class="hljs-type">long</span> <span class="hljs-variable">maxWorkerId</span> <span class="hljs-operator">=</span> -<span class="hljs-number">1L</span> ^ (-<span class="hljs-number">1L</span> &lt;&lt; workerIdBits);<br> <br>    <span class="hljs-comment">/** 支持的最大数据标识id，结果是31 */</span><br>    <span class="hljs-keyword">private</span> <span class="hljs-keyword">final</span> <span class="hljs-type">long</span> <span class="hljs-variable">maxDataCenterId</span> <span class="hljs-operator">=</span> -<span class="hljs-number">1L</span> ^ (-<span class="hljs-number">1L</span> &lt;&lt; dataCenterIdBits);<br> <br>    <span class="hljs-comment">/** 序列在id中占的位数 */</span><br>    <span class="hljs-keyword">private</span> <span class="hljs-keyword">final</span> <span class="hljs-type">long</span> <span class="hljs-variable">sequenceBits</span> <span class="hljs-operator">=</span> <span class="hljs-number">12L</span>;<br> <br>    <span class="hljs-comment">/** 机器ID向左移12位 */</span><br>    <span class="hljs-keyword">private</span> <span class="hljs-keyword">final</span> <span class="hljs-type">long</span> <span class="hljs-variable">workerIdShift</span> <span class="hljs-operator">=</span> sequenceBits;<br> <br>    <span class="hljs-comment">/** 数据标识id向左移17位(12+5) */</span><br>    <span class="hljs-keyword">private</span> <span class="hljs-keyword">final</span> <span class="hljs-type">long</span> <span class="hljs-variable">dataCenterIdShift</span> <span class="hljs-operator">=</span> sequenceBits + workerIdBits;<br> <br>    <span class="hljs-comment">/** 时间截向左移22位(5+5+12) */</span><br>    <span class="hljs-keyword">private</span> <span class="hljs-keyword">final</span> <span class="hljs-type">long</span> <span class="hljs-variable">timestampLeftShift</span> <span class="hljs-operator">=</span> sequenceBits + workerIdBits + dataCenterIdBits;<br> <br>    <span class="hljs-comment">/** 生成序列的掩码，这里为4095 (0b111111111111=0xfff=4095) */</span><br>    <span class="hljs-keyword">private</span> <span class="hljs-keyword">final</span> <span class="hljs-type">long</span> <span class="hljs-variable">sequenceMask</span> <span class="hljs-operator">=</span> -<span class="hljs-number">1L</span> ^ (-<span class="hljs-number">1L</span> &lt;&lt; sequenceBits);<br> <br>    <span class="hljs-comment">/** 工作机器ID(0~31) */</span><br>    <span class="hljs-keyword">private</span> <span class="hljs-type">long</span> workerId;<br> <br>    <span class="hljs-comment">/** 数据中心ID(0~31) */</span><br>    <span class="hljs-keyword">private</span> <span class="hljs-type">long</span> dataCenterId;<br> <br>    <span class="hljs-comment">/** 毫秒内序列(0~4095) */</span><br>    <span class="hljs-keyword">private</span> <span class="hljs-type">long</span> <span class="hljs-variable">sequence</span> <span class="hljs-operator">=</span> <span class="hljs-number">0L</span>;<br> <br>    <span class="hljs-comment">/** 上次生成ID的时间截 */</span><br>    <span class="hljs-keyword">private</span> <span class="hljs-type">long</span> <span class="hljs-variable">lastTimestamp</span> <span class="hljs-operator">=</span> -<span class="hljs-number">1L</span>;<br> <br>    <span class="hljs-keyword">private</span> <span class="hljs-keyword">static</span> SnowflakeIdWorker idWorker;<br> <br>    <span class="hljs-keyword">static</span> &#123;<br>        idWorker = <span class="hljs-keyword">new</span> <span class="hljs-title class_">SnowflakeIdWorker</span>(getWorkId(),getDataCenterId());<br>    &#125;<br> <br>    <span class="hljs-comment">//==============================Constructors=====================================</span><br>    <span class="hljs-comment">/**</span><br><span class="hljs-comment">     * 构造函数</span><br><span class="hljs-comment">     * <span class="hljs-doctag">@param</span> workerId 工作ID (0~31)</span><br><span class="hljs-comment">     * <span class="hljs-doctag">@param</span> dataCenterId 数据中心ID (0~31)</span><br><span class="hljs-comment">     */</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-title function_">SnowflakeIdWorker</span><span class="hljs-params">(<span class="hljs-type">long</span> workerId, <span class="hljs-type">long</span> dataCenterId)</span> &#123;<br>        <span class="hljs-keyword">if</span> (workerId &gt; maxWorkerId || workerId &lt; <span class="hljs-number">0</span>) &#123;<br>            <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">IllegalArgumentException</span>(String.format(<span class="hljs-string">&quot;workerId can&#x27;t be greater than %d or less than 0&quot;</span>, maxWorkerId));<br>        &#125;<br>        <span class="hljs-keyword">if</span> (dataCenterId &gt; maxDataCenterId || dataCenterId &lt; <span class="hljs-number">0</span>) &#123;<br>            <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">IllegalArgumentException</span>(String.format(<span class="hljs-string">&quot;dataCenterId can&#x27;t be greater than %d or less than 0&quot;</span>, maxDataCenterId));<br>        &#125;<br>        <span class="hljs-built_in">this</span>.workerId = workerId;<br>        <span class="hljs-built_in">this</span>.dataCenterId = dataCenterId;<br>    &#125;<br> <br>    <span class="hljs-comment">// ==============================Methods==========================================</span><br>    <span class="hljs-comment">/**</span><br><span class="hljs-comment">     * 获得下一个ID (该方法是线程安全的)</span><br><span class="hljs-comment">     * <span class="hljs-doctag">@return</span> SnowflakeId</span><br><span class="hljs-comment">     */</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">synchronized</span> <span class="hljs-type">long</span> <span class="hljs-title function_">nextId</span><span class="hljs-params">()</span> &#123;<br>        <span class="hljs-type">long</span> <span class="hljs-variable">timestamp</span> <span class="hljs-operator">=</span> timeGen();<br> <br>        <span class="hljs-comment">//如果当前时间小于上一次ID生成的时间戳，说明系统时钟回退过这个时候应当抛出异常</span><br>        <span class="hljs-keyword">if</span> (timestamp &lt; lastTimestamp) &#123;<br>            <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">RuntimeException</span>(<br>                    String.format(<span class="hljs-string">&quot;Clock moved backwards.  Refusing to generate id for %d milliseconds&quot;</span>, lastTimestamp - timestamp));<br>        &#125;<br> <br>        <span class="hljs-comment">//如果是同一时间生成的，则进行毫秒内序列</span><br>        <span class="hljs-keyword">if</span> (lastTimestamp == timestamp) &#123;<br>            sequence = (sequence + <span class="hljs-number">1</span>) &amp; sequenceMask;<br>            <span class="hljs-comment">//毫秒内序列溢出</span><br>            <span class="hljs-keyword">if</span> (sequence == <span class="hljs-number">0</span>) &#123;<br>                <span class="hljs-comment">//阻塞到下一个毫秒,获得新的时间戳</span><br>                timestamp = tilNextMillis(lastTimestamp);<br>            &#125;<br>        &#125;<br>        <span class="hljs-comment">//时间戳改变，毫秒内序列重置</span><br>        <span class="hljs-keyword">else</span> &#123;<br>            sequence = <span class="hljs-number">0L</span>;<br>        &#125;<br> <br>        <span class="hljs-comment">//上次生成ID的时间截</span><br>        lastTimestamp = timestamp;<br> <br>        <span class="hljs-comment">//移位并通过或运算拼到一起组成64位的ID</span><br>        <span class="hljs-keyword">return</span> ((timestamp - twepoch) &lt;&lt; timestampLeftShift)<br>                | (dataCenterId &lt;&lt; dataCenterIdShift)<br>                | (workerId &lt;&lt; workerIdShift)<br>                | sequence;<br>    &#125;<br> <br>    <span class="hljs-comment">/**</span><br><span class="hljs-comment">     * 阻塞到下一个毫秒，直到获得新的时间戳</span><br><span class="hljs-comment">     * <span class="hljs-doctag">@param</span> lastTimestamp 上次生成ID的时间截</span><br><span class="hljs-comment">     * <span class="hljs-doctag">@return</span> 当前时间戳</span><br><span class="hljs-comment">     */</span><br>    <span class="hljs-keyword">protected</span> <span class="hljs-type">long</span> <span class="hljs-title function_">tilNextMillis</span><span class="hljs-params">(<span class="hljs-type">long</span> lastTimestamp)</span> &#123;<br>        <span class="hljs-type">long</span> <span class="hljs-variable">timestamp</span> <span class="hljs-operator">=</span> timeGen();<br>        <span class="hljs-keyword">while</span> (timestamp &lt;= lastTimestamp) &#123;<br>            timestamp = timeGen();<br>        &#125;<br>        <span class="hljs-keyword">return</span> timestamp;<br>    &#125;<br> <br>    <span class="hljs-comment">/**</span><br><span class="hljs-comment">     * 返回以毫秒为单位的当前时间</span><br><span class="hljs-comment">     * <span class="hljs-doctag">@return</span> 当前时间(毫秒)</span><br><span class="hljs-comment">     */</span><br>    <span class="hljs-keyword">protected</span> <span class="hljs-type">long</span> <span class="hljs-title function_">timeGen</span><span class="hljs-params">()</span> &#123;<br>        <span class="hljs-keyword">return</span> System.currentTimeMillis();<br>    &#125;<br> <br>    <span class="hljs-keyword">private</span> <span class="hljs-keyword">static</span> Long <span class="hljs-title function_">getWorkId</span><span class="hljs-params">()</span>&#123;<br>        <span class="hljs-keyword">try</span> &#123;<br>            <span class="hljs-type">String</span> <span class="hljs-variable">hostAddress</span> <span class="hljs-operator">=</span> Inet4Address.getLocalHost().getHostAddress();<br>            <span class="hljs-type">int</span>[] ints = StringUtils.toCodePoints(hostAddress);<br>            <span class="hljs-type">int</span> <span class="hljs-variable">sums</span> <span class="hljs-operator">=</span> <span class="hljs-number">0</span>;<br>            <span class="hljs-keyword">for</span>(<span class="hljs-type">int</span> b : ints)&#123;<br>                sums += b;<br>            &#125;<br>            <span class="hljs-keyword">return</span> (<span class="hljs-type">long</span>)(sums % <span class="hljs-number">32</span>);<br>        &#125; <span class="hljs-keyword">catch</span> (UnknownHostException e) &#123;<br>            <span class="hljs-comment">// 如果获取失败，则使用随机数备用</span><br>            <span class="hljs-keyword">return</span> RandomUtils.nextLong(<span class="hljs-number">0</span>,<span class="hljs-number">31</span>);<br>        &#125;<br>    &#125;<br> <br>    <span class="hljs-keyword">private</span> <span class="hljs-keyword">static</span> Long <span class="hljs-title function_">getDataCenterId</span><span class="hljs-params">()</span>&#123;<br>        <span class="hljs-type">int</span>[] ints = StringUtils.toCodePoints(SystemUtils.getHostName());<br>        <span class="hljs-type">int</span> <span class="hljs-variable">sums</span> <span class="hljs-operator">=</span> <span class="hljs-number">0</span>;<br>        <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> i: ints) &#123;<br>            sums += i;<br>        &#125;<br>        <span class="hljs-keyword">return</span> (<span class="hljs-type">long</span>)(sums % <span class="hljs-number">32</span>);<br>    &#125;<br> <br> <br>    <span class="hljs-comment">/**</span><br><span class="hljs-comment">     * 静态工具类</span><br><span class="hljs-comment">     *</span><br><span class="hljs-comment">     * <span class="hljs-doctag">@return</span></span><br><span class="hljs-comment">     */</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">synchronized</span> Long <span class="hljs-title function_">generateId</span><span class="hljs-params">()</span>&#123;<br>        <span class="hljs-type">long</span> <span class="hljs-variable">id</span> <span class="hljs-operator">=</span> idWorker.nextId();<br>        <span class="hljs-keyword">return</span> id;<br>    &#125;<br> <br>    <span class="hljs-comment">//==============================Test=============================================</span><br>    <span class="hljs-comment">/** 测试 */</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">main</span><span class="hljs-params">(String[] args)</span> &#123;<br>        System.out.println(System.currentTimeMillis());<br>        <span class="hljs-type">long</span> <span class="hljs-variable">startTime</span> <span class="hljs-operator">=</span> System.nanoTime();<br>        <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> <span class="hljs-variable">i</span> <span class="hljs-operator">=</span> <span class="hljs-number">0</span>; i &lt; <span class="hljs-number">50000</span>; i++) &#123;<br>            <span class="hljs-type">long</span> <span class="hljs-variable">id</span> <span class="hljs-operator">=</span> SnowflakeIdWorker.generateId();<br>            System.out.println(id);<br>        &#125;<br>        System.out.println((System.nanoTime()-startTime)/<span class="hljs-number">1000000</span>+<span class="hljs-string">&quot;ms&quot;</span>);<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>或者使用Hutool工具后更简洁的写法：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">import</span> cn.hutool.core.lang.Snowflake;<br><span class="hljs-keyword">import</span> cn.hutool.core.util.IdUtil;<br><span class="hljs-keyword">import</span> org.slf4j.Logger;<br><span class="hljs-keyword">import</span> org.slf4j.LoggerFactory;<br><br><span class="hljs-keyword">import</span> java.net.InetAddress;<br><br><span class="hljs-comment">/**</span><br><span class="hljs-comment"> * ID生成器，基于雪花算法，可用于数据库主键id生成</span><br><span class="hljs-comment"> *</span><br><span class="hljs-comment"> * <span class="hljs-doctag">@author</span> Jerry</span><br><span class="hljs-comment"> * <span class="hljs-doctag">@version</span> V1.0</span><br><span class="hljs-comment"> * <span class="hljs-doctag">@date</span> 2020/04/05</span><br><span class="hljs-comment"> */</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">IdWorker</span> &#123;<br><br>    <span class="hljs-keyword">private</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">final</span> <span class="hljs-type">Logger</span> <span class="hljs-variable">logger</span> <span class="hljs-operator">=</span> LoggerFactory.getLogger(IdWorker.class);<br><br>    <span class="hljs-comment">/**</span><br><span class="hljs-comment">     * 直接生成ID</span><br><span class="hljs-comment">     */</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-type">long</span> <span class="hljs-title function_">nextId</span><span class="hljs-params">()</span> &#123;<br>        <span class="hljs-type">Snowflake</span> <span class="hljs-variable">snowflake</span> <span class="hljs-operator">=</span> IdUtil.getSnowflake(<span class="hljs-number">1</span>, <span class="hljs-number">1</span>);<br>        <span class="hljs-keyword">return</span> snowflake.nextId();<br>    &#125;<br><br>    <span class="hljs-comment">/**</span><br><span class="hljs-comment">     * 指定前缀生成ID</span><br><span class="hljs-comment">     */</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> String <span class="hljs-title function_">nextId</span><span class="hljs-params">(String prefix)</span> &#123;<br>        <span class="hljs-type">int</span> <span class="hljs-variable">workerId</span> <span class="hljs-operator">=</span> <span class="hljs-number">1</span>;<br>        <span class="hljs-keyword">try</span> &#123;<br>            String[] ips = InetAddress.getLocalHost().getHostAddress().split(<span class="hljs-string">&quot;\\.&quot;</span>);<br>            workerId = Integer.parseInt(ips[ips.length - <span class="hljs-number">1</span>]);<br>        &#125; <span class="hljs-keyword">catch</span> (Exception e) &#123;<br>            e.printStackTrace();<br>        &#125;<br>        <span class="hljs-type">Snowflake</span> <span class="hljs-variable">snowflake</span> <span class="hljs-operator">=</span> IdUtil.getSnowflake(workerId % <span class="hljs-number">10</span>, <span class="hljs-number">1</span>);<br>        <span class="hljs-keyword">return</span> prefix + snowflake.nextId();<br>    &#125;<br><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">main</span><span class="hljs-params">(String[] args)</span> &#123;<br>        logger.info(<span class="hljs-string">&quot;&quot;</span> + nextId());<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+
+              
+            </div>
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/15-%E5%88%86%E5%B8%83%E5%BC%8F/" class="category-chain-item">15_分布式</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/15-%E5%88%86%E5%B8%83%E5%BC%8F/01-%E5%88%86%E5%B8%83%E5%BC%8FID/" class="category-chain-item">01_分布式ID</a>
+  
+  
+
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/%E6%9E%B6%E6%9E%84/">#架构</a>
+      
+        <a href="/tags/%E5%88%86%E5%B8%83%E5%BC%8F/">#分布式</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>01-SnowFlake雪花算法</div>
+      <div>https://janycode.github.io/2020/04/05/15_分布式/01_分布式ID/01-SnowFlake雪花算法/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Jerry(姜源)</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2020年4月5日</div>
+        </div>
+      
+      
+      <div class="license-meta-item">
+        <div>许可协议</div>
+        <div>
+          
+            
+            
+              <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+              <span class="hint--top hint--rounded" aria-label="BY - 姜源">
+                <i class="iconfont icon-by"></i>
+              </span>
+              </a>
+            
+          
+        </div>
+      </div>
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2020/04/15/07_%E8%99%9A%E6%8B%9F%E6%9C%BA/04-JVM%E5%8F%82%E6%95%B0%E8%B0%83%E4%BC%98/" title="04-JVM参数调优">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">04-JVM参数调优</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2020/03/17/21_%E4%BB%A3%E7%A0%81%E7%89%87%E6%AE%B5/02_%E9%85%8D%E7%BD%AE%E7%B1%BB/03-ThreadPoolConfig/" title="03-ThreadPoolTaskConfig">
+                        <span class="hidden-mobile">03-ThreadPoolTaskConfig</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+  <article id="comments" lazyload>
+    
+  <div id="SOHUCS" sid='https://janycode.github.io/2020/04/05/15_%E5%88%86%E5%B8%83%E5%BC%8F/01_%E5%88%86%E5%B8%83%E5%BC%8FID/01-SnowFlake%E9%9B%AA%E8%8A%B1%E7%AE%97%E6%B3%95/'></div>
+  <script type="text/javascript">
+    Fluid.utils.loadComments('#SOHUCS', function() {
+      Fluid.utils.createScript("https://changyan.sohu.com/upload/changyan.js", function() {
+        window.changyan.api.config({"appid":"cyw5OHIcO","appkey":"fea3446b3df4b3f129f34da4cbc87e51"})
+      });
+    });
+  </script>
+  <noscript>Please enable JavaScript to view the comments</noscript>
+
+
+  </article>
+
+
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://simple.blog.csdn.net" target="_blank" rel="nofollow noopener"><span>CSDN</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/janycode" target="_blank" rel="nofollow noopener"><span>GitHub</span></a> <i class="iconfont icon-love"></i> <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="busuanzi_container_site_pv" style="display: none">
+        总访问量(PV) 
+        <span id="busuanzi_value_site_pv"></span>
+         次，
+      </span>
+    
+    
+      <span id="busuanzi_container_site_uv" style="display: none">
+        总访客数(UV) 
+        <span id="busuanzi_value_site_uv"></span>
+         人
+      </span>
+    
+    
+  
+</div>
+
+  
+  
+  
+</div>
+
+<!-- live2d 动画 -->
+<script src="https://eqcn.ajz.miesnfu.com/wp-content/plugins/wp-3d-pony/live2dw/lib/L2Dwidget.min.js"></script>
+<script>
+    L2Dwidget.init({
+        "model": {
+            jsonPath: "https://unpkg.com/live2d-widget-model-haruto@1.0.5/assets/haruto.model.json",
+            "scale": 1
+        },
+        "display": {
+            "position": "right",
+            "width": 100,
+            "height": 200,
+            "hOffset": 35,
+            "vOffset": -85
+        },
+        "mobile": {
+            "show": false,
+            "scale": 0.1
+        },
+        "react": {
+            "opacityDefault": 0.75,
+            "opacityOnHover": 0.2
+        }
+    });
+</script>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <!-- Baidu Analytics -->
+    <script defer>
+      if (!Fluid.ctx.dnt) {
+        var _hmt = _hmt || [];
+        (function() {
+          var hm = document.createElement("script");
+          hm.src = "https://hm.baidu.com/hm.js?bfff735c897eb60ea49b735096b20e47";
+          var s = document.getElementsByTagName("script")[0];
+          s.parentNode.insertBefore(hm, s);
+        })();
+      }
+    </script>
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.0/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      headingSelector : CONFIG.toc.headingSelector || 'h1,h2,h3,h4,h5,h6',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      collapseDepth   : CONFIG.toc.collapseDepth || 0,
+      scrollSmooth    : true,
+      headingsOffset  : -boardTop
+    });
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+  });
+</script>
+
+
+  <script>
+  (function() {
+    var enableLang = CONFIG.code_language.enable && CONFIG.code_language.default;
+    var enableCopy = CONFIG.copy_btn;
+    if (!enableLang && !enableCopy) {
+      return;
+    }
+
+    function getBgClass(ele) {
+      return Fluid.utils.getBackgroundLightness(ele) >= 0 ? 'code-widget-light' : 'code-widget-dark';
+    }
+
+    var copyTmpl = '';
+    copyTmpl += '<div class="code-widget">';
+    copyTmpl += 'LANG';
+    copyTmpl += '</div>';
+    jQuery('.markdown-body pre').each(function() {
+      var $pre = jQuery(this);
+      if ($pre.find('code.mermaid').length > 0) {
+        return;
+      }
+      if ($pre.find('span.line').length > 0) {
+        return;
+      }
+
+      var lang = '';
+
+      if (enableLang) {
+        lang = CONFIG.code_language.default;
+        if ($pre[0].children.length > 0 && $pre[0].children[0].classList.length >= 2 && $pre.children().hasClass('hljs')) {
+          lang = $pre[0].children[0].classList[1];
+        } else if ($pre[0].getAttribute('data-language')) {
+          lang = $pre[0].getAttribute('data-language');
+        } else if ($pre.parent().hasClass('sourceCode') && $pre[0].children.length > 0 && $pre[0].children[0].classList.length >= 2) {
+          lang = $pre[0].children[0].classList[1];
+          $pre.parent().addClass('code-wrapper');
+        } else if ($pre.parent().hasClass('markdown-body') && $pre[0].classList.length === 0) {
+          $pre.wrap('<div class="code-wrapper"></div>');
+        }
+        lang = lang.toUpperCase().replace('NONE', CONFIG.code_language.default);
+      }
+      $pre.append(copyTmpl.replace('LANG', lang).replace('code-widget">',
+        getBgClass($pre[0]) + (enableCopy ? ' code-widget copy-btn" data-clipboard-snippet><i class="iconfont icon-copy"></i>' : ' code-widget">')));
+
+      if (enableCopy) {
+        Fluid.utils.createScript('https://lib.baomitu.com/clipboard.js/2.0.10/clipboard.min.js', function() {
+          var clipboard = new window.ClipboardJS('.copy-btn', {
+            target: function(trigger) {
+              var nodes = trigger.parentNode.childNodes;
+              for (var i = 0; i < nodes.length; i++) {
+                if (nodes[i].tagName === 'CODE') {
+                  return nodes[i];
+                }
+              }
+            }
+          });
+          clipboard.on('success', function(e) {
+            e.clearSelection();
+            e.trigger.innerHTML = e.trigger.innerHTML.replace('icon-copy', 'icon-success');
+            setTimeout(function() {
+              e.trigger.innerHTML = e.trigger.innerHTML.replace('icon-success', 'icon-copy');
+            }, 2000);
+          });
+        });
+      }
+    });
+  })();
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>
