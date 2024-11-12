@@ -19,7 +19,7 @@ categories:
 - 清除用户提交的安全白名单以外的内容，以防止XSS攻击
 - 美化HTML
 
-## **引入依赖**
+## 引入依赖
 
 ```xml
 <dependency>
@@ -31,7 +31,7 @@ categories:
 
 
 
-## **解析HTML**
+## 解析HTML
 
 1. 从字符串解析
 
@@ -67,7 +67,7 @@ Document doc = Jsoup.parse(input, "UTF-8", "http://example.com/");
 
 
 
-## **提取HTML**
+## 提取HTML
 
 - 遍历HTML
 
@@ -109,7 +109,7 @@ String relHref = link.attr("href"); // == "/"
 String absHref = link.attr("abs:href"); // "http://jsoup.org/"
 ```
 
-### **CSS选择器**
+### CSS选择器
 
 Jsoup支持CSS选择器，用的是 `Element.select(String selector)`方法
 
@@ -137,7 +137,7 @@ Elements resultLinks = doc.select("h3.r > a"); // direct a after h3
 
 感兴趣的可以看一下测试用例：里面包含了大量的使用场景：https://github.com/zhegexiaohuozi/JsoupXpath/blob/master/src/test/java/org/seimicrawler/xpath/JXDocumentTest.java
 
-## **操作HTML**
+## 操作HTML
 
 jsoup可以在插入、删除、提取HTML，直接看例子代码
 
@@ -175,7 +175,7 @@ div.append(" Last");
 // now: <div>First five &gt; four Last</div>
 ```
 
-## **避免XSS攻击(cross-site scripting)**
+## 避免XSS攻击(cross-site scripting)
 
 ```java
 String unsafe = 
@@ -186,7 +186,7 @@ String safe = Jsoup.clean(unsafe, Whitelist.basic());
 
 
 
-## **csdn2md**
+## csdn2md
 
 使用 jsoup 爬虫爬取 csdn 的博客信息并同时转为 markdown 格式：
 
@@ -583,3 +583,14 @@ public class Html2MdUtil {
 }
 ```
 
+
+
+## 浏览器插件
+
+补充市面上有一些浏览器插件可以协助快速定位dom以获取具体的遍历或值，比如
+
+* `SelectorsHub - XPath Helper`
+
+
+
+![image-20241109100601401](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20241109100602.png)
