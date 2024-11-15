@@ -11,7 +11,7 @@ categories:
 
 
 
-
+### 下载资料
 
 <p><strong>架构实战案例解析</strong></p>
 <blockquote>
@@ -139,3 +139,133 @@ categories:
 <p>资料链接：<a target="_blank" rel="noopener" href="https://url81.ctfile.com/f/57345181-1337290969-cef61a?p=3899">https://url81.ctfile.com/f/57345181-1337290969-cef61a?p=3899</a></p>
 <p>访问密码：3899</p>
 </blockquote>
+
+### 视频资料
+
+```
+《SpringBoot 学习笔记完整教程.pdf》
+链接：https://pan.baidu.com/s/1Br2iYyeglcEDP59rNatxlg 提取码：yyds
+```
+
+```
+MySQL笔记（解压文件里面有）
+https://pan.baidu.com/s/1CVzZoX-AfyytlbCtLEhnKQ 提取码：dva0
+网页版：http://itsoku.com/course/3
+```
+
+```
+《Spring高手系列》
+链接：https://pan.baidu.com/s/1-HSCZ7IXElTpMFxWCUKSdA 提取码：9wbi
+网页版：http://itsoku.com/course/5
+```
+
+```
+2024最新版SpringCloud教程
+地址：https://www.bilibili.com/video/BV1gW421P7RD
+```
+
+```
+PDF链接: https://pan.baidu.com/s/1c64bczodJzGtghrAL8segw?pwd=1024 提取码: 1024
+```
+
+```
+《深入理解高并发编程.pdf》
+链接：https://pan.baidu.com/s/1OmXzPBQe51WWXn6blp8vOQ 提取码：yyds
+```
+
+```
+《Redis全套学习笔记.pdf》
+网盘版：https://pan.baidu.com/s/1Zj0wM7bNZkuLPNVaf-tcUA 提取码：yyds
+网页版：http://itsoku.com/course/15
+```
+
+```
+《Linux保姆级教程.pdf》
+链接：https://pan.baidu.com/s/1dB7G4UUwNoOtq5k7Z-NfkQ 提取码：yyds
+网页版：http://itsoku.com/course/16
+```
+
+```
+mysql全套教程
+https://www.bilibili.com/video/BV1iq4y1u7vj
+```
+
+```
+SpringBoot3：https://www.bilibili.com/video/BV1Es4y1q7BfSpringBoot3
+响应式编程：https://www.bilibili.com/video/BV1sC4y1K7ETSpringCloud2024
+最新版教程：https://www.bilibili.com/video/BV1gW421P7RD
+```
+
+```
+2024版，尚硅谷java学科全套教程（289.1GB）
+百度网盘地址：https://pan.baidu.com/s/1PhTeMkX5vOg0ZRcw0abjCw?pwd=yyds 提取码：yyds
+```
+
+```
+深入理解高并发编程
+PDF链接: https://pan.baidu.com/s/1W5r-2vq5h-OX1G-WOy7Gfg?pwd=yyds 提取码: yyds
+```
+
+```
+JUC并发编程视频教程https://www.bilibili.com/video/BV1ar4y1x727
+```
+
+```
+SpringBoot3+Vue3全套视频教程https://www.bilibili.com/video/BV14z4y1N7pg
+```
+
+```
+Java函数式编程全套视频教程https://www.bilibili.com/video/BV1fz421C7tj
+```
+
+```
+《Java版数据结构与算法，分上下2篇》
+上篇：https://www.bilibili.com/video/BV1Lv4y1e7HL/
+下篇：https://www.bilibili.com/video/BV1rv4y1H7o6/
+```
+
+```
+《凤凰架构：构建可靠的大型分布式系统》
+在线阅读地址：https://icyfenix.cn/
+pdf版：链接: https://pan.baidu.com/s/1tmk7ZrMkjjhqV37KZ0uS-A 提取码: i2jh
+```
+
+```
+《图解23种java设计模式》：https://www.bilibili.com/video/BV1G4411c7N4
+```
+
+```
+RabbitMQ教程：https://www.bilibili.com/video/BV1mN4y1Z7t9
+RocketMQ教程：https://www.bilibili.com/video/BV1cf4y157sz2024
+新版kafka视频：https://www.bilibili.com/video/BV1Gp421m7UN
+```
+
+```
+JVM全套教程：https://www.bilibili.com/video/BV1PJ411n7xZ
+JVM精讲与GC调优教程：https://www.bilibili.com/video/BV1Dz4y1A7FB
+JVM虚拟机入门到实战教程：https://www.bilibili.com/video/BV1r94y1b7eS
+```
+
+```
+idea巅峰教程：https://www.bilibili.com/video/BV1CK411d7aA
+```
+
+```
+Spring5底层原理深度讲解：https://www.bilibili.com/video/BV1P44y1N7QG
+```
+
+```
+MyBatisPlus超细教程：https://www.bilibili.com/video/BV1Bc411W7Wj
+```
+
+```
+JUC并发编程全套教程：https://www.bilibili.com/video/BV16J411h7Rd
+```
+
+```
+Java中的泛型教程：https://www.bilibili.com/video/BV1H94y1a7bJ
+```
+
+```
+Redis7 最强教程：https://www.bilibili.com/video/BV13R4y1v7sP
+```

@@ -2,6 +2,7 @@
 title: 01-接入chatGPT API
 date: 2023-04-20 14:48:37
 tags:
+- 第三方
 - OpenAI
 - chatGPT
 categories: 

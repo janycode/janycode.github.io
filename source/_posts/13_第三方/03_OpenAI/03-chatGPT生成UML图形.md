@@ -2,6 +2,7 @@
 title: 03-chatGPT生成UML图形
 date: 2023-04-21 13:28:42
 tags:
+- 第三方
 - OpenAI
 - chatGPT
 categories: 

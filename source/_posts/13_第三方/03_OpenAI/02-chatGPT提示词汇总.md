@@ -2,6 +2,7 @@
 title: 02-chatGPT提示词汇总
 date: 2023-04-21 11:31:55
 tags:
+- 第三方
 - OpenAI
 - chatGPT
 categories: 

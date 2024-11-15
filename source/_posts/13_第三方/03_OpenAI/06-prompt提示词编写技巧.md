@@ -2,6 +2,7 @@
 title: 06-prompt提示词编写技巧
 date: 2023-7-19 22:14:45
 tags:
+- 第三方
 - OpenAI
 - chatGPT
 - prompt

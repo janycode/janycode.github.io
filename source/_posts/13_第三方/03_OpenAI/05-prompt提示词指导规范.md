@@ -2,6 +2,7 @@
 title: 05-prompt提示词指导规范
 date: 2023-7-19 20:55:44
 tags:
+- 第三方
 - OpenAI
 - chatGPT
 - prompt

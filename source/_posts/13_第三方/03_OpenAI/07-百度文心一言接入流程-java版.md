@@ -3,6 +3,7 @@ title: 07-百度文心一言接入流程-java版
 date: 2024-07-29 12:51:49
 index_img: https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20241026114200.png
 tags:
+- 第三方
 - OpenAI
 - chatGPT
 - 文心一言

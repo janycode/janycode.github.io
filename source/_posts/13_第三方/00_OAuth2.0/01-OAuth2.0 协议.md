@@ -2,6 +2,7 @@
 title: 01-OAuth2.0 协议
 date: 2018-5-13 21:36:21
 tags:
+- 第三方
 - OAuth2
 categories: 
 - 13_第三方
@@ -56,7 +57,7 @@ OAuth（开放授权）是一个开放标准，允许用户授权第三方网站
 通俗：
 
 1. 需要根据应用的ip和秘钥获取授权码
-    
+   
     `oauth/authorize?client_id=应用的ID&client_secret=应用的秘钥&response_type=code&redirect_uri=回调地址`
     
     （获取授权服务返回的信息：可以获取授权码，也可以获取令牌等信息）
@@ -260,7 +261,7 @@ public class OauthConfig extends AuthorizationServerConfigurerAdapter {
 Oauth2.0模式：授权码的模式
 
 1. 请求需求的内容：
-    
+   
     1.获取授权码 code
     
     2.获取令牌 access_token
