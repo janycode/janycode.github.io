@@ -27,49 +27,49 @@ PASSWORD="password"
 DATABASE="zentao"    #禅道数据库就叫这名
 
 # 查询bug激活总数
-SQL_COMMAND1="SELECT CONCAT(p.name, '：', u.realname, '-', count(b.id), ',') as '现未解决bug总数：\\\\n'
-    from zt_user u
-             inner join zt_bug b on b.assignedTo = u.account
-             inner join zt_product p on p.id = b.product
-    where u.type = 'inside'   #内部员工
+SQL_COMMAND1="SELECT CONCAT(p.name, '：', u.realname, '-', COUNT(b.id), ',') AS '现未解决bug总数：\\\\n'
+    FROM zt_user u
+             INNER JOIN zt_bug b ON b.assignedto = u.account
+             INNER JOIN zt_product p ON p.id = b.product
+    WHERE u.type = 'inside'   #内部员工
       #and u.role = 'dev'       #研发
-      and b.status = 'active' #bug状态：激活
-      and b.deleted = '0'     #未删除
-      and p.status = 'normal' #项目状态：正常
-    group by u.realname,
+      AND b.status = 'active' #bug状态：激活
+      AND b.deleted = '0'     #未删除
+      AND p.status = 'normal' #项目状态：正常
+    GROUP BY u.realname,
              p.name
-    order by p.name, count(b.id) desc;"
+    ORDER BY p.name, COUNT(b.id) DESC;"
 
 # 查询P1的bug数
-SQL_COMMAND2="SELECT CONCAT(p.name, '：', u.realname, '-', count(b.id), ',') as '【P1】bug数：\\\\n'
-    from zt_user u
-             inner join zt_bug b on b.assignedTo = u.account
-             inner join zt_product p on p.id = b.product
-    where u.type = 'inside'   #内部员工
+SQL_COMMAND2="SELECT CONCAT(p.name, '：', u.realname, '-', COUNT(b.id), ',') AS '【p1】bug数：\\\\n'
+    FROM zt_user u
+             INNER JOIN zt_bug b ON b.assignedto = u.account
+             INNER JOIN zt_product p ON p.id = b.product
+    WHERE u.type = 'inside'   #内部员工
       #and u.role = 'dev'       #研发
-      and b.status = 'active' #bug状态：激活
-      and b.severity = 1      #严重等级：P1
-      and b.deleted = '0'     #未删除
-      and p.status = 'normal' #项目状态：正常
-    group by u.realname,
+      AND b.status = 'active' #bug状态：激活
+      AND b.severity = 1      #严重等级：P1
+      AND b.deleted = '0'     #未删除
+      AND p.status = 'normal' #项目状态：正常
+    GROUP BY u.realname,
              p.name
-    order by p.name, count(b.id) desc;"
+    ORDER BY p.name, COUNT(b.id) DESC;"
 
 # 查询昨日已解决BUG总数
-SQL_COMMAND3="SELECT CONCAT(p.NAME, '：', u.realname, '-已解决：', COUNT(b.id)) AS '---昨日已解决---\\\\n'
+SQL_COMMAND3="SELECT CONCAT(p.name, '：', u.realname, '-已解决：', COUNT(b.id), ',') AS '---昨日已解决---\\\\n'
     FROM zt_user u
-             INNER JOIN zt_bug b ON b.resolvedBy = u.account
+             INNER JOIN zt_bug b ON b.resolvedby = u.account
              INNER JOIN zt_product p ON p.id = b.product
-    WHERE u.type = 'inside'        #内部员工
+    WHERE u.type = 'inside'                  #内部员工
       #AND u.role = 'dev' #研发
-      AND b.status = 'resolved'    #bug 状态为已解决
-      AND b.deleted = '0'          #未删除
-      AND p.status = 'normal'      #项目状态：正常
-      AND b.openedDate >= CURDATE() - INTERVAL 1 DAY
-      AND b.openedDate < CURDATE() #限定为昨日数据
+      AND b.status IN ('resolved', 'closed') #bug 状态为已解决或已关闭
+      AND b.deleted = '0'                    #未删除
+      AND p.status = 'normal'                #项目状态：正常
+      AND b.resolveddate >= CURDATE() - INTERVAL 1 DAY
+      AND b.resolveddate < CURDATE()         #限定为昨日已解决数据
     GROUP BY u.realname,
-             p.NAME
-    ORDER BY p.NAME,
+             p.name
+    ORDER BY p.name,
              COUNT(b.id) DESC;"
 
 # 使用 mysql 命令执行 SQL 并获取结果

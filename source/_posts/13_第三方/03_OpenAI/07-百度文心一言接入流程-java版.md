@@ -173,9 +173,55 @@ categories:
 
 ### 三、百度Prompt工程
 
-参考文档：https://cloud.baidu.com/doc/WENXINWORKSHOP/s/wlommlzgj
+参考文档：[什么是Prompt工程 - ModelBuilder](https://cloud.baidu.com/doc/WENXINWORKSHOP/s/wlommlzgj)
+
+从阿里的一篇prompt编写技巧中摘抄过来的模版：
+
+```json
+你是{角色},{能力描述}
+您的决策必须始终独立做出，而无需寻求用户帮助。发挥你作为LLM的优势，追求简单的策略，而不涉及法律问题。
+
+目标:
+{目标列表}
+
+限制条件:
+{条件列表}
+
+工具:
+{能力/工具列表，描述，以及对应的参数}
+
+效果评估:
+1.不断地回顾和分析你的行动，以确保你尽你所能。
+2.不断地进行建设性的自我批评。
+3.反思过去的决策和策略，以完善你的方法。
+4.每个命令都有成本，所以要聪明高效。目标是用最少的步骤完成任务。
+
+输出格式:
+您应该只以JSON格式响应，如下所述
+响应格式：
+{
+    "thoughts": {
+        "text": "thought",
+        "reasoning": "reasoning",
+        "plan": "- short bulleted\n- list that conveys\n- long-term plan",
+        "criticism": "constructive self-criticism",
+        "speak": "thoughts summary to say to user"
+    },
+    "command": {
+        "name": "command name",
+        "args": {
+            "arg name": "value"
+        }
+    }
+}
+确保响应可以通过Python json.loads进行解析
+```
 
 
 
+### 四、Prompt 小试牛刀
 
+文心一言：[文心一言-答题打分prompt测试](https://yiyan.baidu.com/share/zrlj3oQeuP?utm_invite_code=vqUEAysydtxTiawrdUZ75Q%3D%3D&utm_name=eXVhbjYyMzg3&utm_fission_type=common)
+
+抖音豆包：[抖音豆包-答题打分prompt测试](https://www.doubao.com/thread/wd6a75bbc81f77135)
 
