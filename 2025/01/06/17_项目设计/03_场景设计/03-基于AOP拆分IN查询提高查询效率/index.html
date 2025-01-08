@@ -25,7 +25,7 @@
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20241026113946.png">
 <meta property="article:published_time" content="2025-01-06T10:32:22.000Z">
-<meta property="article:modified_time" content="2025-01-06T06:50:20.946Z">
+<meta property="article:modified_time" content="2025-01-08T05:48:31.157Z">
 <meta property="article:author" content="Jerry(姜源)">
 <meta property="article:tag" content="性能优化">
 <meta property="article:tag" content="AOP">
@@ -314,7 +314,7 @@
 <figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-keyword">SELECT</span> <span class="hljs-operator">*</span> <span class="hljs-keyword">FROM</span> device <span class="hljs-keyword">WHERE</span> id <span class="hljs-keyword">IN</span> (<span class="hljs-number">1</span>, <span class="hljs-number">2</span>)<br><span class="hljs-keyword">SELECT</span> <span class="hljs-operator">*</span> <span class="hljs-keyword">FROM</span> device <span class="hljs-keyword">WHERE</span> id <span class="hljs-keyword">IN</span> (<span class="hljs-number">3</span>, <span class="hljs-number">4</span>)<br></code></pre></td></tr></table></figure>
 
 <p>并行执行，然后将返回结果合并。</p>
-<p>因为用的地方多，每次都要写很麻烦，所以结合SpringAOP写了一个基于注解优化方案，只需要打上注解就可以提升性能了。实现效果以及具体实现逻辑如下：</p>
+<p>因为用的地方多，每次都要写很麻烦，所以结合Spring AOP写了一个基于注解优化方案，只需要打上注解就可以提升性能了。实现效果以及具体实现逻辑如下：</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@SplitWorkAnnotation(setThreadPool = LIST_DEVICE_EXECUTOR, splitLimit = 20, splitGroupNum = 10)</span><br><span class="hljs-keyword">public</span> <span class="hljs-title function_">listDeviceDetail</span><span class="hljs-params">(Long projectId,<span class="hljs-meta">@NeedSplitParam</span> List&lt;Long&gt; deviceId)</span>&#123;<br>	......<br>&#125;<br></code></pre></td></tr></table></figure>
 
 <p>适用场景和不适用场景</p>
