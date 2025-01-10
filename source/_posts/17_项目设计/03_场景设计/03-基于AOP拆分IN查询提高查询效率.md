@@ -10,7 +10,7 @@ categories:
 - 03_场景设计
 ---
 
-
+![AOP-API](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20241026113946.png)
 
 ## 背景
 
