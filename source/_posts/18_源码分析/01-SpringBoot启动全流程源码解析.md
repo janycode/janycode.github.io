@@ -9,6 +9,10 @@ categories:
 - 18_源码分析
 ---
 
+![image-20250118150118348](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20250118150124.png)
+
+
+
 
 >在使用SpringBoot启动项目的时候，可能只需加一个注解，然后启动main，整个项目就运行了起来，但事实真的是所见即所得吗，还是SpringBoot在背后默默做了很多？
 
