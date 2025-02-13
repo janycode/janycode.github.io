@@ -1,5 +1,5 @@
 ---
-title: 08-Deepseek从入门到精通
+title: 08-Deepseek从入门到精通（完整版）
 date: 2025-02-06 19:12:58
 index_img: https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20250206172444.png
 tags:
@@ -10,6 +10,12 @@ categories:
 - 13_第三方
 - 03_OpenAI
 ---
+
+
+
+参考资料：
+
+* 在线阅读（来自清华大学新媒体研究中心）：[DeepSeek从入门到精通-104页.pdf](https://yuancodes.github.io/upload/DeepSeek%E4%BB%8E%E5%85%A5%E9%97%A8%E5%88%B0%E7%B2%BE%E9%80%9A-104%E9%A1%B5.pdf)
 
 
 
