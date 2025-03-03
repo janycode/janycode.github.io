@@ -21,3 +21,19 @@ categories:
 
 WBS任务排期：[https://janycode.github.io/files/项目计划流程WBS示例.drawio](https://janycode.github.io/files/项目计划流程WBS示例.drawio)
 
+
+
+* 企业微信智能表格模版样例：
+
+![项目任务表格字段模版](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20250218164958.png)
+
+* 【任务状态】枚举：
+
+![任务状态枚举模版](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20250218165043.png)
+
+* 【进度】公式：
+
+```
+IF([任务状态]="已完成", 100%, IF([任务状态]="测试中", 80%, IF([任务状态]="已提测", 70%, IF([任务状态]="联调中", 60%, IF([任务状态]="待联调", 50%, IF([任务状态]="前端开发中", 40%, IF([任务状态]="后端开发中", 20%, IF([任务状态]="准备中", 10%, 0%))))))))
+```
+

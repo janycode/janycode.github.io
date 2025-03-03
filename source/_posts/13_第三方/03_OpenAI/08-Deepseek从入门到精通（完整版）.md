@@ -16,6 +16,7 @@ categories:
 参考资料：
 
 * 在线阅读（来自清华大学新媒体研究中心）：[DeepSeek从入门到精通-104页.pdf](https://jy-imgs.oss-cn-beijing.aliyuncs.com/pdf/DeepSeek%E4%BB%8E%E5%85%A5%E9%97%A8%E5%88%B0%E7%B2%BE%E9%80%9A-104%E9%A1%B5.pdf)
+* 在线阅读（来自清华大学第二版）：[DeepSeek如何赋能职场应用-36页.pdf](http://jy-imgs.oss-cn-beijing.aliyuncs.com/pdf/%E6%B8%85%E5%8D%8E%E5%A4%A7%E5%AD%A6%E7%AC%AC%E4%BA%8C%E7%89%88%E3%80%8ADeepSeek%E5%A6%82%E4%BD%95%E8%B5%8B%E8%83%BD%E8%81%8C%E5%9C%BA%E5%BA%94%E7%94%A8%E3%80%8B.pdf)
 
 
 
