@@ -25,8 +25,9 @@
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20200719221340.png">
 <meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20240730090646.png">
+<meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20250327103059.png">
 <meta property="article:published_time" content="2018-03-28T10:09:54.000Z">
-<meta property="article:modified_time" content="2024-08-01T05:05:05.142Z">
+<meta property="article:modified_time" content="2025-04-03T01:07:29.962Z">
 <meta property="article:author" content="Jerry(姜源)">
 <meta property="article:tag" content="Nginx">
 <meta property="article:tag" content="负载均衡">
@@ -246,7 +247,7 @@
         <i class="iconfont icon-chart"></i>
         
           <!-- compatible with older versions-->
-          12k 字
+          13k 字
         
       </span>
     
@@ -258,7 +259,7 @@
         
         
           <!-- compatible with older versions-->
-          97 分钟
+          112 分钟
         
       </span>
     
@@ -358,6 +359,20 @@
 <h2 id="指定定错误页面"><a href="#指定定错误页面" class="headerlink" title="指定定错误页面"></a>指定定错误页面</h2><figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs yaml"><span class="hljs-comment"># 根据状态码，返回对于的错误页面</span><br><span class="hljs-string">error_page</span> <span class="hljs-number">500</span> <span class="hljs-number">502</span> <span class="hljs-number">503</span> <span class="hljs-number">504</span> <span class="hljs-string">/50x.html;</span><br><span class="hljs-string">location</span> <span class="hljs-string">=</span> <span class="hljs-string">/50x.html</span> &#123;<br>    <span class="hljs-string">root</span> <span class="hljs-string">/source/error_page;</span><br>&#125;<br></code></pre></td></tr></table></figure>
 
 <p>执行命令 nginx -s reload，成功后浏览器访问</p>
+<h2 id="301或302重定向"><a href="#301或302重定向" class="headerlink" title="301或302重定向"></a>301或302重定向</h2><p>参考博客：<a target="_blank" rel="noopener" href="https://blog.csdn.net/zxh7770/article/details/103303312">https://blog.csdn.net/zxh7770/article/details/103303312</a></p>
+<p>核心配置：</p>
+<figure class="highlight nginx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs nginx"><span class="hljs-section">server</span> &#123;<br>    <span class="hljs-attribute">listen</span>               <span class="hljs-number">443</span> ssl;<br>    <span class="hljs-attribute">server_name</span>          xxx.com;<br>    <span class="hljs-attribute">ssl_certificate</span>      /usr/local/nginx/conf/cert/xxx.com.pem;<br>    <span class="hljs-attribute">ssl_certificate_key</span>  /usr/local/nginx/conf/cert/xxx.com.key;<br><br>    <span class="hljs-section">location</span> / &#123;<br>        <span class="hljs-comment">#permanent对应就是301重定向跳转</span><br>        <span class="hljs-attribute">rewrite</span><span class="hljs-regexp"> ^/(.*)</span> https://www.xxx.com/<span class="hljs-variable">$1</span> <span class="hljs-literal">permanent</span>;<br>        <span class="hljs-attribute">try_files</span> <span class="hljs-variable">$uri</span> <span class="hljs-variable">$uri</span>/ /index.html;<br>        <span class="hljs-attribute">index</span>  index.html index.htm;<br>    &#125;   <br>&#125;  <br></code></pre></td></tr></table></figure>
+
+<p>重启nginx，然后阿里云域名服务器配置一级域名 xxx.com 解析到 nginx 所在服务器 ip 。</p>
+<p>示例：以 jiechujiaoyu.com 为例的6个访问域名均可以直接点击正常访问（域名解析里也辅助配置301跳转）</p>
+<p><a href="jiechujiaoyu.com">jiechujiaoyu.com</a><br><a href="www.jiechujiaoyu.com">www.jiechujiaoyu.com</a><br><a target="_blank" rel="noopener" href="http://jiechujiaoyu.com/">http://jiechujiaoyu.com</a><br><a target="_blank" rel="noopener" href="http://www.jiechujiaoyu.com/">http://www.jiechujiaoyu.com</a><br><a target="_blank" rel="noopener" href="https://jiechujiaoyu.com/">https://jiechujiaoyu.com</a><br><a target="_blank" rel="noopener" href="https://www.jiechujiaoyu.com/">https://www.jiechujiaoyu.com</a></p>
+<p>阿里云域名解析配置：</p>
+<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20250327103059.png" srcset="/img/loading.gif" lazyload alt="image-20250327103058414"></p>
+<p>nginx配置如下：</p>
+<figure class="highlight nginx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br></pre></td><td class="code"><pre><code class="hljs nginx">  <span class="hljs-section">server</span> &#123;<br>      <span class="hljs-attribute">listen</span>               <span class="hljs-number">80</span>;<br>      <span class="hljs-attribute">server_name</span>          jiechujiaoyu.com www.jiechujiaoyu.com;<br>      <span class="hljs-attribute">ssl_certificate</span>      /usr/local/nginx/conf/cert/jiechujiaoyu.com.pem;<br>      <span class="hljs-attribute">ssl_certificate_key</span>  /usr/local/nginx/conf/cert/jiechujiaoyu.com.key;<br><br><span class="hljs-section">location</span> / &#123;<br>	<span class="hljs-attribute">rewrite</span><span class="hljs-regexp"> ^/(.*)</span> https://www.jiechujiaoyu.com/<span class="hljs-variable">$1</span> <span class="hljs-literal">permanent</span>;<br>&#125;<br>  &#125;<br><br>  <span class="hljs-section">server</span> &#123;<br>      <span class="hljs-attribute">listen</span>               <span class="hljs-number">443</span> ssl;<br>      <span class="hljs-attribute">server_name</span>          jiechujiaoyu.com www.jiechujiaoyu.com;<br>      <span class="hljs-attribute">ssl_certificate</span>      /usr/local/nginx/conf/cert/jiechujiaoyu.com.pem;<br>      <span class="hljs-attribute">ssl_certificate_key</span>  /usr/local/nginx/conf/cert/jiechujiaoyu.com.key;<br><br>      <span class="hljs-comment">#开启解压缩静态文件</span><br>      <span class="hljs-attribute">gzip_static</span> <span class="hljs-literal">on</span>; <br>      <span class="hljs-comment">#强制一级域名跳转到www子域名</span><br>      <span class="hljs-attribute">if</span> (<span class="hljs-variable">$host</span> = jiechujiaoyu.com)  &#123;<br>          <span class="hljs-attribute">return</span> <span class="hljs-number">301</span> https://www.jiechujiaoyu.com<span class="hljs-variable">$request_uri</span>;<br>      &#125;<br><br>      <span class="hljs-section">location</span> / &#123; <br>         <span class="hljs-attribute">root</span> /opt/wangxiao-pc-prod/<span class="hljs-number">9091</span>/front/pc;<br>         <span class="hljs-attribute">try_files</span> <span class="hljs-variable">$uri</span> <span class="hljs-variable">$uri</span>/ /index.html;<br>         <span class="hljs-attribute">index</span>  index.html index.htm;<br>      &#125;   <br>           <br>      <span class="hljs-section">location</span> /webpc/ &#123;<br>          <span class="hljs-attribute">proxy_set_header</span> Host <span class="hljs-variable">$http_host</span>;<br>          <span class="hljs-attribute">proxy_set_header</span> X-Real-IP <span class="hljs-variable">$remote_addr</span>;<br>          <span class="hljs-attribute">proxy_set_header</span> REMOTE-HOST <span class="hljs-variable">$remote_addr</span>;<br>          <span class="hljs-attribute">proxy_set_header</span> X-Forwarded-For <span class="hljs-variable">$proxy_add_x_forwarded_for</span>;<br>          <span class="hljs-attribute">proxy_hide_header</span> X-Powered-By;<br>          <span class="hljs-attribute">proxy_hide_header</span> Server;<br>          <span class="hljs-attribute">proxy_read_timeout</span> <span class="hljs-number">7200</span>;<br>          <span class="hljs-attribute">proxy_pass</span> https://127.0.0.1:9091/webpc/; <br>      &#125;   <br><br>      <span class="hljs-section">location</span> = /50x.html &#123;<br>         <span class="hljs-attribute">root</span> html;<br>      &#125;   <br>  &#125;<br></code></pre></td></tr></table></figure>
+
+
+
 <h2 id="跨域问题"><a href="#跨域问题" class="headerlink" title="跨域问题"></a>跨域问题</h2><blockquote>
 <h4 id="跨域的定义"><a href="#跨域的定义" class="headerlink" title="跨域的定义"></a>跨域的定义</h4><p>同源策略限制了从同一个源加载的文档或脚本如何与来自另一个源的资源进行交互。这是一个用于隔离潜在恶意文件的重要安全机制。通常不允许不同源间的读操作。</p>
 <h4 id="同源的定义"><a href="#同源的定义" class="headerlink" title="同源的定义"></a>同源的定义</h4><p>如果两个页面的协议，端口（如果有指定）和域名都相同，则两个页面具有相同的源。</p>
@@ -475,9 +490,9 @@
                   <article class="post-prev col-6">
                     
                     
-                      <a href="/2018/03/28/06_%E6%9C%8D%E5%8A%A1%E5%99%A8/02_Nginx/02-Nginx%20%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1/" title="02-Nginx 负载均衡">
+                      <a href="/2018/03/28/06_%E6%9C%8D%E5%8A%A1%E5%99%A8/03_CentOS/01-VMware%E5%AE%89%E8%A3%85%E5%92%8C%E9%85%8D%E7%BD%AECentOS7/" title="01-VMware安装和配置CentOS7">
                         <i class="iconfont icon-arrowleft"></i>
-                        <span class="hidden-mobile">02-Nginx 负载均衡</span>
+                        <span class="hidden-mobile">01-VMware安装和配置CentOS7</span>
                         <span class="visible-mobile">上一篇</span>
                       </a>
                     

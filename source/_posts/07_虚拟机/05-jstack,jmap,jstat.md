@@ -460,6 +460,43 @@ Server is ready.
 
 上面红线框出来的部分大家可以自己去摸索下，最后一项支持OQL（对象查询语言）。
 
+#### 3.1 发现程序异常导出dump
+
+1. JVM启动时增加两个参数:
+
+```makefile
+#出现 OOME 时生成堆 dump: 
+-XX:+HeapDumpOnOutOfMemoryError
+#生成堆文件地址：
+-XX:HeapDumpPath=/opt/jvmlogs/
+```
+
+2. 发现程序异常前通过执行指令，直接生成当前JVM的dmp文件，1234是指JVM的进程号
+
+```perl
+jmap -dump:format=b,file=/var/logs/heap.hprof 1234
+```
+
+获得heap.hprof以后，就可以分析你的java线程里面对象占用堆内存的情况了。
+
+推荐使用Eclipse插件Memory Analyzer Tool 或者 MAT 工具 来打开heap.hprof文件。
+
+**2. 查看整个JVM内存状态**
+
+　　jmap -heap [pid]
+![img](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20250324094633.png)
+
+**3. 查看JVM堆中对象详细占用情况**
+　　jmap -histo [pid]
+
+**4. 导出整个JVM 中内存信息，可以利用其它工具打开dump文件分析，例如jdk自带的visualvm工具**
+
+　　jmap -dump:file=文件名.dump [pid]
+
+　　jmap -dump:format=b,file=文件名 [pid]
+
+　　format=b指定为二进制格式文件
+
  
 
 ### 4. jstat

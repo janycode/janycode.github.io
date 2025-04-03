@@ -19,6 +19,7 @@ categories:
 * sa-token 开源官网：https://sa-token.cc/
 * sa-token 官方文档：https://sa-token.cc/doc.html#/
 * 接入文档：https://blog.csdn.net/Xixi0864/article/details/137650195
+* Sa-Token圣经，史上最全的权限设计方案：https://mp.weixin.qq.com/s/l_k-tX-3JEQfvsy0xMukUw
 
 
 

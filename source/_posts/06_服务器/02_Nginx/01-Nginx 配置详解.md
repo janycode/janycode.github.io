@@ -218,6 +218,97 @@ location = /50x.html {
 
 执行命令 nginx -s reload，成功后浏览器访问
 
+
+
+## 301或302重定向
+
+参考博客：https://blog.csdn.net/zxh7770/article/details/103303312
+
+核心配置：
+
+```nginx
+    server {
+        listen               443 ssl;
+        server_name          xxx.com;
+        ssl_certificate      /usr/local/nginx/conf/cert/xxx.com.pem;
+        ssl_certificate_key  /usr/local/nginx/conf/cert/xxx.com.key;
+
+        location / {
+            #permanent对应就是301重定向跳转
+            rewrite ^/(.*) https://www.xxx.com/$1 permanent;
+            try_files $uri $uri/ /index.html;
+            index  index.html index.htm;
+        }   
+    }  
+```
+
+重启nginx，然后阿里云域名服务器配置一级域名 xxx.com 解析到 nginx 所在服务器 ip 。
+
+示例：以 jiechujiaoyu.com 为例的6个访问域名均可以直接点击正常访问（域名解析里也辅助配置301跳转）
+
+[jiechujiaoyu.com](jiechujiaoyu.com)
+[www.jiechujiaoyu.com](www.jiechujiaoyu.com)
+[http://jiechujiaoyu.com](http://jiechujiaoyu.com)
+[http://www.jiechujiaoyu.com](http://www.jiechujiaoyu.com)
+[https://jiechujiaoyu.com](https://jiechujiaoyu.com)
+[https://www.jiechujiaoyu.com](https://www.jiechujiaoyu.com)
+
+阿里云域名解析配置：
+
+![image-20250327103058414](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20250327103059.png)
+
+nginx配置如下：
+
+```nginx
+    server {
+        listen               80;
+        server_name          jiechujiaoyu.com www.jiechujiaoyu.com;
+        ssl_certificate      /usr/local/nginx/conf/cert/jiechujiaoyu.com.pem;
+        ssl_certificate_key  /usr/local/nginx/conf/cert/jiechujiaoyu.com.key;
+
+		location / {
+			rewrite ^/(.*) https://www.jiechujiaoyu.com/$1 permanent;
+		}
+    }
+
+    server {
+        listen               443 ssl;
+        server_name          jiechujiaoyu.com www.jiechujiaoyu.com;
+        ssl_certificate      /usr/local/nginx/conf/cert/jiechujiaoyu.com.pem;
+        ssl_certificate_key  /usr/local/nginx/conf/cert/jiechujiaoyu.com.key;
+
+        #开启解压缩静态文件
+        gzip_static on; 
+        #强制一级域名跳转到www子域名
+        if ($host = jiechujiaoyu.com)  {
+            return 301 https://www.jiechujiaoyu.com$request_uri;
+        }
+
+        location / { 
+           root /opt/wangxiao-pc-prod/9091/front/pc;
+           try_files $uri $uri/ /index.html;
+           index  index.html index.htm;
+        }   
+             
+        location /webpc/ {
+            proxy_set_header Host $http_host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header REMOTE-HOST $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_hide_header X-Powered-By;
+            proxy_hide_header Server;
+            proxy_read_timeout 7200;
+            proxy_pass https://127.0.0.1:9091/webpc/; 
+        }   
+
+        location = /50x.html {
+           root html;
+        }   
+    }
+```
+
+
+
 ## 跨域问题
 
 > #### 跨域的定义
