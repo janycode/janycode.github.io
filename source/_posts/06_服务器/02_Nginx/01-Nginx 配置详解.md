@@ -69,6 +69,12 @@ nginx -s stop             快速关闭
 nginx -s quit             等待工作进程处理完成后关闭
 ```
 
+不关心配置文件位置关联配置文件启动`通过nginx -t找出配置文件然后指定`：
+
+```bash
+nginx -s stop && sleep 3 && nginx -c `nginx -t 2>&1 | tail -n 1 | awk -F 'file ' '{print $2}' | cut -d ' ' -f1` && sleep 2 && ps -ef | grep nginx | grep -v grep
+```
+
 
 
 ## 默认配置
