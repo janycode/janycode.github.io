@@ -1,5 +1,5 @@
 ---
-title: linux磁盘与内存管理
+title: 03-linux磁盘与内存管理
 date: 2024-5-25 15:00:58
 index_img: https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20241024154332.png
 tags: 
@@ -39,7 +39,7 @@ du -sh
 
 
 
-## 内存管理
+## 内存管理(虚拟内存)
 
 小知识：测试服务器内存不够用怎么办？（使用类似虚拟内存的方式设置一部分硬盘空间为交换内存）
 
@@ -48,3 +48,25 @@ du -sh
 
 
 ![image-20240929171539325](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20240929171540.png)
+
+shell脚本：
+
+```bash
+#!/bin/bash
+
+free -h
+echo "dd if=/dev/zero of=/usr/swap bs=1M count=4096"
+dd if=/dev/zero of=/usr/swap bs=1M count=4096
+echo
+echo "mkswap /usr/swap"
+mkswap /usr/swap
+echo
+echo "swapon /usr/swap"
+swapon /usr/swap
+echo "Need add to /etc/fstab: /usr/swap swap swap defaults 0 0"
+cat /etc/fstab
+echo
+free -h
+echo "Done!!!"
+```
+

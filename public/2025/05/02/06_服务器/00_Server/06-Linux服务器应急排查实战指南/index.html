@@ -1,0 +1,1040 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=light>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Jerry(姜源)">
+  <meta name="keywords" content="Java,Html,CSS,JavaScript,Python,C,Linux,shell编程经验分享、技术总结、心得体会">
+  
+    <meta name="description" content="参考资料：  网络安全行业门户：https:&#x2F;&#x2F;www.freebuf.com&#x2F;  引言在服务器运行过程中，网络安全攻击频发，常见威胁包括 挖矿病毒、蠕虫传播、DDoS 攻击、后门程序等。这些攻击不仅影响系统稳定性，还可能造成数据泄露或业务中断。对于系统运维和应急排查人员而言，如何在最短时间内识别攻击迹象、精准定位问题来源，并迅速采取应对措施，是一项至关重要的技能。 1. 排查思路1）了解清楚事件">
+<meta property="og:type" content="article">
+<meta property="og:title" content="06-Linux服务器应急排查实战指南">
+<meta property="og:url" content="https://janycode.github.io/2025/05/02/06_%E6%9C%8D%E5%8A%A1%E5%99%A8/00_Server/06-Linux%E6%9C%8D%E5%8A%A1%E5%99%A8%E5%BA%94%E6%80%A5%E6%8E%92%E6%9F%A5%E5%AE%9E%E6%88%98%E6%8C%87%E5%8D%97/index.html">
+<meta property="og:site_name" content="姜源の云笔记">
+<meta property="og:description" content="参考资料：  网络安全行业门户：https:&#x2F;&#x2F;www.freebuf.com&#x2F;  引言在服务器运行过程中，网络安全攻击频发，常见威胁包括 挖矿病毒、蠕虫传播、DDoS 攻击、后门程序等。这些攻击不仅影响系统稳定性，还可能造成数据泄露或业务中断。对于系统运维和应急排查人员而言，如何在最短时间内识别攻击迹象、精准定位问题来源，并迅速采取应对措施，是一项至关重要的技能。 1. 排查思路1）了解清楚事件">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20241024154332.png">
+<meta property="article:published_time" content="2025-05-02T07:00:58.000Z">
+<meta property="article:modified_time" content="2025-04-28T06:26:14.712Z">
+<meta property="article:author" content="Jerry(姜源)">
+<meta property="article:tag" content="Linux">
+<meta property="article:tag" content="服务器">
+<meta property="article:tag" content="安全">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20241024154332.png">
+  
+  
+    <meta name="referrer" content="no-referrer-when-downgrade">
+  
+  
+  <title>06-Linux服务器应急排查实战指南 - 姜源の云笔记</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"janycode.github.io","root":"/","version":"1.9.0","typing":{"enable":true,"typeSpeed":50,"cursorChar":"|","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":false},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":"bfff735c897eb60ea49b735096b20e47","google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+
+  
+<meta name="generator" content="Hexo 6.2.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 50vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>姜源の云笔记</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tools/">
+                <i class="iconfont icon-slack-fill"></i>
+                工具
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" target="_blank" rel="noopener" href="https://yuancodes.github.io/">
+                <i class="iconfont icon-notebook"></i>
+                Docsify
+              </a>
+            </li>
+          
+        
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="06-Linux服务器应急排查实战指南"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-author" aria-hidden="true"></i>
+        Jerry(姜源)
+      </span>
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2025-05-02 15:00" pubdate>
+          星期五, 2025/05/02 15:00:58
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          <!-- compatible with older versions-->
+          12k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          <!-- compatible with older versions-->
+          104 分钟
+        
+      </span>
+    
+
+    
+    
+      
+        <span id="busuanzi_container_page_pv" style="display: none">
+          <i class="iconfont icon-eye" aria-hidden="true"></i>
+          <span id="busuanzi_value_page_pv"></span> 次
+        </span>
+        
+      
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">06-Linux服务器应急排查实战指南</h1>
+            
+            <div class="markdown-body">
+              
+              <p>参考资料：</p>
+<ul>
+<li>网络安全行业门户：<a target="_blank" rel="noopener" href="https://www.freebuf.com/">https://www.freebuf.com/</a></li>
+</ul>
+<h2 id="引言"><a href="#引言" class="headerlink" title="引言"></a>引言</h2><p>在服务器运行过程中，网络安全攻击频发，常见威胁包括 挖矿病毒、蠕虫传播、DDoS 攻击、后门程序等。这些攻击不仅影响系统稳定性，还可能造成数据泄露或业务中断。对于系统运维和应急排查人员而言，如何在最短时间内识别攻击迹象、精准定位问题来源，并迅速采取应对措施，是一项至关重要的技能。</p>
+<h2 id="1-排查思路"><a href="#1-排查思路" class="headerlink" title="1. 排查思路"></a>1. 排查思路</h2><p>1）了解清楚事件发生时间点、事件有什么特征、服务器的用途、服务器上部署的应用组件、已做过那些应急措施，禁忌上来就一顿操作；</p>
+<p>2）大概思考下能沾边的网络攻击特征，同时根据服务器版本以及服务器上部署的组件看看近期是否有nday漏洞，有时匹配上了可以节约一大部分时间；</p>
+<p>3）根据已部署的安全设备，快速看看异常事件以及已攻击成功的事件；</p>
+<p>4）上机排查，使用busybox套装防止发生预期以外的情况，使用磁盘备份（dd）进行整个备份，或手工备份日志以及一些易被覆盖的系统文件，如：.viminfo、history，使用LiME（Linux Memory Extractor）备份服务器内存，或者使用手工追加将进程、网络连接状态等进行备份，（虚拟化&#x2F;云环境可直接拍摄快照）；</p>
+<p>5）根据前期了解的情况、事件特征进行排查，若排查到有一定的特征的异常文件或者进程时，可先到网上找找有没有相似案例，可以节约很多时间。</p>
+<h2 id="2-常见网络安全攻击特征"><a href="#2-常见网络安全攻击特征" class="headerlink" title="2. 常见网络安全攻击特征"></a>2. 常见网络安全攻击特征</h2><table>
+<thead>
+<tr>
+<th align="left"><strong>攻击类型</strong></th>
+<th align="left"><strong>特征表现</strong></th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left"><strong>挖矿病毒</strong></td>
+<td align="left">- CPU &#x2F; GPU 长时间 <strong>占用 100%</strong><br />- 异常进程（如<code>xmrig</code>、<code>kworker</code>、<code>ddgs</code>） <br />- 持续对外连接 <strong>矿池地址</strong>（<code>stratum+tcp://</code>）</td>
+</tr>
+<tr>
+<td align="left"><strong>DDoS 攻击</strong></td>
+<td align="left">- 服务器 <strong>带宽异常占满</strong><br />-<code>netstat</code>显示大量<code>SYN_RECV</code>、<code>TIME_WAIT</code><br />-<code>ps</code>发现大量<code>httpd</code>&#x2F;<code>nginx</code>进程</td>
+</tr>
+<tr>
+<td align="left"><strong>后门木马</strong></td>
+<td align="left">- <strong>隐藏进程</strong>，<code>ps</code>进程列表找不到但<code>top</code>能看到 <br />-<code>crontab</code>中出现可疑定时任务 <br />- 端口监听异常 (<code>ss -antp</code>显示 root 运行的非标准端口)</td>
+</tr>
+<tr>
+<td align="left"><strong>蠕虫病毒</strong></td>
+<td align="left">- 短时间内<strong>大量文件变动</strong><br />-<code>top</code>显示异常高 I&#x2F;O 负载 <br />- 服务器对外疯狂扫描其他 IP</td>
+</tr>
+<tr>
+<td align="left"><strong>勒索病毒</strong></td>
+<td align="left">- 文件被加密（扩展名<code>.lock</code>、<code>.encrypted</code>） <br />-<code>/tmp</code>目录下出现未知可执行文件 <br />-<code>ps</code>发现<code>wget</code>&#x2F;<code>curl</code>下载可疑文件</td>
+</tr>
+<tr>
+<td align="left"><strong>Webshell &#x2F; 恶意代码</strong></td>
+<td align="left">- 网站目录（<code>/var/www/html/</code>）出现<strong>陌生脚本文件</strong><br />- <code>grep -r eval</code></td>
+</tr>
+<tr>
+<td align="left"><strong>SQL 注入攻击</strong></td>
+<td align="left">- 数据库<code>mysqld</code>进程 CPU 异常升高 <br />- 网站日志出现大量 <strong>UNION SELECT</strong>或 <strong>OR 1&#x3D;1</strong>语句</td>
+</tr>
+<tr>
+<td align="left"><strong>暴力破解 SSH</strong></td>
+<td align="left">-<code>/var/log/secure</code>出现大量 <strong>failed login</strong>记录 <br />-<code>who</code>发现陌生 IP 登录 <br />-<code>ss -antp</code>发现<code>22</code>端口大量连接</td>
+</tr>
+<tr>
+<td align="left"><strong>DNS 劫持</strong></td>
+<td align="left">-<code>resolv.conf</code>被篡改，DNS 解析异常 <br />-<code>ping google.com</code>解析 IP 变化 <br />- 服务器 DNS 记录被改到<code>8.8.8.8</code>之外的未知 IP</td>
+</tr>
+<tr>
+<td align="left"><strong>恶意代理 &#x2F; 隧道</strong></td>
+<td align="left">-<code>ps</code>发现<code>socat</code>、<code>nc</code>、<code>iodine</code>等隧道工具 <br />- 服务器对外大量<code>443</code>&#x2F;<code>80</code>连接 <br />-<code>iptables</code>规则被修改</td>
+</tr>
+<tr>
+<td align="left"><strong>ARP 欺骗 &#x2F; 内网流量劫持</strong></td>
+<td align="left">-<code>arp -a</code>显示异常网关 MAC <br />- 内网通信异常，流量到达错误 IP <br />-<code>tcpdump</code>发现 ARP 报文激增</td>
+</tr>
+</tbody></table>
+<h2 id="3-Linux数据传输"><a href="#3-Linux数据传输" class="headerlink" title="3. Linux数据传输"></a>3. Linux数据传输</h2><p>应急响应需要将相应工具上传到服务器，可使用的方式：</p>
+<table>
+<thead>
+<tr>
+<th align="left"><strong>传输方式</strong></th>
+<th align="left"><strong>适用场景</strong></th>
+<th align="left"><strong>使用示例</strong></th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left"><strong>SCP（安全复制协议）</strong>✅ 推荐</td>
+<td align="left">适用于<strong>内网或有 SSH 访问权限</strong>的服务器，支持加密传输</td>
+<td align="left"><code>scp tool.tar.gz user@192.168.1.100:/tmp/</code></td>
+</tr>
+<tr>
+<td align="left"><strong>SFTP（安全文件传输）</strong>✅ 推荐</td>
+<td align="left"><strong>基于 SSH</strong>，适用于<strong>Windows 客户端</strong>上传</td>
+<td align="left">使用<code>FileZilla</code>、<code>WinSCP</code>等客户端</td>
+</tr>
+<tr>
+<td align="left"><strong>rsync（高效增量同步）</strong>✅ 推荐</td>
+<td align="left"><strong>大文件同步</strong>，支持<strong>断点续传</strong></td>
+<td align="left"><code>rsync -avz tool.tar.gz user@192.168.1.100:/tmp/</code></td>
+</tr>
+<tr>
+<td align="left"><strong>Xshell &#x2F; Xftp（图形化）</strong></td>
+<td align="left">适用于<strong>Windows 远程管理</strong></td>
+<td align="left"><strong>Xftp 上传文件到服务器</strong></td>
+</tr>
+<tr>
+<td align="left"><strong>FTP（不安全，谨慎使用）</strong></td>
+<td align="left">适用于<strong>无 SSH 但开放 FTP 端口</strong>的服务器</td>
+<td align="left"><code>ftp 192.168.1.100</code></td>
+</tr>
+<tr>
+<td align="left"><strong>HTTP &#x2F; Python Web 服务器</strong>✅ 推荐</td>
+<td align="left">适用于<strong>目标服务器可访问外网</strong>的情况</td>
+<td align="left"><code>python3 -m http.server 8080</code></td>
+</tr>
+<tr>
+<td align="left"><strong>Wget &#x2F; Curl（远程下载）</strong>✅ 推荐</td>
+<td align="left">适用于<strong>服务器能访问公网</strong>的情况</td>
+<td align="left"><code>wget http://your-server.com/tool.tar.gz</code></td>
+</tr>
+<tr>
+<td align="left"><strong>Netcat（适用于封闭环境）</strong>✅ 推荐</td>
+<td align="left"><strong>适用于内网受限环境</strong>，可用于<strong>无 SSH 但有端口通信的服务器</strong></td>
+<td align="left"><strong>发送端：</strong><code>nc -lvp 4444 &lt; tool.tar.gz</code><strong>接收端：</strong><code>nc IP 4444 &gt; tool.tar.gz</code></td>
+</tr>
+<tr>
+<td align="left"><strong>SMB 共享（Windows ↔ Linux）</strong></td>
+<td align="left">适用于<strong>Windows 与 Linux 互传</strong></td>
+<td align="left"><strong>Linux 挂载 SMB:</strong><code>mount -t cifs //192.168.1.100/share /mnt</code></td>
+</tr>
+<tr>
+<td align="left"><strong>U 盘 &#x2F; 物理介质</strong></td>
+<td align="left">适用于<strong>离线服务器</strong></td>
+<td align="left">直接拷贝到 U 盘，然后<code>mount /dev/sdb1 /mnt</code></td>
+</tr>
+</tbody></table>
+<h2 id="4-应急排查方法"><a href="#4-应急排查方法" class="headerlink" title="4. 应急排查方法"></a>4. 应急排查方法</h2><p>注：攻击者可能会替换系统关键命令（如<code>ls</code>、<code>ps</code>、<code>netstat</code>）来隐藏恶意进程或文件。若不使用busybox套装，建议使用如下命令查看命令是否被替换，以ls示例：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-comment">#确保命令路径正确</span><br><span class="hljs-built_in">which</span> <span class="hljs-built_in">ls</span><br><br><span class="hljs-comment">#查看 ls 是否是别名</span><br><span class="hljs-built_in">alias</span><br><br><span class="hljs-comment">#检查 ls 的完整性，计算 ls 命令的 MD5 哈希值，并与系统正常版本对比，判断是否被篡改</span><br><span class="hljs-built_in">md5sum</span> /usr/bin/ls<br><br><span class="hljs-comment">#使用 RPM 验证系统核心文件</span><br>rpm -Va | grep ^..5<br><br><span class="hljs-comment">#运行 echo $PATH，如果 .（当前目录）在前，可能被劫持</span><br><br><span class="hljs-comment">#strace 跟踪系统调用，open 和 execve 能显示命令加载的库和执行的二进制文件</span><br>strace -e trace=open,execve <span class="hljs-built_in">ls</span><br><br><span class="hljs-comment">#使用 stat 检查命令的修改时间</span><br><span class="hljs-built_in">stat</span> /usr/bin/ls<br></code></pre></td></tr></table></figure>
+
+<h3 id="4-1-账户-x2F-登录-x2F-权限信息排查"><a href="#4-1-账户-x2F-登录-x2F-权限信息排查" class="headerlink" title="4.1 账户&#x2F;登录&#x2F;权限信息排查"></a>4.1 账户&#x2F;登录&#x2F;权限信息排查</h3><p>注：主要用于检测系统是否存在异常用户、未授权访问、权限提升等安全隐患。</p>
+<h5 id="账户相关"><a href="#账户相关" class="headerlink" title="账户相关"></a>账户相关</h5><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs bash">/etc/passwd                        <span class="hljs-comment">#查看所有账户，确认是否有陌生账户</span><br>grep -v <span class="hljs-string">&quot;nologin&quot;</span> /etc/passwd           <span class="hljs-comment">#找出所有能登录的用户</span><br>/home                            <span class="hljs-comment">#用户家目录查看是否有陌生账户目录</span><br>awk -F: <span class="hljs-string">&#x27;($3==0)&#123;print $1&#125;&#x27;</span> /etc/passwd    <span class="hljs-comment">#检查是否有多个 root 账户（UID=0）</span><br><span class="hljs-built_in">cat</span> /etc/shadow                    <span class="hljs-comment">#如果shadow有,但passwd没有，可能是隐藏账户</span><br></code></pre></td></tr></table></figure>
+
+<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20250425153509.png" srcset="/img/loading.gif" lazyload alt="image-20250425153500867"></p>
+<h5 id="权限相关"><a href="#权限相关" class="headerlink" title="权限相关"></a>权限相关</h5><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-built_in">cat</span> /etc/group | grep wheel  <span class="hljs-comment">#CentOS/RHEL，sudo组</span><br><span class="hljs-built_in">cat</span> /etc/group | grep sudo  <span class="hljs-comment">#Ubuntu/Debian，sudo组</span><br>getent group sudo        <span class="hljs-comment">#查看组中有那些用户</span><br><span class="hljs-built_in">cat</span> /etc/sudoers         <span class="hljs-comment">#其他用户是否有sudo权限，是否有NOPASSWD:ALL规则或ALL:ALL</span><br><span class="hljs-comment">#是否有进程/用户频繁使用 su 或 sudo 提权</span><br>grep <span class="hljs-string">&quot;su&quot;</span> /var/log/auth.log  <span class="hljs-comment"># Debian/Ubuntu，日志审查</span><br>grep <span class="hljs-string">&quot;sudo&quot;</span> /var/log/secure  <span class="hljs-comment"># CentOS，日志审查</span><br></code></pre></td></tr></table></figure>
+
+<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20250425153609.png" srcset="/img/loading.gif" lazyload alt="image-20250425153608560"></p>
+<h5 id="登录相关"><a href="#登录相关" class="headerlink" title="登录相关"></a>登录相关</h5><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs bash">w  <span class="hljs-built_in">who</span>  last lastb  lastlog              <span class="hljs-comment">#用户登录信息查询</span><br>/var/log/secure                      <span class="hljs-comment">#登录日志</span><br>grep <span class="hljs-string">&quot;Accepted&quot;</span> /var/log/secure | grep sshd   <span class="hljs-comment">#查看 SSH 成功登录记录（CentOS）</span><br>grep <span class="hljs-string">&quot;Failed&quot;</span> /var/log/secure | grep sshd    <span class="hljs-comment">#查看 SSH 失败登录（暴力破解痕迹）</span><br>SSH<br><span class="hljs-built_in">cat</span> /etc/ssh/sshd_config | grep -E <span class="hljs-string">&quot;PermitRootLogin|PasswordAuthentication|AllowUsers&quot;</span>  <span class="hljs-comment">#SSH 配置安全检查</span><br><span class="hljs-built_in">cat</span> ~/.ssh/authorized_keys          <span class="hljs-comment">#检查是否有陌生SSH密钥</span><br><span class="hljs-built_in">ls</span> -lah /home/*/.ssh/authorized_keys<br><span class="hljs-built_in">ls</span> -lah /root/.ssh/             <span class="hljs-comment">#查看root账户的SSH目录时间戳</span><br><span class="hljs-comment">#是否启用了危险的远程访问方式</span><br>netstat -antp | grep -E <span class="hljs-string">&quot;22|23&quot;</span>     <span class="hljs-comment"># 查找常见远程管理端口</span><br></code></pre></td></tr></table></figure>
+
+<h3 id="4-2-进程以及网络连接排查"><a href="#4-2-进程以及网络连接排查" class="headerlink" title="4.2 进程以及网络连接排查"></a>4.2 进程以及网络连接排查</h3><p>注：进程和端口排查是检测恶意程序、后门、隧道、木马等异常行为的关键步骤。</p>
+<h5 id="网络相关"><a href="#网络相关" class="headerlink" title="网络相关"></a>网络相关</h5><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs bash">netstat -tulnp                           <span class="hljs-comment">#网络连接查看</span><br>ss -tulpan                             <span class="hljs-comment">#网络连接查看</span><br>watch -n 1 <span class="hljs-string">&#x27;netstat -antp | grep &quot;192.168.60.1&quot;&#x27;</span>   <span class="hljs-comment">#监视与可疑IP通信的进程</span><br>iptables -L                             <span class="hljs-comment">#查看防火墙规则</span><br>tcpdump                               <span class="hljs-comment">#tcpdump装包对数据包进行分析</span><br></code></pre></td></tr></table></figure>
+
+<p>可疑点：</p>
+<ul>
+<li>是否有<code>0.0.0.0:xxxx</code>监听非常规外网端口</li>
+<li>连接到国外 IP</li>
+<li>*进程名是否可疑</li>
+<li>大量<code>TIME_WAIT</code>连接</li>
+</ul>
+<h5 id="进程相关"><a href="#进程相关" class="headerlink" title="进程相关"></a>进程相关</h5><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-built_in">ls</span> -al /proc/PID/cwd               <span class="hljs-comment">#根据PID查看该应用程序启动的目录</span><br>pwdx PID                           <span class="hljs-comment">#查询进程PID的当前工作目录</span><br>lsof -p PID                        <span class="hljs-comment">#查看PID进程打开的所有文件</span><br>lsof -i :22                        <span class="hljs-comment">#查看监听或连接到端口 22的所有进程</span><br>lsof -u username                   <span class="hljs-comment">#查看用户username打开的所有文件和网络连接</span><br>systemctl status PID               <span class="hljs-comment">#查看进程的启动时间</span><br><span class="hljs-built_in">stat</span> filename                      <span class="hljs-comment">#查看进程文件创建、访问、修改时间</span><br>pstree -a                          <span class="hljs-comment">#查看所有进程父子关系</span><br>lsof | grep evil.sh                <span class="hljs-comment">#根据文件查找PID</span><br>nmap -p- IP                        <span class="hljs-comment">#通过扫描自己查看隐藏端口</span><br>ps -aux                            <span class="hljs-comment">#查看所有进程</span><br>top -c                             <span class="hljs-comment">#查看CPU占用率高的进程</span><br><span class="hljs-built_in">cat</span> /proc/                         <span class="hljs-comment">#通过PID查看所有进程</span><br>ps                                 <span class="hljs-comment">#查看启动进程的CMD</span><br></code></pre></td></tr></table></figure>
+
+<p>其他补充：</p>
+<p><code>deleted</code>但仍在运行的恶意进程，即使攻击者删除了恶意程序文件，如果它仍在运行，**文件可能被标记为<code>(deleted)</code>**。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-built_in">ls</span> -lah /proc/*/exe | grep deleted<br><br><span class="hljs-comment">#找到进程并提取可执行文件：</span><br><span class="hljs-built_in">cp</span> /proc/&lt;PID&gt;/exe /tmp/suspicious_binary<br>strings /tmp/suspicious_binary  <span class="hljs-comment"># 分析二进制内容</span><br></code></pre></td></tr></table></figure>
+
+<p>可疑点：</p>
+<ul>
+<li>占用 CPU &#x2F; 内存异常高的进程</li>
+<li>陌生或随机命名的进程（如<code>xyz123</code>、<code>/tmp/.xyz</code>）</li>
+<li>运行用户异常（如<code>nobody</code>、<code>daemon</code>）</li>
+</ul>
+<h3 id="4-3-任务计划排查"><a href="#4-3-任务计划排查" class="headerlink" title="4.3 任务计划排查"></a>4.3 任务计划排查</h3><p>注：攻击者常通过 计划任务（Crontab） 或 系统服务 进行持久化，确保恶意程序在服务器重启后仍能运行。因此，任务计划排查是检测恶意后门、木马和隐藏任务的关键步骤。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-keyword">for</span> user <span class="hljs-keyword">in</span> $(<span class="hljs-built_in">cut</span> -f1 -d: /etc/passwd); <span class="hljs-keyword">do</span> <span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;[<span class="hljs-variable">$user</span>]&quot;</span>; crontab -u <span class="hljs-variable">$user</span> -l 2&gt;/dev/null; <span class="hljs-keyword">done</span>                      <span class="hljs-comment">#查看所有用户的定时任务</span><br>crontab -l                             <span class="hljs-comment">#有部分恶意代码需要crontab -e 编辑才能看到</span><br><span class="hljs-built_in">cat</span> /var/log/cron                      <span class="hljs-comment">#查看任务计划日志</span><br><span class="hljs-built_in">cat</span> /etc/crontab                       <span class="hljs-comment">#系统全局 crontab 配置文件</span><br><span class="hljs-built_in">cat</span> /etc/anacrontab                    <span class="hljs-comment">#查看 anacron 任务</span><br><span class="hljs-built_in">ls</span> -lah /etc/cron.d/                   <span class="hljs-comment">#查看 /etc/cron.d 目录下的独立定时任务</span><br><span class="hljs-built_in">ls</span> -lah /etc/cron.hourly/              <span class="hljs-comment"># 每小时执行的任务，通常用于日志清理或监控</span><br><span class="hljs-built_in">ls</span> -lah /etc/cron.daily/               <span class="hljs-comment"># 每天执行的任务，如日志轮转（logrotate）</span><br><span class="hljs-built_in">ls</span> -lah /etc/cron.weekly/              <span class="hljs-comment"># 每周执行的任务，通常用于备份或维护</span><br><span class="hljs-built_in">ls</span> -lah /etc/cron.monthly/             <span class="hljs-comment"># 每月执行的任务，可能涉及系统更新等</span><br><span class="hljs-built_in">ls</span> -lah /var/spool/cron/               <span class="hljs-comment">#查看所有用户的 crontab 任务存储文件</span><br><span class="hljs-built_in">ls</span> -lah /var/spool/anacron/            <span class="hljs-comment">#查看 anacron 任务执行日志</span><br>atq                                    <span class="hljs-comment">#at 计划任务查看</span><br>systemctl list-timers --all            <span class="hljs-comment">#查看所有 systemd 定时任务</span><br><span class="hljs-built_in">cat</span> /etc/systemd/system/*.timer        <span class="hljs-comment">#检查自定义 systemd 计划任务</span><br>find /etc/cron* -<span class="hljs-built_in">type</span> f -mtime -3      <span class="hljs-comment">#查找 3 天内修改的 cron 任务</span><br>grep -r <span class="hljs-string">&quot;/tmp/&quot;</span> /etc/cron*             <span class="hljs-comment">#查找任务是否调用 /tmp 目录的可疑脚本</span><br></code></pre></td></tr></table></figure>
+
+<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20250425153851.png" srcset="/img/loading.gif" lazyload alt="image-20250425153849774"></p>
+<h3 id="4-4-自启动排查"><a href="#4-4-自启动排查" class="headerlink" title="4.4 自启动排查"></a>4.4 自启动排查</h3><p>在应急响应中，自启动排查是发现恶意程序、后门、持久化攻击的重要步骤。攻击者可能通过多种方式实现系统启动后自动运行恶意代码。</p>
+<h5 id="检查-systemd服务"><a href="#检查-systemd服务" class="headerlink" title="检查 systemd服务"></a>检查 systemd服务</h5><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">systemctl list-unit-files --<span class="hljs-built_in">type</span>=service   <span class="hljs-comment">#列出所有启动服务</span><br></code></pre></td></tr></table></figure>
+
+<p>enabled：开机自启动，disabled：不开机启动，static：被其他服务依赖启动；</p>
+<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20250425153924.png" srcset="/img/loading.gif" lazyload alt="image-20250425153922981"></p>
+<p>可疑点：</p>
+<ul>
+<li>服务名称伪装成常见服务（如<code>sshd.service</code>、<code>cron.service</code>），但路径异常</li>
+<li>服务启动脚本在<code>/tmp/</code>、<code>/dev/shm/</code>、<code>/var/tmp/</code>目录中</li>
+</ul>
+<h5 id="其他自启动文件-x2F-配置"><a href="#其他自启动文件-x2F-配置" class="headerlink" title="其他自启动文件&#x2F;配置"></a>其他自启动文件&#x2F;配置</h5><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-comment"># 查看 rc.local 文件，检查是否有异常启动项（如恶意脚本、反弹 shell）</span><br><span class="hljs-built_in">cat</span> /etc/rc.local  <br><br><span class="hljs-comment"># 列出所有 rc 运行级别目录中的启动项，关注 S 开头的脚本（表示开机启动）</span><br><span class="hljs-built_in">ls</span> -lah /etc/rc*.d/  <br><br><span class="hljs-comment"># 查看 init.d 目录，列出所有可以通过 init 脚本方式启动的服务</span><br><span class="hljs-built_in">ls</span> -lah /etc/init.d/  <br><br><span class="hljs-comment"># 检查当前用户的 Bash 配置文件，查看是否有异常命令</span><br><span class="hljs-built_in">cat</span> ~/.bashrc  <br><br><span class="hljs-comment"># 检查当前用户的 Bash 登录配置文件，可能包含自启动后门</span><br><span class="hljs-built_in">cat</span> ~/.bash_profile  <br><br><span class="hljs-comment"># 查看系统级别的环境变量及启动脚本，检查是否有全局恶意代码</span><br><span class="hljs-built_in">cat</span> /etc/profile  <br><br><span class="hljs-comment"># 如果使用 Zsh，检查其启动配置文件，可能存在隐藏后门</span><br><span class="hljs-built_in">cat</span> ~/.zshrc  <br><br><span class="hljs-comment"># 查看 systemd 系统服务文件，重点检查是否有异常服务文件</span><br><span class="hljs-built_in">ls</span> -lah /usr/lib/systemd/system  <br><br><span class="hljs-comment"># 列出 multi-user 运行级别的 systemd 服务，找出可疑的自动启动项</span><br><span class="hljs-built_in">ls</span> -lah /usr/lib/systemd/system/multi-user.target.wants  <br><br><span class="hljs-comment"># 检查 `/etc/inittab`，检查是否有异常的运行级别或启动项（针对 SysVinit 系统）</span><br><span class="hljs-built_in">cat</span> /etc/inittab  <br><br><span class="hljs-comment"># 使用 chkconfig 工具查看系统中所有的开机启动项（适用于 RHEL/CentOS 6）</span><br>chkconfig --list | grep <span class="hljs-string">&quot;3:on|5:on&quot;</span>  <br></code></pre></td></tr></table></figure>
+
+<p>可疑点：</p>
+<ul>
+<li>自定义脚本命名模仿系统服务，如<code>S99sshd</code></li>
+<li>脚本内容包含<code>curl</code>、<code>wget</code>、<code>nc</code>等下载&#x2F;反弹 shell 工具</li>
+</ul>
+<h5 id="检查内核模块"><a href="#检查内核模块" class="headerlink" title="检查内核模块"></a>检查内核模块</h5><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs bash">lsmod                                      <span class="hljs-comment"># 列出所有加载的内核模块</span><br>modinfo &lt;模块名&gt;                            <span class="hljs-comment"># 查看模块详细信息</span><br>ldd /usr/sbin/ss                           <span class="hljs-comment">#ss命令动态库查询</span><br>/etc/ld.so.preload                         <span class="hljs-comment">#该文件默认为空</span><br></code></pre></td></tr></table></figure>
+
+<p>可疑点：</p>
+<ul>
+<li>模块名模仿系统模块（如<code>netfilter</code>）</li>
+<li>模块路径在<code>/lib/modules/</code>之外</li>
+</ul>
+<h5 id="环境变量"><a href="#环境变量" class="headerlink" title="环境变量"></a>环境变量</h5><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-comment"># 检查 LD_PRELOAD是否被劫持</span><br><span class="hljs-built_in">echo</span> <span class="hljs-variable">$LD_PRELOAD</span>        <br><br><span class="hljs-comment">#检查LD_LIBRARY_PATH是否被篡改</span><br><span class="hljs-built_in">echo</span> <span class="hljs-variable">$LD_LIBRARY_PATH</span><br><br><span class="hljs-comment">#检查PROMPT_COMMAND是否被利用</span><br><span class="hljs-built_in">echo</span> <span class="hljs-variable">$PROMPT_COMMAND</span><br><br><span class="hljs-comment">#检查SSH_AUTH_SOCK是否被劫持</span><br><span class="hljs-built_in">echo</span> <span class="hljs-variable">$SSH_AUTH_SOCK</span>     <span class="hljs-built_in">ls</span> -lah <span class="hljs-variable">$SSH_AUTH_SOCK</span><br><br><span class="hljs-comment"># 查看所有当前环境变量，检查是否存在可疑或异常的环境配置</span><br><span class="hljs-built_in">env</span>  <br><br><span class="hljs-comment"># 查看 shell 当前的所有变量和函数定义，可能发现异常的变量或环境配置</span><br><span class="hljs-built_in">set</span>  <br><br><span class="hljs-comment"># 查看当前 shell 环境变量的设置，可以用来确认是否有恶意篡改的内容</span><br><span class="hljs-built_in">export</span>  <br><br><span class="hljs-comment"># 查看某个进程的环境变量，检查是否被注入恶意环境配置</span><br><span class="hljs-built_in">cat</span> /proc/<span class="hljs-variable">$PID</span>/environ  <br>strings -f /proc/PID/environ<br><br><span class="hljs-comment"># 查看系统的 PATH 环境变量，确认是否有异常的路径（如恶意程序路径）</span><br><span class="hljs-built_in">echo</span> <span class="hljs-variable">$PATH</span><br><br><span class="hljs-comment">#alias别名检查</span><br><span class="hljs-built_in">alias</span><br></code></pre></td></tr></table></figure>
+
+<p>可疑点：</p>
+<ul>
+<li>环境变量指向&#x2F;tmp、&#x2F;dev&#x2F;shm等路径的异常文件</li>
+<li>环境变量含可以命令</li>
+<li>权限异常（<code>ls -lah $SSH_AUTH_SOCK</code>）</li>
+</ul>
+<h3 id="4-5-文件排查"><a href="#4-5-文件排查" class="headerlink" title="4.5 文件排查"></a>4.5 文件排查</h3><p>在进行文件排查时，关键是识别系统中的异常文件、可能被篡改的文件、隐藏文件及新生成的文件。</p>
+<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20250425154033.png" srcset="/img/loading.gif" lazyload alt="image-20250425154032486"></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-comment"># 检查临时目录（可能用来存放恶意程序），特别是 /tmp 和 /var/tmp，如果挂载为 noexec，仍可能被攻击者利用进行本地提权</span><br><span class="hljs-built_in">ls</span> -al /tmp         /var/tmp<br><br><span class="hljs-comment"># 检查动态库目录，恶意程序可能通过修改或加入恶意动态库来劫持进程</span><br><span class="hljs-built_in">ls</span> -al /lib* /usr/lib*<br><br><span class="hljs-comment"># 检查关键系统目录（如 /dev、/etc），防止恶意文件的存在</span><br><span class="hljs-built_in">ls</span> -al /dev /etc<br><br><span class="hljs-comment"># 检查 /dev/shm 目录，该目录在 Linux 中用于内存存储，恶意程序可能会在内存中运行并藏匿</span><br><span class="hljs-built_in">ls</span> -al /dev/shm<br><br><span class="hljs-comment"># 检查常见的可执行文件目录，可能包含恶意脚本或二进制文件</span><br><span class="hljs-built_in">ls</span> -al /bin /sbin /usr/bin /usr/sbin<br><br><span class="hljs-comment"># 检查是否有恶意的 SSH 后门脚本，可能被放置在 /etc/update-motd.d/ 中</span><br><span class="hljs-built_in">ls</span> -al /etc/update-motd.d/<br><br><span class="hljs-comment"># 查看主机 DNS 配置文件，检查是否有恶意 DNS 配置</span><br><span class="hljs-built_in">cat</span> /etc/hosts<br><span class="hljs-built_in">cat</span> /etc/resolv.conf<br><br><span class="hljs-comment"># 查找隐藏文件和目录，检查是否有可疑文件或后门</span><br><span class="hljs-built_in">ls</span> -al / | grep <span class="hljs-string">&quot;^.&quot;</span><br>find / -<span class="hljs-built_in">type</span> d -name <span class="hljs-string">&quot;.*&quot;</span>  <span class="hljs-comment"># 查找隐藏目录</span><br><br><span class="hljs-comment"># 查找具有 setuid 权限的文件，可能会被攻击者利用进行提权</span><br>find / -<span class="hljs-built_in">type</span> f -perm -4000<br><br><span class="hljs-comment">#查找所有非标准权限的文件</span><br>find /bin /usr/bin /sbin /usr/sbin -<span class="hljs-built_in">type</span> f ! -perm 755<br><br><span class="hljs-comment"># 查看文件系统的属性，可能存在不正常的文件保护（i属性）</span><br>lsattr / -R 2&gt;/dev/null | grep <span class="hljs-string">&quot;----i&quot;</span><br><br><span class="hljs-comment"># 使用 rpm 校验系统文件，检测文件是否被篡改</span><br>rpm -Va | grep ^..5<br><br><span class="hljs-comment">#VIM文件编辑历史，可能存在编辑过恶意文件痕迹</span><br>/root/.viminfo    <br><br><span class="hljs-comment"># 查找最近修改的 JSP 文件，可能是被利用的 WebShell</span><br>find / -name <span class="hljs-string">&quot;*.jsp&quot;</span> -ctime -2<br><br><span class="hljs-comment"># 查找特定目录下的 PHP 文件，检查是否包含恶意代码</span><br>find /var/ -<span class="hljs-built_in">type</span> f -name <span class="hljs-string">&#x27;*.php&#x27;</span> | xargs grep <span class="hljs-string">&#x27;eval&#x27;</span> | more<br><br><span class="hljs-comment">#对比两个文件内容的差异</span><br>diff -c -a -r cms1 cms2<br></code></pre></td></tr></table></figure>
+
+<p>补充：如果文件被删除且该文件正在被使用的情况下，通过lsof从&#x2F;proc目录下恢复该文件的内容</p>
+<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20250428142136.png" srcset="/img/loading.gif" lazyload alt="image-20250425154013979"></p>
+<h3 id="4-6-日志分析"><a href="#4-6-日志分析" class="headerlink" title="4.6 日志分析"></a>4.6 日志分析</h3><h5 id="日志文件"><a href="#日志文件" class="headerlink" title="日志文件"></a>日志文件</h5><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-comment"># 记录身份验证信息，包括用户登录、sudo 使用、SSH 登录等，该日志对于安全审计至关重要；</span><br><span class="hljs-built_in">cat</span> /var/log/auth.log  <span class="hljs-comment"># Debian/Ubuntu 系统</span><br><span class="hljs-built_in">cat</span> /var/log/secure    <span class="hljs-comment"># CentOS/Red Hat 系统</span><br><br><span class="hljs-comment"># 记录系统定时任务（Cron）执行的日志，帮助分析计划任务的运行情况</span><br><span class="hljs-built_in">cat</span> /var/log/cron<br><br><span class="hljs-comment"># 记录邮件服务的相关日志，包括邮件的发送、接收、传输等信息</span><br><span class="hljs-built_in">cat</span> /var/log/maillog  <span class="hljs-comment"># Red Hat/CentOS 系统</span><br><span class="hljs-built_in">cat</span> /var/log/mail.log  <span class="hljs-comment"># Debian/Ubuntu 系统</span><br><br><span class="hljs-comment"># 记录 Apache HTTP 服务器的访问日志和错误日志，用于分析 Web 服务的状态、请求等信息</span><br><span class="hljs-built_in">cat</span> /var/log/httpd/access_log  <span class="hljs-comment"># Red Hat/CentOS 系统</span><br><span class="hljs-built_in">cat</span> /var/log/apache2/access.log  <span class="hljs-comment"># Debian/Ubuntu 系统</span><br><br><span class="hljs-comment"># 记录 MySQL 数据库的日志信息，包括查询日志、错误日志、慢查询日志等</span><br><span class="hljs-built_in">cat</span> /var/log/mysql/error.log  <span class="hljs-comment"># MySQL 错误日志</span><br><span class="hljs-built_in">cat</span> /var/log/mysql/mysql.log  <span class="hljs-comment"># MySQL 查询日志</span><br><br><span class="hljs-comment"># 记录安全相关的审计信息，包括用户活动、权限变更、访问敏感资源等事件。</span><br><span class="hljs-built_in">cat</span> /var/log/audit/audit.log<br><br><span class="hljs-comment"># 记录 UFW（Uncomplicated Firewall）防火墙日志，显示哪些请求被允许或拒绝</span><br><span class="hljs-built_in">cat</span> /var/log/ufw.log<br><br><span class="hljs-comment"># 记录 Samba 服务的日志，包括共享文件夹访问情况、网络文件传输等信息</span><br><span class="hljs-built_in">cat</span> /var/log/samba/log.smbd<br></code></pre></td></tr></table></figure>
+
+<h5 id="日志分析"><a href="#日志分析" class="headerlink" title="日志分析"></a>日志分析</h5><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-comment">#查看爆破失败的 IP</span><br>grep <span class="hljs-string">&#x27;Failed&#x27;</span> /var/log/secure | awk <span class="hljs-string">&#x27;&#123;print $11&#125;&#x27;</span> | <span class="hljs-built_in">sort</span> | <span class="hljs-built_in">uniq</span> -c | <span class="hljs-built_in">sort</span> -nr | <span class="hljs-built_in">head</span> -n 10<br><br><span class="hljs-comment">#查看登录成功的 IP</span><br>grep <span class="hljs-string">&#x27;Accepted&#x27;</span> /var/log/secure | awk <span class="hljs-string">&#x27;&#123;print $11&#125;&#x27;</span> | <span class="hljs-built_in">sort</span> | <span class="hljs-built_in">uniq</span> -c | <span class="hljs-built_in">sort</span> -nr | <span class="hljs-built_in">head</span> -n 10<br><br><span class="hljs-comment">#定位有多少 IP 在爆破 root 帐号</span><br>grep <span class="hljs-string">&quot;Failed password for root&quot;</span> /var/log/auth.log | awk <span class="hljs-string">&#x27;&#123;print $11&#125;&#x27;</span> | <span class="hljs-built_in">sort</span> | <span class="hljs-built_in">uniq</span> -c | <span class="hljs-built_in">sort</span> -nr | <span class="hljs-built_in">head</span> -n 5<br><br><span class="hljs-comment">#查看登录成功的日期、用户名及 IP</span><br>grep <span class="hljs-string">&quot;Accepted &quot;</span> /var/log/secure* | awk <span class="hljs-string">&#x27;&#123;print $1,$2,$3,$9,$11&#125;&#x27;</span><br><br><span class="hljs-comment">#查看爆破用户名字典</span><br>grep <span class="hljs-string">&quot;Failed password&quot;</span> /var/log/secure | awk <span class="hljs-string">&#x27;&#123;print $9&#125;&#x27;</span> | <span class="hljs-built_in">sort</span> | <span class="hljs-built_in">uniq</span> -c | <span class="hljs-built_in">sort</span> -nr<br><br><span class="hljs-comment">#查看爆破失败的所有密码字典</span><br>grep -o <span class="hljs-string">&quot;Failed password&quot;</span> /var/log/secure | <span class="hljs-built_in">uniq</span> -c<br><br><span class="hljs-comment">#查看 su sudo使用情况</span><br>grep <span class="hljs-string">&#x27;su&#x27;</span> /var/log/secure<br>grep <span class="hljs-string">&#x27;sudo&#x27;</span> /var/log/secure<br><br><span class="hljs-comment">#检查 sudo 错误尝试</span><br>grep <span class="hljs-string">&quot;incorrect password attempt&quot;</span> /var/log/secure<br><br><span class="hljs-comment">#查看通过 sudo 或 su 提权的时间和来源</span><br>grep <span class="hljs-string">&#x27;sudo&#x27;</span> /var/log/secure | awk <span class="hljs-string">&#x27;&#123;print $1, $2, $3, $9, $11, $NF&#125;&#x27;</span> | <span class="hljs-built_in">sort</span> | <span class="hljs-built_in">uniq</span> -c | <span class="hljs-built_in">sort</span> -nr<br>grep <span class="hljs-string">&#x27;su&#x27;</span> /var/log/secure | awk <span class="hljs-string">&#x27;&#123;print $1, $2, $3, $9, $11&#125;&#x27;</span> | <span class="hljs-built_in">sort</span> | <span class="hljs-built_in">uniq</span> -c | <span class="hljs-built_in">sort</span> -nr<br></code></pre></td></tr></table></figure>
+
+<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20250425154132.png" srcset="/img/loading.gif" lazyload alt="image-20250425154131102"></p>
+<h2 id="5-隐藏后门以及排查方法"><a href="#5-隐藏后门以及排查方法" class="headerlink" title="5. 隐藏后门以及排查方法"></a>5. 隐藏后门以及排查方法</h2><h3 id="SSH-Wrapper后门"><a href="#SSH-Wrapper后门" class="headerlink" title="SSH Wrapper后门"></a>SSH Wrapper后门</h3><p>攻击者通过替换合法的 SSH 服务（如 &#x2F;usr&#x2F;sbin&#x2F;sshd），在其中嵌入恶意代码，实现后门访问。</p>
+<p>排查方法：</p>
+<p>验证<code>/usr/sbin/sshd</code>的完整性，查看其是否为脚本或被替换；</p>
+<p>file &#x2F;usr&#x2F;sbin&#x2F;sshd</p>
+<p>如果<code>sshd</code>是脚本，检查其内容是否包含可疑代码。</p>
+<p>cat &#x2F;usr&#x2F;sbin&#x2F;sshd</p>
+<h3 id="端口复用"><a href="#端口复用" class="headerlink" title="端口复用"></a>端口复用</h3><p>通过端口复用来达到隐藏端口、绕过防火墙的目的。</p>
+<p>排查方法：通过端口扫描检查是否有端口复用，通过ss或者netstat无法检查出，发现端口复用后排查iptables以及相关服务配置是否被更改；</p>
+<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20250425154203.png" srcset="/img/loading.gif" lazyload alt="image-20250425154201774"></p>
+<h3 id="进程隐藏"><a href="#进程隐藏" class="headerlink" title="进程隐藏"></a>进程隐藏</h3><p>管理员无法通过相关命令工具查找到你运行的进程，从而达到隐藏目的，实现进程隐藏。</p>
+<p>cpu 使用率高,但是却找不到任何占用cpu高的程序</p>
+<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20250425154222.png" srcset="/img/loading.gif" lazyload alt="image-20250425154221270"></p>
+<p>排查方法：</p>
+<p><code>unhide</code>是一个小巧的网络取证工具，能够发现那些借助rootkit，LKM及其它技术隐藏的进程和TCP &#x2F; UDP端口。</p>
+<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20250425154239.png" srcset="/img/loading.gif" lazyload alt="image-20250425154237904"></p>
+<h3 id="SUID-Shell"><a href="#SUID-Shell" class="headerlink" title="SUID Shell"></a>SUID Shell</h3><p>Suid shell是一种可用于以拥有者权限运行的shell，使用普通用户登录就可以获取root权限。</p>
+<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20250425154256.png" srcset="/img/loading.gif" lazyload alt="image-20250425154255002"></p>
+<p>排查方法：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-comment"># 在Linux中查找SUID设置的文件</span><br>find . -perm /4000 <br><span class="hljs-comment"># 在Linux中查找使用SGID设置的文件</span><br>find . -perm /2000<br><span class="hljs-comment"># 取消s权限</span><br><span class="hljs-built_in">chmod</span> u-s /tmp/shell<br></code></pre></td></tr></table></figure>
+
+<h3 id="SSH公私钥免密登录"><a href="#SSH公私钥免密登录" class="headerlink" title="SSH公私钥免密登录"></a>SSH公私钥免密登录</h3><p>排查方法：查看<code>/root/.ssh/authorized_keys</code>是否被修改，find &#x2F; -name<code>authorized_keys</code>。</p>
+<h3 id="软连接"><a href="#软连接" class="headerlink" title="软连接"></a>软连接</h3><p>软连接后门是一种 隐蔽性较强 的持久化后门方法，攻击者利用软链接 (ln -s) 指向关键文件或隐藏恶意程序，使其在特定条件下执行，达到 权限提升、命令劫持或绕过安全检查 的目的。</p>
+<p>劫持<code>/etc/ld.so.preload</code></p>
+<p><code>ld.so.preload</code>是 Linux 动态链接库预加载机制，攻击者可以创建软链接，注入恶意<code>so</code>文件：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-built_in">ln</span> -sf /tmp/malicious.so /etc/ld.so.preload<br></code></pre></td></tr></table></figure>
+
+<p>系统所有动态链接的可执行程序都会加载<code>/tmp/malicious.so</code>，实现权限提升或隐藏恶意进程。</p>
+<p>排查方法：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">find / -<span class="hljs-built_in">type</span> l -<span class="hljs-built_in">ls</span> 2&gt;/dev/null<br></code></pre></td></tr></table></figure>
+
+<p>检查是否有关键目录的异常软链接，检查 &#x2F;tmp、&#x2F;dev&#x2F;shm 等目录中的可疑软链接。</p>
+<h3 id="strace后门"><a href="#strace后门" class="headerlink" title="strace后门"></a>strace后门</h3><p>攻击者利用<code>strace</code>工具，通过命令替换动态跟踪系统调用和数据，记录用户的敏感操作，如 SSH、SU、SUDO 等。</p>
+<p>通过修改用户的环境配置文件（如<code>.bashrc</code>），为常用命令设置别名，加入<code>strace</code>跟踪。</p>
+<p>排查方法：</p>
+<p>查看<code>.bashrc</code>、<code>.bash_profile</code>等文件，查找异常的别名设置。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">grep <span class="hljs-string">&#x27;alias&#x27;</span> ~/.bashrc ~/.bash_profile<br></code></pre></td></tr></table></figure>
+
+<p>查找系统中是否存在可疑的隐藏日志文件</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">find / -name <span class="hljs-string">&#x27;.*&#x27;</span> -<span class="hljs-built_in">type</span> f -size +1M<br></code></pre></td></tr></table></figure>
+
+<h3 id="openSSH后门"><a href="#openSSH后门" class="headerlink" title="openSSH后门"></a>openSSH后门</h3><p>攻击者可能替换<code>/usr/sbin/sshd</code>或<code>/bin/ssh</code>以植入后门，使其在认证阶段记录密码或允许特定后门密码登录。</p>
+<p>排查方法：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs bash">rpm -Va | grep openssh  <span class="hljs-comment"># 检查 RPM 安装包完整性（适用于 RPM 系统）</span><br>dpkg --verify openssh-server  <span class="hljs-comment"># 检查 DEB 安装包完整性</span><br><span class="hljs-built_in">md5sum</span> /usr/sbin/sshd  <span class="hljs-comment"># 计算 md5 并与官方比对</span><br><span class="hljs-built_in">ls</span> -lah /usr/sbin/sshd  <span class="hljs-comment"># 检查时间戳是否异常</span><br><br>strace -o aa -ff -p  SSHDPID <span class="hljs-comment">#跟踪sshd PID</span><br></code></pre></td></tr></table></figure>
+
+<h3 id="PAM后门"><a href="#PAM后门" class="headerlink" title="PAM后门"></a>PAM后门</h3><p>PAM（可插拔认证模块）是 Linux 认证机制的重要组成部分。攻击者可以通过劫持 PAM 模块或修改 PAM 配置，实现无密码登录、隐藏用户、记录密码等后门。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs bash">后门方式                     检查方法                       修复措施<br>替换PAM认证模块        <span class="hljs-built_in">md5sum</span> /lib/security/pam_unix.so     重新安装 PAM<br>添加自定义 PAM 后门   <span class="hljs-built_in">ls</span> -l /lib/security/                   删除恶意 .so 文件<br>修改 PAM 配置         grep <span class="hljs-string">&quot;pam_permit.so&quot;</span> /etc/pam.d/sshd 还原 /etc/pam.d/sshd<br>认证日志劫持            grep <span class="hljs-string">&quot;pam_exec.so&quot;</span> /etc/pam.d/*   删除恶意日志记录<br>LD_PRELOAD 劫持      <span class="hljs-built_in">cat</span> /etc/ld.so.preload              删除 /etc/ld.so.preload<br></code></pre></td></tr></table></figure>
+
+<h2 id="6-实用排查-x2F-杀毒工具"><a href="#6-实用排查-x2F-杀毒工具" class="headerlink" title="6. 实用排查&#x2F;杀毒工具"></a>6. 实用排查&#x2F;杀毒工具</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><code class="hljs bash">chkrootkit          <span class="hljs-comment">#能检测已知的Rootkit特征，如隐藏进程、恶意netstat、ifconfig等</span><br><br>Rkhunter            <span class="hljs-comment">#专业检测系统是否感染rootkit的工具  rkhunter -check</span><br>地址：http://rootkit.nl/projects/rootkit_hunter.html<br><br>ClamAV              <span class="hljs-comment">#支持病毒库更新，可检测病毒、木马、恶意软件</span><br>使用yum可进行安装，需要先安装依赖包<br>sudo apt install clamav*      安装<br>sudo freshclam                   更新<br>clamscan -ri / -l o           全盘扫描<br><br>河马                <span class="hljs-comment">#webshell查杀</span><br>地址：https://www.shellpub.com/<br><br>NeoPi       <span class="hljs-comment">#检测文本/脚本文件中的混淆和加密内容，其主要目的是帮助检测隐藏的Web Shell 代码</span><br><br>unhide              <span class="hljs-comment">#能够发现那些借助rootkit，LKM及其它技术隐藏的进程和TCP / UDP端口。</span><br>sudo yum install unhide          <span class="hljs-comment">#安装</span><br>unhide [options] test_list       <span class="hljs-comment">#unhide proc   unhide sys</span><br><br>execsnoop           <span class="hljs-comment">#execsnoop通过ftrace实时监控进程的exec()行为，输出短时进程的信息，包括进程 PID、父进程 PID、命令行参数以及执行的结果。</span><br>https://github.com/brendangregg/perf-tools<br><br>java -jar arthas-boot.jar    <span class="hljs-comment">#sc javax.servlet.* 查找内存马</span><br></code></pre></td></tr></table></figure>
+
+
+              
+            </div>
+            <hr/>
+            <div>
+              <div>
+  <img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20241112163319.png" srcset="/img/loading.gif" lazyload>
+</div>
+<div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/06-%E6%9C%8D%E5%8A%A1%E5%99%A8/" class="category-chain-item">06_服务器</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/06-%E6%9C%8D%E5%8A%A1%E5%99%A8/00-Server/" class="category-chain-item">00_Server</a>
+  
+  
+
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/Linux/">#Linux</a>
+      
+        <a href="/tags/%E6%9C%8D%E5%8A%A1%E5%99%A8/">#服务器</a>
+      
+        <a href="/tags/%E5%AE%89%E5%85%A8/">#安全</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>06-Linux服务器应急排查实战指南</div>
+      <div>https://janycode.github.io/2025/05/02/06_服务器/00_Server/06-Linux服务器应急排查实战指南/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Jerry(姜源)</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2025年5月2日</div>
+        </div>
+      
+      
+      <div class="license-meta-item">
+        <div>许可协议</div>
+        <div>
+          
+            
+            
+              <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+              <span class="hint--top hint--rounded" aria-label="BY - 姜源">
+                <i class="iconfont icon-by"></i>
+              </span>
+              </a>
+            
+          
+        </div>
+      </div>
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2025/04/08/13_%E7%AC%AC%E4%B8%89%E6%96%B9/03_OpenAI/10-SpringBoot+MCP%E6%95%B4%E5%90%88AI%E4%B8%8E%E6%9C%8D%E5%8A%A1%E7%9A%84%E6%A1%A5%E6%A2%81/" title="10-SpringBoot+MCP整合AI与服务的桥梁">
+                        <span class="hidden-mobile">10-SpringBoot+MCP整合AI与服务的桥梁</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+  <article id="comments" lazyload>
+    
+  <div id="SOHUCS" sid='https://janycode.github.io/2025/05/02/06_%E6%9C%8D%E5%8A%A1%E5%99%A8/00_Server/06-Linux%E6%9C%8D%E5%8A%A1%E5%99%A8%E5%BA%94%E6%80%A5%E6%8E%92%E6%9F%A5%E5%AE%9E%E6%88%98%E6%8C%87%E5%8D%97/'></div>
+  <script type="text/javascript">
+    Fluid.utils.loadComments('#SOHUCS', function() {
+      Fluid.utils.createScript("https://changyan.sohu.com/upload/changyan.js", function() {
+        window.changyan.api.config({"appid":"cyw5OHIcO","appkey":"fea3446b3df4b3f129f34da4cbc87e51"})
+      });
+    });
+  </script>
+  <noscript>Please enable JavaScript to view the comments</noscript>
+
+
+  </article>
+
+
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://simple.blog.csdn.net" target="_blank" rel="nofollow noopener"><span>CSDN</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/janycode" target="_blank" rel="nofollow noopener"><span>GitHub</span></a> <i class="iconfont icon-love"></i> <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="busuanzi_container_site_pv" style="display: none">
+        总访问量(PV) 
+        <span id="busuanzi_value_site_pv"></span>
+         次，
+      </span>
+    
+    
+      <span id="busuanzi_container_site_uv" style="display: none">
+        总访客数(UV) 
+        <span id="busuanzi_value_site_uv"></span>
+         人
+      </span>
+    
+    
+  
+</div>
+
+  
+  
+  
+</div>
+
+<!-- live2d 动画 -->
+<script src="https://eqcn.ajz.miesnfu.com/wp-content/plugins/wp-3d-pony/live2dw/lib/L2Dwidget.min.js"></script>
+<script>
+    L2Dwidget.init({
+        "model": {
+            jsonPath: "https://unpkg.com/live2d-widget-model-haruto@1.0.5/assets/haruto.model.json",
+            "scale": 1
+        },
+        "display": {
+            "position": "right",
+            "width": 100,
+            "height": 200,
+            "hOffset": 35,
+            "vOffset": -85
+        },
+        "mobile": {
+            "show": false,
+            "scale": 0.1
+        },
+        "react": {
+            "opacityDefault": 0.75,
+            "opacityOnHover": 0.2
+        }
+    });
+</script>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <!-- Baidu Analytics -->
+    <script defer>
+      if (!Fluid.ctx.dnt) {
+        var _hmt = _hmt || [];
+        (function() {
+          var hm = document.createElement("script");
+          hm.src = "https://hm.baidu.com/hm.js?bfff735c897eb60ea49b735096b20e47";
+          var s = document.getElementsByTagName("script")[0];
+          s.parentNode.insertBefore(hm, s);
+        })();
+      }
+    </script>
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.0/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      headingSelector : CONFIG.toc.headingSelector || 'h1,h2,h3,h4,h5,h6',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      collapseDepth   : CONFIG.toc.collapseDepth || 0,
+      scrollSmooth    : true,
+      headingsOffset  : -boardTop
+    });
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+  });
+</script>
+
+
+  <script>
+  (function() {
+    var enableLang = CONFIG.code_language.enable && CONFIG.code_language.default;
+    var enableCopy = CONFIG.copy_btn;
+    if (!enableLang && !enableCopy) {
+      return;
+    }
+
+    function getBgClass(ele) {
+      return Fluid.utils.getBackgroundLightness(ele) >= 0 ? 'code-widget-light' : 'code-widget-dark';
+    }
+
+    var copyTmpl = '';
+    copyTmpl += '<div class="code-widget">';
+    copyTmpl += 'LANG';
+    copyTmpl += '</div>';
+    jQuery('.markdown-body pre').each(function() {
+      var $pre = jQuery(this);
+      if ($pre.find('code.mermaid').length > 0) {
+        return;
+      }
+      if ($pre.find('span.line').length > 0) {
+        return;
+      }
+
+      var lang = '';
+
+      if (enableLang) {
+        lang = CONFIG.code_language.default;
+        if ($pre[0].children.length > 0 && $pre[0].children[0].classList.length >= 2 && $pre.children().hasClass('hljs')) {
+          lang = $pre[0].children[0].classList[1];
+        } else if ($pre[0].getAttribute('data-language')) {
+          lang = $pre[0].getAttribute('data-language');
+        } else if ($pre.parent().hasClass('sourceCode') && $pre[0].children.length > 0 && $pre[0].children[0].classList.length >= 2) {
+          lang = $pre[0].children[0].classList[1];
+          $pre.parent().addClass('code-wrapper');
+        } else if ($pre.parent().hasClass('markdown-body') && $pre[0].classList.length === 0) {
+          $pre.wrap('<div class="code-wrapper"></div>');
+        }
+        lang = lang.toUpperCase().replace('NONE', CONFIG.code_language.default);
+      }
+      $pre.append(copyTmpl.replace('LANG', lang).replace('code-widget">',
+        getBgClass($pre[0]) + (enableCopy ? ' code-widget copy-btn" data-clipboard-snippet><i class="iconfont icon-copy"></i>' : ' code-widget">')));
+
+      if (enableCopy) {
+        Fluid.utils.createScript('https://lib.baomitu.com/clipboard.js/2.0.10/clipboard.min.js', function() {
+          var clipboard = new window.ClipboardJS('.copy-btn', {
+            target: function(trigger) {
+              var nodes = trigger.parentNode.childNodes;
+              for (var i = 0; i < nodes.length; i++) {
+                if (nodes[i].tagName === 'CODE') {
+                  return nodes[i];
+                }
+              }
+            }
+          });
+          clipboard.on('success', function(e) {
+            e.clearSelection();
+            e.trigger.innerHTML = e.trigger.innerHTML.replace('icon-copy', 'icon-success');
+            setTimeout(function() {
+              e.trigger.innerHTML = e.trigger.innerHTML.replace('icon-success', 'icon-copy');
+            }, 2000);
+          });
+        });
+      }
+    });
+  })();
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

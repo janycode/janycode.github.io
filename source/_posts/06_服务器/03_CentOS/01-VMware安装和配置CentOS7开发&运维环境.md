@@ -586,8 +586,22 @@ categories:
         target_label: application  # 映射到 application 标签 
         replacement: $1            # 直接替换 
   ```
+  
+* prometheus启动：
 
+  ```bash
+  ./prometheus --config.file=prometheus.yml
+  #如果配置了systemctl，则可以命令启动
+  systemctl start prometheus
+  systemctl status prometheus
+  systemctl stop prometheus
+  #开机启动
+  systemctl enable prometheus
+  #开机不启动
+  systemctl disable prometheus
+  ```
 
+  
 
 * grafana单独下载：https://mirrors.tuna.tsinghua.edu.cn/grafana/yum/rpm/Packages/grafana-7.4.3-1.x86_64.rpm
 

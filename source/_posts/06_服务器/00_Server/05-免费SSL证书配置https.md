@@ -1,5 +1,5 @@
 ---
-title: 免费SSL证书配置https自动续期
+title: 05-免费SSL证书配置https自动续期
 date: 2024-5-28 19:57:23
 index_img: https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20241024153859.png
 tags: 
