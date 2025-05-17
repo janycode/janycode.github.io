@@ -24,8 +24,12 @@
 <meta property="og:description" content="Centos7 CentOS7在VMware上安装教程：https:&#x2F;&#x2F;blog.csdn.net&#x2F;HXBest&#x2F;article&#x2F;details&#x2F;123853738 CentOS7配置网络：https:&#x2F;&#x2F;blog.csdn.net&#x2F;feriman&#x2F;article&#x2F;details&#x2F;121068882 CentOS7配置yum镜像：https:&#x2F;&#x2F;blog.csdn.net&#x2F;m0_64787068&#x2F;">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20250411085338.png">
+<meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20250506152217.png">
+<meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20250506152317.png">
+<meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20250506152407.png">
+<meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20250508112555.png">
 <meta property="article:published_time" content="2018-03-28T15:06:42.000Z">
-<meta property="article:modified_time" content="2025-04-28T06:26:14.719Z">
+<meta property="article:modified_time" content="2025-05-17T02:00:42.820Z">
 <meta property="article:author" content="Jerry(姜源)">
 <meta property="article:tag" content="CentOS">
 <meta property="article:tag" content="服务器">
@@ -246,7 +250,7 @@
         <i class="iconfont icon-chart"></i>
         
           <!-- compatible with older versions-->
-          31k 字
+          32k 字
         
       </span>
     
@@ -258,7 +262,7 @@
         
         
           <!-- compatible with older versions-->
-          258 分钟
+          270 分钟
         
       </span>
     
@@ -632,6 +636,64 @@
 <li><p>按照git最新提交记录的增量式扫描配置如下：</p>
 <figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><code class="hljs groovy">stage(<span class="hljs-string">&#x27;代码扫描&#x27;</span>) &#123;<br>     steps &#123;<br>         script &#123;<br>             <span class="hljs-keyword">if</span> (rollbackFlag == <span class="hljs-string">&quot;true&quot;</span>) &#123;<br>                 sh <span class="hljs-string">&#x27;echo 回滚操作，跳过拉取代码&#x27;</span><br>             &#125; <span class="hljs-keyword">else</span> &#123;<br>                 sh <span class="hljs-string">&#x27;echo 代码扫描&#x27;</span><br>                 <span class="hljs-comment">// git最近一次提交的文件</span><br>                 <span class="hljs-keyword">def</span> changedFiles = sh(<span class="hljs-attr">script:</span> <span class="hljs-string">&quot;cd $&#123;projectPath&#125;/$&#123;projectName&#125; &amp;&amp; git diff --name-only HEAD~1 HEAD | xargs -I&#123;&#125; realpath &#123;&#125;&quot;</span>, <span class="hljs-attr">returnStdout:</span> <span class="hljs-literal">true</span>).trim()<br>                 <span class="hljs-keyword">def</span> inclusions = changedFiles.replace(<span class="hljs-string">&#x27;\n&#x27;</span>, <span class="hljs-string">&#x27;,&#x27;</span>)<br>                 <span class="hljs-comment">// 使用双引号让变量插值生效</span><br>                 sh <span class="hljs-string">&quot;echo 本次Git提交增量的文件为：$&#123;inclusions&#125;&quot;</span><br>                 sh <span class="hljs-string">&quot;cd $&#123;projectPath&#125;/$&#123;projectName&#125; &amp;&amp; /opt/sonar/sonar-scanner/bin/sonar-scanner -Dsonar.host.url=http://localhost:9000 -Dsonar.login=sqa_6c6e7c4f7cc5012b07df283ad05b5c619e31cd11 -Dsonar.sources=$&#123;projectPath&#125;/$&#123;projectName&#125;/src -Dsonar.projectKey=$&#123;projectName&#125; -Dsonar.projectName=$&#123;projectName&#125; -Dsonar.inclusions=$&#123;inclusions&#125; -Dsonar.exclusions=$&#123;projectPath&#125;/$&#123;projectName&#125;/node_modules/**,$&#123;projectPath&#125;/$&#123;projectName&#125;/dist/** -Dsonar.language=js -Dsonar.javascript.file.suffixes=.vue,.js -Dsonar.analysis.date=2025-04-11&quot;</span><br>                 sh <span class="hljs-string">&#x27;echo 代码扫描完成&#x27;</span><br>                 sh <span class="hljs-string">&#x27;sleep 5&#x27;</span><br>                 sh <span class="hljs-string">&#x27;echo 开始确认代码扫描结果&#x27;</span><br>                 <span class="hljs-comment">// 执行命令并获取输出</span><br>                 <span class="hljs-keyword">def</span> commandOutput = sh(<br>                     <span class="hljs-symbol">script:</span> <span class="hljs-string">&quot;curl -s -u sqa_6c6e7c4f7cc5012b07df283ad05b5c619e31cd11: http://localhost:9000/api/qualitygates/project_status?projectKey=$&#123;projectName&#125; | jq -r &#x27;.projectStatus.status&#x27;&quot;</span>,<br>                     <span class="hljs-symbol">returnStdout:</span> <span class="hljs-literal">true</span><br>                 ).trim()<br>     <br>                 <span class="hljs-comment">// 解析结果</span><br>                 <span class="hljs-keyword">def</span> SCAN_RES = commandOutput<br>                 sh <span class="hljs-string">&quot;echo 代码扫描结果：$&#123;SCAN_RES&#125;&quot;</span><br>                 <br>                 <span class="hljs-keyword">if</span> (SCAN_RES != <span class="hljs-string">&quot;OK&quot;</span>) &#123;<br>                     error <span class="hljs-string">&quot;代码质量扫描未通过，详情查看地址(账号:viewer 密码:jcjy123456)：http://182.92.171.35:9000/dashboard?id=$&#123;projectName&#125;&quot;</span> <br>                 &#125;<br>                 sh <span class="hljs-string">&#x27;echo 确认代码扫描结果通过&#x27;</span><br>             &#125;<br>         &#125;<br>     &#125;<br> &#125;<br></code></pre></td></tr></table></figure></li>
 </ul>
+<h2 id="php环境"><a href="#php环境" class="headerlink" title="php环境"></a>php环境</h2><h3 id="一、起步操作"><a href="#一、起步操作" class="headerlink" title="一、起步操作"></a>一、起步操作</h3><p>查询系统版本、系统内核</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-built_in">cat</span> /etc/redhat-release<br><span class="hljs-built_in">cat</span> /proc/version<br></code></pre></td></tr></table></figure>
+
+<h3 id="二、搭建Apache"><a href="#二、搭建Apache" class="headerlink" title="二、搭建Apache"></a>二、搭建Apache</h3><p>1.安装Apache</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">yum install -y httpd<br></code></pre></td></tr></table></figure>
+
+<p>2.启动Apache服务</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs bash">systemctl start httpd.service<br>systemctl status httpd.service<br></code></pre></td></tr></table></figure>
+
+<p>3.设置开机启动服务</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">systemclt <span class="hljs-built_in">enable</span> httpd.service<br></code></pre></td></tr></table></figure>
+
+<p>4.开放防火墙的80端口（直接关闭防火墙在云服务器上打开安全组端口）</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs bash">firewall-cmd --zone=public --add-port=80/tcp --permanent<br>firewall-cmd --reload<br>firewall-cmd --list-ports<br></code></pre></td></tr></table></figure>
+
+<p>5.Apache测试（在浏览器输入ip访问即可）</p>
+<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20250506152217.png" srcset="/img/loading.gif" lazyload alt="img"></p>
+<h3 id="三、搭建Mysql"><a href="#三、搭建Mysql" class="headerlink" title="三、搭建Mysql"></a>三、搭建Mysql</h3><ol>
+<li>Yum仓库下载mysql</li>
+</ol>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">yum localinstall https://repo.mysql.com//mysql80-community-release-el7-1.noarch.rpm<br></code></pre></td></tr></table></figure>
+
+<p>2.Yum安装mysql</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">yum install mysql-community-server<br></code></pre></td></tr></table></figure>
+
+<p>3.启动mysql服务</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs bash">service mysqld start<br>service mysqld status<br></code></pre></td></tr></table></figure>
+
+<p>4.查看初始密码、设置mysql密码</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs bash">grep <span class="hljs-string">&#x27;temporary password&#x27;</span> /var/log/mysqld.log<br>mysql -u root -p<br></code></pre></td></tr></table></figure>
+
+<p>使用初始化密码登录后必须设置一个自己的密码，否则不能进行其他操作。设置密码的策略组是默认的必须包含大小写字符、数字、特殊字符且大于8位(可以通过修改密码策略等级来允许配置简单密码，这个自己bing吧)。</p>
+<p>5.开放防火墙3306端口</p>
+<p>6.登录mysql，进入mysql数据库设置允许远程访问</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">alter user <span class="hljs-string">&#x27;root&#x27;</span>@<span class="hljs-string">&#x27;localhost&#x27;</span> identified with mysql_native_password by <span class="hljs-string">&#x27;123456&#x27;</span>;<br></code></pre></td></tr></table></figure>
+
+<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20250506152317.png" srcset="/img/loading.gif" lazyload alt="img"></p>
+<h3 id="四、搭建Php"><a href="#四、搭建Php" class="headerlink" title="四、搭建Php"></a>四、搭建Php</h3><p>1.yum安装php</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">yum -y install php<br></code></pre></td></tr></table></figure>
+
+<p>2.重启Apache服务器。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">systemctl restart httpd<br></code></pre></td></tr></table></figure>
+
+<p>3.安装php的扩展，安装完成之后也需要重启Apache服务器</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">yum -y install php-gd php-ldap php-odbc php-pear php-xml php-xmlrpc php-mbstring php-snmp php-soap curl curl-devel<br></code></pre></td></tr></table></figure>
+
+<p>五、测试<br>1.在&#x2F;var&#x2F;www&#x2F;html目录下创建index.php文件，并在其中添加一下代码保存。</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs php"><span class="hljs-meta">&lt;?php</span><br><span class="hljs-title function_ invoke__">phpinfo</span>();<br><span class="hljs-meta">?&gt;</span><br></code></pre></td></tr></table></figure>
+
+<p>2.使用浏览器访问ip，出现以下界面表示成功。</p>
+<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20250506152407.png" srcset="/img/loading.gif" lazyload alt="image-20250506152406379"></p>
+<p>注：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-built_in">cd</span> /var/www/html<br><span class="hljs-built_in">ls</span> -la<br>chomd -R 777 ./					//修改文件夹权限<br></code></pre></td></tr></table></figure>
+
+
+
+<p>php版本升级到7.3版本：<a target="_blank" rel="noopener" href="https://www.oryoy.com/news/centos-xi-tong-xia-sheng-ji-php-zhi-te-ding-ban-ben-hao-de-xiang-xi-bu-zhou-yu-zhu-yi-shi-xiang.html">https://www.oryoy.com/news/centos-xi-tong-xia-sheng-ji-php-zhi-te-ding-ban-ben-hao-de-xiang-xi-bu-zhou-yu-zhu-yi-shi-xiang.html</a></p>
+<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20250508112555.png" srcset="/img/loading.gif" lazyload alt="image-20250508112545232"></p>
 
               
             </div>

@@ -1112,11 +1112,136 @@ wget https://github.com/xuhuisheng/sonar-l10n-zh/releases/download/sonar-l10n-zh
 
   
 
+## php环境
+
+### 一、起步操作
+
+查询系统版本、系统内核
+
+```bash
+cat /etc/redhat-release
+cat /proc/version
+```
+
+### 二、搭建Apache
+
+1.安装Apache
+
+```bash
+yum install -y httpd
+```
+
+2.启动Apache服务
+
+```bash
+systemctl start httpd.service
+systemctl status httpd.service
+```
+
+3.设置开机启动服务
+
+```bash
+systemclt enable httpd.service
+```
+
+4.开放防火墙的80端口（直接关闭防火墙在云服务器上打开安全组端口）
+
+```bash
+firewall-cmd --zone=public --add-port=80/tcp --permanent
+firewall-cmd --reload
+firewall-cmd --list-ports
+```
+
+5.Apache测试（在浏览器输入ip访问即可）
+
+![img](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20250506152217.png)
+
+### 三、搭建Mysql
+
+1. Yum仓库下载mysql
+
+```bash
+yum localinstall https://repo.mysql.com//mysql80-community-release-el7-1.noarch.rpm
+```
+
+2.Yum安装mysql
+
+```bash
+yum install mysql-community-server
+```
+
+3.启动mysql服务
+
+```bash
+service mysqld start
+service mysqld status
+```
+
+4.查看初始密码、设置mysql密码
+
+```bash
+grep 'temporary password' /var/log/mysqld.log
+mysql -u root -p
+```
+
+使用初始化密码登录后必须设置一个自己的密码，否则不能进行其他操作。设置密码的策略组是默认的必须包含大小写字符、数字、特殊字符且大于8位(可以通过修改密码策略等级来允许配置简单密码，这个自己bing吧)。
+
+5.开放防火墙3306端口
+
+6.登录mysql，进入mysql数据库设置允许远程访问
+
+```bash
+alter user 'root'@'localhost' identified with mysql_native_password by '123456';
+```
+
+![img](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20250506152317.png)
+
+### 四、搭建Php
+
+1.yum安装php
+
+```bash
+yum -y install php
+```
+
+2.重启Apache服务器。
+
+```bash
+systemctl restart httpd
+```
+
+3.安装php的扩展，安装完成之后也需要重启Apache服务器
+
+```bash
+yum -y install php-gd php-ldap php-odbc php-pear php-xml php-xmlrpc php-mbstring php-snmp php-soap curl curl-devel
+```
+
+五、测试
+1.在/var/www/html目录下创建index.php文件，并在其中添加一下代码保存。
+
+```php
+<?php
+phpinfo();
+?>
+```
+
+2.使用浏览器访问ip，出现以下界面表示成功。
+
+![image-20250506152406379](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20250506152407.png)
+
+注：
+
+```bash
+cd /var/www/html
+ls -la
+chomd -R 777 ./					//修改文件夹权限
+```
 
 
 
+php版本升级到7.3版本：https://www.oryoy.com/news/centos-xi-tong-xia-sheng-ji-php-zhi-te-ding-ban-ben-hao-de-xiang-xi-bu-zhou-yu-zhu-yi-shi-xiang.html
 
-
+![image-20250508112545232](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20250508112555.png)
 
 
 

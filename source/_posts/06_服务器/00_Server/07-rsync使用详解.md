@@ -1,6 +1,7 @@
 ---
 title: 07-rsync使用详解
 date: 2025-04-28 22:15:00
+index_img: https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20241024154332.png
 tags: 
 - 服务器
 - rsync
