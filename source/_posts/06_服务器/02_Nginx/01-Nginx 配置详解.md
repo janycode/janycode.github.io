@@ -325,7 +325,7 @@ nginx配置如下：
 >
 > 如果两个页面的协议，端口（如果有指定）和域名都相同，则两个页面具有相同的源。
 
-#### nginx解决跨域的原理
+### nginx解决跨域的原理
 
 例如：
 
@@ -657,5 +657,64 @@ The host is 192.168.0.7(Docker03) - Node 2!
 
 # 启动192.168.0.7（Nginx-Node2/Nginx-Web2）
 $ docker run -d -p 6666:80 --name nginx-node2 -v $(pwd)/html:/usr/share/nginx/html --restart always nginx
+```
+
+
+
+
+
+## Nginx配置PC与H5自适应
+
+参考：https://n.cn/share/r1/f617d92caf3f477da405a4d8ffc61a07?from=web
+
+直接可用：
+
+```bash
+# 1. HTTP强制跳转HTTPS（通用配置）
+server {
+    listen 80;
+    server_name www.jiechujiaoyu.com  h5.jiechujiaoyu.com; 
+    return 301 https://$host$request_uri;  # 全站HTTPS重定向
+}
+ 
+# 2. PC端服务配置（HTTPS）
+server {
+    listen 443 ssl;
+    server_name www.jiechujiaoyu.com; 
+ 
+    # SSL证书配置 
+    ssl_certificate /path/to/ssl_certificate.crt; 
+    ssl_certificate_key /path/to/private_key.key; 
+    ssl_protocols TLSv1.2 TLSv1.3;
+ 
+    # 根目录及默认页 
+    root /var/www/pc-site;
+    index index.html; 
+ 
+    # 移动端访问时跳转至H5域名
+    if ($http_user_agent ~* "(android|iphone|ipod|ipad|mobile|webos)") {
+        rewrite ^(.*)$ https://h5.jiechujiaoyu.com$1  permanent;  # 301永久跳转
+    }
+}
+ 
+# 3. H5端服务配置（HTTPS）
+server {
+    listen 443 ssl;
+    server_name h5.jiechujiaoyu.com; 
+ 
+    # SSL证书配置（可与PC端相同）
+    ssl_certificate /path/to/ssl_certificate.crt; 
+    ssl_certificate_key /path/to/private_key.key; 
+    ssl_protocols TLSv1.2 TLSv1.3;
+ 
+    # 根目录及默认页 
+    root /var/www/h5-site;
+    index index.html; 
+ 
+    # PC设备访问时跳回PC域名 
+    if ($http_user_agent !~* "(android|iphone|ipod|ipad|mobile|webos)") {
+        rewrite ^(.*)$ https://www.jiechujiaoyu.com$1  permanent;  # 301永久跳转 
+    }
+}
 ```
 
