@@ -39,6 +39,14 @@ categories:
   ```
 
   Maven仓库的安装与配置：https://blog.csdn.net/dontYouWorry/article/details/128934720
+  
+  ```bash
+  #如果按上述方法安装了jdk后，jps -v命令提示找不到，则需要执行如下命令：
+  yum install -y java-1.8.0-openjdk-devel.x86_64
+  #然后jps -v 可以执行了。
+  ```
+  
+  
 
 ## Jenkins持续交付
 

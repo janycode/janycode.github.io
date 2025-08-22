@@ -305,7 +305,17 @@ Tue 202x-04-15 18:19:00 CST  4h 18min left n/a                          n/a     
 
 > 若需修改续期频率，需编辑 Snap 定时器的配置（需通过 Snap 命令或修改系统级定时器文件），但默认配置已足够安全（证书到期前 30 天内才会实际续期）。
 
+`自动续期如果不生效使用【手动】命令：`
 
+> certbot certonly --standalone --email my@qq.com -d xxx.abc.com
+>
+> 生成之后然后去改nginx即可。如果 80 端口占用，则需要停掉nginx进行配置。
+>
+> 设置自动续期：Certbot 支持设置自动续期任务，以确保你的 SSL 证书在到期前得到更新。你可以使用系统的计划任务工具（如 [cron](https://zhida.zhihu.com/search?content_id=231081606&content_type=Article&match_order=1&q=cron&zd_token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJ6aGlkYV9zZXJ2ZXIiLCJleHAiOjE3NTI2NTI0MjIsInEiOiJjcm9uIiwiemhpZGFfc291cmNlIjoiZW50aXR5IiwiY29udGVudF9pZCI6MjMxMDgxNjA2LCJjb250ZW50X3R5cGUiOiJBcnRpY2xlIiwibWF0Y2hfb3JkZXIiOjEsInpkX3Rva2VuIjpudWxsfQ.vlHfjU_7buPzAOKhvcUYIeVUXDaVQLXIHpW00b5sdEk&zhida_source=entity)）来定期运行 Certbot 命令。 示例: cron 任务配置，每天凌晨 2 点自动运行 Certbot：
+>
+> ```bash
+> 0 2 * * * certbot renew --quiet
+> ```
 
 ## 5.不同服务器使用
 
