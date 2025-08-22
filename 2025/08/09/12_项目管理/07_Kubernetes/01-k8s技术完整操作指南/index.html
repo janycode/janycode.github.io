@@ -1,0 +1,1348 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=light>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Jerry(姜源)">
+  <meta name="keywords" content="Java,Html,CSS,JavaScript,Python,C,Linux,shell编程经验分享、技术总结、心得体会">
+  
+    <meta name="description" content="参考资料：https:&#x2F;&#x2F;kubernetes.io&#x2F;zh-cn&#x2F; 1. Docker基础介绍与实施步骤1.1 什么是Docker？Docker是一种开源的容器化平台，允许开发者将应用程序及其所有依赖打包到一个轻量级、可移植的容器中。容器确保应用在任何环境中都能一致地运行，无论是在开发、测试还是生产环境。 1.2 为什么使用Docker？ 一致性：消除“在我的机器上可以运行”的问题。 可移植性：">
+<meta property="og:type" content="article">
+<meta property="og:title" content="01-k8s技术完整操作指南">
+<meta property="og:url" content="https://janycode.github.io/2025/08/09/12_%E9%A1%B9%E7%9B%AE%E7%AE%A1%E7%90%86/07_Kubernetes/01-k8s%E6%8A%80%E6%9C%AF%E5%AE%8C%E6%95%B4%E6%93%8D%E4%BD%9C%E6%8C%87%E5%8D%97/index.html">
+<meta property="og:site_name" content="姜源の云笔记">
+<meta property="og:description" content="参考资料：https:&#x2F;&#x2F;kubernetes.io&#x2F;zh-cn&#x2F; 1. Docker基础介绍与实施步骤1.1 什么是Docker？Docker是一种开源的容器化平台，允许开发者将应用程序及其所有依赖打包到一个轻量级、可移植的容器中。容器确保应用在任何环境中都能一致地运行，无论是在开发、测试还是生产环境。 1.2 为什么使用Docker？ 一致性：消除“在我的机器上可以运行”的问题。 可移植性：">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20250715161022.png">
+<meta property="article:published_time" content="2025-08-09T14:33:12.000Z">
+<meta property="article:modified_time" content="2025-08-22T01:28:21.522Z">
+<meta property="article:author" content="Jerry(姜源)">
+<meta property="article:tag" content="Docker">
+<meta property="article:tag" content="Kubernetes">
+<meta property="article:tag" content="k8s">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20250715161022.png">
+  
+  
+    <meta name="referrer" content="no-referrer-when-downgrade">
+  
+  
+  <title>01-k8s技术完整操作指南 - 姜源の云笔记</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"janycode.github.io","root":"/","version":"1.9.0","typing":{"enable":true,"typeSpeed":50,"cursorChar":"|","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":false},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":"bfff735c897eb60ea49b735096b20e47","google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+
+  
+<meta name="generator" content="Hexo 6.2.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 50vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>姜源の云笔记</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tools/">
+                <i class="iconfont icon-slack-fill"></i>
+                工具
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" target="_blank" rel="noopener" href="https://yuancodes.github.io/">
+                <i class="iconfont icon-notebook"></i>
+                Docsify
+              </a>
+            </li>
+          
+        
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="01-k8s技术完整操作指南"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-author" aria-hidden="true"></i>
+        Jerry(姜源)
+      </span>
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2025-08-09 22:33" pubdate>
+          星期六, 2025/08/09 22:33:12
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          <!-- compatible with older versions-->
+          23k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          <!-- compatible with older versions-->
+          188 分钟
+        
+      </span>
+    
+
+    
+    
+      
+        <span id="busuanzi_container_page_pv" style="display: none">
+          <i class="iconfont icon-eye" aria-hidden="true"></i>
+          <span id="busuanzi_value_page_pv"></span> 次
+        </span>
+        
+      
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">01-k8s技术完整操作指南</h1>
+            
+            <div class="markdown-body">
+              
+              <p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20250715161022.png" srcset="/img/loading.gif" lazyload alt="Kubernetes 介绍 - Session的专栏 - TNBLOG"></p>
+<p>参考资料：<a target="_blank" rel="noopener" href="https://kubernetes.io/zh-cn/">https://kubernetes.io/zh-cn/</a></p>
+<h2 id="1-Docker基础介绍与实施步骤"><a href="#1-Docker基础介绍与实施步骤" class="headerlink" title="1. Docker基础介绍与实施步骤"></a>1. Docker基础介绍与实施步骤</h2><h3 id="1-1-什么是Docker？"><a href="#1-1-什么是Docker？" class="headerlink" title="1.1 什么是Docker？"></a>1.1 什么是Docker？</h3><p>Docker是一种开源的容器化平台，允许开发者将应用程序及其所有依赖打包到一个轻量级、可移植的容器中。容器确保应用在任何环境中都能一致地运行，无论是在开发、测试还是生产环境。</p>
+<h3 id="1-2-为什么使用Docker？"><a href="#1-2-为什么使用Docker？" class="headerlink" title="1.2 为什么使用Docker？"></a>1.2 为什么使用Docker？</h3><ul>
+<li><strong>一致性</strong>：消除“在我的机器上可以运行”的问题。</li>
+<li><strong>可移植性</strong>：容器可以在任何支持Docker的环境中运行。</li>
+<li><strong>资源高效</strong>：相比传统的虚拟机，容器更轻量，启动更快。</li>
+<li><strong>隔离性</strong>：每个容器运行在独立的环境中，避免相互干扰。</li>
+</ul>
+<h3 id="1-3-Docker安装步骤"><a href="#1-3-Docker安装步骤" class="headerlink" title="1.3 Docker安装步骤"></a>1.3 Docker安装步骤</h3><p>根据不同的操作系统，Docker的安装步骤有所不同。以下分别介绍在Windows、MacOS和Linux上的安装方法。</p>
+<h4 id="1-3-1-在Windows上安装Docker"><a href="#1-3-1-在Windows上安装Docker" class="headerlink" title="1.3.1 在Windows上安装Docker"></a>1.3.1 在Windows上安装Docker</h4><ol>
+<li><p>系统要求：</p>
+<ul>
+<li>Windows 10 64-bit: Pro, Enterprise, or Education (Build 15063 or later)。</li>
+<li>确保已启用<strong>Hyper-V</strong>和<strong>容器</strong>功能。</li>
+</ul>
+</li>
+<li><p>下载Docker Desktop：访问<a target="_blank" rel="noopener" href="https://www.docker.com/products/docker-desktop/">Docker官网</a>下载适用于Windows的Docker Desktop安装程序。</p>
+</li>
+<li><p>安装Docker Desktop：</p>
+<ul>
+<li>双击下载的安装程序，按照提示完成安装。</li>
+<li>安装完成后，重启计算机（如果提示）。</li>
+</ul>
+</li>
+<li><p>验证安装：</p>
+<p>打开命令提示符（CMD）或PowerShell，运行：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">docker --version<br></code></pre></td></tr></table></figure>
+
+<p>预期输出：</p>
+<figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs apache"><span class="hljs-attribute">Docker</span> version <span class="hljs-number">20</span>.<span class="hljs-number">10</span>.<span class="hljs-number">7</span>, build f0df350<br></code></pre></td></tr></table></figure></li>
+</ol>
+<h4 id="1-3-2-在MacOS上安装Docker"><a href="#1-3-2-在MacOS上安装Docker" class="headerlink" title="1.3.2 在MacOS上安装Docker"></a>1.3.2 在MacOS上安装Docker</h4><ol>
+<li><p>系统要求：</p>
+<ul>
+<li>MacOS 10.14 或更高版本。</li>
+<li>至少4GB的RAM。</li>
+</ul>
+</li>
+<li><p>下载Docker Desktop：</p>
+<ul>
+<li>访问<a target="_blank" rel="noopener" href="https://www.docker.com/products/docker-desktop/">Docker官网</a>下载适用于MacOS的Docker Desktop安装程序。</li>
+</ul>
+</li>
+<li><p>安装Docker Desktop：</p>
+<ul>
+<li>双击下载的<code>.dmg</code>文件，将Docker图标拖拽到“Applications”文件夹中。</li>
+</ul>
+</li>
+<li><p>启动Docker Desktop：</p>
+<ul>
+<li>在“Applications”文件夹中找到Docker图标，双击启动。</li>
+<li>安装完成后，Docker图标会显示在菜单栏中。</li>
+</ul>
+</li>
+<li><p>验证安装：</p>
+<ul>
+<li><p>打开终端，运行：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">docker --version<br></code></pre></td></tr></table></figure>
+</li>
+<li><p>预期输出：</p>
+<figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs apache"><span class="hljs-attribute">Docker</span> version <span class="hljs-number">20</span>.<span class="hljs-number">10</span>.<span class="hljs-number">7</span>, build f0df350<br></code></pre></td></tr></table></figure></li>
+</ul>
+</li>
+</ol>
+<h4 id="1-3-3-在Linux上安装Docker"><a href="#1-3-3-在Linux上安装Docker" class="headerlink" title="1.3.3 在Linux上安装Docker"></a>1.3.3 在Linux上安装Docker</h4><p>以Ubuntu为例，介绍Docker的安装步骤。</p>
+<ol>
+<li><p>更新包索引并安装依赖：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs bash">sudo apt-get update<br>sudo apt-get install \<br>    ca-certificates \<br>    curl \<br>    gnupg \<br>    lsb-release<br></code></pre></td></tr></table></figure>
+</li>
+<li><p>添加Docker的官方GPG密钥：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs bash">sudo <span class="hljs-built_in">mkdir</span> -p /etc/apt/keyrings<br>curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg<br></code></pre></td></tr></table></figure>
+</li>
+<li><p>设置Docker的APT源：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-built_in">echo</span> \<br>  <span class="hljs-string">&quot;deb [arch=<span class="hljs-subst">$(dpkg --print-architecture)</span> signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu \</span><br><span class="hljs-string">  <span class="hljs-subst">$(lsb_release -cs)</span> stable&quot;</span> | sudo <span class="hljs-built_in">tee</span> /etc/apt/sources.list.d/docker.list &gt; /dev/null<br></code></pre></td></tr></table></figure>
+</li>
+<li><p>安装Docker Engine：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs bash">sudo apt-get update<br>sudo apt-get install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin<br></code></pre></td></tr></table></figure>
+</li>
+<li><p>启动并启用Docker服务：</p>
+<figure class="highlight nsis"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs nsis">sudo <span class="hljs-params">system</span>ctl start docker<br>sudo <span class="hljs-params">system</span>ctl enable docker<br></code></pre></td></tr></table></figure>
+</li>
+<li><p>添加当前用户到docker组（可选，避免每次运行docker命令需sudo）：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">sudo usermod -aG docker <span class="hljs-variable">$USER</span><br></code></pre></td></tr></table></figure>
+
+<p>注意：运行上述命令后，需要重新登录或重启系统以使更改生效。</p>
+</li>
+<li><p>验证安装：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs bash">docker --version<br><span class="hljs-comment">#预期输出</span><br>Docker version 20.10.7, build f0df350<br></code></pre></td></tr></table></figure></li>
+</ol>
+<h3 id="1-4-Docker基本操作步骤"><a href="#1-4-Docker基本操作步骤" class="headerlink" title="1.4 Docker基本操作步骤"></a>1.4 Docker基本操作步骤</h3><h4 id="1-4-1-拉取镜像"><a href="#1-4-1-拉取镜像" class="headerlink" title="1.4.1 拉取镜像"></a>1.4.1 拉取镜像</h4><p>Docker镜像是容器的蓝图，包含应用程序及其所有依赖。</p>
+<p><strong>命令格式</strong>：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">docker pull &lt;image-name&gt;:&lt;tag&gt;<br></code></pre></td></tr></table></figure>
+
+<p>示例：拉取官方的Nginx镜像</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs bash">docker pull nginx:latest<br><span class="hljs-comment">#预期输出</span><br>latest: Pulling from library/nginx<br>a3ab...: Already exists<br>Digest: sha256:...<br>Status: Downloaded newer image <span class="hljs-keyword">for</span> nginx:latest<br></code></pre></td></tr></table></figure>
+
+<h4 id="1-4-2-运行容器"><a href="#1-4-2-运行容器" class="headerlink" title="1.4.2 运行容器"></a>1.4.2 运行容器</h4><p>使用镜像创建并启动一个容器。</p>
+<p><strong>命令格式</strong>：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">docker run -d --name &lt;container-name&gt; -p &lt;host-port&gt;:&lt;container-port&gt; &lt;image-name&gt;:&lt;tag&gt;<br></code></pre></td></tr></table></figure>
+
+<p>示例：运行一个Nginx容器，绑定本地的8080端口到容器的80端口</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">docker run -d --name my-nginx -p 8080:80 nginx:latest<br></code></pre></td></tr></table></figure>
+
+<p>参数说明：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs bash">-d：后台运行容器。<br>--name：为容器指定一个名称。<br>-p：端口映射，将主机的8080端口映射到容器的80端口。<br></code></pre></td></tr></table></figure>
+
+<p>预期输出：</p>
+<figure class="highlight gams"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs gams"><span class="hljs-function"><span class="hljs-title">a3ab</span></span>... (容器ID)<br></code></pre></td></tr></table></figure>
+
+<p>验证运行：</p>
+<p>打开浏览器，访问<a href="http://localhost:8080，应看到Nginx欢迎页面。">http://localhost:8080，应看到Nginx欢迎页面。</a></p>
+<h4 id="1-4-3-查看运行中的容器"><a href="#1-4-3-查看运行中的容器" class="headerlink" title="1.4.3 查看运行中的容器"></a>1.4.3 查看运行中的容器</h4><p><strong>命令格式</strong>：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs bash">docker ps<br><span class="hljs-comment">#预期输出：</span><br>CONTAINER ID   IMAGE         COMMAND                  CREATED          STATUS          PORTS                  NAMES<br>a3ab...        nginx:latest  <span class="hljs-string">&quot;/docker-entrypoint.…&quot;</span>   10 seconds ago   Up 9 seconds    0.0.0.0:8080-&gt;80/tcp   my-nginx<br></code></pre></td></tr></table></figure>
+
+
+
+
+<h4 id="1-4-4-查看容器日志"><a href="#1-4-4-查看容器日志" class="headerlink" title="1.4.4 查看容器日志"></a>1.4.4 查看容器日志</h4><p><strong>命令格式</strong>：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">docker logs &lt;container-name&gt;<br></code></pre></td></tr></table></figure>
+
+
+<p>示例：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs bash">docker logs my-nginx<br><span class="hljs-comment">#预期输出：</span><br>172.17.0.1 - - [01/Jan/2024:12:00:00 +0000] <span class="hljs-string">&quot;GET / HTTP/1.1&quot;</span> 200 612 <span class="hljs-string">&quot;-&quot;</span> <span class="hljs-string">&quot;curl/7.68.0&quot;</span><br></code></pre></td></tr></table></figure>
+
+
+
+<h4 id="1-4-5-进入容器"><a href="#1-4-5-进入容器" class="headerlink" title="1.4.5 进入容器"></a>1.4.5 进入容器</h4><p><strong>命令格式</strong>：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">docker <span class="hljs-built_in">exec</span> -it &lt;container-name&gt; /bin/bash<br></code></pre></td></tr></table></figure>
+
+<p>示例：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">docker <span class="hljs-built_in">exec</span> -it my-nginx /bin/bash<br></code></pre></td></tr></table></figure>
+
+<p>说明：进入容器内部，可以执行命令和查看文件。</p>
+<h4 id="1-4-6-停止和删除容器"><a href="#1-4-6-停止和删除容器" class="headerlink" title="1.4.6 停止和删除容器"></a>1.4.6 停止和删除容器</h4><p><strong>停止容器</strong>：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">docker stop &lt;container-name&gt;<br></code></pre></td></tr></table></figure>
+
+<p>示例：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs bash">docker stop my-nginx<br><span class="hljs-comment">#预期输出：</span><br>容器ID<br></code></pre></td></tr></table></figure>
+
+
+<p><strong>删除容器</strong>：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">docker <span class="hljs-built_in">rm</span> &lt;container-name&gt;<br></code></pre></td></tr></table></figure>
+
+<p>示例：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs bash">docker <span class="hljs-built_in">rm</span> my-nginx<br><span class="hljs-comment">#预期输出：</span><br>容器ID<br></code></pre></td></tr></table></figure>
+
+
+
+
+<h4 id="1-4-7-构建自定义镜像"><a href="#1-4-7-构建自定义镜像" class="headerlink" title="1.4.7 构建自定义镜像"></a>1.4.7 构建自定义镜像</h4><ol>
+<li><strong>编写Dockerfile</strong></li>
+</ol>
+<p>创建一个目录用于存放Dockerfile和相关文件，例如myapp：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-built_in">mkdir</span> myapp<br><span class="hljs-built_in">cd</span> myapp<br></code></pre></td></tr></table></figure>
+
+
+<p>Dockerfile内容（简单的Python应用示例）：</p>
+<figure class="highlight dockerfile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><code class="hljs dockerfile"><span class="hljs-comment"># 使用官方Python基础镜像</span><br><span class="hljs-keyword">FROM</span> python:<span class="hljs-number">3.9</span>-slim<br><br><span class="hljs-comment"># 设置工作目录</span><br><span class="hljs-keyword">WORKDIR</span><span class="language-bash"> /app</span><br><br><span class="hljs-comment"># 复制当前目录内容到工作目录</span><br><span class="hljs-keyword">COPY</span><span class="language-bash"> . /app</span><br><br><span class="hljs-comment"># 安装应用依赖</span><br><span class="hljs-keyword">RUN</span><span class="language-bash"> pip install --no-cache-dir -r requirements.txt</span><br><br><span class="hljs-comment"># 暴露端口</span><br><span class="hljs-keyword">EXPOSE</span> <span class="hljs-number">5000</span><br><br><span class="hljs-comment"># 定义环境变量</span><br><span class="hljs-keyword">ENV</span> NAME World<br><br><span class="hljs-comment"># 运行应用</span><br><span class="hljs-keyword">CMD</span><span class="language-bash"> [<span class="hljs-string">&quot;python&quot;</span>, <span class="hljs-string">&quot;app.py&quot;</span>]</span><br></code></pre></td></tr></table></figure>
+
+
+
+<ol start="2">
+<li><strong>创建应用文件</strong></li>
+</ol>
+<p>requirements.txt：</p>
+<figure class="highlight txt"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs txt">Flask<br></code></pre></td></tr></table></figure>
+
+<p>app.py：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">from</span> flask <span class="hljs-keyword">import</span> Flask<br><span class="hljs-keyword">import</span> os<br><br>app = Flask(__name__)<br><br><span class="hljs-meta">@app.route(<span class="hljs-params"><span class="hljs-string">&#x27;/&#x27;</span></span>)</span><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">hello</span>():<br>    name = os.getenv(<span class="hljs-string">&#x27;NAME&#x27;</span>, <span class="hljs-string">&#x27;World&#x27;</span>)<br>    <span class="hljs-keyword">return</span> <span class="hljs-string">f&#x27;Hello, <span class="hljs-subst">&#123;name&#125;</span>!&#x27;</span><br><br><span class="hljs-keyword">if</span> __name__ == <span class="hljs-string">&#x27;__main__&#x27;</span>:<br>    app.run(host=<span class="hljs-string">&#x27;0.0.0.0&#x27;</span>, port=<span class="hljs-number">5000</span>)<br></code></pre></td></tr></table></figure>
+
+<ol start="3">
+<li><strong>构建镜像</strong></li>
+</ol>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><code class="hljs bash">docker build -t my-python-app:latest .<br><span class="hljs-comment">#预期输出：</span><br>Sending build context to Docker daemon  5.632kB<br>Step 1/6 : FROM python:3.9-slim<br> ---&gt; ...<br>Step 2/6 : WORKDIR /app<br> ---&gt; Using cache<br> ---&gt; ...<br>Step 3/6 : COPY . /app<br> ---&gt; Using cache<br> ---&gt; ...<br>Step 4/6 : RUN pip install --no-cache-dir -r requirements.txt<br> ---&gt; Using cache<br> ---&gt; ...<br>Step 5/6 : EXPOSE 5000<br> ---&gt; Using cache<br> ---&gt; ...<br>Step 6/6 : CMD [<span class="hljs-string">&quot;python&quot;</span>, <span class="hljs-string">&quot;app.py&quot;</span>]<br> ---&gt; Using cache<br> ---&gt; ...<br>Successfully built ...<br>Successfully tagged my-python-app:latest<br></code></pre></td></tr></table></figure>
+
+
+
+<ol start="4">
+<li><strong>运行自定义镜像</strong></li>
+</ol>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs bash">docker run -d --name my-python-app -p 5000:5000 my-python-app:latest<br><span class="hljs-comment">#预期输出：</span><br>a3ab...<br></code></pre></td></tr></table></figure>
+
+
+
+<ol start="5">
+<li><strong>验证应用</strong></li>
+</ol>
+<p>打开浏览器，访问<a href="http://localhost:5000，应显示Hello">http://localhost:5000，应显示Hello</a>, World!</p>
+<p>通过环境变量修改问候语：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs bash">docker stop my-python-app<br>docker <span class="hljs-built_in">rm</span> my-python-app<br>docker run -d --name my-python-app -p 5000:5000 -e NAME=Kubernetes my-python-app:latest<br></code></pre></td></tr></table></figure>
+
+<p>再次访问<a href="http://localhost:5000，应显示Hello">http://localhost:5000，应显示Hello</a>, Kubernetes!</p>
+<h3 id="1-5-Docker常见问题及解决方案"><a href="#1-5-Docker常见问题及解决方案" class="headerlink" title="1.5 Docker常见问题及解决方案"></a>1.5 Docker常见问题及解决方案</h3><p>问题1：<strong>无法拉取镜像</strong></p>
+<p>原因：</p>
+<ul>
+<li>网络问题。</li>
+<li>镜像名称或标签错误。</li>
+</ul>
+<p>解决方案：</p>
+<ul>
+<li>检查网络连接。</li>
+<li>确认镜像名称和标签正确。</li>
+<li>尝试使用不同的镜像仓库。</li>
+</ul>
+<p>问题2：<strong>容器启动失败</strong></p>
+<p>原因：</p>
+<ul>
+<li>Dockerfile配置错误。</li>
+<li>应用依赖未正确安装。</li>
+</ul>
+<p>解决方案：</p>
+<ul>
+<li>检查Dockerfile和应用日志。</li>
+<li>确认所有依赖已正确安装。</li>
+</ul>
+<p>问题3：<strong>端口冲突</strong></p>
+<p>原因：</p>
+<ul>
+<li>主机端口已被其他应用占用。</li>
+</ul>
+<p>解决方案：</p>
+<ul>
+<li>更换主机端口，例如将-p 8080:80改为-p 8081:80。</li>
+</ul>
+<h2 id="2-Kubernetes基础概念与架构"><a href="#2-Kubernetes基础概念与架构" class="headerlink" title="2. Kubernetes基础概念与架构"></a>2. Kubernetes基础概念与架构</h2><h3 id="2-1-Kubernetes概述"><a href="#2-1-Kubernetes概述" class="headerlink" title="2.1 Kubernetes概述"></a>2.1 Kubernetes概述</h3><p>Kubernetes（简称K8s）是一个开源的容器编排平台，用于自动化部署、扩展和管理容器化应用。它提供了丰富的功能，如负载均衡、服务发现、自动伸缩、滚动更新等，帮助开发者和运维团队高效地管理大规模的应用部署。</p>
+<p><strong>定义</strong>：Kubernetes是一个用于自动部署、扩展和管理容器化应用的开源平台。</p>
+<p><strong>历史背景</strong>：由Google开发并开源，基于其内部的Borg系统，旨在简化大规模容器管理。</p>
+<h3 id="2-2-虚拟化与容器化的区别"><a href="#2-2-虚拟化与容器化的区别" class="headerlink" title="2.2 虚拟化与容器化的区别"></a>2.2 虚拟化与容器化的区别</h3><p>虚拟化：</p>
+<ul>
+<li><p>概念：通过虚拟机管理程序（如VMware、Hyper-V）在物理硬件上运行多个操作系统实例。</p>
+</li>
+<li><p>优点：隔离性强，每个虚拟机拥有独立的操作系统。</p>
+</li>
+<li><p>缺点：资源开销大，启动速度慢。</p>
+</li>
+</ul>
+<p>容器化：</p>
+<ul>
+<li><p>概念：通过容器引擎（如Docker）在同一操作系统内核上运行多个隔离的应用实例。</p>
+</li>
+<li><p>优点：资源利用率高，启动速度快，便于部署和迁移。</p>
+</li>
+<li><p>缺点：隔离性不如虚拟机，依赖于宿主操作系统。</p>
+</li>
+</ul>
+<h3 id="2-3-Kubernetes架构详解"><a href="#2-3-Kubernetes架构详解" class="headerlink" title="2.3 Kubernetes架构详解"></a>2.3 Kubernetes架构详解</h3><p>Kubernetes的架构主要分为<strong>控制平面（Control Plane）和节点（Node）</strong>两大部分。</p>
+<p><strong>控制平面（Control Plane）</strong></p>
+<ul>
+<li><p>API Server：</p>
+<ul>
+<li>功能：作为Kubernetes的控制中心，所有API请求都通过API Server处理。</li>
+<li>交互：与kubectl、其他Kubernetes组件和外部系统交互。</li>
+<li>安全性：支持认证、授权和审计，确保集群的安全性。</li>
+</ul>
+</li>
+<li><p>Scheduler：</p>
+<ul>
+<li>功能：根据资源需求和调度策略，将Pod分配到合适的Node上。</li>
+<li>调度算法：考虑资源利用率、亲和性&#x2F;反亲和性、污点和容忍等因素。</li>
+<li>扩展性：支持自定义调度器和调度插件，满足特定的调度需求。</li>
+</ul>
+</li>
+<li><p>Controller Manager：</p>
+<ul>
+<li>功能：运行各种控制器，确保集群的期望状态与实际状态一致。</li>
+</ul>
+</li>
+<li><p>常见控制器：</p>
+<ul>
+<li>ReplicaSet Controller：管理Pod的副本数量。</li>
+<li>Deployment Controller：管理Deployment资源，支持滚动更新和回滚。</li>
+<li>Node Controller：监控Node的状态，处理Node故障。</li>
+<li>Endpoint Controller：管理Service的Endpoints，确保服务发现的准确性。</li>
+</ul>
+</li>
+<li><p>etcd：</p>
+<ul>
+<li>功能：分布式键值存储，保存集群的状态数据。</li>
+<li>特性：分布式、高可用、强一致性，确保数据的可靠性和一致性。</li>
+<li>备份与恢复：定期备份etcd数据，确保在灾难发生时能够恢复集群状态。</li>
+</ul>
+</li>
+</ul>
+<p><strong>节点（Node）</strong></p>
+<ul>
+<li>Kubelet：<ul>
+<li>功能：每个Node上的代理，负责Pod和容器的生命周期管理。</li>
+<li>任务：确保Pod按照定义运行，监控容器状态，报告Node状态。</li>
+<li>交互：与API Server通信，接收调度指令和更新信息。</li>
+</ul>
+</li>
+<li>Kube-Proxy：<ul>
+<li>功能：实现Kubernetes的网络服务，管理Service的负载均衡和网络路由。</li>
+<li>工作方式：基于iptables或IPVS，转发流量到对应的Pod。</li>
+<li>高可用性：在多个Node上运行，确保网络服务的可靠性。</li>
+</ul>
+</li>
+<li>容器运行时（Container Runtime）：<ul>
+<li>定义：如Docker、containerd，负责运行容器。</li>
+<li>功能：下载镜像、运行容器、管理容器生命周期。</li>
+</ul>
+</li>
+</ul>
+<h3 id="2-4-关键概念"><a href="#2-4-关键概念" class="headerlink" title="2.4 关键概念"></a>2.4 关键概念</h3><ul>
+<li>Pod：Kubernetes中最小的可部署单元，一个Pod可以包含一个或多个紧密关联的容器。</li>
+<li>Service：定义一组Pod的访问策略，提供负载均衡和服务发现功能。</li>
+<li>Deployment：管理Pod的部署和更新，支持滚动更新和回滚。</li>
+<li>Namespace：用于在同一个集群中划分多个虚拟子集，便于资源隔离和管理。</li>
+</ul>
+<h3 id="2-5-案例分析"><a href="#2-5-案例分析" class="headerlink" title="2.5 案例分析"></a>2.5 案例分析</h3><p>案例1：电商平台的容器化部署</p>
+<figure class="highlight txt"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs txt">背景：一个电商平台包含前端、后端和数据库三个部分。传统部署中，这三个部分分别运行在不同的虚拟机上，资源利用率不高，且部署和扩展较为复杂。<br><br>容器化部署：<br>前端：使用Docker将前端应用打包成容器镜像，确保环境一致性。<br>后端：同样打包成容器镜像，方便与前端和数据库的协同工作。<br>数据库：运行在独立的数据库容器中，通过Kubernetes的Service进行访问。<br><br>Kubernetes管理：<br>Deployment：分别为前端和后端创建Deployment，管理其副本数量和更新策略。<br>Service：为前端和后端创建Service，提供内部负载均衡和服务发现。<br>Namespace：将电商平台的所有资源部署在一个独立的Namespace中，便于管理和监控。<br></code></pre></td></tr></table></figure>
+
+<p>案例2：多租户应用的资源隔离</p>
+<figure class="highlight txt"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs txt">背景：一家SaaS公司需要在同一个Kubernetes集群中为不同的客户提供服务，确保资源隔离和安全性。<br><br>解决方案：<br>Namespace划分：为每个客户创建独立的Namespace，隔离各自的资源和权限。<br>资源配额（Resource Quota）：为每个Namespace设置资源限制，防止资源滥用。<br>网络策略（Network Policy）：配置网络策略，控制不同Namespace之间的网络访问权限。<br></code></pre></td></tr></table></figure>
+
+
+
+<h2 id="3-Kubernetes核心组件"><a href="#3-Kubernetes核心组件" class="headerlink" title="3. Kubernetes核心组件"></a>3. Kubernetes核心组件</h2><h3 id="3-1-API-Server"><a href="#3-1-API-Server" class="headerlink" title="3.1 API Server"></a>3.1 API Server</h3><ul>
+<li>功能：作为Kubernetes的控制中心，所有API请求都通过API Server处理。</li>
+<li>交互：与kubectl、其他Kubernetes组件和外部系统交互。</li>
+<li>安全性：支持认证、授权和审计，确保集群的安全性。</li>
+</ul>
+<h3 id="3-2-etcd"><a href="#3-2-etcd" class="headerlink" title="3.2 etcd"></a>3.2 etcd</h3><ul>
+<li>功能：保存Kubernetes集群的所有状态信息，是集群的“单一真理来源”。</li>
+<li>特性：分布式、高可用、强一致性，确保数据的可靠性和一致性。</li>
+<li>备份与恢复：定期备份etcd数据，确保在灾难发生时能够恢复集群状态。</li>
+</ul>
+<h3 id="3-3-Scheduler"><a href="#3-3-Scheduler" class="headerlink" title="3.3 Scheduler"></a>3.3 Scheduler</h3><ul>
+<li>功能：根据资源需求和调度策略，将Pod分配到合适的Node上。</li>
+<li>调度算法：考虑资源利用率、亲和性&#x2F;反亲和性、污点和容忍等因素。</li>
+<li>扩展性：支持自定义调度器和调度插件，满足特定的调度需求。</li>
+</ul>
+<h3 id="3-4-Controller-Manager"><a href="#3-4-Controller-Manager" class="headerlink" title="3.4 Controller Manager"></a>3.4 Controller Manager</h3><ul>
+<li><p>功能：运行各种控制器，确保集群的期望状态与实际状态一致。</p>
+</li>
+<li><p>常见控制器：</p>
+<ul>
+<li>ReplicaSet Controller：管理Pod的副本数量。</li>
+<li>Deployment Controller：管理Deployment资源，支持滚动更新和回滚。</li>
+<li>Node Controller：监控Node的状态，处理Node故障。</li>
+<li>Endpoint Controller：管理Service的Endpoints，确保服务发现的准确性。</li>
+</ul>
+</li>
+</ul>
+<h3 id="3-5-Kubelet"><a href="#3-5-Kubelet" class="headerlink" title="3.5 Kubelet"></a>3.5 Kubelet</h3><ul>
+<li>功能：每个Node上运行的代理，负责Pod和容器的生命周期管理。</li>
+<li>任务：确保Pod按照定义运行，监控容器状态，报告Node状态。</li>
+<li>交互：与API Server通信，接收调度指令和更新信息。</li>
+</ul>
+<h3 id="3-6-Kube-Proxy"><a href="#3-6-Kube-Proxy" class="headerlink" title="3.6 Kube-Proxy"></a>3.6 Kube-Proxy</h3><ul>
+<li>功能：实现Kubernetes的网络服务，管理Service的负载均衡和网络路由。</li>
+<li>工作方式：基于iptables或IPVS，转发流量到对应的Pod。</li>
+<li>高可用性：在多个Node上运行，确保网络服务的可靠性。</li>
+</ul>
+<h3 id="3-7-案例分析"><a href="#3-7-案例分析" class="headerlink" title="3.7 案例分析"></a>3.7 案例分析</h3><p>案例1：API Server的高可用性配置</p>
+<figure class="highlight txt"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs txt">背景：一个生产环境的Kubernetes集群需要确保API Server的高可用性，避免单点故障影响整个集群。<br><br>解决方案：<br>多实例部署：在多个控制平面节点上部署多个API Server实例。<br>负载均衡器：使用外部负载均衡器（如HAProxy、Nginx）分发API请求到各个API Server实例。<br>etcd集群：部署etcd集群，确保数据的高可用性和一致性。<br>证书管理：配置安全证书，确保API Server通信的安全性。<br></code></pre></td></tr></table></figure>
+
+<p>案例2：etcd数据备份与恢复</p>
+<figure class="highlight txt"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><code class="hljs txt">背景：为了防止etcd数据丢失或损坏，需定期备份etcd数据，并能够在必要时进行恢复。<br>步骤：<br><br>备份etcd数据：<br>ETCDCTL_API=3 etcdctl snapshot save /path/to/backup.db \<br> --endpoints=https://127.0.0.1:2379 \<br> --cacert=/etc/kubernetes/pki/etcd/ca.crt \<br> --cert=/etc/kubernetes/pki/etcd/server.crt \<br> --key=/etc/kubernetes/pki/etcd/server.key<br><br>恢复etcd数据：<br>ETCDCTL_API=3 etcdctl snapshot restore /path/to/backup.db \<br> --data-dir=/var/lib/etcd-new \<br> --initial-cluster=&lt;cluster&gt; \<br> --initial-cluster-token=&lt;token&gt; \<br> --initial-advertise-peer-urls=https://&lt;new-etcd-peer-url&gt;<br><br>验证恢复：<br>启动新的etcd实例，确保数据一致性。<br>检查集群状态，确认所有组件正常运行。<br></code></pre></td></tr></table></figure>
+
+<p>案例3：Scheduler自定义调度策略</p>
+<figure class="highlight txt"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><code class="hljs txt">背景：某应用需要Pod部署到具有特定标签的Node上，例如仅在高性能GPU节点上运行。<br><br>解决方案：<br>Node标签：为GPU节点添加标签，例如gpu=true。<br>kubectl label nodes &lt;node-name&gt; gpu=true<br><br>Deployment配置：在Pod的调度策略中指定节点选择器。<br>spec:<br> containers:<br>  - name: gpu-app<br>    image: gpu-app:latest<br>    nodeSelector:<br>    gpu: &quot;true&quot;<br><br>应用Deployment：<br>kubectl apply -f gpu-deployment.yaml<br><br>验证：确保Pod被调度到带有gpu=true标签的Node上。<br></code></pre></td></tr></table></figure>
+
+
+
+<h2 id="4-搭建Kubernetes集群环境"><a href="#4-搭建Kubernetes集群环境" class="headerlink" title="4. 搭建Kubernetes集群环境"></a>4. 搭建Kubernetes集群环境</h2><h3 id="4-1-Minikube介绍"><a href="#4-1-Minikube介绍" class="headerlink" title="4.1 Minikube介绍"></a>4.1 Minikube介绍</h3><p>Minikube是一个轻量级的本地Kubernetes集群，适用于开发和学习环境。它支持多种虚拟化驱动（如VirtualBox、Docker），易于安装和启动。</p>
+<h3 id="4-2-安装前准备"><a href="#4-2-安装前准备" class="headerlink" title="4.2 安装前准备"></a>4.2 安装前准备</h3><p>系统要求：确保操作系统支持虚拟化，安装了合适的虚拟化引擎。</p>
+<p>依赖工具：</p>
+<ul>
+<li><code>kubectl</code>：Kubernetes命令行工具，用于与集群交互。</li>
+</ul>
+<p>虚拟化软件：如VirtualBox、Docker Desktop（MacOS&#x2F;Windows）。</p>
+<h3 id="4-3-安装Minikube"><a href="#4-3-安装Minikube" class="headerlink" title="4.3 安装Minikube"></a>4.3 安装Minikube</h3><p>根据不同的操作系统，Minikube的安装步骤有所不同。</p>
+<h4 id="4-3-1-在Windows上安装Minikube"><a href="#4-3-1-在Windows上安装Minikube" class="headerlink" title="4.3.1 在Windows上安装Minikube"></a>4.3.1 在Windows上安装Minikube</h4><p>安装Chocolatey（如果未安装）：</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs powershell"><span class="hljs-built_in">Set-ExecutionPolicy</span> Bypass <span class="hljs-literal">-Scope</span> <span class="hljs-keyword">Process</span> <span class="hljs-literal">-Force</span>; `<br>[<span class="hljs-type">System.Net.ServicePointManager</span>]::SecurityProtocol = `<br>[<span class="hljs-type">System.Net.ServicePointManager</span>]::SecurityProtocol <span class="hljs-operator">-bor</span> <span class="hljs-number">3072</span>; `<br><span class="hljs-built_in">iex</span> ((<span class="hljs-built_in">New-Object</span> System.Net.WebClient).DownloadString(<span class="hljs-string">&#x27;https://community.chocolatey.org/install.ps1&#x27;</span>))<br></code></pre></td></tr></table></figure>
+
+<p>使用Chocolatey安装Minikube：</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs powershell">choco install minikube<br></code></pre></td></tr></table></figure>
+
+<p>验证安装：</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs powershell">minikube version<br></code></pre></td></tr></table></figure>
+
+
+
+<h4 id="4-3-2-在MacOS上安装Minikube"><a href="#4-3-2-在MacOS上安装Minikube" class="headerlink" title="4.3.2 在MacOS上安装Minikube"></a>4.3.2 在MacOS上安装Minikube</h4><p>安装Homebrew（如果未安装）：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">/bin/bash -c <span class="hljs-string">&quot;<span class="hljs-subst">$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)</span>&quot;</span><br></code></pre></td></tr></table></figure>
+
+<p>使用Homebrew安装Minikube：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">brew install minikube<br></code></pre></td></tr></table></figure>
+
+<p>验证安装：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">minikube version<br></code></pre></td></tr></table></figure>
+
+
+
+<h4 id="4-3-3-在Linux上安装Minikube"><a href="#4-3-3-在Linux上安装Minikube" class="headerlink" title="4.3.3 在Linux上安装Minikube"></a>4.3.3 在Linux上安装Minikube</h4><p>下载Minikube二进制文件：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs bash">curl -Lo minikube https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64<br>sudo <span class="hljs-built_in">mv</span> minikube /usr/local/bin/<br>sudo <span class="hljs-built_in">chmod</span> +x /usr/local/bin/minikube<br></code></pre></td></tr></table></figure>
+
+<p>验证安装：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">minikube version<br></code></pre></td></tr></table></figure>
+
+
+
+<h3 id="4-4-启动Minikube集群"><a href="#4-4-启动Minikube集群" class="headerlink" title="4.4 启动Minikube集群"></a>4.4 启动Minikube集群</h3><p>基本启动命令：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">minikube start<br></code></pre></td></tr></table></figure>
+
+<p>指定Kubernetes版本：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">minikube start --kubernetes-version=v1.26.0<br></code></pre></td></tr></table></figure>
+
+<p>指定虚拟化驱动：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">minikube start --driver=virtualbox<br></code></pre></td></tr></table></figure>
+
+<p>常见启动参数：</p>
+<figure class="highlight txt"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs txt">--cpus：分配给集群的CPU数量。<br>--memory：分配给集群的内存大小。<br>--disk-size：分配给集群的磁盘空间。<br></code></pre></td></tr></table></figure>
+
+
+
+<h3 id="4-5-验证集群状态"><a href="#4-5-验证集群状态" class="headerlink" title="4.5 验证集群状态"></a>4.5 验证集群状态</h3><p>检查节点状态：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">kubectl get nodes<br></code></pre></td></tr></table></figure>
+
+<p>预期输出：</p>
+<figure class="highlight txt"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs txt">NAME       STATUS   ROLES    AGE   VERSION<br>minikube   Ready    master   5m    v1.26.0<br></code></pre></td></tr></table></figure>
+
+<p>查看所有命名空间中的Pod：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs bash">kubectl get pods --all-namespaces<br><span class="hljs-comment">#预期输出</span><br>NAMESPACE     NAME                                       READY   STATUS    RESTARTS   AGE<br>kube-system   coredns-&lt;<span class="hljs-built_in">hash</span>&gt;                             1/1     Running   0          5m<br>kube-system   etcd-minikube                              1/1     Running   0          5m<br>kube-system   kube-apiserver-minikube                    1/1     Running   0          5m<br>kube-system   kube-controller-manager-minikube           1/1     Running   0          5m<br>kube-system   kube-scheduler-minikube                    1/1     Running   0          5m<br>kube-system   storage-provisioner                        1/1     Running   0          5m<br></code></pre></td></tr></table></figure>
+
+<p>检查Kubernetes版本：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs bash">kubectl version --short<br><span class="hljs-comment">#预期输出</span><br>Client Version: v1.26.0<br>Server Version: v1.26.0<br></code></pre></td></tr></table></figure>
+
+
+
+
+<h3 id="4-6-案例分析"><a href="#4-6-案例分析" class="headerlink" title="4.6 案例分析"></a>4.6 案例分析</h3><p>案例1：在MacOS上使用Minikube搭建Kubernetes集群</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><code class="hljs txxt">步骤：<br>安装Homebrew（如果未安装）：<br>/bin/bash -c &quot;$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)&quot;<br><br>使用Homebrew安装Minikube：<br>brew install minikube<br><br>启动Minikube集群：<br>minikube start --driver=hyperkit --memory=4096 --cpus=2<br><br>验证集群状态：<br>kubectl get nodes<br><br>常见问题解决：<br>启动失败：检查Hyperkit是否正确安装，使用以下命令安装：<br>brew install hyperkit<br><br>资源不足：调整内存和CPU分配，确保主机有足够资源运行Minikube。<br></code></pre></td></tr></table></figure>
+
+<p>案例2：在Linux上使用Minikube搭建集群并配置虚拟化驱动</p>
+<figure class="highlight txt"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><code class="hljs txt">步骤：<br>安装Minikube：<br>curl -Lo minikube https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64<br>sudo mv minikube /usr/local/bin/<br>sudo chmod +x /usr/local/bin/minikube<br><br>安装KVM2驱动（推荐用于Linux）：<br>sudo apt-get update<br>sudo apt-get install -y qemu-kvm libvirt-daemon-system libvirt-clients bridge-utils<br>sudo adduser $USER libvirt<br>newgrp libvirt<br><br>启动Minikube集群：<br>minikube start --driver=kvm2 --memory=4096 --cpus=2<br><br>验证集群状态：<br>kubectl get nodes<br><br>常见问题解决：<br>权限问题：确保用户属于libvirt组，重新登录或使用newgrp libvirt。<br>KVM未启动：启动libvirt服务：<br>sudo systemctl start libvirtd<br><br></code></pre></td></tr></table></figure>
+
+<p>案例3：在Windows上使用Minikube搭建集群</p>
+<figure class="highlight txt"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><code class="hljs txt">步骤：<br>安装Chocolatey（如果未安装）：<br>Set-ExecutionPolicy Bypass -Scope Process -Force; `<br>[System.Net.ServicePointManager]::SecurityProtocol = `<br>[System.Net.ServicePointManager]::SecurityProtocol -bor 3072; `<br>iex ((New-Object System.Net.WebClient).DownloadString(&#x27;https://community.chocolatey.org/install.ps1&#x27;))<br><br>使用Chocolatey安装Minikube：<br>choco install minikube<br><br>安装VirtualBox（如果使用VirtualBox驱动）：<br>choco install virtualbox<br><br>启动Minikube集群：<br>minikube start --driver=virtualbox --memory=4096 --cpus=2<br><br>验证集群状态：<br>kubectl get nodes<br><br>常见问题解决：<br>VirtualBox未安装：确保VirtualBox已正确安装，重新启动计算机后再尝试启动Minikube。<br>网络配置问题：检查VirtualBox网络设置，确保网络适配器配置正确。<br></code></pre></td></tr></table></figure>
+
+
+
+<h2 id="5-Kubernetes基础资源与对象"><a href="#5-Kubernetes基础资源与对象" class="headerlink" title="5. Kubernetes基础资源与对象"></a>5. Kubernetes基础资源与对象</h2><h3 id="5-1-Pod"><a href="#5-1-Pod" class="headerlink" title="5.1 Pod"></a>5.1 Pod</h3><p>Pod是Kubernetes中最小的可部署单元，一个Pod可以包含一个或多个紧密关联的容器。</p>
+<h4 id="5-1-1-编写Pod-YAML文件"><a href="#5-1-1-编写Pod-YAML文件" class="headerlink" title="5.1.1 编写Pod YAML文件"></a>5.1.1 编写Pod YAML文件</h4><p>创建一个名为nginx-pod.yaml的文件，内容如下：</p>
+<p>apiVersion: v1<br>kind: Pod<br>metadata:<br>  name: nginx-pod<br>  labels:<br>    app: nginx<br>spec:<br>  containers:</p>
+<ul>
+<li>name: nginx<br>image: nginx:latest<br>ports:<ul>
+<li>containerPort: 80<br>AI写代码<br>yaml</li>
+</ul>
+</li>
+</ul>
+<p>1<br>2<br>3<br>4<br>5<br>6<br>7<br>8<br>9<br>10<br>11<br>12<br>文件说明：</p>
+<p>apiVersion: v1：指定资源的API版本。<br>kind: Pod：指定资源类型为Pod。<br>metadata：<br>name: nginx-pod：Pod的名称。<br>labels：用于标识Pod的标签，便于选择和管理。<br>spec：<br>containers：定义Pod内的容器列表。<br>name: nginx：容器的名称。<br>image: nginx:latest：容器使用的镜像。<br>ports：容器监听的端口。<br>5.1.2 应用Pod配置<br>在终端中运行以下命令，将Pod部署到Kubernetes集群中：</p>
+<p>kubectl apply -f nginx-pod.yaml<br>AI写代码<br>bash<br>1<br>预期输出：</p>
+<p>pod&#x2F;nginx-pod created<br>AI写代码<br>1<br>5.1.3 验证Pod状态<br>运行以下命令查看Pod的状态：</p>
+<p>kubectl get pods<br>AI写代码<br>bash<br>1<br>预期输出：</p>
+<p>NAME         READY   STATUS    RESTARTS   AGE<br>nginx-pod    1&#x2F;1     Running   0          2m<br>AI写代码<br>1<br>2<br>5.1.4 查看Pod详细信息<br>运行以下命令查看Pod的详细信息，包括事件日志：</p>
+<p>kubectl describe pod nginx-pod<br>AI写代码<br>bash<br>1<br>重点信息：</p>
+<p>Containers部分：确认容器已启动并监听80端口。<br>Events部分：检查是否有错误或警告。<br>5.2 Deployment<br>Deployment是Kubernetes中的一种控制器，用于管理Pod的部署和更新，支持滚动更新和回滚。</p>
+<p>5.2.1 编写Deployment YAML文件<br>创建一个名为nginx-deployment.yaml的文件，内容如下：</p>
+<p>apiVersion: apps&#x2F;v1<br>kind: Deployment<br>metadata:<br>  name: nginx-deployment<br>  labels:<br>    app: nginx<br>spec:<br>  replicas: 2<br>  selector:<br>    matchLabels:<br>      app: nginx<br>  template:<br>    metadata:<br>      labels:<br>        app: nginx<br>    spec:<br>      containers:<br>      - name: nginx<br>        image: nginx:latest<br>        ports:<br>        - containerPort: 80<br>AI写代码<br>yaml</p>
+<p>1<br>2<br>3<br>4<br>5<br>6<br>7<br>8<br>9<br>10<br>11<br>12<br>13<br>14<br>15<br>16<br>17<br>18<br>19<br>20<br>21<br>文件说明：</p>
+<p>apiVersion: apps&#x2F;v1：指定资源的API版本。<br>kind: Deployment：指定资源类型为Deployment。<br>metadata：<br>name: nginx-deployment：Deployment的名称。<br>labels：用于标识Deployment的标签。<br>spec：<br>replicas: 2：指定运行的Pod副本数量。<br>selector：<br>matchLabels：指定选择器标签，匹配Pod的标签。<br>template：<br>metadata：<br>labels：Pod的标签，需与选择器匹配。<br>spec：<br>containers：定义Pod内的容器列表。<br>5.2.2 应用Deployment配置<br>运行以下命令，将Deployment部署到Kubernetes集群中：</p>
+<p>kubectl apply -f nginx-deployment.yaml<br>AI写代码<br>bash<br>1<br>预期输出：</p>
+<p>deployment.apps&#x2F;nginx-deployment created<br>AI写代码<br>1<br>5.2.3 验证Deployment状态<br>运行以下命令查看Deployment的状态：</p>
+<p>kubectl get deployments<br>AI写代码<br>bash<br>1<br>预期输出：</p>
+<p>NAME                READY   UP-TO-DATE   AVAILABLE   AGE<br>nginx-deployment    2&#x2F;2     2            2           5m<br>AI写代码<br>1<br>2<br>5.2.4 查看Pods状态<br>运行以下命令查看由Deployment管理的Pods状态：</p>
+<p>kubectl get pods<br>AI写代码<br>bash<br>1<br>预期输出：</p>
+<p>NAME                                READY   STATUS    RESTARTS   AGE<br>nginx-deployment-7c8d9b6c6d-abcde   1&#x2F;1     Running   0          5m<br>nginx-deployment-7c8d9b6c6d-fghij   1&#x2F;1     Running   0          5m<br>AI写代码<br>1<br>2<br>3<br>5.2.5 扩展Deployment副本数<br>运行以下命令将Deployment的副本数扩展到3个：</p>
+<p>kubectl scale deployment nginx-deployment –replicas&#x3D;3<br>AI写代码<br>bash<br>1<br>预期输出：</p>
+<p>deployment.apps&#x2F;nginx-deployment scaled<br>AI写代码<br>1<br>5.2.6 滚动更新Deployment<br>假设需要将Nginx镜像从nginx:latest更新到nginx:1.19，确保服务的连续性。</p>
+<p>修改Deployment YAML文件：</p>
+<p>将image: nginx:latest修改为image: nginx:1.19。</p>
+<p>containers:</p>
+<ul>
+<li>name: nginx<br>image: nginx:1.19<br>ports:<ul>
+<li>containerPort: 80<br>AI写代码<br>yaml<br>1<br>2<br>3<br>4<br>5<br>应用更新：</li>
+</ul>
+</li>
+</ul>
+<p>kubectl apply -f nginx-deployment.yaml<br>AI写代码<br>bash<br>1<br>监控滚动更新进度：</p>
+<p>kubectl rollout status deployment nginx-deployment<br>AI写代码<br>bash<br>1<br>预期输出：</p>
+<p>deployment “nginx-deployment” successfully rolled out<br>AI写代码<br>1<br>验证更新：</p>
+<p>kubectl get pods -l app&#x3D;nginx<br>AI写代码<br>bash<br>1<br>确认所有Pod已使用新的Nginx版本。<br>回滚Deployment（如有需要）：</p>
+<p>kubectl rollout undo deployment nginx-deployment<br>AI写代码<br>bash<br>1<br>预期输出：</p>
+<p>deployment.apps&#x2F;nginx-deployment rolled back<br>AI写代码<br>1<br>5.2.7 回滚Deployment<br>如果更新失败或出现问题，可以通过以下命令回滚到之前的稳定版本：</p>
+<p>kubectl rollout undo deployment nginx-deployment<br>AI写代码<br>bash<br>1<br>预期输出：</p>
+<p>deployment.apps&#x2F;nginx-deployment rolled back<br>AI写代码<br>1<br>验证回滚：</p>
+<p>kubectl get pods -l app&#x3D;nginx<br>AI写代码<br>bash<br>1<br>确认所有Pod已回滚到旧的镜像版本。<br>5.3 Service<br>Service定义了一组Pod的访问策略，提供稳定的网络访问和负载均衡。</p>
+<p>5.3.1 编写Service YAML文件<br>创建一个名为nginx-service.yaml的文件，内容如下：</p>
+<p>apiVersion: v1<br>kind: Service<br>metadata:<br>  name: nginx-service<br>  labels:<br>    app: nginx<br>spec:<br>  type: NodePort<br>  selector:<br>    app: nginx<br>  ports:</p>
+<ul>
+<li>port: 80<br>targetPort: 80<br>nodePort: 30007<br>AI写代码<br>yaml</li>
+</ul>
+<p>1<br>2<br>3<br>4<br>5<br>6<br>7<br>8<br>9<br>10<br>11<br>12<br>13<br>14<br>文件说明：</p>
+<p>apiVersion: v1：指定资源的API版本。<br>kind: Service：指定资源类型为Service。<br>metadata：<br>name: nginx-service：Service的名称。<br>labels：用于标识Service的标签。<br>spec：<br>type: NodePort：指定Service的类型为NodePort。<br>selector：<br>app: nginx：选择标签为app: nginx的Pod。<br>ports：<br>port: 80：Service的端口。<br>targetPort: 80：Pod容器的端口。<br>nodePort: 30007：主机端口，通过该端口可以访问Service。<br>5.3.2 应用Service配置<br>运行以下命令，将Service部署到Kubernetes集群中：</p>
+<p>kubectl apply -f nginx-service.yaml<br>AI写代码<br>bash<br>1<br>预期输出：</p>
+<p>service&#x2F;nginx-service created<br>AI写代码<br>1<br>5.3.3 验证Service状态<br>运行以下命令查看Service的状态：</p>
+<p>kubectl get svc nginx-service<br>AI写代码<br>bash<br>1<br>预期输出：</p>
+<p>NAME            TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)        AGE<br>nginx-service   NodePort    10.96.0.1       <none>        80:30007&#x2F;TCP   5m<br>AI写代码<br>1<br>2<br>5.3.4 访问Nginx应用<br>获取Minikube的IP地址（如果使用Minikube）：</p>
+<p>minikube ip<br>AI写代码<br>bash<br>1<br>预期输出：<br>192.168.99.100<br>AI写代码<br>1<br>在浏览器中输入访问URL：</p>
+<p><a target="_blank" rel="noopener" href="http://192.168.99.100:30007/">http://192.168.99.100:30007</a><br>AI写代码<br>1<br>应显示Nginx欢迎页面，表示Service已成功暴露应用。<br>5.3.5 Service类型详解<br>ClusterIP（默认）：</p>
+<p>描述：仅在集群内部可访问。<br>用途：内部通信，如服务间调用。<br>NodePort：</p>
+<p>描述：在每个Node的固定端口上暴露服务。<br>用途：开发和测试环境，或外部访问有限的服务。<br>LoadBalancer：</p>
+<p>描述：通过云提供商的负载均衡器暴露服务，分配一个外部IP。<br>用途：生产环境，提供高可用性和负载均衡。<br>ExternalName：</p>
+<p>描述：将Service映射到外部DNS名称。<br>用途：访问集群外部资源，简化DNS管理。<br>5.4 Namespace<br>Namespace用于在同一个集群中划分多个虚拟子集，便于资源隔离和管理。</p>
+<p>5.4.1 创建Namespace<br>运行以下命令创建一个名为dev的Namespace：</p>
+<p>kubectl create namespace dev<br>AI写代码<br>bash<br>1<br>验证创建：</p>
+<p>kubectl get namespaces<br>AI写代码<br>bash<br>1<br>预期输出：</p>
+<p>NAME              STATUS   AGE<br>default           Active   10m<br>kube-node-lease   Active   10m<br>kube-public       Active   10m<br>kube-system       Active   10m<br>dev               Active   2m<br>AI写代码<br>1<br>2<br>3<br>4<br>5<br>6<br>5.4.2 在Namespace中部署应用<br>将之前编写的nginx-pod.yaml部署到dev Namespace中：</p>
+<p>kubectl apply -f nginx-pod.yaml -n dev<br>AI写代码<br>bash<br>1<br>验证Pod在dev Namespace中运行：</p>
+<p>kubectl get pods -n dev<br>AI写代码<br>bash<br>1<br>预期输出：</p>
+<p>NAME        READY   STATUS    RESTARTS   AGE<br>nginx-pod   1&#x2F;1     Running   0          1m<br>AI写代码<br>1<br>2<br>5.4.3 资源隔离验证<br>创建另一个Namespace（如prod）：</p>
+<p>kubectl create namespace prod<br>AI写代码<br>bash<br>1<br>在prod Namespace中部署不同的Pod：</p>
+<p>kubectl apply -f nginx-pod.yaml -n prod<br>AI写代码<br>bash<br>1<br>查看所有Namespace中的Pod：</p>
+<p>kubectl get pods –all-namespaces<br>AI写代码<br>bash<br>1<br>预期输出：<br>NAMESPACE     NAME        READY   STATUS    RESTARTS   AGE<br>default       nginx-pod   1&#x2F;1     Running   0          10m<br>dev           nginx-pod   1&#x2F;1     Running   0          5m<br>prod          nginx-pod   1&#x2F;1     Running   0          2m<br>kube-system   …<br>AI写代码<br>1<br>2<br>3<br>4<br>5<br>确认不同Namespace中的Pod相互独立。</p>
+<p>5.5 ConfigMap与Secret<br>5.5.1 创建ConfigMap<br>ConfigMap用于存储非敏感的配置信息，如配置文件、环境变量。</p>
+<p>编写ConfigMap YAML文件（app-configmap.yaml）：</p>
+<p>apiVersion: v1<br>kind: ConfigMap<br>metadata:<br>  name: app-config<br>data:<br>  APP_ENV: production<br>  LOG_LEVEL: info<br>AI写代码<br>yaml<br>1<br>2<br>3<br>4<br>5<br>6<br>7<br>应用ConfigMap：</p>
+<p>kubectl apply -f app-configmap.yaml<br>AI写代码<br>bash<br>1<br>5.5.2 创建Secret<br>Secret用于存储敏感信息，如密码、API密钥、证书。</p>
+<p>使用kubectl命令创建Secret：</p>
+<p>kubectl create secret generic db-secret –from-literal&#x3D;username&#x3D;dbuser –from-literal&#x3D;password&#x3D;securepassword<br>AI写代码<br>bash<br>1<br>验证Secret创建：</p>
+<p>kubectl get secrets<br>AI写代码<br>bash<br>1<br>预期输出：<br>NAME          TYPE                                  DATA   AGE<br>db-secret     Opaque                                2      5m<br>app-config    Opaque                                2      5m<br>AI写代码<br>1<br>2<br>3<br>5.5.3 在Pod中使用ConfigMap和Secret<br>编写Pod YAML文件（app-pod.yaml）：</p>
+<p>apiVersion: v1<br>kind: Pod<br>metadata:<br>  name: app-pod<br>spec:<br>  containers:</p>
+<ul>
+<li>name: app-container<br>image: myapp:latest<br>env:<ul>
+<li>name: APP_ENV<br>valueFrom:<br>  configMapKeyRef:<br>name: app-config<br>key: APP_ENV</li>
+<li>name: LOG_LEVEL<br>valueFrom:<br>  configMapKeyRef:<br>name: app-config<br>key: LOG_LEVEL</li>
+<li>name: DB_USERNAME<br>valueFrom:<br>  secretKeyRef:<br>name: db-secret<br>key: username</li>
+<li>name: DB_PASSWORD<br>valueFrom:<br>  secretKeyRef:<br>name: db-secret<br>key: password<br>AI写代码<br>yaml</li>
+</ul>
+</li>
+</ul>
+<p>1<br>2<br>3<br>4<br>5<br>6<br>7<br>8<br>9<br>10<br>11<br>12<br>13<br>14<br>15<br>16<br>17<br>18<br>19<br>20<br>21<br>22<br>23<br>24<br>25<br>26<br>27<br>28<br>29<br>部署Pod：</p>
+<p>kubectl apply -f app-pod.yaml<br>AI写代码<br>bash<br>1<br>验证环境变量：</p>
+<p>kubectl exec -it app-pod – env | grep APP_ENV<br>kubectl exec -it app-pod – env | grep DB_PASSWORD<br>AI写代码<br>bash<br>1<br>2<br>预期输出：<br>APP_ENV&#x3D;production<br>DB_PASSWORD&#x3D;securepassword<br>AI写代码<br>1<br>2<br>5.6 案例分析<br>案例1：创建并管理Pod<br>场景：开发者需要在集群中运行一个简单的Nginx服务器，快速验证Kubernetes集群的功能。<br>步骤：<br>编写Pod YAML文件（nginx-pod.yaml）：<br>apiVersion: v1<br>kind: Pod<br>metadata:<br>  name: nginx-pod<br>spec:<br>  containers:</p>
+<ul>
+<li>name: nginx<br>image: nginx:latest<br>ports:<ul>
+<li>containerPort: 80<br>AI写代码<br>yaml</li>
+</ul>
+</li>
+</ul>
+<p>1<br>2<br>3<br>4<br>5<br>6<br>7<br>8<br>9<br>10<br>部署Pod：<br>kubectl apply -f nginx-pod.yaml<br>AI写代码<br>bash<br>1<br>查看Pod状态：<br>kubectl get pods<br>AI写代码<br>bash<br>1<br>预期输出：<br>NAME        READY   STATUS    RESTARTS   AGE<br>nginx-pod   1&#x2F;1     Running   0          2m<br>AI写代码<br>1<br>2<br>查看Pod详细信息：<br>kubectl describe pod nginx-pod<br>AI写代码<br>bash<br>1<br>重点信息：<br>Containers部分，确认容器已启动并监听80端口。<br>Events部分，检查是否有错误或警告。<br>案例2：创建并管理Deployment<br>场景：运维团队需要部署一个高可用的Nginx应用，确保在Pod故障时自动重建，并支持版本更新。<br>步骤：<br>编写Deployment YAML文件（nginx-deployment.yaml）：<br>apiVersion: apps&#x2F;v1<br>kind: Deployment<br>metadata:<br>  name: nginx-deployment<br>spec:<br>  replicas: 2<br>  selector:<br>    matchLabels:<br>      app: nginx<br>  template:<br>    metadata:<br>      labels:<br>        app: nginx<br>    spec:<br>      containers:<br>      - name: nginx<br>        image: nginx:latest<br>        ports:<br>        - containerPort: 80<br>AI写代码<br>yaml</p>
+<p>1<br>2<br>3<br>4<br>5<br>6<br>7<br>8<br>9<br>10<br>11<br>12<br>13<br>14<br>15<br>16<br>17<br>18<br>19<br>部署Deployment：<br>kubectl apply -f nginx-deployment.yaml<br>AI写代码<br>bash<br>1<br>查看Deployment状态：<br>kubectl get deployments<br>AI写代码<br>bash<br>1<br>预期输出：<br>NAME               READY   UP-TO-DATE   AVAILABLE   AGE<br>nginx-deployment   2&#x2F;2     2            2           5m<br>AI写代码<br>1<br>2<br>查看Pods状态：<br>kubectl get pods<br>AI写代码<br>bash<br>1<br>预期输出：<br>NAME                                READY   STATUS    RESTARTS   AGE<br>nginx-deployment-7c8d9b6c6d-abcde   1&#x2F;1     Running   0          5m<br>nginx-deployment-7c8d9b6c6d-fghij   1&#x2F;1     Running   0          5m<br>AI写代码<br>1<br>2<br>3<br>扩展Deployment副本数：<br>kubectl scale deployment nginx-deployment –replicas&#x3D;3<br>AI写代码<br>bash<br>1<br>验证扩展：<br>kubectl get deployments<br>AI写代码<br>bash<br>1<br>预期输出：<br>NAME                READY   UP-TO-DATE   AVAILABLE   AGE<br>nginx-deployment    3&#x2F;3     3            3           10m<br>AI写代码<br>1<br>2<br>滚动更新Deployment：<br>修改镜像版本：将Nginx版本升级到1.19。<br>更新YAML文件：<br>containers:</p>
+<ul>
+<li>name: nginx<br>image: nginx:1.19<br>ports:<ul>
+<li>containerPort: 80<br>AI写代码<br>yaml<br>1<br>2<br>3<br>4<br>5<br>应用更新：<br>kubectl apply -f nginx-deployment.yaml<br>AI写代码<br>bash<br>1<br>监控更新进度：<br>kubectl rollout status deployment nginx-deployment<br>AI写代码<br>bash<br>1<br>预期输出：<br>deployment “nginx-deployment” successfully rolled out<br>AI写代码<br>1<br>验证更新：<br>kubectl get pods -l app&#x3D;nginx<br>AI写代码<br>bash<br>1<br>确认所有Pod已使用新的Nginx版本。<br>回滚Deployment（如有需要）：<br>kubectl rollout undo deployment nginx-deployment<br>AI写代码<br>bash<br>1<br>监控回滚进度：<br>kubectl rollout status deployment nginx-deployment<br>AI写代码<br>bash<br>1<br>预期输出：<br>deployment “nginx-deployment” successfully rolled out<br>AI写代码<br>1<br>验证回滚：<br>kubectl get pods -l app&#x3D;nginx<br>AI写代码<br>bash<br>1<br>确认所有Pod已回滚到旧的镜像版本。<br>案例3：创建并管理Namespace<br>场景：开发团队需要在集群中创建一个名为dev的Namespace，用于开发环境的资源隔离。<br>步骤：<br>创建dev Namespace：<br>kubectl create namespace dev<br>AI写代码<br>bash<br>1<br>验证Namespace创建：<br>kubectl get namespaces<br>AI写代码<br>bash<br>1<br>预期输出：<br>NAME              STATUS   AGE<br>default           Active   10m<br>kube-node-lease   Active   10m<br>kube-public       Active   10m<br>kube-system       Active   10m<br>dev               Active   2m<br>AI写代码<br>1<br>2<br>3<br>4<br>5<br>6<br>在dev Namespace中部署Pod：<br>kubectl apply -f nginx-pod.yaml -n dev<br>AI写代码<br>bash<br>1<br>查看dev Namespace中的Pod：<br>kubectl get pods -n dev<br>AI写代码<br>bash<br>1<br>预期输出：<br>NAME        READY   STATUS    RESTARTS   AGE<br>nginx-pod   1&#x2F;1     Running   0          1m<br>AI写代码<br>1<br>2<br>资源隔离验证：<br>创建另一个Namespace（如prod）：<br>kubectl create namespace prod<br>AI写代码<br>bash<br>1<br>在prod Namespace中部署不同的Pod：<br>kubectl apply -f nginx-pod.yaml -n prod<br>AI写代码<br>bash<br>1<br>查看所有Namespace中的Pod：<br>kubectl get pods –all-namespaces<br>AI写代码<br>bash<br>1<br>预期输出：<br>NAMESPACE     NAME        READY   STATUS    RESTARTS   AGE<br>default       nginx-pod   1&#x2F;1     Running   0          10m<br>dev           nginx-pod   1&#x2F;1     Running   0          5m<br>prod          nginx-pod   1&#x2F;1     Running   0          2m<br>kube-system   …<br>AI写代码<br>1<br>2<br>3<br>4<br>5<br>确认不同Namespace中的Pod相互独立。<br>案例4：使用ConfigMap和Secret管理配置<br>场景：应用程序需要从外部配置文件读取配置信息，并使用数据库密码等敏感信息。<br>步骤：<br>创建ConfigMap：<br>编写ConfigMap YAML文件（app-configmap.yaml）：<br>apiVersion: v1<br>kind: ConfigMap<br>metadata:<br>name: app-config<br>data:<br>APP_ENV: production<br>LOG_LEVEL: info<br>AI写代码<br>yaml<br>1<br>2<br>3<br>4<br>5<br>6<br>7<br>应用ConfigMap：<br>kubectl apply -f app-configmap.yaml<br>AI写代码<br>bash<br>1<br>创建Secret：<br>使用kubectl命令创建Secret：<br>kubectl create secret generic db-secret –from-literal&#x3D;username&#x3D;dbuser –from-literal&#x3D;password&#x3D;securepassword<br>AI写代码<br>bash<br>1<br>验证Secret创建：<br>kubectl get secrets<br>AI写代码<br>bash<br>1<br>预期输出：<br>NAME          TYPE                                  DATA   AGE<br>db-secret     Opaque                                2      5m<br>app-config    Opaque                                2      5m<br>AI写代码<br>1<br>2<br>3<br>在Pod中使用ConfigMap和Secret：<br>编写Pod YAML文件（app-pod.yaml）：<br>apiVersion: v1<br>kind: Pod<br>metadata:<br>name: app-pod<br>spec:<br>containers:</li>
+<li>name: app-container<br>image: myapp:latest<br>env:<ul>
+<li>name: APP_ENV<br>valueFrom:<br>  configMapKeyRef:<br>name: app-config<br>key: APP_ENV</li>
+<li>name: LOG_LEVEL<br>valueFrom:<br>  configMapKeyRef:<br>name: app-config<br>key: LOG_LEVEL</li>
+<li>name: DB_USERNAME<br>valueFrom:<br>  secretKeyRef:<br>name: db-secret<br>key: username</li>
+<li>name: DB_PASSWORD<br>valueFrom:<br>  secretKeyRef:<br>name: db-secret<br>key: password<br>AI写代码<br>yaml</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p>1<br>2<br>3<br>4<br>5<br>6<br>7<br>8<br>9<br>10<br>11<br>12<br>13<br>14<br>15<br>16<br>17<br>18<br>19<br>20<br>21<br>22<br>23<br>24<br>25<br>26<br>27<br>28<br>29<br>部署Pod：<br>kubectl apply -f app-pod.yaml<br>AI写代码<br>bash<br>1<br>验证环境变量：<br>kubectl exec -it app-pod – env | grep APP_ENV<br>kubectl exec -it app-pod – env | grep DB_PASSWORD<br>AI写代码<br>bash<br>1<br>2<br>预期输出：<br>APP_ENV&#x3D;production<br>DB_PASSWORD&#x3D;securepassword<br>AI写代码<br>1<br>2</p>
+
+              
+            </div>
+            <hr/>
+            <div>
+              <div>
+  <img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20241112163319.png" srcset="/img/loading.gif" lazyload>
+</div>
+<div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/12-%E9%A1%B9%E7%9B%AE%E7%AE%A1%E7%90%86/" class="category-chain-item">12_项目管理</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/12-%E9%A1%B9%E7%9B%AE%E7%AE%A1%E7%90%86/07-Kubernetes/" class="category-chain-item">07_Kubernetes</a>
+  
+  
+
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/Docker/">#Docker</a>
+      
+        <a href="/tags/Kubernetes/">#Kubernetes</a>
+      
+        <a href="/tags/k8s/">#k8s</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>01-k8s技术完整操作指南</div>
+      <div>https://janycode.github.io/2025/08/09/12_项目管理/07_Kubernetes/01-k8s技术完整操作指南/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Jerry(姜源)</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2025年8月9日</div>
+        </div>
+      
+      
+      <div class="license-meta-item">
+        <div>许可协议</div>
+        <div>
+          
+            
+            
+              <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+              <span class="hint--top hint--rounded" aria-label="BY - 姜源">
+                <i class="iconfont icon-by"></i>
+              </span>
+              </a>
+            
+          
+        </div>
+      </div>
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2025/07/05/13_%E7%AC%AC%E4%B8%89%E6%96%B9/03_OpenAI/11-%E3%80%90AI%E6%99%BA%E8%83%BD%E4%BD%93%E3%80%91Coze%20%E6%90%AD%E5%BB%BA%E4%B8%AA%E4%BA%BA%E6%97%85%E6%B8%B8%E8%A7%84%E5%88%92%E5%8A%A9%E6%89%8B%E5%AE%9E%E6%88%98%E8%AF%A6%E8%A7%A3/" title="11-【AI智能体】Coze 搭建个人旅游规划助手实战详解">
+                        <span class="hidden-mobile">11-【AI智能体】Coze 搭建个人旅游规划助手实战详解</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+  <article id="comments" lazyload>
+    
+  <div id="SOHUCS" sid='https://janycode.github.io/2025/08/09/12_%E9%A1%B9%E7%9B%AE%E7%AE%A1%E7%90%86/07_Kubernetes/01-k8s%E6%8A%80%E6%9C%AF%E5%AE%8C%E6%95%B4%E6%93%8D%E4%BD%9C%E6%8C%87%E5%8D%97/'></div>
+  <script type="text/javascript">
+    Fluid.utils.loadComments('#SOHUCS', function() {
+      Fluid.utils.createScript("https://changyan.sohu.com/upload/changyan.js", function() {
+        window.changyan.api.config({"appid":"cyw5OHIcO","appkey":"fea3446b3df4b3f129f34da4cbc87e51"})
+      });
+    });
+  </script>
+  <noscript>Please enable JavaScript to view the comments</noscript>
+
+
+  </article>
+
+
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://simple.blog.csdn.net" target="_blank" rel="nofollow noopener"><span>CSDN</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/janycode" target="_blank" rel="nofollow noopener"><span>GitHub</span></a> <i class="iconfont icon-love"></i> <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="busuanzi_container_site_pv" style="display: none">
+        总访问量(PV) 
+        <span id="busuanzi_value_site_pv"></span>
+         次，
+      </span>
+    
+    
+      <span id="busuanzi_container_site_uv" style="display: none">
+        总访客数(UV) 
+        <span id="busuanzi_value_site_uv"></span>
+         人
+      </span>
+    
+    
+  
+</div>
+
+  
+  
+  
+</div>
+
+<!-- live2d 动画 -->
+<script src="https://eqcn.ajz.miesnfu.com/wp-content/plugins/wp-3d-pony/live2dw/lib/L2Dwidget.min.js"></script>
+<script>
+    L2Dwidget.init({
+        "model": {
+            jsonPath: "https://unpkg.com/live2d-widget-model-haruto@1.0.5/assets/haruto.model.json",
+            "scale": 1
+        },
+        "display": {
+            "position": "right",
+            "width": 100,
+            "height": 200,
+            "hOffset": 35,
+            "vOffset": -85
+        },
+        "mobile": {
+            "show": false,
+            "scale": 0.1
+        },
+        "react": {
+            "opacityDefault": 0.75,
+            "opacityOnHover": 0.2
+        }
+    });
+</script>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <!-- Baidu Analytics -->
+    <script defer>
+      if (!Fluid.ctx.dnt) {
+        var _hmt = _hmt || [];
+        (function() {
+          var hm = document.createElement("script");
+          hm.src = "https://hm.baidu.com/hm.js?bfff735c897eb60ea49b735096b20e47";
+          var s = document.getElementsByTagName("script")[0];
+          s.parentNode.insertBefore(hm, s);
+        })();
+      }
+    </script>
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.0/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      headingSelector : CONFIG.toc.headingSelector || 'h1,h2,h3,h4,h5,h6',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      collapseDepth   : CONFIG.toc.collapseDepth || 0,
+      scrollSmooth    : true,
+      headingsOffset  : -boardTop
+    });
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+  });
+</script>
+
+
+  <script>
+  (function() {
+    var enableLang = CONFIG.code_language.enable && CONFIG.code_language.default;
+    var enableCopy = CONFIG.copy_btn;
+    if (!enableLang && !enableCopy) {
+      return;
+    }
+
+    function getBgClass(ele) {
+      return Fluid.utils.getBackgroundLightness(ele) >= 0 ? 'code-widget-light' : 'code-widget-dark';
+    }
+
+    var copyTmpl = '';
+    copyTmpl += '<div class="code-widget">';
+    copyTmpl += 'LANG';
+    copyTmpl += '</div>';
+    jQuery('.markdown-body pre').each(function() {
+      var $pre = jQuery(this);
+      if ($pre.find('code.mermaid').length > 0) {
+        return;
+      }
+      if ($pre.find('span.line').length > 0) {
+        return;
+      }
+
+      var lang = '';
+
+      if (enableLang) {
+        lang = CONFIG.code_language.default;
+        if ($pre[0].children.length > 0 && $pre[0].children[0].classList.length >= 2 && $pre.children().hasClass('hljs')) {
+          lang = $pre[0].children[0].classList[1];
+        } else if ($pre[0].getAttribute('data-language')) {
+          lang = $pre[0].getAttribute('data-language');
+        } else if ($pre.parent().hasClass('sourceCode') && $pre[0].children.length > 0 && $pre[0].children[0].classList.length >= 2) {
+          lang = $pre[0].children[0].classList[1];
+          $pre.parent().addClass('code-wrapper');
+        } else if ($pre.parent().hasClass('markdown-body') && $pre[0].classList.length === 0) {
+          $pre.wrap('<div class="code-wrapper"></div>');
+        }
+        lang = lang.toUpperCase().replace('NONE', CONFIG.code_language.default);
+      }
+      $pre.append(copyTmpl.replace('LANG', lang).replace('code-widget">',
+        getBgClass($pre[0]) + (enableCopy ? ' code-widget copy-btn" data-clipboard-snippet><i class="iconfont icon-copy"></i>' : ' code-widget">')));
+
+      if (enableCopy) {
+        Fluid.utils.createScript('https://lib.baomitu.com/clipboard.js/2.0.10/clipboard.min.js', function() {
+          var clipboard = new window.ClipboardJS('.copy-btn', {
+            target: function(trigger) {
+              var nodes = trigger.parentNode.childNodes;
+              for (var i = 0; i < nodes.length; i++) {
+                if (nodes[i].tagName === 'CODE') {
+                  return nodes[i];
+                }
+              }
+            }
+          });
+          clipboard.on('success', function(e) {
+            e.clearSelection();
+            e.trigger.innerHTML = e.trigger.innerHTML.replace('icon-copy', 'icon-success');
+            setTimeout(function() {
+              e.trigger.innerHTML = e.trigger.innerHTML.replace('icon-success', 'icon-copy');
+            }, 2000);
+          });
+        });
+      }
+    });
+  })();
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>
