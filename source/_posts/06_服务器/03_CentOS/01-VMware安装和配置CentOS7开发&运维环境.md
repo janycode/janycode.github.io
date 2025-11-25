@@ -421,14 +421,12 @@ categories:
 ```
 
 * 安装nvm管理node多版本：https://blog.51cto.com/qiuyue/6260438
-  
 * 比如我用的 node 16.15.1 和 18.16.0，通过 nvm list可以看到
-  
 * 安装nvm多版本管理后，jenkins中创建的任务可能看不到了，原因是因为中文编码问题。
   
   * 当时手动重新新建了pipeline以及做了如下中文设置才ok。`一定要先准备好环境再开始创建构建任务！`
-  
 * npm镜像源加速：https://blog.csdn.net/m0_52172586/article/details/142930356
+* 如果nvm安装不了的话，可以尝试此方法：https://juejin.cn/post/7401408756221362202
 
 ### 一、Tomcat服务端编码修正
 
