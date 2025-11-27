@@ -895,6 +895,724 @@ background: url(../html/img/1.png) no-repeat center fixed yellow;
 
 
 
+### 6.4 案例
+
+![image-20251127095257803](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20251127095307.png)
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>盒子案例</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+        }
+
+        img{
+            display: block;
+        }
+
+        #box {
+            width: 241px;
+            height: 335px;
+            margin: 0 auto;
+            padding: 11px 11px 18px;
+        }
+
+        .title {
+            width: 235px;
+            height: 19px;
+            padding-left: 4px;
+            border-left: 2px solid #254282;
+            color: #254282;
+            line-height: 16px;
+            font-weight: bold;
+            margin-bottom: 16px;
+        }
+
+        .bigpic {
+            width: 241px;
+            height: 170px;
+            margin-bottom: 23px;
+        }
+
+        .bigpic p {
+            width: 241px;
+            height: 26px;
+            background-color: #f6f7f8;
+            font-size: 12px;
+            text-align: center;
+            line-height: 26px;
+        }
+
+        .smallpic {
+            width: 241px;
+            height: 120px;
+        }
+        .smallpic p{
+            font-size: 12px;
+            width: 112px;
+            background-color: #f6f7f8;
+        }
+
+        .left{
+            float: left;
+        }
+        .right{
+            float: right;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="box">
+        <div class="title">女人图片</div>
+        <div class="bigpic">
+            <img src="img/images/cover_03.jpg" style="width: 241px; height: 160px;">
+            <p>大姐利用“异业联盟”经营美容院，救了自</p>
+        </div>
+        <div class="smallpic">
+            <div class="left">
+                <img src="img/images/cover_06.jpg" style="width: 112px; height: 84px;">
+                <p>无效化妆、无效穿搭≠容貌焦虑</p>
+            </div>
+            <div class="right">
+                <img src="img/images/cover_08.jpg" style="width: 112px; height: 84px;">
+                <p>小个子不要怕！“高人一等”的穿搭给你</p>
+            </div>
+
+        </div>
+    </div>
+</body>
+
+</html>
+```
+
+运行效果：
+
+![image-20251127111107407](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20251127111108.png)
+
+
+
+### 6.5 overflow 溢出
+
+`overflow` 溢出属性
+
+* **visible**，默认值，溢出内容会显示在元素之外
+* **hidden**，溢出内容隐藏，文本会裁切
+* **scroll**，滚动，溢出内容以滚动方式显示
+* **auto**，如果有溢出会添加滚动条，没有溢出正常显示 `常用`
+* **inherit**，规定应该遵从父元素继承 overflow 属性的值
+
+```html
+<head>
+    <style>
+        div{
+            width: 200px;
+            height: 200px;
+            background-color: yellow;
+            /* overflow: visible; 默认，显示溢出 */
+            /* overflow: hidden; 隐藏溢出 */
+            /* overflow: scroll; 是否溢出都有滚动条 */
+            overflow: auto; /* 文本少正常显示，文本多则展示滚动条【最常用】 */
+            /* overflow: inherit; 继承父元素的溢出效果 */
+        }
+    </style>
+</head>
+<body>
+    <div>
+        Lorem ipsum dolor sit amet consectetur adipisicing elit. Eos quam rerum error soluta odit! Labore tempore, repellat amet libero quibusdam voluptates perferendis, nemo et cupiditate fugiat fugit inventore doloremque. Doloremque!
+    </div>
+</body>
+```
+
+`overflow-x`，X轴溢出，设置X轴展示滚动条时使用
+
+`overflow-y`，Y轴溢出，设置Y轴展示滚动条时使用
+
+```css
+overflow-x: scroll;  /* X轴滚动 */
+overflow-y: hidden;  /* Y轴隐藏 */
+```
+
+案例：
+
+![image-20251127120441911](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20251127120443.png)
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+        }
+
+        #box {
+            width: 890px;
+            height: 290px;
+            /* background-color: yellow; */
+            margin: 0 auto;
+            overflow: auto; /* 溢出滚动 */
+        }
+
+        .info {
+            width: 162px;
+            height: 112px;
+            border: 1px solid #808080;
+            float: left;  /* 竖着变横着，全部浮动 */
+            margin-right: 48px;
+            margin-bottom: 20px;
+        }
+
+        .info div {
+            width: 162px;
+            height: 84px;
+            background-color: #cccccc;
+            font-size: 12px;
+        }
+
+        .info .price {
+            height: 63px;
+            line-height: 63px;
+            padding-left: 21px;
+            color: #b5b5b5;
+        }
+
+        .info .date {
+            padding-left: 21px;
+            color: #b5b5b5;
+        }
+
+        .info .category{
+            background: white;
+            height: 28px;
+            line-height: 28px;
+            color: #000000;
+            text-align: center;
+            font-size: 12px;
+        }
+
+        /* 鼠标滑过的区域 :hover 伪类选择器控制 */
+        .info:hover div{
+            background-color: #219cea;
+        }
+        .info:hover .price, .info:hover .date{
+            color: white;
+        }
+        .info:hover p{
+            color:#219cea;
+        }
+        .info:hover .category{
+            background-image: url(img/images/icon.png);
+            background-repeat: no-repeat;       /* 背景不平铺 */
+            background-position: right bottom;  /* 控制位置，右下角 */
+        }
+    </style>
+</head>
+
+<body>
+    <div id="box">
+        <div class="info">
+            <div>
+                <p class="price">¥100.00元</p>
+                <p class="date">有效期至：20XX.05.01</p>
+            </div>
+            <p class="category">[店铺类][商城类]</p>
+        </div>
+        <!-- div info 拷贝12份 -->
+    </div>
+</body>
+
+</html>
+```
+
+
+
+### 6.6 white-space 空余空间
+
+`white-space` 空余空间属性，该属性用来设置如何处理元素内的空白。
+
+* **normal**，默认值，空白会被浏览器忽略
+* **nowrap**，文本不换行，文本会在同意杭商继续，知道遇到`<br/>`标签为止 - `最常用`
+* **pre**，预格式化文本，会显示空格、tab、回车，不换行，常用于代码块等特殊展示
+* **pre-wrap**，显示空格、tab、回车，会换行
+* **pre-line**，显示回车，不显示空格，会换行
+* **inherit**，继承父元素空余空间属性
+
+`text-overflow` 文本溢出属性
+
+* **clip**，默认值，不显示省略号(...)
+* **ellipsis**，显示省略号标记(...)
+
+因此 ↓
+
+**单行文本溢出显示省略号样式**（`缺一不可`）：
+
+1. 容器宽度，`width` 必须设置；
+2. 强制文本在一行内显示，`white-space: nowrap;`
+3. 溢出内容为隐藏，`overflow: hidden;`
+4. 溢出文本显示为省略号，`text-overflow: ellipsis;`
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        div{
+            width: 200px;            /* 1.必须有宽度 */
+            height: 200px;
+            background-color: yellow;
+            white-space: nowrap;     /* 2.不换行 */
+            overflow: hidden;        /* 3.溢出隐藏 */
+            text-overflow: ellipsis; /* 4.溢出文本显示省略号 */
+        }
+    </style>
+</head>
+<body>
+    <div>
+        Lorem, ipsum dolor sit amet consectetur adipisicing elit. Quae facere totam nulla odio, accusamus sequi aliquid quos quia exercitationem. Fugit sunt enim commodi at ut omnis repellat, repellendus officiis fugiat.
+    </div>
+</body>
+</html>
+```
+
+pre标签(代码中带了空格、tab、回车，会被正常渲染显示)
+
+```html
+<pre>       
+        预格式化文本，会保留空格、tab、回车</pre>
+```
+
+
+
+## 7. 元素显示类型
+
+### 7.1 元素类型分类
+
+![image-20251127122116598](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20251127122118.png)
+
+注意：
+
+* 块元素：拥有 `display:block;`或 `display:list-item;`属性。
+* 使用 `p` 标签放文本可以，**坚决不要嵌套任何东西，即不能放块元素**，这是不成文的规定。
+
+* 行内(内联)元素：拥有 `display:inline;` 属性，不能设置宽高。
+* 行内块元素：拥有 `display:inline-block;` 属性，既可以设置宽高，又能在一行内展示。
+
+
+
+### 7.2 盒子模型影响
+
+* 行内元素如`span`，**只能设置元素的左右边距**，`不能设置上下边距`(设置无效)。 
+
+* 行内块元素如`img`与块元素如`p`按照上下使用时，会有几像素空白的问题，需img设置为块元素解决。
+
+  ```css
+  img{ display: block; }  /* 解决方案 */
+  ```
+
+![image-20251127123926466](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20251127123928.png)
+
+* 反过来如 `div` 这样的块元素也可以转换为行内元素，即 `display:inline;` 比如在 a 链接的导航下方继续写div时，会出现高度问题，此时需要将a链接设置为行内块 inline-block 即可解决，让其占据这块位置。
+
+```css
+a{
+    display: inline-block; /* 转换为行内块元素，单独占据高度空间 */
+}
+```
+
+
+
+### 7.3 display:none
+
+控制展示与否，多用于鼠标滑过或者点击后展示内容。
+
+示例：
+
+```html
+<head>
+    <style>
+        .hide{
+            display: none;
+        }
+        .box:hover .hide{
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div class="box">
+        军事
+        <ul class="hide">
+            <li>1111</li>
+            <li>2222</li>
+            <li>3333</li>
+        </ul>
+    </div>
+</body>
+```
+
+实用案例`二级菜单`:
+
+效果
+
+![image-20251127130524327](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20251127130525.png)
+
+注意：
+
+* `>` 符号在选择器上是`子代选择器`，只会选择下一级子代，即亲儿子
+* `空格`符号在选择器上是`后代选择器`，会选择所有的子代生效，即后代都生效
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        *{
+            margin: 0;
+            padding: 0;
+        }
+        .box{
+            width: 300px;
+            margin: 0 auto;
+        }
+        ul{
+            list-style: none;
+        }
+        .box .item{
+            width: 148px;
+            float: left;
+            text-align: center;
+            border: 1px solid blue;
+            background-color: blue;
+            color: white;
+            line-height: 40px;
+        }
+        .box>li:hover{
+            background-color: lightblue;
+        }
+        /* 默认不展示, 其中>符号代表亲儿子，子代选择，不会涉及其他深度; 空格是所有后代选择器 */
+        .box>li>ul{
+            display: none;
+            background-color: white;
+            color: black;
+        }
+        .box>li:hover ul{
+            display: block;
+        }
+        .box>li li:hover{
+            color: white;
+            background-color: blue;
+        }
+    </style>
+</head>
+<body>
+    <ul class="box">
+        <li class="item">视频教程
+            <ul>
+                <li>全部教程</li>
+                <li>HTML5</li>
+                <li>Java</li>
+                <li>Python</li>
+            </ul>
+        </li>
+        <li class="item">认证考试
+            <ul>
+                <li>PMP</li>
+                <li>红帽</li>
+            </ul>
+        </li>
+    </ul>
+</body>
+</html>
+```
+
+## 8. 案例
+
+安利首页：https://www.amway.com.cn/
+
+html：
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>安利首页</title>
+
+    <link rel="stylesheet" href="css/index.css">
+    <!-- 版心（两侧留白）：margin: 0 auto; -->
+    <!-- 通栏（占满全屏）：100% -->
+</head>
+<body>
+    <!-- 页头 -->
+    <div class="header con">
+        <div class="logo"></div>
+        <div class="headrrignt">
+            <ul>
+                <li><a class="active">安利海外购</a></li>
+                <li><a>掌上安利</a></li>
+                <li><a class="active">安利悦享会</a></li>
+                <li><a>安利植物研发中心</a></li>
+                <li><a>各地店铺</a></li>
+                <li><a class="last active">安利易联网</a></li>
+            </ul>
+
+            <div class="search">
+                <input type="text" placeholder="搜索" class="left">
+                <input type="submit" value="" class="right"> <!-- value="" 为了去掉按钮默认文本【提交】变为空 -->
+            </div>
+        </div>
+    </div>
+    <!-- 导航 -->
+    <div class="nav">
+        <ul class="con">
+            <li>走进安利</li>
+            <li>产品展馆</li>
+            <li>公司资讯</li>
+            <li>企业责任</li>
+            <li>安利云购</li>
+            <li>其他</li>
+        </ul>
+    </div>
+    <!-- 广告 -->
+    <div class="banner"></div>
+    <!-- 列表内容 -->
+    <div class="list con">
+        <div class="item">
+            <img src="img/item1.jpg" alt="">
+            <p>《总裁零距离》微站</p>
+        </div>
+        <div class="item">
+            <img src="img/item1.jpg" alt="">
+            <p>《总裁零距离》微站</p>
+        </div>
+        <div class="item itemlast">
+            <img src="img/item1.jpg" alt="">
+            <p>《总裁零距离》微站</p>
+        </div>
+    </div>
+    <!-- 页脚 -->
+    <div class="footer">
+        <div class="con">
+            <ul>
+                <li>安利公益基金会</li>
+                <li>安利培训中心</li>
+                <li>安利云购</li>
+                <li>安利轻创业平台</li>
+                <li>安利公益基金会</li>
+                <li>安利培训中心</li>
+                <li>安利云购</li>
+                <li>安利轻创业平台</li>
+                <li>安利公益基金会</li>
+                <li>安利培训中心</li>
+                <li>安利云购</li>
+                <li>安利轻创业平台</li>
+            </ul>
+            <p>版权为安利（中国）日用品有限公司所有，未经许可不得转载或链接，粤ICP备<span>05013154</span>号</p>
+        </div>
+    </div>
+</body>
+</html>
+```
+
+css:
+
+```css
+*{
+    margin: 0;
+    padding: 0;
+}
+
+/* 通用版心样式，谁用谁取到class即可 */
+.con{
+    width: 966px;
+    margin: 0 auto;
+}
+
+ul{
+    list-style: none;
+}
+
+.header{
+    height: 110px;
+    /* background-color: yellow; */
+}
+
+.logo{
+    width: 280px;
+    height: 110px;
+    background: url(../img/logo.png) no-repeat center center;
+    float: left;
+}
+
+.headrrignt{
+    float: right;
+}
+
+.headrrignt ul{
+    height: 44px;
+    line-height: 44px;
+    margin-top: 10px;
+}
+
+.headrrignt li{
+    float: left;
+}
+
+.headrrignt li a{
+    border-right: 1px solid #b2c7ea;
+    padding: 0 13px;
+    font-size: 13px;
+    color: #ababab;
+}
+
+.headrrignt .last{
+    padding-right: 0;
+    border: 0;
+}
+
+.headrrignt li .active{
+    color: #eb6ca1;
+}
+
+.search{
+    float: right;
+    width: 234px;
+    height: 28px;
+    border: 1px solid #d1d1d1;
+}
+
+.search input {
+    border: 0;     /* input框的边框线 */
+    outline: none; /* input的选中后外圈线 */
+}
+
+.search .left{
+    width: 200px;
+    height: 28px;
+    float: left;
+    padding-left: 10px;
+}
+
+.search .right{
+    float: right;
+    height: 28px;
+    width: 24px;
+    background: url(../img/search.jpg) no-repeat left center;
+}
+
+.nav{
+    height: 53px;
+    line-height: 53px;
+    border: 1px solid #657588;
+    background: #0c345c;
+    color: white;
+}
+
+.nav li{
+    float: left;
+    font-size: 16px;
+    margin-right: 76px;
+}
+
+.banner{
+    height: 550px;
+    background: url(../img/banner1.jpg) no-repeat center top;
+}
+
+.list{
+    height: 213px;
+    /* background: yellow; */
+    margin-top: 51px;
+    margin-bottom: 35px;
+}
+
+.item{
+    height: 211px;
+    width: 305px;
+    border: 1px solid #cccccc;
+    float: left;
+    margin-right: 19px;
+}
+
+.item img{
+    width: 305px;
+    height: 164px;
+    display: block; /* 需要改成块级元素，可以规避img标签的几像素空白问题 */
+}
+
+.item p{
+    height: 47px;
+    line-height: 47px;
+    padding-left: 28px;
+    font-size: 16px;
+}
+
+.itemlast{
+    margin-right: 0;
+}
+
+.footer{
+    height: 206px;
+    border-top: 1px solid #cccccc;
+    background-color: #fafafa;
+}
+
+.footer ul{
+    height: 84px;
+    padding-top: 30px;
+    padding-bottom: 30px;
+    border-bottom: 1px solid #ecebeb;
+    line-height: 28px;
+}
+
+.footer ul li{
+    width: 210px;
+    padding-left: 30px;
+    font-size: 12px;
+    color: #336699;
+    float: left;
+}
+
+.footer p{
+    height: 61px;
+    line-height: 61px;
+    padding-left: 30px;
+    font-size: 12px;
+}
+
+.footer p span{
+    color: #0096da;
+}
+```
+
+最终效果：
+
+![安利首页](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20251127170724.jpeg)
+
+
+
+
+
 
 
 
