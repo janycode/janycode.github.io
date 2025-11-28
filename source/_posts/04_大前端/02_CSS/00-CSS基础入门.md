@@ -9,7 +9,7 @@ categories:
 - 02_CSS
 ---
 
-
+![image-20251125100829463](E:\blog\image\00-CSS基础入门\20251125100838.png)
 
 ## 1. 什么是CSS
 
@@ -895,7 +895,7 @@ background: url(../html/img/1.png) no-repeat center fixed yellow;
 
 
 
-### 6.4 案例
+### 案例：图文混排
 
 ![image-20251127095257803](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20251127095307.png)
 
@@ -999,7 +999,7 @@ background: url(../html/img/1.png) no-repeat center fixed yellow;
 
 
 
-### 6.5 overflow 溢出
+### 6.4 overflow 溢出
 
 `overflow` 溢出属性
 
@@ -1139,7 +1139,7 @@ overflow-y: hidden;  /* Y轴隐藏 */
 
 
 
-### 6.6 white-space 空余空间
+### 6.5 white-space 空余空间
 
 `white-space` 空余空间属性，该属性用来设置如何处理元素内的空白。
 
@@ -1201,7 +1201,7 @@ pre标签(代码中带了空格、tab、回车，会被正常渲染显示)
 
 ## 7. 元素显示类型
 
-### 7.1 元素类型分类
+### 7.1 元素显示类型
 
 ![image-20251127122116598](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20251127122118.png)
 
@@ -1266,9 +1266,9 @@ a{
 </body>
 ```
 
-实用案例`二级菜单`:
+### 案例：二级菜单
 
-效果
+二级菜单效果
 
 ![image-20251127130524327](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20251127130525.png)
 
@@ -1344,7 +1344,7 @@ a{
 </html>
 ```
 
-## 8. 案例
+## 综合案例：仿安利
 
 安利首页：https://www.amway.com.cn/
 
