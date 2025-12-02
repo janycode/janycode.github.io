@@ -70,7 +70,7 @@ bottom:100px;
 
 ### 1.3 粘性定位
 
-* sticky 粘性定位演示
+* **sticky**，粘性定位演示
 
 ```html
 <!DOCTYPE html>
@@ -90,7 +90,7 @@ bottom:100px;
             width: 500px;
             height: 100px;
             margin: 0 auto;
-            position: sticky;
+            position: sticky;  /* 粘性定位 */
             top: 0;  /* 支持负值，一般用 0 就可以 */
         }
         .body{
