@@ -1,5 +1,5 @@
 ---
-title: 02-JS BOM+DOM（old）
+title: 12-JS BOM+DOM（old）
 date: 2018-5-12 21:36:21
 tags:
 - JavaScript
