@@ -14,7 +14,7 @@ categories:
 
 ## 1. position 定位
 
-`position` 定位，需要结合便宜位置（top/left/right/bottom）使用。
+`position` 定位，需要结合偏移位置（top/left/right/bottom）使用。
 
 ![image-20251127173633018](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20251127173634.png)
 

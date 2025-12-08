@@ -439,24 +439,25 @@ margin:0 auto;  /* 实现盒子的水平居中 */
 > * 400-正常，normal
 > * 700-加粗，bold
 > * 900-更粗，bolder
->
-> ```css
-> text-indent: 2em; /* 只对首行生效，当前字体的两倍来缩进，即2个汉字 */
-> ```
->
-> ```css
-> text-decoration: none;/* none 常用在a标签超链接上，用于去掉下划线 */
-> ```
->
-> ```css
-> text-decoration: line-through underline;/* 多个时空格隔开，比如删除线和下划线同时使用 */
-> ```
->
-> ```css
-> text-transform: uppercase; /* capitalize-首字母大写,  lowercase-全小写, uppercase全大写, none-无效果*/
-> ```
->
-> 
+
+
+```css
+text-indent: 2em; /* 只对首行生效，当前字体的两倍来缩进，即2个汉字 */
+```
+
+```css
+text-decoration: none;/* none 常用在a标签超链接上，用于去掉下划线 */
+```
+
+```css
+text-decoration: line-through underline;/* 多个时空格隔开，比如删除线和下划线同时使用 */
+```
+
+```css
+text-transform: uppercase; /* capitalize-首字母大写,  lowercase-全小写, uppercase全大写, none-无效果*/
+```
+
+
 
 网页浏览器支持的常见字体：
 
@@ -1156,6 +1157,8 @@ overflow-y: hidden;  /* Y轴隐藏 */
 * **ellipsis**，显示省略号标记(...)
 
 因此 ↓
+
+#### 案例：溢出显示省略号(★)
 
 **单行文本溢出显示省略号样式**（`缺一不可`）：
 

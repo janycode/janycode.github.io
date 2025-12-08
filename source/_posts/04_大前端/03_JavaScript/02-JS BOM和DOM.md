@@ -118,11 +118,11 @@ JavaScript = ECMAscript + BOM  + DOM
 * `document.documentElement.scrollLeft || document.body.scrollLeft` 横向滚动距离（兼容性）
 * `window.scrollTo(0, 0)` 回到顶部 
 * `window.open(url)` 打开标签页url
-* `window.cloese()` 关闭当前标签页
+* `window.close()` 关闭当前标签页
 * `window.history.forward()` == `window.history.go(1)` 前进一页（需要有历史记录）
 * `window.history.back()` == `window.history.go(-1)` 返回上一页【**最常用**】
 
-```js
+```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -199,7 +199,7 @@ JavaScript = ECMAscript + BOM  + DOM
 
 标签页：
 
-```js
+```html
     <button id="btn">打开百度</button>
     <button id="closeBtn">关闭当前标签页</button>
     <script>
@@ -217,7 +217,7 @@ JavaScript = ECMAscript + BOM  + DOM
 
 浏览器历史记录前进和后退：
 
-```js
+```html
     <button id="backBtn">返回上一页</button>
     <button id="forwardBtn">前进一页</button>
     <script>
@@ -243,12 +243,12 @@ JavaScript = ECMAscript + BOM  + DOM
 
 注意：`永久存储`，关闭页面或浏览器不会消失，只有在刻意去清除或者卸载浏览器操作等才会消失。
 
-* `localStorage.setItem(key, value)` 存or改 一个键值对到本地存储中，**只能存储字符串类型的数据**
+* `localStorage.setItem(key, value)` 存/改 一个键值对到本地存储中，**只能存储字符串类型的数据**
 * `localStorage.getItem(key)` 获取本地存储中key的value值，**读取 json字符串时要进行解析**
 * `localStorage.removeItem(key)` 删除本地存储中的key和value
 * `localStorage.clear()` 删除所有的本地存储内容
 
-```js
+```html
     <button id="save">点击存</button>
     <button id="get">点击取</button>
     <button id="del">点击删</button>
@@ -301,7 +301,7 @@ sessionStorage.setItem('key', 'value')
 
 ### 案例：记住用户名
 
-```js
+```html
     <div>
         用户名：
         <input type="text" id="username">
@@ -374,7 +374,7 @@ sessionStorage.setItem('key', 'value')
 * `document.querySelector("#id")` 通过 css 选择器获取元素：返回**第一个**匹配的元素
 * `document.querySelectorAll(".class")` 通过 css 选择器获取元素：返回**所有**匹配的元素
 
-```js
+```html
     <div id="box">1111</div>
     <ul>
         <li class="newsItem">001</li>
@@ -442,13 +442,13 @@ sessionStorage.setItem('key', 'value')
 
 ### 2.3 操作元素的属性
 
-* `.属性` 操作原生属性直接可以通过 . 找到对应属性的值
-* `.setAttribute()` 自定义属性设置属性的值
-* `.getAttribute()` 自定义属性获取属性的值
-* `.removeAttribute()` 自定义属性移除属性和值
+* `.属性` 操作原生属性直接可以通过 . 找到对应属性的值，如 input框中的 username.type
+* `.setAttribute()` **设置**自定义属性的值
+* `.getAttribute()` **获取**自定义属性的值
+* `.removeAttribute()` 自定义属性**移除**属性和值
 * `data-***` H5规范约定使用 `data-` 来命名属性时，就可以通过 `.dataset` 属性再 `.属性` 获取属性的值
 
-```js
+```html
     <div id="box"></div>
     <input type="text" id="username">
     <input type="checkbox" id="remember">
@@ -482,7 +482,7 @@ sessionStorage.setItem('key', 'value')
 
 #### 案例：密码可视
 
-```js
+```html
     <input type="password" id="password">
     <button id="show">显示密码</button>
     <script>
@@ -509,7 +509,7 @@ sessionStorage.setItem('key', 'value')
 
 #### 案例：购物车全选
 
-```js
+```html
     <input type="checkbox" id="all">全选
     <hr>
     <ul class="shop">
@@ -561,7 +561,7 @@ sessionStorage.setItem('key', 'value')
 * `.innerText` 只有元素(标签)的文本内容
 * `.value` 元素内属性的文本内容value值
 
-```js
+```html
     <div id="box">
         这是一个div元素
     </div>
@@ -594,30 +594,39 @@ sessionStorage.setItem('key', 'value')
 
 #### 案例：渲染页面
 
-```js
+```html
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
     <style>
-        *{
+        * {
             margin: 0;
             padding: 0;
         }
-        ul{
+
+        ul {
             list-style: none;
         }
-        li{
+
+        li {
+            /* 父元素不写高度时，子元素写了浮动后，父元素发生高度塌陷。可以给父元素添加 overflow: hidden; 来解决 */
             overflow: hidden;
+            margin-left: 10px;
+            margin-top: 10px;
         }
-        li img{
+
+        li img {
+            /* 图片左浮动，文字就环绕在图片的右边 */
             float: left;
             width: 100px;
         }
     </style>
 </head>
+
 <body>
     <ul>
         <!-- <li>
@@ -647,19 +656,20 @@ sessionStorage.setItem('key', 'value')
             }
         ]
         // 2. 处理数据
-        var fileItems = filmList.map(function(item){
+        var fileItems = filmList.map(function (item) {
             // 模板字符串
             return `<li>
-            <img src="${item.url}" alt="">
-            <h3>${item.title}</h3>
-            <p>评分：${item.score}</p>
-        </li>`
+                        <img src="${item.url}" alt="">
+                        <h3>${item.title}</h3>
+                        <p>评分：${item.score}</p>
+                    </li>`
         })
         console.log(fileItems.join(""))
         // 3. 渲染页面
         document.querySelector("ul").innerHTML = fileItems.join("")
     </script>
 </body>
+
 </html>
 ```
 
