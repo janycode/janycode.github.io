@@ -604,7 +604,7 @@ background: url(../html/img/1.png) no-repeat center fixed yellow;
 
 
 
-### 5.4  CSS浮动属性
+### 5.4  CSS浮动属性-float(★)
 
 ![image-20251126164806747](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20251126164807.png)
 

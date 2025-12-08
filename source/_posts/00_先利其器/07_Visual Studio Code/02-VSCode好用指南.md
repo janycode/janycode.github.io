@@ -1,0 +1,86 @@
+---
+title: 02-VSCode好用指南
+date: 2018-5-22 20:14:49
+tags: 
+- Visual Studio Code
+- VSCode
+- 使用技巧
+categories:
+- 00_先利其器
+- 07_Visual Studio Code
+---
+
+
+
+![image-20220212163939405](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20220212163940.png)
+
+参考资料(官网)：https://code.visualstudio.com/
+
+> 在 Windows、macOS 和 Linux 上运行的独立源代码编辑器。 JavaScript 和 Web 开发人员的最佳选择，包含大量扩展，几乎支持任何编程语言。
+>
+> 重点：`免费!`
+
+
+
+## 快捷键速查表
+
+* Windows/Linux快捷键
+
+![image-20251207212734054](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20251207212735.png)
+
+* MAC快捷键
+
+![image-20251207212704144](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20251207212712.png)
+
+
+
+## 界面
+
+![img](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20251207223406.jpg)
+
+
+
+
+
+## 插件列表
+
+* Chinese (Simplified) (简体中文) Language Pack for Visual Studio Code，中文插件包，第一个必装
+
+* Auto Rename Tag，自动修改成对标签，默认生效
+* view-in-browser，快速预览页面的插件
+* Live Server，实时预览服务，快捷键 Alt + L，再 Alt + O
+* htmltagwrap，快速键入p标签，结合成对修改标签使用，快捷键 Alt + W
+* px to rem & rpx & vw (cssrem)，可以快速的转换px与rem单位，快捷键 Alt + Z
+* Image preview，光标悬浮在图片路径上时，显示图片预览
+* Comment Translate： 自动翻译 MDN reference 提示信息，最好设置一下源语种和目标语种
+* TRAE AI (formerly MarsCode): Coding Assistant，豆包智能编程助手，提供代码解释、单测生成、问题修复、技术问答等，提升编码效率与质量。
+* Code Spell Checker，标志错的单词，还可以提示单词的正确拼法。
+* indent-rainbow，提示我们的缩进是否到位，每步交替四种不同的颜色，没有到位的话颜色变红
+* IntelliJ IDEA Keybindings，转变快捷键习惯与 IDEA 风格
+
+PS：如果插件安装无法联网，把windows文件管理器下 %USERPROFILE%\.vscode\extensions，删除该文件夹下所有内容。
+
+
+
+
+
+## 自用快捷键
+
+* Alt + J → Alt+J，批量选中相同变量
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
