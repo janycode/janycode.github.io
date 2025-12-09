@@ -443,10 +443,10 @@ sessionStorage.setItem('key', 'value')
 ### 2.3 操作元素的属性
 
 * `.属性` 操作原生属性直接可以通过 . 找到对应属性的值，如 input框中的 username.type
-* `.setAttribute()` **设置**自定义属性的值
-* `.getAttribute()` **获取**自定义属性的值
-* `.removeAttribute()` 自定义属性**移除**属性和值
-* `data-***` H5规范约定使用 `data-` 来命名属性时，就可以通过 `.dataset` 属性再 `.属性` 获取属性的值
+* `.setAttribute(key, value)` **设置**自定义属性和值
+* `.getAttribute(key)` **获取**自定义属性和值
+* `.removeAttribute(key)` 自定义属性**移除**属性和值
+* `data-***` H5规范约定使用 `data-` 来命名属性时，就可以通过 `.dataset` 属性再 `.属性` 获取/设置自定义属性的值
 
 ```html
     <div id="box"></div>
@@ -687,7 +687,7 @@ sessionStorage.setItem('key', 'value')
 * `.classList` 可以获取或设置元素的**类名列表**
   * `.add(class)`  添加样式类
   * `.remove(class)` 删除样式类
-  * `.toggle(class)` 切换样式类（添加 <--> 删除 来回切换）
+  * `.toggle(class)` 切换样式类（添加-删除 来回切换）
 
 ```html
 <!DOCTYPE html>
@@ -955,7 +955,7 @@ DOM常用三大类`元素节点`、 `文本节点`、`属性节点`。
 * 获取到的元素/标签，叫元素节点，通过 `getElementBy...() 获取到的都是元素节点`
 * 标签里面写的文字，就是文本节点，通过 `getAttribute() 获取到的就是元素的属性节点`
 * 标签上的属性，就是属性节点，通过 `innerText 获取到的就是元素的文本节点`
-* 特殊节点：
+* DOM树：
   * **document**
     ![image-20251209155348159](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20251209155456.png)
   * **html**
@@ -1159,8 +1159,8 @@ DOM常用三大类`元素节点`、 `文本节点`、`属性节点`。
 注意：
 
 1. 获取到的尺寸是没有单位的数字
-2. 当元素在页面不占位置的额时候，获取到的是0
-   - display: none; 元素在页面不占位
+2. 当元素在页面不占位置的时候，获取到的是0
+   - display: none;  元素在页面不占位
    - 怪异盒子模型，不影响计算结果
 
 ```html
@@ -1368,7 +1368,7 @@ DOM常用三大类`元素节点`、 `文本节点`、`属性节点`。
 </html>
 ```
 
-效果（右侧滚动条会额外加载，效果参考：https://m.maizuo.com/v5/#/films/nowPlaying）：
+效果（右侧滚动条会额外加载，[效果参考](https://m.maizuo.com/v5/#/films/nowPlaying)）:
 
 ![chrome-capture-2025-12-09 (3)](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20251209194824.gif)
 
