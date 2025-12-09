@@ -66,9 +66,21 @@ PS：如果插件安装无法联网，把windows文件管理器下 %USERPROFILE%
 
 ## 自用快捷键
 
-* Alt + J → Alt+J，批量选中相同变量
+* Ctrl + Alt + Shift + J，批量选中相同变量
 
 
+
+
+
+
+
+## 浏览器开发者工具
+
+
+
+### 1. 弱网
+
+![image-20251209180818814](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20251209180819.png)
 
 
 
