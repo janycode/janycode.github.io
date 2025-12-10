@@ -1,11 +1,11 @@
 ---
-title: 01-正则表达式语法
+title: 04-Regex正则表达式
 date: 2018-5-7 15:21:05
 tags:
 - 正则表达式
 categories: 
-- 02_编程语言
-- 04_正则表达式
+- 04_大前端
+- 03_JavaScript
 ---
 
 
@@ -14,8 +14,482 @@ categories:
 >
 > 正则表达式可视化: https://jex.im/regulex
 
+## 1. 创建
 
-### 1. 正则表达式 基本使用
+### 1.1 字面量
+
+```js
+var reg = /abc/      //eg: 包含 abc 子字符串
+```
+
+
+
+### 1.2 构造函数
+
+```
+var reg2 = new RegExp("abc")   //eg: 包含 abc 子字符串
+```
+
+
+
+示例：
+
+```html
+    <form action="">
+        <input type="text" required id="mytext">
+        <input type="email">
+        <input type="submit" value="提交">
+    </form>
+
+    <script>
+        /* 正则表达式 */
+        // 1.字面量方式
+        var reg = /abc/      //eg: 包含 abc 子字符串
+        console.log(reg)
+        // 2.内置构造函数
+        var reg2 = new RegExp("abc")   //eg: 包含 abc 子字符串
+        console.log(reg2)
+
+        mytext.onblur = function() {
+            console.log(mytext.value)
+            console.log(reg.test(mytext.value))   // true/false
+        }
+    </script>
+```
+
+
+
+## 2. 元字符
+
+### 2.1 基本元字符
+
+* `\d` 一位数字
+* `\D` 一位非数字
+* `\s` 一位空白，包含空格、缩进、换行
+* `\S` 一位非空白
+* `\w` 一位字母、数字、下划线
+* `\W` 一位非字母、非数字、非下划线
+* `.` 一位任意内容（换行不算）
+* `\` 转义字符
+* ...
+
+```js
+    <script>
+        //1. \d 一位数字
+        var reg = /\d/    // 包含一位数字
+        console.log(reg.test("abc"))   // false
+        console.log(reg.test("123"))   // true
+        reg = /\d\d/      // 包含两位数字
+        console.log(reg.test("ab2"))   // false
+        console.log(reg.test("123"))   // true
+
+        //2. \D 一位非数字
+        reg = /\D/         //包含一位非数字
+        console.log(reg.test("ab2"))   // true
+        console.log(reg.test("123"))   // false
+
+        //3. \s 一位空白，包含空格、缩进、换行都算
+        reg = /\s/
+        console.log(reg.test("ab2"))    // false
+        console.log(reg.test("ab\n2"))  // true
+
+        //4. \S 一位非空白
+        reg = /\S/
+        console.log(reg.test("ab 2"))   // true
+        console.log(reg.test("\n"))     // false
+
+        //5. \w 一位字母、数字、下划线
+        reg = /\w/
+        console.log(reg.test("&(*)"))    // false
+        console.log(reg.test("ab_1"))    // true
+        
+        //6. \W 一位非字母、非数字、非下划线
+        reg = /\W/
+        console.log(reg.test("&(*)"))    // true
+        console.log(reg.test("ab_1"))    // false
+
+        //7. . 任意内容（换行不算）
+        reg = /./
+        console.log(reg.test("&(*^"))      // true
+        console.log(reg.test("\n\n\n"))    // false
+
+        //8. \ 转义字符
+        reg = /\d\.\d/     // 一位小数
+        console.log(reg.test("1.2"))       // true
+        console.log(reg.test("1a2"))       // false
+    </script>
+```
+
+### 2.2 边界符
+
+* `^` 以什么开头，只能限定一位字符
+* `$` 以什么结尾，只能限定一位字符
+* `^开头结尾$` 以什么开头且以什么结尾，开头结尾各一位字符
+
+```js
+    <script>
+        // ^ 以什么开头
+        var reg = /^\d/      // 以一位数字开头
+        console.log(reg.test("abc"))     // false
+        console.log(reg.test("12a"))     // true
+        // $ 以什么结尾
+        reg = /\d$/
+        console.log(reg.test("abc"))     // false
+        console.log(reg.test("a12"))     // true
+        // ^开头结束$
+        reg = /^a\dc$/
+        console.log(reg.test("a1c"))      // true
+        console.log(reg.test("abc"))      // false
+    </script>
+```
+
+### 2.3 限定符
+
+* `*` 0~n次
+* `+` 1~n次
+* `?` 0~1次
+* `{n}` 限定n次
+* `{n,}` 限定大于等于n次
+* `{n,m}` 限定n~m次，包含n次和m次
+
+```js
+    <script>
+        // * 0~n次
+        var reg = /\d*/
+        console.log(reg.test("abc"))        // true
+        console.log(reg.test("abc1"))       // true
+        console.log(reg.test("abc123"))     // true
+        // + 1~n次
+        reg = /\d+/
+        console.log(reg.test("abc"))        // false
+        console.log(reg.test("abc1"))       // true
+        console.log(reg.test("abc123"))     // true
+        // ? 0~1次
+        reg = /\d?/
+        console.log(reg.test("abc"))        // true
+        console.log(reg.test("abc1"))       // true
+        console.log(reg.test("abc123"))     // true
+        // {n} 限定次数
+        reg = /\d{3}/
+        console.log(reg.test("abc"))        // false
+        console.log(reg.test("abc1"))       // false
+        console.log(reg.test("abc123"))     // true
+        // {n,} 限定大于等于n次
+        reg = /\d{3,}/
+        console.log(reg.test("abc"))          // false
+        console.log(reg.test("abc1"))         // false
+        console.log(reg.test("abc12345"))     // true
+        // {n,m} 限定 大于等于n次，小于等于m次
+        reg = /\d{3,5}/
+        console.log(reg.test("abc"))          // false
+        console.log(reg.test("abc123"))       // true
+        console.log(reg.test("abc12345"))     // true
+        reg = /^abc{2}$/
+        console.log(reg.test("abc"))           // false
+        console.log(reg.test("decc"))          // false
+        console.log(reg.test("332abcc3232"))   // false
+        console.log(reg.test("abcc"))          // true
+    </script>
+```
+
+
+
+### 2.4 特殊符号
+
+* `()` 表示整体
+* `|` 或，左右是整体，最好加上小括号便于分辨
+* `[]` 代表包含1个，且需要连续，不能穿插不符合规则的字符
+* `[^]` 取反，意思是不是这里面的字符
+
+```js
+    <script>
+        // () 表示整体
+        reg = /^(abc){2}$/
+        console.log(reg.test("abc"))             // false
+        console.log(reg.test("decc"))            // false
+        console.log(reg.test("332abcabc3232"))   // false
+        console.log(reg.test("abcabc"))          // true
+        // | 或，左右是整体，最好加上小括号便于分辨
+        reg = /a|b/
+        console.log(reg.test("123"))    // false
+        console.log(reg.test("1a3"))    // true
+        console.log(reg.test("12b"))    // true
+        console.log(reg.test("1ab"))    // true
+        reg = /(abc|def)/    // | 前后整体，等价于 /((abc)|(def))/
+        console.log(reg.test("abd"))      // false
+        console.log(reg.test("abdef"))    // true
+        reg = /abc|def|xyz/    // | 前后整体，等价于 /(abc)|(def)|(xyz)/
+        console.log(reg.test("abc"))    // true
+        console.log(reg.test("def"))    // true
+        console.log(reg.test("fyz"))    // false
+        // [] 代表包含1个，且需要连续，不能穿插不符合规则的字符
+        reg = /[abcdef]/
+        console.log(reg.test("x"))     // false
+        console.log(reg.test("xa"))    // true
+        reg = /[abcdef]{3,5}/
+        console.log(reg.test("abcd"))     // true
+        console.log(reg.test("abxyz"))    // false
+        console.log(reg.test("a1b2c3d4xyz"))    // false
+        reg = /[a-zA-Z0-9_]/
+        console.log(reg.test("a1b2c3d4xyz"))       // true
+        console.log(reg.test("a1!@@##$$%2c3d"))    // true
+        // [^] 取反，意思是不是这里面的字符
+        reg = /[^abc]/
+        console.log(reg.test("a"))      // false
+        console.log(reg.test("ac"))     // false
+        console.log(reg.test("ac1"))    // true
+    </script>
+```
+
+
+
+### 2.5 捕获exec
+
+`exec()` 捕获匹配正则的字符串片段。
+
+* `/reg/g` 全局匹配，此时exec()方法每调用一次就会往下匹配一个，直到匹配为 null 即为查找结束
+* `/reg/i` 忽略大小写
+* `/reg/gi` （两个标识符可以同时写）
+
+```js
+    <script>
+        // exec() 方法
+        var reg = /\d{3}/
+        console.log(reg.exec("aa123aa"))   // ['123', index: 2, input: 'aa123aa', groups: undefined]
+
+        // exec() 截取一次
+        var dateStr = "time is 2077-02-01 12:20:30"
+        // 2077/02/01
+        reg = /\d{4}-\d{1,2}-\d{1,2}/
+        var newStr = reg.exec(dateStr)
+        console.log(newStr[0].split("-").join("/"))    // 2077/02/01
+
+        // exec() 截取两次, 标识符 //g 全局往下逐次exec()调用匹配，//i 忽略大小写，写一起就是 //gi
+        var dateStr1 = "time is 2077-02-01 12:20:30 2099-08-07 16:15:14"
+        // 2077/02/01 - 2099/08/07
+        reg = /\d{4}-\d{1,2}-\d{1,2}/g
+        var newStr1 = reg.exec(dateStr1)
+        console.log(newStr1)
+        // 因为标识符g，每次调用exec()可以继续往下查找匹配
+        var newStr2 = reg.exec(dateStr1)   // 查找匹配的第一个
+        console.log(newStr2)
+        var newStr3 = reg.exec(dateStr1)   // 查找匹配的第二个
+        console.log(newStr3)             // null - 可用于while循环判断查找结束标记
+        console.log(newStr1[0].split("-").join("/"))    // 2077/02/01
+        console.log(newStr2[0].split("-").join("/"))    // 2099/08/07
+
+        // () 和 g 一起使用，会将捕获的对象拆分到数组中去，可以通过数组下标直接获取
+        reg = /(\d{4})-(\d{1,2})-(\d{1,2})/g
+        var s = reg.exec(dateStr1);
+        console.log(s)     // ['2077-02-01', '2077', '02', '01', index: 8, ...]
+        console.log(s[0])  // 2077-02-01
+        console.log(s[1])  // 2077
+        console.log(s[2])  // 02
+        console.log(s[3])  // 01
+
+        // 标识符 i: 忽略大小写
+        reg = /[a-z]/i
+        console.log(reg.test("AA"))  // true
+    </script>
+```
+
+
+
+## 3. 两大特性
+
+1. **懒惰**，exec()每次只找匹配的第一个。
+   - 解决：使用全局标识符 `g`，就可以exec()逐次调用查找
+2. **贪婪**，会尽可能匹配最长的结果
+   - 解决：正则表达式内部的最后，加上一个 `?` 就可以变为非贪婪（会尽可能匹配最短的结果）
+
+```js
+    <script>
+        //1.懒惰特性，解决：使用全局标识符 g，就可以exec()逐次调用查找
+        //2.贪婪，会尽可能匹配最长的结果
+        var reg = /\d{1,4}/
+        console.log(reg.exec("aa12345bb")[0]) 
+        //3.非贪婪，会尽可能匹配最短的结果
+        reg = /\d{1,4}?/
+        console.log(reg.exec("aa12345bb")[0])
+
+        // 示例-非贪婪
+        var str = `<p class="active"><span>hello,world</span></p>`
+        reg = /<p.*?>/
+        console.log(reg.exec(str)[0])  // <p class="active">
+    </script>
+```
+
+
+
+## 4. 正则与字符串方法
+
+* `str.replace(reg, 要替换的内容)` 全局替换，记得加上标识符 g
+* `str.search(reg)`  查找匹配正则的字符串的首个字符下标
+* `str.match(reg)` 匹配正则，返回数组（需要加上标识符g）
+
+```js
+    <script>
+        // 字符串 .replace() .search() .match
+        var s = "aaa我艹bbb我艹cd"
+        var newS = s.replace(/我艹/g, "*")
+        console.log(newS)     // aaa*bbb*cd
+
+        console.log(s.search("b"))    // 5
+        console.log(s.search(/b/))    // 5
+        console.log(s.search(/cd/))   // 10
+
+        var ds = "time is 2077-02-01 12:20:30 2099-08-07 16:15:14"
+        console.log(ds.match(/(\d{4})-(\d{1,2})-(\d{1,2})/g))    // ['2077-02-01', '2099-08-07']
+    </script>
+```
+
+
+
+
+
+## 案例：密码强度验证
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        *{
+            margin: 0;
+            padding: 0;
+        }
+        form {
+            width: 500px;
+            height: 100px;
+            border: 2px solid black;
+            margin: 10px auto;
+
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+        form input{
+            height: 30px;
+            line-height: 30px;
+            width: 400px;
+            font-size: 25px;
+            padding-left: 5px;
+        }
+        form p {
+            width: 400px;
+            display: flex;
+            justify-content: space-between;
+        }
+        form p span{
+            width: 100px;
+            margin-top: 10px;
+            text-align: center;
+            border: 1px solid gray;
+            background: lightgrey;
+        }
+
+        form>p>.active:nth-child(1) {
+            color: white;
+            background: red;
+        }
+        form>p>.active:nth-child(2) {
+            color: white;
+            background: orange;
+        }
+        form>p>.active:nth-child(3) {
+            color: white;
+            background: green;
+        }
+
+    </style>
+</head>
+<body>
+    <form action="">
+        <label for="">
+            <input type="text">
+        </label>
+        <p>
+            <span>弱</span>
+            <span>中</span>
+            <span>强</span>
+        </p>
+    </form>
+
+    <script>
+        var oinput = document.querySelector("input")
+        var reg1 = /\d/
+        var reg2 = /[a-z]/i
+        var reg3 = /[!@#$%^&*()]/
+
+        var ospans = document.querySelectorAll("span")
+        oinput.oninput = function(evt) {
+            // 输入的值：this.value 或 evt.target.value
+            //console.log(this.value)
+            //console.log(evt.target.value)
+            var level = 0
+            if (reg1.test(this.value)) level++
+            if (reg2.test(this.value)) level++
+            if (reg3.test(this.value)) level++
+            //console.log(level)
+
+            for (var i = 0; i < ospans.length; i++) {
+                //先移除
+                ospans[i].classList.remove("active")
+                if (i < level) {
+                    //再添加
+                    ospans[i].classList.add("active")
+                }
+            }
+        }
+    </script>
+</body>
+</html>
+```
+
+效果：
+
+![chrome-capture-2025-12-10 (4)](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20251210193550.gif)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<hr>
+
+old备份：
+
+1. 正则表达式 基本使用
+
 1. `匹配`
     测试字符串内的模式。例如，可以测试输入字符串，以查看字符串内是否出现电话号码模式或信用卡号码模式。这称为数据验证。
 2. `替换`
@@ -23,7 +497,8 @@ categories:
 3. `提取`
     提取子字符串。基于模式匹配从字符串中提取子字符串，可以查找文档内或输入域内特定的文本。
 
-#### 1.1 Java执行正则方法
+1.1 Java执行正则方法
+
 **String类**成员方法：
 
 boolean `matches`(String regex); // 正则匹配
@@ -129,7 +604,7 @@ public class ChineseFilter {
 
 
 
-#### 1.2 常用规则
+1.2 常用规则
 
 **单字符类**：
 
@@ -173,7 +648,8 @@ X 表示一个字符或者预定义字符
 
 ● `X{n,m}` 至少n次，不超过m次
 
-#### 1.3 常用正则案例 × 75
+1.3 常用正则案例 × 75
+
 **校验数字的表达式**
 
 1. 数字：`^[0-9]*$`
@@ -278,11 +754,14 @@ X 表示一个字符或者预定义字符
 35. 文件扩展名效验: `^([a-zA-Z]\\:|\\\\)\\\\([^\\\\]+\\\\)*[^\\/:*?"<>|]+\\.txt(l)?$`
 36. 判断IE版本：`^.*MSIE [5-8](?:\\.[0-9]+)?(?!.*Trident\\/[5-9]\\.0).*$`
 
+2. 正则表达式 语法（明细）
 
-### 2. 正则表达式 语法（明细）
-#### 2.1 普通字符
+2.1 普通字符
+
 普通字符包括没有显式指定为元字符的所有可打印和不可打印字符。这包括`所有大写和小写字母、所有数字、所有标点符号和一些其他符号`。
-#### 2.2 非打印字符
+
+2.2 非打印字符
+
 非打印字符也可以是正则表达式的组成部分。
 <table class="reference">
 <tr>
@@ -322,8 +801,8 @@ X 表示一个字符或者预定义字符
     <td>匹配一个垂直制表符。等价于 \x0b 和 \cK。</td>
 </tr>
 </table>
+2.3 特殊字符
 
-#### 2.3 特殊字符
 许多元字符要求在试图匹配它们时特别对待。若要匹配这些特殊字符，必须首先使字符"转义"，即反斜杠字符`\`放在它们前面。
 <table class="reference">
 <tr>
@@ -375,8 +854,8 @@ X 表示一个字符或者预定义字符
     <td>指明两项之间的一个选择。要匹配 |，请使用 \|。</td>
 </tr>
 </table>
+2.4 限定符
 
-#### 2.4 限定符
 限定符用来指定正则表达式的一个给定组件必须要出现多少次才能满足匹配。有 `*` 或 `+` 或 `?` 或 `{n}` 或 `{n,}` 或 `{n,m}` 共6种。
 <table class="reference">
 <tr>
@@ -408,8 +887,8 @@ X 表示一个字符或者预定义字符
     <td>m 和 n 均为非负整数，其中n &lt;= m。最少匹配 n 次且最多匹配 m 次。例如，"o{1,3}" 将匹配 "fooooood" 中的前三个 o。'o{0,1}' 等价于 'o?'。请注意在逗号和两个数之间不能有空格。</td>
 </tr>
 </table>
+2.5 定位符
 
-#### 2.5 定位符
 定位符用来描述字符串或单词的边界，`^` 和 `$` 分别指字符串的开始与结束，`\b` 描述单词的前或后边界，`\B` 表示非单词边界。
 <table class="reference">
 <tr>
@@ -433,8 +912,8 @@ X 表示一个字符或者预定义字符
     <td>非单词边界匹配。</td>
 </tr>
 </table>
+2.6 选择与反向引用
 
-#### 2.6 选择与反向引用
 - 选择
 用圆括号将所有选择项括起来，相邻的选择项之间用|分隔。但用圆括号会有一个副作用，使相关的匹配会被缓存，此时可用?:放在第一个选项前来消除这种副作用。
 其中 `?:` 是非捕获元之一，还有两个非捕获元是 `?=` 和 `?!`，这两个还有更多的含义，前者为正向预查，在任何开始匹配圆括号内的正则表达式模式的位置来匹配搜索字符串，后者为负向预查，在任何开始不匹配该正则表达式模式的位置来匹配搜索字符串。
@@ -466,7 +945,8 @@ for (var i = 0; i < arr.length ; i++) {
 第三个括号子表达式包含 :80
 第四个括号子表达式包含 /html/page-01.html
 
-#### 2.7 预定义字符/元字符
+2.7 预定义字符/元字符
+
 <table class="reference notranslate">
 <tr>
 	<th width="20%">字符</th>
@@ -641,8 +1121,8 @@ for (var i = 0; i < arr.length ; i++) {
     <td><p>匹配 n，其中 n 是一个用四个十六进制数字表示的 Unicode 字符。例如， \u00A9 匹配版权符号 (?)。</p></td>
 </tr>
 </table>
+2.8 方括号与圆括号
 
-#### 2.8 方括号与圆括号
 `方括号 [] 是单个匹配，字符集/排除字符集/命名字符集`。
 示例：
  1、`[0-3]`：表示找到这一个位置上的字符只能是 0 到 3 这四个数字，与 (abc|bcd|cde) 的作用比较类似，但圆括号可以匹配多个连续的字符，而一对方括号只能匹配单个字符。

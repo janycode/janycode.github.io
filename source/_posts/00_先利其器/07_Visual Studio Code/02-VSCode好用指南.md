@@ -84,7 +84,13 @@ PS：如果插件安装无法联网，把windows文件管理器下 %USERPROFILE%
 
 
 
+### 2. 谷歌浏览器插件
 
+FeHelper: https://chrome.zzzmh.cn/info/pkgccpejnmalmdinmhkkfafefagiiiad
+
+可以插件内部添加很多使用的小组件进来。
+
+![image-20251210193830106](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20251210193831.png)
 
 
 
