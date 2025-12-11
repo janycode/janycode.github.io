@@ -8,7 +8,7 @@ categories:
 - 03_JavaScript
 ---
 
-
+![image-20251125100829463](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20251128131801.png)
 
 > 正则表达式在线测试+代码生成：[https://c.runoob.com/front-end/854](https://c.runoob.com/front-end/854)
 >
@@ -26,7 +26,7 @@ var reg = /abc/      //eg: 包含 abc 子字符串
 
 ### 1.2 构造函数
 
-```
+```js
 var reg2 = new RegExp("abc")   //eg: 包含 abc 子字符串
 ```
 
