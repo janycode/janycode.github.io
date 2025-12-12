@@ -42,10 +42,9 @@ categories:
 
 
 
-## 插件列表
+## 插件列(★)
 
 * Chinese (Simplified) (简体中文) Language Pack for Visual Studio Code，中文插件包，第一个必装
-
 * Auto Rename Tag，自动修改成对标签，默认生效
 * view-in-browser，快速预览页面的插件
 * Live Server，实时预览服务，快捷键 Alt + L，再 Alt + O
@@ -57,6 +56,8 @@ categories:
 * Code Spell Checker，标志错的单词，还可以提示单词的正确拼法。
 * indent-rainbow，提示我们的缩进是否到位，每步交替四种不同的颜色，没有到位的话颜色变红
 * IntelliJ IDEA Keybindings，转变快捷键习惯与 IDEA 风格
+* Preview on Web Server，在web服务器上预览，重启vscode后，可以访问8080端口
+  * 快捷键有冲突，记得修改快捷键，目前使用 `Ctrl+Alt+Shift+字母`  S 是停止，R 是重启，L 是快速预览
 
 PS：如果插件安装无法联网，把windows文件管理器下 %USERPROFILE%\.vscode\extensions，删除该文件夹下所有内容。
 
