@@ -32,6 +32,14 @@ var reg2 = new RegExp("abc")   //eg: 包含 abc 子字符串
 
 
 
+### 1.3 正则判断
+
+```js
+reg.test(str)   //判断是否符合正则表达式规则，返回 true/false
+```
+
+
+
 示例：
 
 ```html

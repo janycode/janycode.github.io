@@ -1,10 +1,10 @@
 ---
-title: 07-Ajax&Promise&跨域&闭包
+title: 07-Ajax&Promise&fetch
 date: 2018-5-7 15:21:05
 tags:
 - Ajax
-- 跨域
-- 闭包
+- Promise
+- fetch
 categories: 
 - 04_大前端
 - 03_JavaScript
@@ -241,6 +241,17 @@ Ajax下：
 > 再次验证（已OK）：
 >
 > ![image-20251212112215485](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20251212112216.png)
+>
+> 
+>
+> json-server支持的分页和详情接口请求方式：
+>
+> 模拟列表页：http://localhost:3000/api/?_page=1&_limit=10
+>
+> 模拟详情页：
+>
+> * http://localhost:3000/api/?id=1
+> * http://localhost:3000/api/1
 
 
 
@@ -1441,23 +1452,506 @@ fetch POST：
 
 
 
+### 案例：列表与详情交互
+
+#### 1. 接口分析
+
+在实际开发中，后端通常会提供接口供前端调用。以下是一个示例接口的分析过程。
+
+##### 启动JSON Server
+
+我们使用JSON Server来模拟后端接口。通过以下命令启动服务：
+
+```bash
+json-server --watch db.json --port 3000
+```
+
+启动后，服务会运行在`http://localhost:3000`。我们可以通过访问`http://localhost:3000/goods`来获取商品列表数据。
+
+##### 接口数据结构
+
+访问接口后，返回的数据是一个数组，数组中的每个元素是一个商品对象。以下是一个示例数据结构：
+
+db.json
+
+```json
+{
+    "goods": [
+        {
+            "id": 1,
+            "name": "荣耀手机",
+            "price": 1999,
+            "poster": "/images/1.jpg",
+            "description": "高性能手机，适合日常使用。",
+            "items": [
+                "https://static.maizuo.com/pc/v5/usr/movie/53443bf08ac8f08d23e3fe35959a3240.jpg?x-oss-process=image/quality,Q_70",
+                "https://static.maizuo.com/pc/v5/usr/movie/7767b643a38cbaf714aaea55f5c44053.jpg?x-oss-process=image/quality,Q_70",
+                "https://static.maizuo.com/pc/v5/usr/movie/53443bf08ac8f08d23e3fe35959a3240.jpg?x-oss-process=image/quality,Q_70",
+                "https://static.maizuo.com/pc/v5/usr/movie/7767b643a38cbaf714aaea55f5c44053.jpg?x-oss-process=image/quality,Q_70"
+            ]
+        },
+        {
+            "id": 2,
+            "name": "iPhone 11",
+            "price": 5999,
+            "poster": "/images/2.jpg",
+            "description": "苹果旗舰手机，性能卓越。"
+        },
+        {
+            "id": 3,
+            "name": "iPhone 12",
+            "price": 5999,
+            "poster": "/images/3.jpg",
+            "description": "苹果旗舰手机，性能卓越。"
+        },
+        {
+            "id": 4,
+            "name": "iPhone 13",
+            "price": 5999,
+            "poster": "/images/4.jpg",
+            "description": "苹果旗舰手机，性能卓越。"
+        },
+        {
+            "id": 5,
+            "name": "iPhone 14",
+            "price": 5999,
+            "poster": "/images/5.jpg",
+            "description": "苹果旗舰手机，性能卓越。"
+        },
+        {
+            "id": 6,
+            "name": "iPhone 15",
+            "price": 5999,
+            "poster": "/images/6.jpg",
+            "description": "苹果旗舰手机，性能卓越。"
+        },
+        {
+            "id": 7,
+            "name": "iPhone 16",
+            "price": 5999,
+            "poster": "/images/7.jpg",
+            "description": "苹果旗舰手机，性能卓越。"
+        },
+        {
+            "id": 8,
+            "name": "iPhone 17",
+            "price": 5999,
+            "poster": "/images/8.jpg",
+            "description": "苹果旗舰手机，性能卓越。"
+        },
+        {
+            "id": 9,
+            "name": "iPhone 18",
+            "price": 5999,
+            "poster": "/images/9.jpg",
+            "description": "苹果旗舰手机，性能卓越。"
+        },
+        {
+            "id": 10,
+            "name": "iPhone 19",
+            "price": 5999,
+            "poster": "/images/10.jpg",
+            "description": "苹果旗舰手机，性能卓越。"
+        },
+        {
+            "id": 11,
+            "name": "iPhone 20",
+            "price": 5999,
+            "poster": "/images/11.jpg",
+            "description": "苹果旗舰手机，性能卓越。"
+        },
+        {
+            "id": 12,
+            "name": "iPhone 21",
+            "price": 5999,
+            "poster": "/images/12.jpg",
+            "description": "苹果旗舰手机，性能卓越。"
+        },
+        {
+            "id": 13,
+            "name": "iPhone 22",
+            "price": 5999,
+            "poster": "/images/13.jpg",
+            "description": "苹果旗舰手机，性能卓越。"
+        },
+        {
+            "id": 14,
+            "name": "iPhone 23",
+            "price": 5999,
+            "poster": "/images/14.jpg",
+            "description": "苹果旗舰手机，性能卓越。"
+        },
+        {
+            "id": 15,
+            "name": "iPhone 24",
+            "price": 5999,
+            "poster": "/images/15.jpg",
+            "description": "苹果旗舰手机，性能卓越。"
+        },
+        {
+            "id": 16,
+            "name": "vivo X90",
+            "price": 3999,
+            "poster": "/images/16.jpg",
+            "description": "拍照神器，适合摄影爱好者。"
+        }
+    ]
+}
+```
+
+##### 分页参数
+
+为了实现懒加载功能，我们需要通过分页参数来获取数据。JSON Server支持以下分页参数：
+
+- `_page`：页码
+- `_pre_page`：每页数据条数  (json-server 旧版本可以使用 `_limit` )
+
+例如，获取第一页的5条数据：
+
+```bash
+http://localhost:3000/goods?_page=1&_pre_page=5
+```
+
+##### 正确的参数组合方案
+
+根据源码实现，可以总结出三种安全的分页方式：
+
+| 分页模式 | 参数组合               | 适用场景         |
+| :------- | :--------------------- | :--------------- |
+| 页码分页 | `_page=1&_per_page=10` | 用户界面分页控件 |
+| 偏移分页 | `_start=0&_limit=10`   | 无限滚动加载     |
+| 范围分页 | `_start=0&_end=10`     | 数据导出功能     |
+
+> 注意：\_per_page参数有默认值10，而\_limit没有默认值。这意味着单独使用\_page=2会返回10条数据，而单独使用\_start=10会返回空数组。
+
+页码分页的返回结果示例：
+
+```bash
+http://localhost:3000/goods/?_page=1&_per_page=5
+```
+
+```json
+{
+    "first": 1,
+    "prev": 1,
+    "next": 3,
+    "last": 4,
+    "pages": 4,
+    "items": 17,
+    "data": [
+        {...},
+        {...},
+        {...},
+        {...},
+        {...}
+    ]
+}
+```
 
 
 
+#### 2. 懒加载实现
+
+懒加载是一种常见的性能优化技术，通过分页加载数据，减少一次性加载的数据量，提升页面性能。
+
+##### 实现步骤
+
+1. **监听页面滚动事件**：通过`scroll`事件监听页面滚动。
+2. **判断是否滚动到底部**：通过`scrollTop`、`scrollHeight`和`clientHeight`判断是否滚动到底部。
+3. **发送AJAX请求**：当滚动到底部时，发送AJAX请求获取下一页数据。
+4. **渲染数据**：将获取到的数据渲染到页面中。
 
 
 
+#### 3. 跨域问题
+
+在实际开发中，跨域问题是一个常见的挑战。跨域问题通常发生在前端请求的域名与后端接口的域名不一致时。
+
+##### 解决方案
+
+1. **CORS**：后端通过设置`Access-Control-Allow-Origin`头来允许跨域请求。
+2. **JSONP**：通过`<script>`标签加载数据，实现跨域请求。
+3. **代理服务器**：通过代理服务器转发请求，避免跨域问题。
+
+以下是一个使用CORS的示例：
+
+```javascript
+fetch("http://localhost:3000/goods", {
+  method: "GET",
+  headers: {
+    "Access-Control-Allow-Origin": "*"
+  }
+})
+  .then(response => response.json())
+  .then(data => console.log(data))
+  .catch(error => console.error("跨域请求失败：", error));
+```
+
+#### 4. 列表跳转详情页面
+
+在列表页面中，点击某个商品时，跳转到详情页面并显示该商品的详细信息。
+
+##### 实现步骤
+
+1. **传递参数**：通过URL传递商品ID。
+2. **获取参数**：在详情页面中通过URL获取商品ID。
+3. **发送请求**：根据商品ID发送请求获取详细信息。
+4. **渲染页面**：将获取到的详细信息渲染到页面中。
 
 
 
+#### 5. 常见问题及解答
+
+以下是一些常见的问题及解答：
+
+| 问题                     | 答案                                                         |
+| ------------------------ | ------------------------------------------------------------ |
+| 为什么懒加载功能不生效？ | 检查是否正确监听了滚动事件，以及是否正确发送了分页请求。     |
+| 跨域请求失败如何解决？   | 确保后端设置了CORS头，或者使用JSONP或代理服务器。            |
+| 详情页面如何获取商品ID？ | 通过URL参数获取商品ID `new URL(location.href).searchParams.get("id")`。 |
+| 如何实现分页功能？       | 通过分页参数`_page`和`_pre_page`实现分页请求。               |
+| 如何优化列表页面性能？   | 使用懒加载技术，减少一次性加载的数据量。                     |
+
+#### 6. 相似概念对比
+
+以下是一些相似概念的对比：
+
+| 概念   | 描述                                     | 适用场景                       |
+| ------ | ---------------------------------------- | ------------------------------ |
+| AJAX   | 异步请求技术，用于与服务器进行交互       | 实现页面局部更新，提升用户体验 |
+| JSONP  | 通过`<script>`标签加载数据，实现跨域请求 | 解决跨域问题，但仅支持GET请求  |
+| CORS   | 通过设置HTTP头允许跨域请求               | 解决跨域问题，支持多种请求方式 |
+| 懒加载 | 分页加载数据，减少一次性加载的数据量     | 提升页面性能，优化用户体验     |
 
 
 
+#### 代码：
 
+![image-20251215113202261](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20251215113203.png)
 
+list.html
 
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="./css/list.css">
+</head>
+<body>
+    <h1>列表</h1>
+    <ul id="list">
+        <!-- <li>
+            <img src="https://static.maizuo.com/pc/v5/usr/movie/53443bf08ac8f08d23e3fe35959a3240.jpg?x-oss-process=image/quality,Q_70" alt="">
+            <h3>测试测试</h3>
+        </li> -->
+    </ul>
+    <script src="./js/list.js"></script>
+</body>
+</html>
+```
 
+detail.html
 
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="./css/detail.css">
+</head>
+<body>
+    <h1>详情页面</h1>
+    <div class="feature"></div>
+    <div class="price"></div>
+    <ul class="list"></ul>
+    <script src="./js/detail.js"></script>
+</body>
+</html>
+```
+
+js/list.js
+
+```js
+// 面向过程
+
+// 1. 获取数据
+var current = 0 // 记录当前第几页
+var total = 0 // 记录总数据长度
+var isLoading = false //记录是否正在请求（防止多次请求）
+getList() //声明提升-预解析，这里调用也没问题
+async function getList() {
+    current++
+    var fetchRes = await fetch(`http://localhost:3000/goods/?_page=${current}&_per_page=5`)
+    // json-server 旧版0.17.4才有，新版本没有 X-Total-Count 该长度
+    // console.log(fetchRes.headers.get("X-Total-Count"))
+    var res = await fetchRes.json()
+    // console.log(res)
+    var list = res.data
+    // _page 与 _per_page 组合使用，总条数为 items 属性
+    total = res.items
+    console.log("total:", total)
+    // console.log(list)
+    renderHTML(list)  // 进入页面先渲染一次数据
+    return list
+}
+
+function renderHTML(arr) {
+    for (let i = 0; i < arr.length; i++) {
+        var oli = document.createElement("li")
+        oli.innerHTML = `<img src="http://localhost:3000${arr[i].poster}" alt="">
+                            <h3>${arr[i].name}</h3>`
+
+        // 跳转事件绑定，需要带着详情的id过去
+        oli.onclick = function() {
+            console.log(arr[i].id)
+            location.href = `detail.html?id=${arr[i].id}`
+        }
+
+        list.appendChild(oli)
+    }
+}
+
+// 防频繁触发标记
+isLoading = false
+window.onscroll = function () {
+    // 判断总长度，来确定最后一条数据拿到（单独从接口中获取），就直接 return 掉
+    // console.log(list.children.length, total)
+    if (list.children.length == Number(total)) {
+        return
+    }
+
+    var listHeight = list.offsetHeight  // ul 的高度
+    var listTop = list.offsetTop        // ul 距离body顶部的高度
+    // console.log(listHeight + listTop)
+
+    var windowHeight = document.documentElement.clientHeight   // 视窗高度
+    var scrollTop = document.documentElement.scrollTop || document.body.scrollTop  // 滚动距离
+    // console.log(Math.round(windowHeight + scrollTop))
+
+    if (isLoading) return
+    // 计算到底的公式：(列表高度+列表距离body顶部的高度) - (视窗高度+滚动距离) < 50或100
+    if ((listHeight + listTop) - Math.round(windowHeight + scrollTop) < 50) {
+        console.log("滚动到底了！！！ < 50px")
+        isLoading = true
+
+        //渲染下一组数据
+        getList().then(() => {
+            isLoading = false
+        })
+    }
+}
+```
+
+js/detail.js
+
+```js
+// 面向对象
+
+// 获取列表页带过来的id值
+// 1.截取字符串 - 古老，不推荐
+// console.log(location.href.split("=")[1])
+// 2.URL标准函数获取
+let urlObj = new URL(location.href)
+console.log(urlObj.searchParams.get("id"))
+let id = urlObj.searchParams.get("id")
+
+class Detail {
+    constructor(id) {
+        this.id = id
+        this.init()
+    }
+
+    async init() {
+        //获取数据
+        let info = await this.getList()
+        console.log(info)
+        //渲染页面
+        this.renderHTML(info)
+    }
+
+    async getList() {
+        // 将id拼接到获取详情接口上
+        let res = await fetch(`http://localhost:3000/goods/${this.id}`)
+        let info = await res.json()
+        return info
+    }
+
+    renderHTML(info) {
+        // 对象解构
+        let {name, price, poster, description, items} = info
+        let oH1 = document.querySelector("h1")
+        let oFeature = document.querySelector(".feature")
+        let oPrice = document.querySelector(".price")
+        let oList = document.querySelector(".list")
+        oH1.innerHTML = name
+        oFeature.innerHTML = description
+        oPrice.innerHTML = `价格：<span style="color:red">¥${price}</span>`
+
+        oList.innerHTML = items.map(item => `
+            <li>
+                <img src="${item}">
+            </li>
+        `).join("")
+    }
+}
+
+new Detail(id)
+```
+
+css/list.css
+
+```css
+* {
+    margin: 0;
+    padding: 0;
+}
+
+html,
+body {
+    height: 100%;
+}
+
+ul {
+    list-style: none;
+}
+
+ul li {
+    overflow: hidden;
+    height: 150px;
+}
+
+ul li img {
+    float: left;
+    width: 80px;
+}
+```
+
+css/detail.css
+
+```css
+*{
+    margin: 0;
+    padding: 0;
+}
+
+ul {
+    list-style: none;
+    padding: 10px;
+}
+
+ul img{
+    width: 100%;
+}
+```
+
+效果：
+
+![chrome-capture-2025-12-15](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20251215113702.gif)
 
 
 

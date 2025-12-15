@@ -12,6 +12,7 @@ categories:
 \>> [jQuery 参考手册](https://www.w3school.com.cn/jquery/jquery_reference.asp)
 
 jQuery，是一个 JavaScript 脚本类库文件，简化了JS编程。
+
 JQuery 是2006年8月诞生的一个开源项目，凭借简洁的语法和跨平台的兼容性，极大地简化了 JavaScript 开发遍历 HTML 文档、操作 DOM 、处理事件、执行动画和开发 Ajax 的操作，其独特而又优雅的代码风格改变了 JavaScript 程序员的设计思路和编写程序的方式。
 
 ### 1. jQuery 导入方式
