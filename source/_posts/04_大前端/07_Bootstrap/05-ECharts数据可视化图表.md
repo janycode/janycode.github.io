@@ -23,7 +23,9 @@ categories:
 
 ### 1. ECharts 概述
 ECharts 是一个使用 JavaScript 实现的开源数据可视化库，涵盖各行业图表，满足各种需求。
+
 ECharts 遵循 Apache-2.0 开源协议，免费商用。
+
 ECharts 兼容当前绝大部分浏览器（IE8/9/10/11，Chrome，Firefox，Safari等）及兼容多种设备，可随时随地任性展示。
 
 ### 2. ECharts 使用步骤
@@ -45,7 +47,9 @@ ECharts 兼容当前绝大部分浏览器（IE8/9/10/11，Chrome，Firefox，Saf
 ```
 
 **③ 官网选择一个图表样式，编辑 option 填充 script 即可**
+
 两个方法一组option参数。`init` 方法、`setOption` 方法、`option` 参数从官网图表样式中来。
+
 ```html
 <script>
     $(function () {
@@ -148,6 +152,7 @@ ECharts 兼容当前绝大部分浏览器（IE8/9/10/11，Chrome，Firefox，Saf
 
 ### 4. ECharts 异步请求
 官网教程和示例：[https://echarts.apache.org/zh/tutorial.html#异步数据加载和更新](https://echarts.apache.org/zh/tutorial.html#%E5%BC%82%E6%AD%A5%E6%95%B0%E6%8D%AE%E5%8A%A0%E8%BD%BD%E5%92%8C%E6%9B%B4%E6%96%B0)
+
 ![ECharts 数据可视化图表](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230316145032.png)
 echarts1.jsp
 

@@ -29,12 +29,18 @@ Bootstrap Validator 数据校验，就是表单验证，友好的错误提示可
 
 
 2. **代码中引入**
-当前项目引入 BootStrap Validator 相关的资源
-引入 bootstrap.css
-引入 bootstrapValidator.css
-引入 jquery-3.5.1.min.js
-引入 bootstrap.js
-引入 bootstrapValidator.js
+
+  当前项目引入 BootStrap Validator 相关的资源
+
+  ```
+  引入 bootstrap.css
+  引入 bootstrapValidator.css
+  引入 jquery-3.5.1.min.js
+  引入 bootstrap.js
+  引入 bootstrapValidator.js
+  ```
+
+  
 
 ```html
 <link href="bootstrap/css/bootstrap.min.css" rel="stylesheet">
@@ -54,7 +60,9 @@ Bootstrap Validator 数据校验，就是表单验证，友好的错误提示可
 
 ### 3. 表单验证使用
 **【普通验证】**
+
 普通账号和密码输入框的验证和提示。
+
 ```html
 <%--引入bootstrap.css / BootstrapValidator.css / jquery.js / Bootstrap.js / BootstrapValidator.js--%>
 <link href="${pageContext.request.contextPath}/bootstrap/css/bootstrap.min.css" rel="stylesheet">
@@ -119,6 +127,7 @@ Bootstrap Validator 数据校验，就是表单验证，友好的错误提示可
 ```
 
 **【高级验证】**
+
 添加了更多的验证和验证成功与否的文字图标。
 
 ```html
