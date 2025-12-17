@@ -1,12 +1,12 @@
 ---
-title: 02-Vue 核心
+title: 98-Vue 核心
 date: 2020-01-22 12:32:55
 tags:
 - Vue
 - 语法
 categories: 
 - 04_大前端
-- 09_Vue
+- 04_Vue
 ---
 
 

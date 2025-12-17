@@ -1,14 +1,12 @@
 ---
-title: 01-Vue Demo
+title: 99-Vue Demo
 date: 2018-5-22 21:36:21
 tags:
 - Vue
 categories: 
 - 04_大前端
-- 09_Vue
+- 04_Vue
 ---
-
-
 
 ![image-20200723170734421](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20200723170735.png)
 
