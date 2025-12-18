@@ -16,7 +16,7 @@ categories:
 * 官网：https://cn.vuejs.org/
 * vue2 官方教程：https://v2.cn.vuejs.org/v2/guide/
 * vue3 官方教程：https://cn.vuejs.org/guide/introduction.html
-* 说明：*`Vue 2.0 在 2023 年 12 月 31 日停止更新`*。
+* 说明：`Vue 2.0 在 2023 年 12 月 31 日停止更新`。
 
 
 
@@ -60,15 +60,15 @@ categories:
     <navbar></navbar>
 </div>
 <script>
-var Child = {
-  template: '<h1>自定义组件!</h1>'
-}
-new Vue({
-  el: '#app',
-  components: {
-    'navbar': Child           // <navbar> 将只在当前实例可用
-  }
-})
+    var Child = {
+      template: '<h1>自定义组件!</h1>'
+    }
+    new Vue({
+      el: '#app',
+      components: {
+        'navbar': Child           // <navbar> 将只在当前实例可用
+      }
+    })
 </script>
 ```
 
@@ -78,7 +78,7 @@ new Vue({
 
 #### 1.2.1 父传子
 
-1. 子组件标签通过`:自定义属性`去**绑定**父组件的**属性值**
+1. 子组件标签上通过`:自定义属性`去**绑定**父组件的**属性值**
 2. 子组件的`props`属性通过该**自定义属性**来**接受**父组件的属性值
 
 ```html
@@ -133,13 +133,14 @@ new Vue({
 
 #### 1.2.2 子传父
 
-1. 子组件1标签通过`@自定义事件`去**绑定**父组件的**事件方法**
+1. 子组件1标签上通过`@自定义事件`去**绑定**父组件的**事件方法**
 2. 子组件1的 methods 点击事件中操作子组件自身的 `this.$emit(...)` **触发执行**绑定父组件的事件方法
    - this.$emit(eventName, args...) 该方法为固定写法，且支持传参
+3. 子组件2因为绑定了对应的变量，如 v-show，所以会跟随更新渲染
 
 ```html
     <div id="box">
-        <!-- 1. @父组件自定义事件（点击子 navbar 控制显示或隐藏子 sidebar） -->
+        <!-- 1. @父组件自定义事件（点击子组件navbar 控制显示或隐藏子组件sidebar） -->
         <navbar @my_event="handleEvent"></navbar>
         <sidebar v-show="isShow"></sidebar>
     </div>
