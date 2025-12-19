@@ -35,7 +35,7 @@ categories:
 * template 属性需要包含一个根节点
 * 所有实例都能使用
 
-```html
+```vue
 <div id="app">
     <navbar></navbar>
 </div>
@@ -55,7 +55,7 @@ categories:
 * 如果写在 Vue.component 中，就属于他自己的子组件，只能在自己的内部使用
 * 只能在当前初始化实例中使用
 
-```html
+```vue
 <div id="app">
     <navbar></navbar>
 </div>
@@ -74,12 +74,34 @@ categories:
 
 
 
+> 组件创建命名参考，如果使用 `-` 短杠分隔，那么就可以使用`驼峰方式初始化`组件。eg:
+>
+> ```vue
+> <film-detail></film-detail>
+> 
+> Vue.component("filmDetail", {
+>     template: `<div></div>`
+> })
+> ```
+
+
+
 ### 1.2 父子组件通信
 
 #### 1.2.1 父传子
 
 1. 子组件标签上通过`:自定义属性`去**绑定**父组件的**属性值**
 2. 子组件的`props`属性通过该**自定义属性**来**接受**父组件的属性值
+   - props 校验类型 type 可以是下面原生构造器：
+     - String
+     - Number
+     - Boolean
+     - Array
+     - Object
+     - Date
+     - Function
+     - Symbol
+   - props 是否能修改？父组件传给你的属性，只有父组件可以重新传，但`不允许子组件随意修改`
 
 ```html
     <div id="box">
@@ -194,27 +216,745 @@ categories:
 
 
 
+#### 1.2.3 子传子(兄弟通信-中间人模式)
+
+父组件，称之为 中间人。
+
+* 组合子传父、父传子的两个通信方式，即 子1传父、父传子2 来实现兄弟通信
 
 
 
+示例：（列表与详情是两个同级的子组件）
 
-### 1.3 引用
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="./lib/vue.js"></script>
+    <style>
+        .item{
+            overflow: hidden;
+            padding: 5px;
+            width: 300px;
+            border: 1px solid gray;
+        }
+        .item img{
+            float: left;
+            width: 100px;
+        }
+        .filmInfo{
+            max-width: 300px;
+            min-height: 200px;
+            position: fixed;  /* 固定定位 */
+            right: 0;
+            top: 50px;
+            background: yellow;
+        }
+    </style>
+</head>
+<body>
+    <div id="box">
+        <button @click="handleClick">ajax</button>
+        <film-item v-for="item in datalist" :key="item.filmId" :item="item" @event="handleEvent"></film-item>
+        <!-- :detail-data 接收值时用 detailData, 渲染时用 {{detailData}} -->
+        <film-detail :detail-data="detailData"></film-detail>
+    </div>
+    <script>
+        Vue.component("filmItem", {
+            props: {
+                item: Object,
+                default: {}
+            },
+            template: `
+                <div class="item">
+                    <img :src="item.poster">
+                    {{item.name}}
+                    <div>
+                        <button @click="handleClick">详情</button>
+                    </div>
+                </div>
+            `,
+            methods: {
+                handleClick() {
+                    console.log(this.item.synopsis)
+                    this.$emit("event", this.item.synopsis)
+                }
+            }
+        })
+
+        Vue.component("filmDetail", {
+            props: {
+                // 标签中定义属性为 :detail-data，接收时可以用驼峰 detailData
+                // 如果用下划线，则没有这个问题，都可以是同一个值 detail_data
+                detailData: {
+                    type: String,
+                    default: "没有简介"
+                }
+            },
+            template: `
+                <div class="filmInfo">
+                    {{detailData}}
+                </div>
+            `
+        })
+
+        new Vue({
+            el: "#box",
+            data: {
+                datalist: [],
+                detailData: ""
+            },
+            methods: {
+                handleClick() {
+                    fetch("./json/maizuo.json")
+                        .then(res => res.json())
+                        .then(res => {
+                            console.log(res.data.films)
+                            this.datalist = res.data.films
+                        })
+                },
+                handleEvent(data) {
+                    console.log("父组件自定义事件", data)
+                    this.detailData = data
+                }
+            }
+        })
+    </script>
+</body>
+</html>
+```
+
+效果：
+
+![chrome-capture-2025-12-19](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20251219135744.gif)
+
+
+
+#### 1.2.4 中央事件总线 bus
+
+组件之间通信，关系变得复杂时，方案有二：
+
+* `bus` 中央事件总线 `var bus = new Vue()`，原理是 **订阅发布模式**
+  * `bus.$on()` 监听事件，发送信息组件中使用（记得定义接收数据的属性）
+  * `bus.$emit()` 触发事件，接收信息组件中使用
+* `vuex` 状态管理
+
+作用：实现不同组件之间进行通信（非父子关系）。
+
+原理：$bus就是vue原型上添加的一个vue实例，用于存储、监听以及触发事件。
+
+实现步骤：
+
+1. 注册事件总线
+
+```js
+var bus = new Vue()
+//或
+Vue.prototype.bus = new Vue();
+```
+
+2. 在需要发送信息的组件中**触发**事件
+
+```js
+bus.$emit("eventname")        //无参传递，eventname表示事件名
+bus.$emit("eventname",params) //带参传递，params表示传递的参数
+```
+
+3. 在需要接收信息的组件中**监听**事件，需要写在 `mounted()` 函数中
+
+```js
+//生命周期函数
+mounted() {
+    //有参
+    bus.$on("eventname",(params)=>{...});
+    //无参
+    bus.$on('eventname', () => {...});
+}
+```
+
+4. 在接收信息的组件`beforeDestroy`事件中销毁接收事件
+
+```js
+beforeDestroy() {
+    this.bus.$off('eventname');
+}
+```
+
+
+
+示例：（改造列表与详情是两个组件的情况，模拟组件之间通信）
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="./lib/vue.js"></script>
+    <style>
+        .item{
+            overflow: hidden;
+            padding: 5px;
+            width: 300px;
+            border: 1px solid gray;
+        }
+        .item img{
+            float: left;
+            width: 100px;
+        }
+        .filmInfo{
+            max-width: 300px;
+            min-height: 200px;
+            position: fixed;  /* 固定定位 */
+            right: 0;
+            top: 50px;
+            background: yellow;
+        }
+    </style>
+</head>
+<body>
+    <div id="box">
+        <button @click="handleClick">ajax</button>
+        <film-item v-for="item in datalist" :key="item.filmId" :item="item" @event="handleEvent"></film-item>
+        <!-- :detail-data 接收值时用 detailData, 渲染时用 {{detailData}} -->
+        <film-detail :detail-data="detailData"></film-detail>
+    </div>
+    <script>
+        // 事件总线 bus
+        var bus = new Vue()
+
+        Vue.component("filmItem", {
+            props: {
+                item: Object,
+                default: {}
+            },
+            template: `
+                <div class="item">
+                    <img :src="item.poster">
+                    {{item.name}}
+                    <div>
+                        <button @click="handleClick">详情</button>
+                    </div>
+                </div>
+            `,
+            methods: {
+                handleClick() {
+                    // console.log(this.item.synopsis)
+                    bus.$emit("event", this.item.synopsis)
+                }
+            }
+        })
+
+        Vue.component("filmDetail", {
+            data() {
+                return {
+                    info: ""
+                }
+            },
+            template: `
+                <div class="filmInfo">
+                    {{info}}
+                </div>
+            `,
+            mounted() {
+                bus.$on("event", (params) => {
+                    console.log("$on:", params)
+                    this.info = params
+                })
+            }
+        })
+
+        new Vue({
+            el: "#box",
+            data: {
+                datalist: [],
+                detailData: ""
+            },
+            methods: {
+                handleClick() {
+                    fetch("./json/maizuo.json")
+                        .then(res => res.json())
+                        .then(res => {
+                            console.log(res.data.films)
+                            this.datalist = res.data.films
+                        })
+                },
+                handleEvent(data) {
+                    console.log("父组件自定义事件", data)
+                    this.detailData = data
+                }
+            }
+        })
+    </script>
+</body>
+</html>
+```
+
+效果一样。
+
+
+
+#### 扩展：v-once
+
+`v-once` 有什么用？
+
+渲染普通的HTML元素在VUE中是非常快速的，有时组件内包含了大量的静态内容，这种情况下可以在根元素上添加 v-once 属性，以确保这些内容只计算一次然后就被缓存起来了。
+
+如：
+
+```js
+Vue.component("terms-of-service", {
+    template: `<div v-once> ... </div>`
+})
+```
+
+
+
+### 1.3 模版引用 ref
+
+`ref` 绑定模版引用，它允许我们在一个特定的 DOM 元素或子组件实例被挂载后，获得对它的直接引用。
+
+`this.$refs` 获取引用对象
+
+* 绑定 dom 节点，拿到的就是 dom对象
+* 绑定 组件，拿到的就是 组件对象
+
+> `注意`：该引用如果被重新赋值，就打破了数据通信流程，导致数据流转混乱。
+
+```html
+    <div id="box">
+        <input type="text" ref="myText">
+        <input type="password" ref="myPassword">
+        <button @click="handleAdd">add</button>
+        <child ref="myChild"></child>
+    </div>
+    <script>
+        Vue.component("child", {
+            data() {
+                return {
+                    myName: "jerry11111"
+                }
+            },
+            template: `<div>child-{{myName}}</div>`
+        })
+
+        new Vue({
+            el: "#box",
+            methods: {
+                handleAdd() {
+                    // console.log(this.$refs.myText, this.$refs.myPassword)
+                    console.log(this.$refs.myChild.myName)
+                    // 该引用如果被重新赋值，就打破了数据通信流程，导致数据流转混乱
+                    this.$refs.myChild.myName = "tom222222"
+                    console.log(this.$refs.myChild.myName)
+                }
+            }
+        })
+    </script>
+```
 
 
 
 ### 1.4 动态组件
 
+`<component is="xxx"></component>` vue内置的标签，可以作为一个动态组件使用。
+
+* 如果需要保存该动态组件，如输入框中的已输入的值，则使用 `<keep-alive></keep-alive>`包裹
+
+```html
+    <div id="box">
+        <button @click="which='first'">组件1</button>
+        <button @click="which='second'">组件2</button>
+        <button @click="which='third'">组件3</button>
+        <!-- 需要动态绑定 :is，否则which是字符串不是变量 -->
+        <component :is="which"></component>
+    </div>
+    <script>
+        Vue.component("first", {
+            template: `<div>111111</div>`
+        })
+        Vue.component("second", {
+            template: `<div>222222</div>`
+        })
+        Vue.component("third", {
+            template: `<div>333333</div>`
+        })
+
+        new Vue({
+            el: "#box",
+            data: {
+                which: "first"
+            }
+        })
+    </script>
+```
 
 
-### 1.5 插槽slot
+
+### 1.5 插槽 slot
+
+`<slot></slot>`  或 `v-slot:` 或 `#` 插槽，也叫内容分发。 扩展组件的能力，提高组件的复用性。
+
+* 单个插槽，就写标签即可 `<slot></slot>`
+* 具名插槽，给属性 name，即 `<slot name="xxx"></slot>` 
+* 新版slot写法，将 `v-slot:`name 简写为 `#`name，该写法只能写在 `<template>` 标签上
+
+> 内容分发：混合父组件的内容与子组件自己的模版。
+
+```html
+    <div id="box">
+        <child>
+            <template v-slot:a>
+                <div>aaaaaaaaaaaaa</div>
+            </template>
+            <!-- 简写 # -->
+            <template #b>
+                <div>bbbbbbbbbbbbb</div>
+            </template>
+        </child>
+    </div>
+    <script>
+        Vue.component("child", {
+            template: `
+                <div>
+                    <slot name="a"></slot>
+                    <slot name="b"></slot>
+                </div>
+            `
+        })
+        new Vue({
+            el: "#box"
+        })
+    </script>
+```
+
+旧版插槽 slot：
+
+```html
+    <div id="box">
+        <div>11111</div>
+        <div>22222</div>
+        <div slot="a">aaaaa</div>
+        <div slot="b">bbbbb</div>
+    </div>
+    <script>
+        Vue.component("child", {
+            template: `
+                <div>
+                    <slot></slot>
+                    <slot name="a"></slot>
+                    <slot name="b"></slot>
+                </div>
+            `
+        })
+        new Vue({
+            el: "#box"
+        })
+    </script>
+```
 
 
 
-### 1.6 过渡效果
+### 1.6 过渡动画
+
+`transition` 标签包裹需要加动画的内容。参考资料：https://www.runoob.com/vue2/vue-transitions.html
+
+* `<transition name="jerry" appear mode="in-out">`  内部默认只能生效一个元素 `</transition>`
+  * `name`="jerry" 其中的 jerry是动画 class 名称的前缀，会被拆解匹配为
+    * .jerry`-enter-active` {动画效果CSS样式}
+    * .jerry`-leave-active` {动画效果CSS样式}
+  * `appear` 属性是设置初始元素过渡动画，让页面刷新时初始动画也能生效
+  * `mode` 可以设置为 **in-out** 或者 **out-in**，意为 先进后出动画，或者 先出后进动画
+
+* 当有相同标签名的元素切换时，通过 `key` 属性设置唯一值来标记它们，配合 v-if 和 v-else 在动画中切换内容
+  * diff算法带来的效果：
+    - 如果key一样就复用，如果key不一样就会删除并创建新的对比
+    - 如果标签不一样，也会删除dom节点重新创建
+* `<transition-group name="jerry"></transition-group>` 用于多个列表的过渡，**列表元素需要设置唯一的key值**（内部还是dom的diff算法）
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="./lib/vue.js"></script>
+    <style>
+        .jerry-enter-active {
+            animation: aaa 1s;
+        }
+
+        .jerry-leave-active {
+            animation: aaa 1s reverse;
+        }
+
+        @keyframes aaa {
+            0% {
+                opacity: 0;
+                transform: translateX(100px);
+            }
+
+            100% {
+                opacity: 1;
+                transform: translateX(0px);
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div id="box">
+        <button @click="isShow = !isShow">change</button>
+        <transition enter-active-class="jerry-enter-active" leave-active-class="jerry-leave-active">
+            <div v-show="isShow">hello, change</div>
+        </transition>
+
+        <!-- 简写的方式，只写前缀; 初始动画(刷新页面就出现) -->
+        <transition name="jerry" appear mode="out-in">
+            <div v-if="isShow" key="1">hello, jerry1</div>
+            <div v-else key="2">hello, jerry2</div>
+        </transition>
+    </div>
+    <script>
+        new Vue({
+            el: "#box",
+            data: {
+                isShow: true
+            }
+        })
+    </script>
+</body>
+
+</html>
+```
+
+效果：
+
+![chrome-capture-2025-12-19 (1)](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20251219161604.gif)
+
+
+
+#### 案例：待办事项-列表过渡动画
+
+```html
+<ul v-show="dataList.length">
+    <transition-group name="jerry">
+        <li v-for="(item, index) in dataList" :key="item">
+            {{item}}-{{index}}
+            <button @click="handleDel(index)">删除</button>
+        </li>
+    </transition-group>
+</ul>
+```
+
+#### 案例：抽屉效果-过渡动画
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="./lib/vue.js"></script>
+    <style>
+        .jerry{
+            position: fixed;
+            right: 0px;
+            top: 0px;
+        }
+        /* 改变前缀 jerry 做多套动画，用于匹配 mode 不同的动画 */
+        .jerry-enter-active {
+            animation: aaa 1s;
+        }
+
+        .jerry-leave-active {
+            animation: aaa 1s reverse;
+        }
+
+        @keyframes aaa {
+            0% {
+                opacity: 0;
+                transform: translateX(100px);
+            }
+
+            100% {
+                opacity: 1;
+                transform: translateX(0px);
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div id="box">
+        <navbar>
+            <button @click="isShow = !isShow">点击</button>
+        </navbar>
+        <!-- 多套CSS，对应接收的 mode 的值，作为CSS的前缀 -->
+        <sidebar v-show="isShow" mode="jerry"></sidebar>
+    </div>
+    <script>
+        // 子组件 navbar
+        Vue.component("navbar", {
+            template: `
+                <div>
+                    导航栏-<slot></slot>
+                </div>`,
+            methods: {
+                handleClick() {
+                    console.log("子传父")
+                    // 2. $emit 触发/分发，子组件告诉父组件，触发父组件的事件 handleEvent
+                    this.$emit("my_event", 100)  // 支持传参
+                }
+            }
+        })
+        // 子组件 sidebar
+        Vue.component("sidebar", {
+            props: {
+                mode: {
+                    type: String,
+                    default: ""
+                }
+            },
+            // mode 值使用时，需要指定 name为绑定的属性 :name
+            template: `
+            <transition :name=mode>
+                <div>
+                    <ul :class=mode>
+                        <li>111</li>
+                        <li>222</li>
+                        <li>333</li>
+                        <li>444</li>
+                        <li>555</li>
+                    </ul>
+                </div>
+            </transition>
+            `
+        })
+        // 父组件 box
+        new Vue({
+            el: "#box",
+            data: {
+                isShow: false
+            },
+            methods: {
+                handleEvent(arg) {
+                    console.log("父组件定义的事件:", arg)  // 父组件定义的事件: 100
+                    this.isShow = !this.isShow
+                }
+            }
+        })  // 创建根组件
+    </script>
+</body>
+
+</html>
+```
 
 
 
 ### 1.7 生命周期
+
+四个阶段，八个钩子函数。`创建 和 挂载，即前4个生命周期一个组件只会走一次。`
+
+①创建：
+
+* `beforeCreate()` 在这个阶段，数据是获取不到的，并且真实dom元素也是没有渲染出来的。
+
+* `created()` 可以访问数据，真实dom元素还没有渲染出来，可以进行相关初始化的事件绑定、发送请求操作
+
+②挂载：
+
+* `beforeMount()` 挂载之前，相关render函数首次被调用，但数据还没渲染出来，与created()函数用法基本一致
+
+* `mounted()`  真实dom元素已经渲染完成，可以拿到真实dom节点
+  * 很多依赖dom创建之后才能进行初始化工作的插件，如轮播插件
+  * 订阅bus总线  bus.$on
+  * 发 ajax（即打开页面就像看到的数据）
+
+③更新：
+
+* `beforeUpdate()` 数据发生改变，但在dom被更新之前被调用，可以获取dom更新之前的内容
+
+* `updated()` 更新完成后，获取到diff算法对比之后把虚拟dom更新为真实dom后的真实dom渲染了
+
+④销毁：
+
+* `beforeDestroy()`-vue2 | `beforeUnmount()`-vue3，实例销毁之前，在这里实例仍然完全可用。销毁之前，可以做一些善后操作，可以清除定时器、事件解绑等。
+
+* `destroyed`-vue2 | `unmounted()`-vu3，实例销毁之后调用，完全丧失功能。
+
+
+
+生命周期图示vue2：
+
+![Vue 实例生命周期](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20251219180925.png)
+
+
+
+生命周期图示vue3：
+
+![img](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20251219180625.png)
+
+示例：
+
+```html
+    <div id="box">
+        {{myname}} - {{globalName}}
+        <button @click=" myname = 'tom' ">更新</button>
+    </div>
+    <script>
+        new Vue({
+            el: "#box",
+            data: {
+                myname: "jerry",
+                user: {}
+            },
+            beforeCreate() {
+                console.log("beforeCreate ->", this.myname)
+            },
+            created() {
+                // 一般做状态的初始化工作
+                console.log("created ->", this.myname)
+                this.myname = this.myname + "111111111"
+                this.globalName = "this可以直接访问的属性值"
+                this.user = localStorage.getItem("user") // this下面的属性
+            },
+            beforeMount() {
+                console.log("beforeMount ->", this.$el)  //模版解析之前最后一次修改模版节点
+            },
+            mounted() {
+                console.log("mounted ->", this.$el) //真实数据已经渲染，可以做相关初始化工作，发ajax
+            },
+            beforeUpdate() {
+                console.log("beforeUpdate ->", this.myname)
+            },
+            updated() {
+                console.log("updated ->", this.myname)
+            },
+            beforeUnmount() {
+                console.log("beforeUnmount ->")
+                window.onresize = null
+            },
+            unmounted() {
+                console.log("unmounted ->")
+            }
+        })
+    </script>
+```
+
+
+
+
+
+
 
 
 
