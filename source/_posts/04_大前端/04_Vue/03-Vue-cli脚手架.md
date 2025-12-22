@@ -75,9 +75,9 @@ vue ui
 ```json
 ...
 "scripts": {
-    "serve": "vue-cli-service serve",   //对应命令：npm run serve - 对应开发环境，打包到内存热更新
-    "build": "vue-cli-service build",   //对应命令：npm run build - 对应生产环境，会压缩代码，打包为静态文件
-    "lint": "vue-cli-service lint"      //对应命令：npm run lint  - 自动修复格式错误等
+    "serve": "vue-cli-service serve", //->命令：npm run serve - 对应开发环境，打包到内存热更新
+    "build": "vue-cli-service build", //->命令：npm run build - 对应生产环境，会压缩代码，打包为静态文件
+    "lint": "vue-cli-service lint"    //->命令：npm run lint  - 自动修复格式错误等
 },
 ...
 ```
@@ -87,10 +87,10 @@ vue ui
 ```json
 ...
 "scripts": {
-    "start": "vue-cli-service serve",   // npm start，其中start时才可以省略 run
-    "serve": "vue-cli-service serve",   //对应命令：npm run serve - 对应开发环境，打包到内存热更新
-    "build": "vue-cli-service build",   //对应命令：npm run build - 对应生产环境，会压缩代码，打包为静态文件
-    "lint": "vue-cli-service lint"      //对应命令：npm run lint  - 自动修复格式错误等
+    "start": "vue-cli-service serve", // npm start，其中start时才可以省略 run
+    "serve": "vue-cli-service serve", //->命令：npm run serve - 对应开发环境，打包到内存热更新
+    "build": "vue-cli-service build", //->命令：npm run build - 对应生产环境，会压缩代码，打包为静态文件
+    "lint": "vue-cli-service lint"    //->命令：npm run lint  - 自动修复格式错误等
 },
 ...
 ```
@@ -289,7 +289,7 @@ export default {
     return {}
   },
   // ②局部注册（全局或局部按需选其一）
-  component: {
+  components: {
     navbar   // 名称相同因此可以简写，原 navbar: navbar
   },
   methods: {}

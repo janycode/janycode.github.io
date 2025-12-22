@@ -59,7 +59,9 @@ npm 最新国内镜像源设置 2025
 1. 国内源
 
 淘宝：`https://registry.npmmirror.com/`
+
 腾讯云：`https://mirrors.cloud.tencent.com/npm/`
+
 CNPM：`https://r.cnpmjs.org/`
 
 2.设置
