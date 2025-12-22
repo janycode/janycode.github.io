@@ -827,7 +827,7 @@ background: url(../html/img/1.png) no-repeat center fixed yellow;
 
 `margin` 外边距
 
-1. 背景色`不会`蔓延到内边距
+1. 背景色`不会`蔓延到外边距
 2. 可以单独设置1到4个值均可，对应位置不同，与padding位置一致
 3. 可以单独设置某个方向，或将其清0，如上右下左 margin-top/margin-right/margin-bottom/margin-left
 4. `*{margin:0}` 清除默认带的外边距样式

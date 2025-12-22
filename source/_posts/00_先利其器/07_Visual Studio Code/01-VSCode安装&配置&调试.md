@@ -78,15 +78,35 @@ F12 开发者工具：
 
 
 
+## 3. 遇到的问题
+
+### 3.1 live server 5500 和 vscode-preview-server 8080 两个预览服务可以打开浏览器但是无法访问到内容
+
+检查步骤1：
+
+```Bash
+# 查看5500端口占用
+netstat -ano | findstr :5500
+# 查看8080端口占用
+netstat -ano | findstr :8080
+
+# 杀掉对应进程
+taskkill /F /PID 1234  # 1234是占用端口的进程PID
+```
+
+再试试访问 5500 和 8080
+
+检查步骤2 - 验证好用：
+
+临时关闭防火墙测试：打开「设置」→「网络和 Internet」→「Windows 防火墙」→「关闭防火墙」（仅测试用，解决后重新开启）。
 
 
 
 
 
+### 3.2 在继承终端打开没反应
 
-
-
-
+![image-20251222150952910](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20251222150954.png)
 
 
 

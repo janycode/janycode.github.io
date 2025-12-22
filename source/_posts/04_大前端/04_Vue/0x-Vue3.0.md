@@ -1,0 +1,152 @@
+---
+title: 0x-Vue3.0
+date: 2018-5-22 21:36:21
+tags:
+- Vue
+categories: 
+- 04_大前端
+- 04_Vue
+---
+
+![image-20200723170734421](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20200723170735.png)
+
+参考资料：
+
+* 官网：https://cn.vuejs.org/
+* vue2 官方教程：https://v2.cn.vuejs.org/v2/guide/
+* vue3 官方教程：https://cn.vuejs.org/guide/introduction.html
+* 说明：`Vue 2.0 在 2023 年 12 月 31 日停止更新`。
+
+
+
+## x. vue3组件定义
+
+```html
+    <div id="box">
+        {{myname}}
+        <navbar myname="aaa">
+            <div>111111111111111</div>
+        </navbar>
+        <sidebar></sidebar>
+    </div>
+
+    <script>
+        var obj = {
+            data() {
+                return {
+                    myname: "jerry"
+                }
+            },
+            methods: {}
+            computed: {}
+        }
+        var app = Vue.createApp(obj)
+        app.component("navbar", {
+            props: ["myname"],
+            template: `
+                <div>
+                    navbar-{{myname}}
+                    <slot></slot>
+                </div>
+            `
+        })
+        app.component("sidebar", {
+            template: `
+            <div>123123123</div>
+            `
+        })
+        app.mount("#box")
+    </script>
+```
+
+
+
+## y. vue3自定义指令
+
+### y.1 生命周期
+
+- `created `: 在绑定元素的属性或事件监听器被应用之前调用。
+- `beforeMount `: 指令第一次绑定到元素并且在挂载父组件之前调用。
+- `mounted `: 在绑定元素的父组件被挂载后调用。
+- `beforeUpdate`: 在更新包含组件的 VNode 之前调用。
+- `updated`: 在包含组件的 VNode 及其子组件的 VNode 更新后调用。
+- `beforeUnmount`: 当指令与在绑定元素父组件卸载之前时，只调用一次。
+- `unmounted`: 当指令与元素解除绑定且父组件已卸载时，只调用一次。
+
+与组件的生命周期，除了没有 **beforeCreate** 外，其他都一样。
+
+
+
+### y.2 指令轮播
+
+```html
+    <div id="box">
+        <header>导航</header>
+        <div class="swiper">
+            <div class="swiper-wrapper">
+                <!-- 绑一个自定义指令 v-swiper，传参为对象解构 -->
+                <div class="swiper-slide" v-for="(item, index) in datalist" :key="item"
+                    v-swiper="{index: index, length: datalist.length}">
+                    {{item}}
+                </div>
+            </div>
+            <!-- 如果需要分页器 -->
+            <div class="swiper-pagination"></div>
+
+            <!-- 如果需要导航按钮 -->
+            <div class="swiper-button-prev"></div>
+            <div class="swiper-button-next"></div>
+        </div>
+        <footer>底部内容</footer>
+    </div>
+
+
+    <script>
+        // 自定义指令 v-swiper
+        var obj = {
+            data() {
+                return {
+                    datalist: []
+                }
+            },
+            mounted() {
+                setTimeout(() => {
+                    this.datalist = ["aaa", "bbb", "ccc"]
+                    //过早
+                }, 2000)
+            },
+        }
+
+        var app = Vue.createApp(obj)
+        app.directive("swiper", {
+            mounted(el, binding) {
+                console.log("inserted", el, binding.value)
+                // 如果最后一个节点插入到父节点中了，就可以 new Swiper 初始化了
+                let { index, length } = binding.value
+                if (binding.value = length) {
+                    console.log("new Swiper")
+                    new Swiper(".swiper", {
+                        // direction: 'vertical', // 垂直切换选项
+                        loop: true, // 循环模式选项
+                        // 如果需要分页器
+                        pagination: {
+                            el: '.swiper-pagination',
+                        },
+                        // 如果需要前进后退按钮
+                        navigation: {
+                            nextEl: '.swiper-button-next',
+                            prevEl: '.swiper-button-prev',
+                        },
+                        // 自动轮播
+                        autoplay: {
+                            delay: 2500,
+                            disableOnInteraction: false,
+                        },
+                    })
+                }
+            }
+        })
+        app.mount("#box")
+    </script>
+```
+

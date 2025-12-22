@@ -40,6 +40,48 @@ categories:
 
 
 
+## npm|cnpm镜像
+
+`cnpm` 安装
+
+```bash
+npm install -g cnpm --registry=https://registry.npmmirror.com/
+```
+
+验证：
+
+```bash
+cnpm -v
+```
+
+npm 最新国内镜像源设置 2025
+
+1. 国内源
+
+淘宝：`https://registry.npmmirror.com/`
+腾讯云：`https://mirrors.cloud.tencent.com/npm/`
+CNPM：`https://r.cnpmjs.org/`
+
+2.设置
+
+```csharp
+#查询当前使用的镜像源
+npm get registry
+
+#设置为淘宝镜像源 
+npm config set registry https://registry.npmmirror.com/
+
+#验证设置
+npm get registry
+
+#还原为官方源
+npm config set registry https://registry.npmjs.org/ 
+```
+
+
+
+
+
 
 
 ## 插件列(★)
@@ -60,6 +102,8 @@ categories:
   * 快捷键有冲突，记得修改快捷键，目前使用 `Ctrl+Alt+Shift+字母`  S 是停止，R 是重启，L 是快速预览
 * Error Lens：主要用于代码编辑时错误及警告的提示和展示
 * CSS Peek：是一个能够将类名快速转到定义的的插件，尤其是全局类名的时候，可以达到事半功倍的效果
+* ESLint：ESLint语法标准检测（暂时禁用，语法提示过于严谨）
+* Vetur 或 vue官方插件：作者 Pine Wu 可以让 vue 文件有语法提示
 * AI 代码补全插件：https://apifox.com/apiskills/vscode-code-completion/
 
 PS：如果插件安装无法联网，把windows文件管理器下 %USERPROFILE%\.vscode\extensions，删除该文件夹下所有内容。

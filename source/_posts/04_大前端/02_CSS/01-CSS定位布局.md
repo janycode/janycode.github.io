@@ -523,8 +523,8 @@ margin-left: 负一半px;
 
 ### 1.6 文字环绕
 
-* **float**： 半脱离，有`文字环绕`效果
-* **absolute**：全脱离，不会出现文字环绕效果
+* `float：方向;` - 半脱离，有`文字环绕`效果
+* `position: absolute;` - 全脱离，不会出现文字环绕效果
 
 ```html
 <!DOCTYPE html>

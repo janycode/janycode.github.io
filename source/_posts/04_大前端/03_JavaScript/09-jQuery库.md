@@ -45,7 +45,7 @@ https://pss.bdstatic.com/static/superman/js/lib/jquery-1-edb203c114.10.2.js
 
 试一试：
 
-```js
+```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -55,8 +55,8 @@ https://pss.bdstatic.com/static/superman/js/lib/jquery-1-edb203c114.10.2.js
 </head>
 <body>
     <script>
-        console.log($)
-        console.log(jQuery)
+        console.log($)              //jQuery对象
+        console.log(jQuery)         //jQuery对象
         console.log($ === jQuery)   // true
     </script>
 </body>
