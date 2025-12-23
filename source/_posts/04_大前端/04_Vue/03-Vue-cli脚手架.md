@@ -680,3 +680,113 @@ export default {
 
 
 
+## 2. 反向代理-解决跨域
+
+`vue.config.js 配置反向代理`就可以解决跨域问题（让天下没有难跨的域）。
+
+* devServer: {...} 可以指定端口号 port ，以及指定反向代理 proxy
+
+如下请求：① 或 ② 均可
+
+```js
+    axios
+      // ① 举例如以 /ajax 开头，会经过反向代理 devServer.proxy 配置，补充上域名，就可以解决跨域问题
+      // .get(
+      //   "/ajax/comingList?ci=73&token=&limit=10&optimus_uuid=424018A0DBF611F0B1298720294CD58A3B570872BF7C4455AF088EB790854A30&optimus_risk_level=71&optimus_code=10"
+      // )
+      // ② 可以给接口前面拼接自定义字符串，如 /jerry，通过反向代理替换
+      .get(
+        "/jerry/ajax/comingList?ci=73&token=&limit=10&optimus_uuid=424018A0DBF611F0B1298720294CD58A3B570872BF7C4455AF088EB790854A30&optimus_risk_level=71&optimus_code=10"
+      )
+      .then((res) => {
+        console.log(res.data);
+      });
+```
+
+vue.config.js （①②分别对应axios请求的①②）
+
+```js
+module.exports = defineConfig({
+  transpileDependencies: true,
+  lintOnSave: false, // 暂时关闭eslint语法检测
+
+  // 配置反向代理
+  devServer: {
+    port: 8080, // 端口号可以修改
+    proxy: {
+      // ① 以 /ajax 开头时，会代理为 target 域名
+      // '/ajax': {
+      //   target: 'https://m.maoyan.com',
+      //   changeOrigin: true,
+      // ② 以 /jerry 开头时，会替换为空，并代理为 target 域名
+      '/jerry': {
+        target: 'https://m.maoyan.com',
+        changeOrigin: true,
+        pathRewrite: {
+          '^/jerry': ''
+        }
+      }
+    }
+  }
+})
+
+```
+
+
+
+## 3. 组件别名 @
+
+`@` webpack的别名，是 vue-cli 生成项目的 `src` 目录的绝对路径。
+
+```js
+// . 相对路径
+import navBar from "./components/Navbar.vue";
+import sideBar from "./components/Sidebar.vue";
+// @ 绝对路径（即对应 src 绝对路径）
+import navBar from "@/components/Navbar.vue";
+import sideBar from "@/components/Sidebar.vue";
+```
+
+
+
+也可以通过 **vue.config.js** 对目录进行别名配置（不一定会用的到，按需）
+
+```js
+module.exports = defineConfig({
+  transpileDependencies: true,
+  lintOnSave: false, // 暂时关闭eslint语法检测
+
+  // 目录别名
+  configureWebpack: {
+    resolve: {
+      alias: {
+        'assets': '@/assets',
+        'components': '@/components',
+        'views': '@/views'
+      }
+    }
+  }
+})
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
