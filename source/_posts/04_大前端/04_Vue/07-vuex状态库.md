@@ -1,11 +1,9 @@
 ---
-title: 07-vue开发流程
+title: 07-vuex状态库
 date: 2018-5-22 21:36:21
 tags:
 - Vue
-- git
-- nginx
-- 开发流程
+- vuex
 categories: 
 - 04_大前端
 - 04_Vue
@@ -20,51 +18,7 @@ categories:
 * vue3 官方教程：https://cn.vuejs.org/guide/introduction.html
 * 说明：`Vue 2.0 在 2023 年 12 月 31 日停止更新`。
 
-
-## 1. 开发流程
-
-### 1.1 git
-
-
-
-### 1.2 开发流程
-
-
-
-### 1.3 云服务器
-
-
-
-### 1.4 nginx
-
-
-
-## 2. 扩展
-
-### 2.1 betterScroll
-
-
-
-### 2.2 300ms以及手势问题
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+## 1. vuex状态库
 
 
 
