@@ -14,6 +14,10 @@ categories:
 
 
 
+背景：设备缩放比 `window.devicePixelRatio` ，比如拿到设计稿是750px，设备缩放比是2.0，那么设备像素设置就应该为 375px。
+
+![image-20251224101127737](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20251224113548168.png)
+
 
 
 ## 1. rem等比例缩放

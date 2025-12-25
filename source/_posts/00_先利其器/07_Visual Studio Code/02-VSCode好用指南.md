@@ -86,7 +86,7 @@ npm config set registry https://registry.npmjs.org/
 
 
 
-## 插件列(★)
+## 插件列表(★)
 
 * Chinese (Simplified) (简体中文) Language Pack for Visual Studio Code，中文插件包，第一个必装
 * Auto Rename Tag，自动修改成对标签，默认生效
@@ -157,6 +157,33 @@ FeHelper: https://chrome.zzzmh.cn/info/pkgccpejnmalmdinmhkkfafefagiiiad
 - 勾选“**允许连接**”，填写**名称和描述**，最后点击“**完成**”以保存设置。
 
 ![image-20251223103132106](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20251223103133.png)
+
+
+
+
+
+## ESLint语法检测
+
+.eslintrc.js
+
+```js
+module.exports = {
+  ...,
+  rules: {
+    ...,
+    'no-new': 'off',
+    'no-unused-vars': 'off',
+    'vue/multi-word-component-names': 'off'
+  }
+}
+```
+
+加上如上规则：
+
+* no-new, 不准单独new - 关闭
+* no-unused-vars， 不准有未使用的变量 - 关闭
+* vue/multi-word-component-names，组件命名规则 - 关闭
+  * 对应 error: Component name "xxx" should always be multi-word
 
 
 
