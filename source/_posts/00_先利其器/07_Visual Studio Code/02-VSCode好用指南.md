@@ -66,7 +66,7 @@ CNPM：`https://r.cnpmjs.org/`
 
 2.设置
 
-```csharp
+```bash
 #查询当前使用的镜像源
 npm get registry
 
