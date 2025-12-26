@@ -1,5 +1,5 @@
 ---
-title: 07-vuex状态库
+title: 06-vuex状态库
 date: 2018-5-22 21:36:21
 tags:
 - Vue

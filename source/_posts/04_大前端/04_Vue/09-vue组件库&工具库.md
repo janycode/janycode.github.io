@@ -1,5 +1,5 @@
 ---
-title: 06-vue组件库
+title: 09-vue组件库&工具库
 date: 2018-5-22 21:36:21
 tags:
 - Vue
@@ -12,18 +12,13 @@ categories:
 
 ![image-20200723170734421](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20200723170735.png)
 
-参考资料：
 
-* 官网：https://cn.vuejs.org/
-* vue2 官方教程：https://v2.cn.vuejs.org/v2/guide/
-* vue3 官方教程：https://cn.vuejs.org/guide/introduction.html
-* 说明：`Vue 2.0 在 2023 年 12 月 31 日停止更新`。
 
 ## 1. 组件库
 
 集合来自社区贡献的数以千计的插件和库：https://github.com/vuejs/awesome-vue#components--libraries
 
-### 1.1 elementUI-PC端后台
+### 1.1 elementUI - PC端后台
 
 `elementUI`，饿了么UED团队退出的 vue 前端框架，主要用于PC端（**偏后台系统**）。
 
@@ -265,7 +260,7 @@ html,body{
 
 
 
-### 1.2 vant-移动端
+### 1.2 vant - 移动端
 
 `vant`，有赞技术团队退出的 vue 前端框架，主要用于移动端。
 
@@ -348,6 +343,46 @@ export default {
 效果：
 
 ![image-20251226112537788](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20251226112539161.png)
+
+
+
+
+
+## 2. 工具库
+
+### 2.1 axios - 请求库
+
+axios 基于 Promise 的网络请求库，官网: https://www.axios-http.cn/ 
+
+*npm i axios*
+
+### 2.2 swiper - 轮播库
+
+swiper 各种轮播样式库，官网: https://swiper.com.cn/
+
+*npm i swiper*
+
+### 2.3 moment - 时间库
+
+moment 时间处理库，官网: https://momentjs.cn/
+
+*npm i moment*
+
+### 2.4 better-scroll - 流畅滚动库
+
+better-scroll 更好的滚动库, 官网：https://better-scroll.github.io/docs/zh-CN/
+
+*npm i better-scroll*
+
+
+
+
+
+
+
+
+
+
 
 
 
