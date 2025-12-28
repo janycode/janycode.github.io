@@ -14,9 +14,11 @@ categories:
 
 ## 1. position 定位
 
-`position` 定位，需要结合偏移位置（top/left/right/bottom）使用。
+`position` 定位，需要结合偏移位置（top/left/right/bottom）使用。有 6 个取值。
 
 ![image-20251127173633018](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20251127173634.png)
+
+* **6** postion: inherit; 从其父元素继承此属性。
 
 ```css
 position 偏移位置属性：

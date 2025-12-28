@@ -50,6 +50,7 @@ categories:
 > * SpotBugs 本地代码检查工具
 > * Translation 翻译工具，Ctrl+Q 的时候可以自动翻译 或 Ctrl+Shift+Y 对选定内容翻译
 > * Easy Javadoc 一键生成java代码注释，包含类、属性、方法
+> * Rainbow Brackets 成对括号、花括号着色插件
 
 
 

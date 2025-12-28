@@ -69,7 +69,7 @@ export default new Vuex.Store({
 
 `vue-devtools` 浏览器插件，可视化跟踪公共状态字段和方法的过程，支持时光回溯。
 
-**Vue2** 安装Edge浏览器扩展程序的`5.3.4`，参考下载：https://blog.csdn.net/weixin_45204443/article/details/124205504
+**Vue2** 安装Edge浏览器扩展程序的`5.3.4`版本，参考下载：https://blog.csdn.net/weixin_45204443/article/details/124205504
 
 **Vue3** 安装Chrome浏览器扩展程序的`7.7.7`版本，参考下载：https://chrome.zzzmh.cn/info/nhdogjmejiglipccpnnnanhbledajbpd
 
