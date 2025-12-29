@@ -113,7 +113,7 @@ http {
 
         # 路由
         location / {
-            root   www; # 访问根目录
+            root   www; # 访问根目录 或者 dist
             index  index.html index.htm; # 入口文件
         }
     }
@@ -140,7 +140,7 @@ server {
 
     # 路由
     location / {
-        root   www; # 访问根目录
+        root   www; # 访问根目录 或 dist
         index  index.html index.htm; # 入口文件
     }
 }
@@ -325,7 +325,7 @@ nginx配置如下：
 >
 > 如果两个页面的协议，端口（如果有指定）和域名都相同，则两个页面具有相同的源。
 
-### nginx解决跨域的原理
+### nginx解决跨域-反向代理
 
 例如：
 
@@ -343,6 +343,7 @@ server {
     server_name xx_domain
 
     ## 1. 用户访问 http://xx_domain，则反向代理到 https://github.com
+    ## 2. 也可配置为 location /path {...}，则访问 http://domain/path 时，匹配反向代理规则
     location / {
         proxy_pass  https://github.com;
         proxy_redirect     off;
@@ -355,6 +356,51 @@ server {
 ```
 
 这样可以完美绕过浏览器的同源策略：`github.com`访问`nginx`的`github.com`属于同源访问，而`nginx`对服务端转发的请求不会触发浏览器的同源策略。
+
+实例：
+
+```nginx
+    server {
+        listen               80; 
+        server_name          xxx.com www.xxx.com;
+        
+        location / { 
+            rewrite ^/(.*) https://www.xxx.com/$1 permanent;
+        }
+    }
+
+    server {
+        listen              443;
+        server_name         xxx.com www.xxx.com; 
+        ssl_certificate     /etc/letsencrypt/live/www.xxx.com/fullchain.pem;
+        ssl_certificate_key /etc/letsencrypt/live/www.xxx.com/privkey.pem;
+        
+        #开启解压缩静态文件
+        gzip_static on;
+        
+        location / { 
+            proxy_pass http://127.0.0.1:3000;
+        }
+        #反向代理配置，访问 recruit 时全部代理到 proxy_pass 服务器路径
+        location /recruit/ { 
+            proxy_set_header Host $http_host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header REMOTE-HOST $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_hide_header X-Powered-By;
+            proxy_hide_header Server;
+            proxy_read_timeout 7200;
+            proxy_pass http://127.0.0.1:9303/recruit/;
+        }
+        
+        location = /50x.html {
+            root html;
+        }
+    }
+
+```
+
+
 
 ## Nginx配置参数中文详细说明
 

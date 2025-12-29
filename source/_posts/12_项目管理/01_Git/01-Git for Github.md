@@ -53,7 +53,7 @@ $ `git config --global user.email "yourEmail"`
 
 * **工作区(Working Directory)：**电脑上的本地硬盘目录，平时存放项目代码的地方。
 
-* **暂存区(stage)**：用于临时存放你的改动，事实上它只是一个文件，保存即将提交到文件列表信息，一般存放在"git目录"下的index文件（.git/index）中，所以我们把暂存区有时也叫作索引（index）。
+* **暂存区(stage)：**用于临时存放你的改动，事实上它只是一个文件，保存即将提交到文件列表信息，一般存放在"git目录"下的index文件（.git/index）中，所以我们把暂存区有时也叫作索引（index）。
 
 * **本地仓库(Repository)：**工作区有个隐藏目录.git，它就是Git的本地版本库。
 

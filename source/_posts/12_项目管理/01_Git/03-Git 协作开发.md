@@ -12,14 +12,14 @@ categories:
 
 ### 分支规范
 
-|               分支名称                | 生命周期 |          功能          |
-| :-----------------------------------: | :------: | :--------------------: |
-|                master                 |   长期   |  主分支、生产环境版本  |
-|                develop                |   长期   |       开发、联调       |
-|                release                |   长期   |          测试          |
-| hotfix/jiang.yuan/new-hotfix@20220422 |   临时   |        bug修复         |
-|                  pre                  |   临时   | 预上线、解决多版本冲突 |
-| feature/jiang.yuan/new-task@20220422  |   临时   |       新业务开发       |
+|               分支名称               |  生命周期   |          功能          |
+| :----------------------------------: | :---------: | :--------------------: |
+|                master                |    长期     |  主分支、生产环境版本  |
+|               develop                |    长期     |       开发、联调       |
+|               release                |    长期     |          测试          |
+| hotfix/jiangyuan/new-hotfix@20220422 |    临时     |        bug修复         |
+|                 pre                  | 长期 / 临时 | 预上线、解决多版本冲突 |
+| feature/jiangyuan/new-task@20220422  |    临时     |       新业务开发       |
 
 ### 单 feature 分支开发流程
 
@@ -91,7 +91,9 @@ categories:
 
 ![image-20200713202524457](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20200713202525.png)
 
-Ctrl + Shift + ` >> Git >> 操作分支，将 dev 分支推到远程仓库。
+Ctrl + Shift + `
+
+>> Git >> 操作分支，将 dev 分支推到远程仓库。
 
 ![image-20200713202841629](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20200713202842.png)
 

@@ -10,27 +10,38 @@ categories:
 
 ![image-20200616223337238](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20200616223339.png)
 
-## 1. 同步操作
+速查：
 
-```bash
+![image-20251229151805779](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20251229151807481.png)
+
+## **1. 同步操作**
+
+```sh
 下载代码：git clone [.git path]
 同步本地：git pull
 工作状态：git status [path]
 提交暂存：git add filename 或 git add dirname 或 git add .
-提交暂存：git add -f filename  #添加不存在的文件增加参数 -f
+提交暂存：git add -f filename       #添加不存在的文件增加参数 -f
 删除暂存：git rm --cached filename  #不删除物理文件，仅将该文件从缓存中删除
 提交修改：git commit -m "说明信息"
 推送仓库：git push
+```
+
+```sh
 查看记录：git log
-回滚代码：git reset --hard resetVersionHash #将当前branch的HEAD指针指向commit hash
-		(eg: git reset --hard 388a0acd8f29efd98974318f3dd30488a5cf7141 #回滚代码到这个log提交时的状态)
-		git push -f origin currentBranch
-		(eg: git push -f origin dev #强制提交覆盖远程dev分支代码，慎用 -f 确定代码不要的情况使用！！！)
+操作记录：git reflog
+回滚代码：
+git reset --hard resetVersionHash #将当前branch的HEAD指针指向commit hash
+# eg: git reset --hard 388a0acd8f29efd98974318f3dd30488a5cf7141 #回滚代码到这个log提交时的状态
+git push -f origin currentBranch
+# eg: git push -f origin dev #强制提交覆盖远程dev分支代码，慎用 -f 确定代码不要的情况使用！！！
+git reset --hard HEAD^        #回退到上一次提交
+git reset --hard HEAD~n       #回退n次操作
 ```
 
 
 
-## 2. 强制覆盖
+## **2. 强制覆盖**
 
 ```sh
 强制覆盖命令：
@@ -42,7 +53,9 @@ categories:
 
 强制覆盖本地（从指定分支上，[master]为branch name）：
 	pj=[master] && path=`git branch --all | grep "/$pj$"` && git fetch --all && git reset --hard $path && git pull
+```
 
+```sh
 强制覆盖单个文件或目录
    git fetch
    # ...<ignore>
@@ -50,20 +63,22 @@ categories:
   git checkout -m cc8990b <filename>
 ```
 
-```
+
+
+```sh
 使用 git push 命令提交到Gerrit：git push ssh://user@10.128.161.91:29418/mbb/xxx HEAD:refs/for/branch
  @ user：是自己的域名，例如：yuan.jiang
  @ branch：为分支名，目前我们只使用master
 ```
 
-## 3. 提交空目录
+## **3. 提交空目录**
 
-```
+```sh
 git提交空目录的方法：
 如果想push一个空目录，在它下面执行 touch .gitignore 文件，然后 add 提交即可。
 ```
 
-## 4. 提交删除目录
+## **4. 提交删除目录**
 
 ```sh
 git提交删除目录：
@@ -83,7 +98,7 @@ git add [*directory*] -A
 
 
 
-## 5. 提交（commit）
+## **5. 提交（commit）**
 
 ### 我刚才提交了什么?
 

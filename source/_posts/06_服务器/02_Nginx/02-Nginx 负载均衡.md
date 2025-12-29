@@ -495,7 +495,7 @@ sudo certbot --nginx -d yourdomain.com
 
 ### 步骤 4.2：配置 Nginx 使用 SSL
 
-```bash
+```nginx
 server {
     listen 443 ssl;
     server_name yourdomain.com;
