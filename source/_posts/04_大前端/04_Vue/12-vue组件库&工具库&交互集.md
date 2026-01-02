@@ -1,5 +1,5 @@
 ---
-title: 09-vue组件库&工具库&交互集
+title: 12-vue组件库&工具库&交互集
 date: 2018-5-22 21:36:21
 tags:
 - Vue
@@ -44,7 +44,7 @@ vue add element
 # Vue 3 项目，安装 plus 版：
 npm i element-plus -S
 
-# Vue 2 项目，安装兼容版本，如2.9.2：
+# Vue 2 项目，安装兼容版本，v2.9.2：
 npm i element-ui@2.9.2 -S
 ```
 

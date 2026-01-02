@@ -682,7 +682,7 @@ export default {
 
 ## 2. 反向代理-解决跨域
 
-`vue.config.js 配置反向代理`就可以解决跨域问题（让天下没有难跨的域）。
+`vue.config.js 配置反向代理`就可以解决跨域问题（让天下没有难跨的域）。 [devServer 官方配置](https://cli.vuejs.org/zh/config/#devserver-proxy)
 
 * devServer: {...} 可以指定端口号 port ，以及指定反向代理 proxy
 

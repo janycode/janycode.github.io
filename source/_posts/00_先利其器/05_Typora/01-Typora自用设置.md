@@ -16,7 +16,9 @@ categories:
 #### 下载
 
 Typora 官网地址：[https://typora.io](https://typora.io/)
+
 Typora 中文官网地址：[https://typoraio.cn](https://typoraio.cn/)
+
 工具下载地址：[蓝奏云，密码：fkmj](https://www.lanzouh.com/i7j9H26waded) || [百度网盘，密码：dcqe](https://pan.baidu.com/s/1gga2OZ732Xvig1QKn52NHQ)
 
 #### 复制文件至安装目录
