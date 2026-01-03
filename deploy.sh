@@ -3,6 +3,7 @@
 
 #生成一次最新需要部署的页面
 echo "生成一次最新需要部署的页面..."
+hexo clean
 hexo g
 echo "生成完毕！"
 echo
