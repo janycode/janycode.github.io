@@ -150,6 +150,8 @@ Java EE API 官方文档： [1.7英文](https://docs.oracle.com/javaee/7/api/toc
 |  03  |       uiverse.io        |              [官网](https://uiverse.io/)              |     最大开源UI库，适配React、Vue、Lit等，开箱即用      |
 |  04  |   VUE后台管理系统模板   |            [官网](http://vue.easydo.work/)            | 最全的前端管理系统模版开源库，含预览地址、官网、教程等 |
 |  05  |      open-lovable       | [开源地址](https://github.com/firecrawl/open-lovable) |                克隆任何网站为React应用                 |
+|  06  |        vue bits         |             [官网](https://vue-bits.dev/)             |             vue组件库，各种酷炫特效的组件              |
+|  07  |          UXbot          |             [官网](https://www.uxbot.cn/)             |                快速将想法变成ui网站界面                |
 
 
 

@@ -246,6 +246,18 @@ $width: 100px;
 
 
 
+## 6. vue中使用
+
+安装：*npm i sass*
+
+使用：
+
+```css
+<style lang="scss" scoped>
+...
+</style>
+```
+
 
 
 
