@@ -1,9 +1,10 @@
 ---
-title: 14-vue工具库
+title: 99-vue工具库&组件库
 date: 2022-5-22 21:36:21
 tags:
 - Vue
 - 工具库
+- 组件库
 categories: 
 - 04_大前端
 - 04_Vue
@@ -20,15 +21,50 @@ Lodash 是一个一致性、模块化、高性能的 JavaScript 实用工具库�
 
 安装：*npm i lodash*
 
-使用：(习惯使用 `_` 作为其对象名称。)
+使用：(习惯使用 `_` 作为其对象名称来引入。)
 
 ```js
 import _ from 'lodash'
 ```
 
+#### 如验证 groupBy 使用
 
+示例1：
 
+```js
+const numbers = [1, 2, 3, 4, 5, 6];
+// 使用 groupBy 按「奇偶性」分组
+const grouped = _.groupBy(numbers, (num) => num % 2 === 0 ? '偶数' : '奇数');
+console.log(grouped);
+```
 
+```json
+{
+  奇数: [1, 3, 5],
+  偶数: [2, 4, 6]
+}
+```
+
+示例2：
+
+```js
+const users = [
+  { name: '张三', age: 20 },
+  { name: '李四', age: 30 },
+  { name: '王五', age: 20 },
+  { name: '赵六', age: 30 }
+];
+// 按「年龄」分组（直接传属性名字符串，更简洁）
+const groupedByAge = _.groupBy(users, 'age');
+console.log(groupedByAge);
+```
+
+```json
+{
+  '20': [{ name: '张三', age: 20 }, { name: '王五', age: 20 }],
+  '30': [{ name: '李四', age: 30 }, { name: '赵六', age: 30 }]
+}
+```
 
 
 
@@ -621,6 +657,16 @@ export default {
 
 
 
+### 1.5 综合
+
+> 1. **通用工具首选**：Lodash（全能）、Underscore（轻量）、Ramda（函数式）；
+> 2. **日期处理主流**：date-fns（TypeScript 优先）、dayjs（轻量兼容）；
+> 3. **数据验证推荐**：Zod（前端 / TS 项目）、Joi（后端 Node.js 项目）；
+> 4. **网络请求标配**：Axios（浏览器 / Node.js 通用）；
+> 5. **历史 / 传统项目**：jQuery（DOM 操作）、Moment.js（不推荐新项目，用 dayjs/date-fns 替代）。
+
+
+
 ## 2. 交互集
 
 ### 2.1 索引城市
@@ -873,6 +919,82 @@ export default {
 
 
 
+
+## 3. 主流开源组件库
+
+#### 1. Tailwind CSS（工具类优先的原子化 CSS 框架）
+
+- **定位**：不是传统组件库，而是原子化 CSS 工具集，可快速定制任意风格的用户端页面（官网 / 商城首选）
+- **核心优势**：高度灵活、无预设样式束缚、响应式适配极佳，适合需要定制化设计的商城 / 品牌官网
+- **企业应用**：Shopify、Netflix、Twitch、阿里 / 字节等大厂大量使用
+- **官网**：https://tailwindcss.com/
+- **补充**：搭配 `daisyUI`（基于 Tailwind 的组件库）使用更高效：https://daisyui.com/
+
+#### 2. Ant Design（AntD，阿里出品）
+
+- **定位**：不仅支持后台，也深度适配用户端场景（商城、官网、用户中心），设计体系成熟
+- **核心优势**：组件丰富（含导航、轮播、商品卡片、表单等用户端核心组件）、交互规范统一、支持响应式
+- **企业应用**：阿里系产品、知乎、B 站等大量使用
+- **官网**：https://ant.design/
+- **补充**：Vue 版本：https://www.antdv.com/（适配 Vue2/Vue3）
+
+#### 3. Vuetify（Vue 生态用户端首选）
+
+- **定位**：基于 Material Design 的 Vue 专属组件库，专为用户端场景优化（商城、官网、移动端 H5）
+- **核心优势**：组件覆盖全（商品列表、轮播、购物车、支付组件等）、响应式原生支持、移动端适配优秀
+- **企业应用**：大量中小电商、品牌官网使用，Vue 生态用户端场景渗透率极高
+- **官网**：https://vuetifyjs.com/
+
+#### 4. Bootstrap（经典通用型）
+
+- **定位**：最老牌的响应式 CSS 框架，适配所有用户端场景（官网、商城、营销页）
+- **核心优势**：生态极广、文档完善、学习成本低，适合快速搭建商城 / 官网
+- **企业应用**：全球数百万网站使用，包括 NASA、Twitter 早期版本
+- **官网**：https://getbootstrap.com/
+
+#### 5. Element Plus（扩展用户端场景）
+
+- **定位**：虽以后台为主，但 V2 版本大幅增强用户端组件（商品卡片、轮播、导航、优惠券等）
+- **核心优势**：Vue3 生态最成熟，组件风格可定制，适合需要统一前后端风格的商城 / 官网
+- **企业应用**：国内大量中小电商、品牌官网使用
+- **官网**：https://element-plus.org/
+
+#### 6. MUI（Material UI，React 生态首选）
+
+- **定位**：基于 Material Design 的 React 组件库，专为用户端场景设计（商城、官网、移动端 H5）
+- **核心优势**：组件精美、交互流畅、响应式适配优秀，适合 React 技术栈的商城 / 官网
+- **企业应用**：Google 系产品、Airbnb、Netflix 等使用
+- **官网**：https://mui.com/
+
+#### 7. Vant（移动端用户端专用）
+
+- **定位**：有赞出品，专为移动端 H5 / 小程序设计的 Vue 组件库（商城、电商 H5、会员中心）
+- **核心优势**：轻量、高性能、适配各种移动端机型，电商场景组件全覆盖（购物车、支付、优惠券）
+- **企业应用**：有赞生态、京东、拼多多部分移动端页面
+- **官网**：https://vant-ui.github.io/vant/
+
+#### 8. Layui（轻量通用型）
+
+- **定位**：国产轻量 UI 框架，无框架依赖（原生 JS），适配官网 / 商城 / 营销页
+- **核心优势**：学习成本极低、开箱即用，适合非前后端分离的传统官网 / 商城
+- **企业应用**：国内大量中小企业官网、小型商城使用
+- **官网**：https://layui.dev/
+
+### 场景选型
+
+| 场景                  | 首选组件库             | 次选组件库             |
+| --------------------- | ---------------------- | ---------------------- |
+| Vue3 + 商城 / 官网    | Vuetify / Element Plus | Tailwind CSS + daisyUI |
+| React + 商城 / 官网   | MUI (Material UI)      | Ant Design             |
+| 移动端 H5 / 小程序    | Vant                   | MUI (移动端适配版)     |
+| 高度定制化官网 / 商城 | Tailwind CSS           | Bootstrap              |
+| 快速搭建 / 低学习成本 | Bootstrap              | Layui                  |
+
+### 总结
+
+1. **通用首选**：Tailwind CSS（高度定制）、Bootstrap（快速搭建）是所有用户端场景的基础选择，适配性最广；
+2. **框架绑定型**：Vue 生态选 Vuetify/Element Plus，React 生态选 MUI/Ant Design，移动端选 Vant；
+3. **企业级适配**：Ant Design、Element Plus、Vuetify 是国内企业做商城 / 官网最常用的三大组件库，兼顾功能、美观和维护性。
 
 
 
