@@ -88,29 +88,27 @@ npm config set registry https://registry.npmjs.org/
 
 ## 插件列表(★)
 
-* Chinese (Simplified) (简体中文) Language Pack for Visual Studio Code，中文插件包，第一个必装
-* Auto Rename Tag，自动修改成对标签，默认生效
-* view-in-browser，快速预览页面的插件
-* Live Server，实时预览服务，快捷键 Alt + L，再 Alt + O
-* htmltagwrap，快速键入p标签，结合成对修改标签使用，快捷键 Alt + W
-* px to rem & rpx & vw (cssrem)，可以快速的转换px与rem单位，快捷键 Alt + Z
-* Image preview，光标悬浮在图片路径上时，显示图片预览
-* Comment Translate： 自动翻译 MDN reference 提示信息，最好设置一下源语种和目标语种
-* TRAE AI (formerly MarsCode): Coding Assistant，豆包智能编程助手，提供代码解释、单测生成、问题修复、技术问答等，提升编码效率与质量。
-* Code Spell Checker，标志错的单词，还可以提示单词的正确拼法。
-* indent-rainbow，提示我们的缩进是否到位，每步交替四种不同的颜色，没有到位的话颜色变红
-* IntelliJ IDEA Keybindings，转变快捷键习惯与 IDEA 风格
-* Preview on Web Server，在web服务器上预览，重启vscode后，可以访问8080端口
+* **Chinese (Simplified) (简体中文) Language Pack for Visual Studio Code**，中文插件包，第一个必装
+* **Auto Rename Tag**，自动修改成对标签，默认生效
+* **view-in-browser**，快速预览页面的插件
+* **Live Server**，实时预览服务，快捷键 Alt + L，再 Alt + O
+* **htmltagwrap**，快速键入p标签，结合成对修改标签使用，快捷键 Alt + W
+* **px to rem & rpx & vw (cssrem)**，可以快速的转换px与rem单位，快捷键 Alt + Z
+* **Image preview**，光标悬浮在图片路径上时，显示图片预览
+* **Comment Translate**： 自动翻译 MDN reference 提示信息，最好设置一下源语种和目标语种
+* **TRAE AI (formerly MarsCode)**: Coding Assistant，豆包智能编程助手，提供代码解释、单测生成、问题修复、技术问答等，提升编码效率与质量。
+* **Code Spell Checker**，标志错的单词，还可以提示单词的正确拼法。
+* **indent-rainbow**，提示我们的缩进是否到位，每步交替四种不同的颜色，没有到位的话颜色变红
+* **IntelliJ IDEA Keybindings**，转变快捷键习惯与 IDEA 风格
+* **Preview on Web Server**，在web服务器上预览，重启vscode后，可以访问8080端口
   * 快捷键有冲突，记得修改快捷键，目前使用 `Ctrl+Alt+Shift+字母`  S 是停止，R 是重启，L 是快速预览
-* Error Lens：主要用于代码编辑时错误及警告的提示和展示
-* CSS Peek：是一个能够将类名快速转到定义的的插件，尤其是全局类名的时候，可以达到事半功倍的效果
-* ESLint：ESLint语法标准检测（**暂时禁用**，语法提示过于严谨）
-* Vue（Offical）：针对vue3的语法插件，需要禁用 Vetur 插件。
+* **Error Lens**：主要用于代码编辑时错误及警告的提示和展示
+* **CSS Peek**：是一个能够将类名快速转到定义的的插件，尤其是全局类名的时候，可以达到事半功倍的效果
+* **ESLint**：ESLint语法标准检测（**暂时禁用**，语法提示过于严谨）
+* **Vue（Offical）**：针对vue3的语法插件，需要禁用 Vetur 插件。
 * AI 代码补全插件：https://apifox.com/apiskills/vscode-code-completion/
 
-PS：如果插件安装无法联网，把windows文件管理器下 %USERPROFILE%\.vscode\extensions，删除该文件夹下所有内容。
-
-
+PS：如果插件安装无法联网，把windows文件管理器下 `%USERPROFILE%\.vscode\extensions`，删除该文件夹下所有内容。
 
 
 
@@ -118,8 +116,9 @@ PS：如果插件安装无法联网，把windows文件管理器下 %USERPROFILE%
 
 ## 自用快捷键
 
-* Ctrl + Alt + Shift + J，批量选中相同变量
-
+* **Ctrl + Alt + Shift + J**  批量选中相同变量
+* **Ctrl + Alt + L**  转变快捷键习惯与 IDEA 风格后的 **代码自动格式化** 快捷键
+  * 连带两个设置: `Editor: Word Wrap Column` 和  `Prettier: Print Width` 两个字段设置为 120（默认值为80），可以增加格式化时触发换行的宽度
 
 
 
@@ -159,6 +158,19 @@ FeHelper: https://chrome.zzzmh.cn/info/pkgccpejnmalmdinmhkkfafefagiiiad
 ![image-20251223103132106](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20251223103133.png)
 
 
+
+
+
+### 4. 谷歌浏览器控制台字体设置
+
+参考资料：https://juejin.cn/post/7348842402826485801
+
+我的设置如下：
+
+* 标准字体：**微软雅黑**
+* Serif 字体：**Microsoft YaHei Mono** 或 Consolas
+* Sans-serif 字体：**微软雅黑**
+* 宽度固定的字体：**Microsoft YaHei Mono** 或 Consolas
 
 
 
