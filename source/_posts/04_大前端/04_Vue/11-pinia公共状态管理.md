@@ -292,9 +292,43 @@ export default useCinemasStore
 
 
 
+## 2. pinia 持久化插件
 
+地址：https://www.npmjs.com/package/pinia-plugin-persistedstate
 
+安装：*npm i pinia-plugin-persistedstate*
 
+使用：
 
+main.js
 
+```js
+import { createPinia } from 'pinia'
+import piniaPluginPersistedstate from 'pinia-plugin-persistedstate'
 
+const pinia = createPinia()
+pinia.use(piniaPluginPersistedstate)
+```
+
+xxxStore.js - 在 defineStore 的第三个参数，持久化开启 `{ persist: true }`
+
+```js
+import {defineStore} from 'pinia'
+import { ref } from 'vue'
+
+// defineStore 第三个参与用于 pinia 持久化插件配置
+export const useUserStore = defineStore("user", () => {
+    const user = ref({}) //全局可用
+    const changeUser = (value) => {
+        user.value = value
+    }
+    return {
+        user,
+        changeUser
+    }
+}, {
+    persist: true //持久化设置
+})
+```
+
+触发持久化 store 时，会将公共状态数据 user 存储在 localStorage 中。
