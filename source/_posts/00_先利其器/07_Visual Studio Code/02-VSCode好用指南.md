@@ -38,6 +38,33 @@ categories:
 
 ![img](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20251207223406.jpg)
 
+### 文件树
+
+ctrl + shift + P 输入 *settings.json* 打开 *Open User Settgins*，添加如下 `3` 个配置：
+
+```json
+{
+  ...
+  "workbench.tree.indent": 12,
+  "workbench.tree.renderIndentGuides": "always",
+  "workbench.colorCustomizations": {
+    "tree.indentGuidesStroke": "#05ef3c"
+  }
+}
+```
+
+效果
+
+![image-20260111094012466](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20260111094014106.png)
+
+
+
+### 自动格式化
+
+打开设置，找到 format on save/paste/type，3项开启：保存/粘贴/键入一行
+
+
+
 
 
 ## npm|cnpm镜像
@@ -96,6 +123,7 @@ npm config set registry https://registry.npmjs.org/
 * **px to rem & rpx & vw (cssrem)**，可以快速的转换px与rem单位，快捷键 Alt + Z
 * **Image preview**，光标悬浮在图片路径上时，显示图片预览
 * **Comment Translate**： 自动翻译 MDN reference 提示信息，最好设置一下源语种和目标语种
+* **Code Translate** ：作者 w88975 自动翻译鼠标停留的代码变量单词悬浮
 * **TRAE AI (formerly MarsCode)**: Coding Assistant，豆包智能编程助手，提供代码解释、单测生成、问题修复、技术问答等，提升编码效率与质量。
 * **Code Spell Checker**，标志错的单词，还可以提示单词的正确拼法。
 * **indent-rainbow**，提示我们的缩进是否到位，每步交替四种不同的颜色，没有到位的话颜色变红
@@ -106,6 +134,11 @@ npm config set registry https://registry.npmjs.org/
 * **CSS Peek**：是一个能够将类名快速转到定义的的插件，尤其是全局类名的时候，可以达到事半功倍的效果
 * **ESLint**：ESLint语法标准检测（**暂时禁用**，语法提示过于严谨）
 * **Vue（Offical）**：针对vue3的语法插件，需要禁用 Vetur 插件。
+* **Material Icon Theme** ：文件图标主体插件，更高效美观的分辨不同的文件和文件夹 - 用的人多，但个人不太感冒。
+* **VSCode Icons** ：【`推荐`】文件图标主体插件，简约简单，好识别不花哨。
+* **Path Intellisense** ：路径智能提示补全插件，输入路径时非常好用
+* **CodeSnap** ：选中的代码快速存储为美观的截图
+* **Doxygen Documentation Generator** ：和 IDEA 一样快捷的输入方法或者类的注释
 * AI 代码补全插件：https://apifox.com/apiskills/vscode-code-completion/
 
 PS：如果插件安装无法联网，把windows文件管理器下 `%USERPROFILE%\.vscode\extensions`，删除该文件夹下所有内容。
@@ -114,13 +147,28 @@ PS：如果插件安装无法联网，把windows文件管理器下 `%USERPROFILE
 
 
 
-## 自用快捷键
+## 自用快捷键-IDEA风格
 
 * **Ctrl + Alt + Shift + J**  批量选中相同变量
 * **Ctrl + Alt + L**  转变快捷键习惯与 IDEA 风格后的 **代码自动格式化** 快捷键
-  * 连带两个设置: `Editor: Word Wrap Column` 和  `Prettier: Print Width` 两个字段设置为 120（默认值为80），可以增加格式化时触发换行的宽度
+  * 连带两个设置: `Editor: Word Wrap Column` 和  `Prettier: Print Width` 两个字段设置为 150（默认值为80），可以增加格式化时触发换行的宽度
 
+* **Ctrl + E** 打开顶部文件搜索栏
+* **Ctrl + G** 跳转到指定的行数
+* **Ctrl + Shift + O** 搜索并跳转到当前文件指定的变量/方法名
+* **Ctrl + Tab** 循环展示已打开的文件，↑ ↓ 选中到对应文件
+* **Alt + ←或→** 快速左右跳转已打开的文件【最常用】
+* 双击shift后输入`?` ，展示最常用的命令或快捷键
+* **Ctrl + Shift + P**，打开VSCode的命令面板
+* `Ctrl + \` 打开右侧拆分编辑器，此时 **Alt + ←或→** 在当前编辑器窗口内切换文件，**Ctrl+1或2** 在第1个或第2个编辑器间切换
 
+* **Ctrl + Shift + ↑或↓** 移动当前代码行，或者 Alt + ↑或↓
+* **Ctrl + L** 选中当前行，继续按就继续往下选（IDEA 中是 Ctrl + C 选中当前行）
+* **Ctrl + W** 选中或扩选当前变量/方法，再按下 **Ctrl + Alt + Shift + J** 就可以选中当前文件中所有的该名字
+* `Alt + 滚轮` 代码滚动加速滚动，方便浏览
+* 对文件点击右键，可以选中当前比较文件，再选一个文件进行对比文件内容。
+  * 终端命令方式 `code --diff 文件路径A 文件路径B` 会快速打开 vscode 的文件对比窗口进行对比（适用于不再同一个工程项目中）。
+  * 替代工具 `BeyondCompare`
 
 
 
