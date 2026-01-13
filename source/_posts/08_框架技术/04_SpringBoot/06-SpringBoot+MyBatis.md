@@ -17,7 +17,7 @@ categories:
 
 
 
-#### 1. 导入依赖
+### 1. 导入依赖
 
 ```xml
 <!--  引入mybatis相关依赖，必须写版本号 -->
@@ -36,7 +36,7 @@ categories:
 </dependency>
 ```
 
-#### 2. 配置文件
+### 2. 配置文件
 
 如果使用 properties 格式的配置：application.properties
 
@@ -81,7 +81,7 @@ mybatis:
 
 
 
-#### 3. 实体类
+### 3. 实体类
 
 ```java
 @Data
@@ -96,7 +96,7 @@ public class Account {
 
 
 
-#### 4. Mapper
+### 4. Mapper
 
 ```JAVA
 import com.demo.pojo.Account;
@@ -111,7 +111,7 @@ public interface AccountMapper {
 
 
 
-#### 5. Mapper.xml
+### 5. Mapper.xml
 
 在 src\main\resources\mapper 路径下创建对应的 AccountMapper.xml 文件
 
@@ -130,7 +130,7 @@ public interface AccountMapper {
 
 
 
-#### 6. Service
+### 6. Service
 
 ```java
 import com.demo.pojo.Account;
@@ -143,7 +143,7 @@ public interface AccountService {
 
 
 
-#### 7. ServiceImpl
+### 7. ServiceImpl
 
 ```java
 import com.demo.mapper.AccountMapper;
@@ -168,7 +168,7 @@ public class AccountServiceImpl implements AccountService {
 
 
 
-#### 8. Controller
+### 8. Controller
 
 ```java
 import com.demo.pojo.Account;
@@ -193,7 +193,7 @@ public class AccountController {
 
 
 
-#### 9. `@MapperScan`
+### 9. `@MapperScan`
 
 > 注意：需要在启动类上添加 `@MapperScan` 扫描 Mapper
 
@@ -213,7 +213,7 @@ public class Springboot02Application {
 
 
 
-#### 10. 分页插件整合
+### 10. 分页插件整合
 
 pom.xml
 

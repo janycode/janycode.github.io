@@ -72,3 +72,19 @@ tt {
 }
 ```
 
+
+
+### 4. csdn文章复制在线转md
+
+csdn文章路径: https://blog.csdn.net/xxx/article/details/123
+
+浏览器url中进入阅读模式，加`read://`：`read://https://blog.csdn.net/xxx/article/details/123`
+
+F12开发者工具模式，复制文章内容的div为 outHTML：
+
+![image-20260113104745774](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20260113104747124.png)
+
+在线转md：
+
+https://tool.lu/markdown/
+

@@ -74,22 +74,25 @@ public class MyInterceptorConfig implements WebMvcConfigurer {
 
 > 匹配规则：
 >
-> * addPathPatterns("/*/**") 可以拦截所有请求
+> `addPathPatterns("/*/**")` 可以拦截所有请求
 >
-> * 一个*：只匹配字符，不匹配路径（ / ）
->     两个**：匹配字符，和路径（ / ）
+> 一个 *：只匹配字符，不匹配路径（ / ）
 >
-> * ```yaml
->     - /**： 匹配所有路径
->     - /admin/**：匹配 /admin/ 下的所有路径
->     - /secure/*：只匹配 /secure/user，不匹配 /secure/user/info
->     ```
+> 两个 **：匹配字符，和路径（ / ）
 >
-> addPathPatterns("`/**`") 表示拦截所有的请求
-> addPathPatterns("`/**`") 表示拦截所有的请求
-> addPathPatterns("`/test/**`") 表示拦截/test/ 下的所有路径请求
-> addPathPatterns("`/test/*`") 表示拦截/test/abc，拦截/test/aaa , 不拦截 /test/abc/def
-> addPathPatterns("`/test/`").excludePathPatterns("`/test/login`", “`/test/register`”) 表示拦截/test/ 下的所有路径请求，但不拦截 /test/login 和 /test/register
+> - `/**`： 匹配所有路径
+> - `/admin/**`：匹配 /admin/ 下的所有路径
+> - `/secure/*`：只匹配 /secure/user，不匹配 /secure/user/info
+>
+> `addPathPatterns("/**")` 表示拦截所有的请求
+>
+> `addPathPatterns("/**")` 表示拦截所有的请求
+>
+> `addPathPatterns("/test/**")` 表示拦截/test/ 下的所有路径请求
+>
+> `addPathPatterns("/test/*")` 表示拦截/test/abc，拦截/test/aaa , 不拦截 /test/abc/def
+>
+> `addPathPatterns("/test/").excludePathPatterns("/test/login", "/test/register")` 表示拦截/test/ 下的所有路径请求，但不拦截 /test/login 和 /test/register
 
 
 ### 3. 测试类

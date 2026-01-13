@@ -1,12 +1,12 @@
 ---
-title: 02-HTTPS协议
+title: 06-HTTPS协议
 date: 2017-4-28 22:23:58
 tags:
 - HTTPS
 - 协议
 categories: 
 - 04_大前端
-- 06_HTTP
+- 01_HTML
 ---
 
 

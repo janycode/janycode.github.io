@@ -1,12 +1,12 @@
 ---
-title: 01-HTTP协议
+title: 05-HTTP协议
 date: 2017-4-28 22:23:58
 tags:
 - HTTP
 - 协议
 categories: 
 - 04_大前端
-- 06_HTTP
+- 01_HTML
 ---
 
 协议：两个设备进行数据交换的约定。
