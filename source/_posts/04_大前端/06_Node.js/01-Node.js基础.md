@@ -33,7 +33,7 @@ Nodejs是基于V8引擎，V8是Google发布的开源JavaScript引擎，本身就
 
 - Nodejs语法完全是js语法，只要懂js基础就可以学会Nodejs后端开发
 
-- NodeJs超强的高并发能力,实现高性能服务器
+- Nodejs超强的高并发能力，实现高性能服务器
 
 - 开发周期短、开发成本低、学习成本低
 
