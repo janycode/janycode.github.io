@@ -68,7 +68,7 @@ Node.js 下载地址：https://nodejs.cn/download/
 
 命令如下：
 
-```powershell
+```sh
 nvm install 18.20.3
 nvm use 18.20.3
 node -v #输出 v18.20.3
@@ -305,9 +305,12 @@ yarn install
 
 > 以 node 18 版本文档为参考：https://nodejs.cn/api/v18/zlib.html
 >
-> 所有模块使用前都需要导入，导入方式有两种：`CJS`，即 commonJS 规范；`EJS`，即 ES6 规范。
+> 所有模块使用前都需要导入，导入方式有两种：
+>
+> * `CJS`，即 commonJS 规范
+> * `ESM`，即 ES6 规范（**JavaScript 模块化标准**）
 
-### 2.0 ES 规范 - 【EJS】
+### 2.0 ES 规范 - 【ESM】
 
 |         导出方式         |           导入方式            |            特点            |
 | :----------------------: | :---------------------------: | :------------------------: |
@@ -675,13 +678,15 @@ index.html
 
 
 
-#### 2.1.6 爬虫
+#### 2.1.6 爬虫 cheerio
 
 安装第三方模块：
 
 *npm init*
 
-*npm i cheerio@1.0.0-rc.12*    -(兼容性: node18 与 cheerio1.0.0-rc.12)
+*npm i cheerio@1.0.0-rc.12*    - (兼容性: node18 与 cheerio1.0.0-rc.12 兼容，否则 require 报错)
+
+* cheerio 可以让解析 dom 像类似 jquery 一样。
 
 ```js
 var http = require("http")
