@@ -170,9 +170,9 @@ MongoDB支持丰富的查询语言, 支持读和写操作(CRUD), 比如数据聚
 - 使用 `db.<collection_name>.insertOne()` 向集合中添加*一个文档*, 参数一个 json 格式的文档
 - 使用 `db.<collection_name>.insertMany()` 向集合中添加*多个文档*, 参数为 json 文档数组
 
-![img](https://docs.mongodb.com/manual/_images/crud-annotated-mongodb-insertOne.bakedsvg.svg)
 
-```
+
+```sql
 db.collection.insert({
   <document or array of documents>,
   writeConcern: <document>,
@@ -199,7 +199,7 @@ db.collection.insertMany([
 
 如果某条数据插入失败, 将会终止插入, 但已经插入成功的数据**不会回滚掉**. 因为批量插入由于数据较多容易出现失败, 因此, 可以使用 `try catch` 进行异常捕捉处理, 测试的时候可以不处理.如：
 
-```
+```sql
 try {
   db.comment.insertMany([
     {"_id":"1","articleid":"100001","content":"不应该把清晨浪费在手机上, 健康很重要, 一杯温水幸福你我 他.","userid":"1002","nickname":"相忘于江湖","createdatetime":new Date("2019-0805T22:08:15.522Z"),"likenum":NumberInt(1000),"state":"1"},
@@ -220,41 +220,41 @@ try {
 - 使用 `db.<collection_name>.find()` 方法对集合进行查询, 接受一个 json 格式的查询条件. 返回的是一个**数组**
 - `db.<collection_name>.findOne()` 查询集合中符合条件的第一个文档, 返回的是一个**对象**
 
-![img](https://raw.githubusercontent.com/Zhenye-Na/img-hosting-picgo/master/img/crud-annotated-mongodb-find.bakedsvg.png)
+
 
 可以使用 `$in` 操作符表示*范围查询*
 
-```
+```sql
 db.inventory.find( { status: { $in: [ "A", "D" ] } } )
 ```
 
 多个查询条件用逗号分隔, 表示 `AND` 的关系
 
-```
+```sql
 db.inventory.find( { status: "A", qty: { $lt: 30 } } )
 ```
 
 等价于下面 sql 语句
 
-```mysql
+```sql
 SELECT * FROM inventory WHERE status = "A" AND qty < 30
 ```
 
 使用 `$or` 操作符表示后边数组中的条件是OR的关系
 
-```
+```sql
 db.inventory.find( { $or: [ { status: "A" }, { qty: { $lt: 30 } } ] } )
 ```
 
 等价于下面 sql 语句
 
-```mysql
+```sql
 SELECT * FROM inventory WHERE status = "A" OR qty < 30
 ```
 
 联合使用 `AND` 和 `OR` 的查询语句
 
-```
+```sql
 db.inventory.find( {
      status: "A",
      $or: [ { qty: { $lt: 30 } }, { item: /^p/ } ]
@@ -263,13 +263,13 @@ db.inventory.find( {
 
 在 terminal 中查看结果可能不是很方便, 所以可以用 `pretty()` 来帮助阅读
 
-```
+```sql
 db.inventory.find().pretty()
 ```
 
 匹配内容
 
-```
+```sql
 db.posts.find({
   comments: {
     $elemMatch: {
@@ -284,7 +284,7 @@ db.<collection_name>.find({ content : /once/ })
 
 创建索引
 
-```
+```sql
 db.posts.createIndex({
   { title : 'text' }
 })
@@ -314,7 +314,7 @@ db.posts.find({
 
 其中最常用的修改操作符即为`$set`和`$unset`,分别表示**赋值**和**取消赋值**.
 
-```
+```sql
 db.inventory.updateOne(
     { item: "paper" },
     {
@@ -337,7 +337,7 @@ db.inventory.updateMany(
 
 `db.<collection_name>.replaceOne()` 方法替换除 `_id` 属性外的**所有属性**, 其`<update>`参数应为一个**全新的文档**.
 
-```
+```sql
 db.inventory.replaceOne(
     { item: "paper" },
     { item: "paper", instock: [ { warehouse: "A", qty: 60 }, { warehouse: "B", qty: 40 } ] }
@@ -346,7 +346,7 @@ db.inventory.replaceOne(
 
 **批量修改**
 
-```
+```sql
 // 默认会修改第一条
 db.document.update({ userid: "30", { $set {username: "guest"} } })
 
@@ -358,7 +358,7 @@ db.document.update( { userid: "30", { $set {username: "guest"} } }, {multi: true
 
 如果想实现对某列值在原有值的基础上进行增加或减少, 可以使用 `$inc` 运算符来实现
 
-```
+```sql
 db.document.update({ _id: "3", {$inc: {likeNum: NumberInt(1)}} })
 ```
 
@@ -383,7 +383,7 @@ db.document.update({ _id: "3", {$inc: {likeNum: NumberInt(1)}} })
 - `db.collection.drop()`
 - `db.dropDatabase()`
 
-```
+```sql
 db.inventory.deleteMany( { qty : { $lt : 50 } } )
 ```
 
@@ -399,13 +399,13 @@ db.inventory.deleteMany( { qty : { $lt : 50 } } )
 
 可以用 `$sort` 更改文档排序规则
 
-```
+```sql
 { $sort: { <field1>: <sort order>, <field2>: <sort order> ... } }
 ```
 
 For the field or fields to sort by, set the sort order to `1` or `-1` to specify an *ascending* or *descending* sort respectively, as in the following example:
 
-```
+```sql
 db.users.aggregate(
    [
      { $sort : { age : -1, posts: 1 } }
@@ -426,7 +426,7 @@ Optimizations are subject to change between releases.
 
 举个栗子:
 
-```
+```sql
 db.posts.find().sort({ title : -1 }).limit(2).pretty()
 ```
 
@@ -437,15 +437,14 @@ db.posts.find().sort({ title : -1 }).limit(2).pretty()
 - `1` - display
 - `0` - dont display
 
-```
+```sql
 > db.users.find( {}, {username: 1} )
-
 > db.users.find( {}, {age: 1, _id: 0} )
 ```
 
 ### 2.4 forEach()
 
-```
+```sql
 > db.posts.find().forEach(fucntion(doc) { print('Blog Post: ' + doc.title) })
 ```
 
@@ -453,7 +452,7 @@ db.posts.find().sort({ title : -1 }).limit(2).pretty()
 
 #### 2.5.1 正则表达式
 
-```
+```sql
 $ db.collection.find({field:/正则表达式/})
 
 $ db.collection.find({字段:/正则表达式/})
@@ -463,7 +462,7 @@ $ db.collection.find({字段:/正则表达式/})
 
 `<`, `<=`, `>`, `>=` 这些操作符也是很常用的, 格式如下:
 
-```
+```sql
 db.collection.find({ "field" : { $gt: value }}) // 大于: field > value
 db.collection.find({ "field" : { $lt: value }}) // 小于: field < value
 db.collection.find({ "field" : { $gte: value }}) // 大于等于: field >= value
@@ -475,19 +474,19 @@ db.collection.find({ "field" : { $ne: value }}) // 不等于: field != value
 
 包含使用 `$in` 操作符. 示例：查询评论的集合中 `userid` 字段包含 `1003` 或 `1004`的文档
 
-```
+```sql
 db.comment.find({userid:{$in:["1003","1004"]}})
 ```
 
 不包含使用 `$nin` 操作符. 示例：查询评论集合中 `userid` 字段不包含 `1003` 和 `1004` 的文档
 
-```
+```sql
 db.comment.find({userid:{$nin:["1003","1004"]}})
 ```
 
 ## 2.6 常用命令小结
 
-```
+```sql
 选择切换数据库：use articledb
 插入数据：db.comment.insert({bson数据})
 查询所有数据：db.comment.find();
@@ -523,7 +522,7 @@ db.comment.find({userid:{$nin:["1003","1004"]}})
 
 举个例子, 比如“用户-订单”这个一对多的关系中, 想查询某一个用户的所有或者某个订单, 可以
 
-```
+```sql
 var user_id = db.users.findOne( {username: "username_here"} )._id
 db.orders.find( {user_id: user_id} )
 ```
@@ -540,7 +539,7 @@ db.orders.find( {user_id: user_id} )
 
 MongoDB 使用的是 B Tree, MySQL 使用的是 B+ Tree
 
-```
+```sql
 // create index
 db.<collection_name>.createIndex({ userid : 1, username : -1 })
 
@@ -569,7 +568,7 @@ MongoDB 支持在文档的单个字段上创建用户定义的**升序/降序索
 
 对于单个字段索引和排序操作, 索引键的排序顺序（即升序或降序）并不重要, 因为 MongoDB 可以在任何方向上遍历索引.
 
-![img](https://raw.githubusercontent.com/Zhenye-Na/img-hosting-picgo/master/img/image-20200505231043779.png)
+
 
 #### 4.2.2 复合索引
 
@@ -577,7 +576,7 @@ MongoDB 还支持多个字段的用户定义索引, 即复合索引 Compound Ind
 
 复合索引中列出的字段顺序具有重要意义.例如, 如果复合索引由 `{ userid: 1, score: -1 }` 组成, 则索引首先按 `userid` 正序排序, 然后 在每个 `userid` 的值内, 再在按 `score` 倒序排序.
 
-![img](https://raw.githubusercontent.com/Zhenye-Na/img-hosting-picgo/master/img/image-20200505231305941.png)
+
 
 #### 4.2.3 其他索引
 
@@ -603,7 +602,7 @@ MongoDB 提供了一种文本索引类型, 支持在集合中搜索字符串内�
 
 语法
 
-```
+```sql
 db.collection.getIndexes()
 ```
 
@@ -617,23 +616,15 @@ db.collection.getIndexes()
 
 语法
 
-```
+```sql
 db.collection.createIndex(keys, options)
 ```
-
-参数
-
-![image-20200506203419523](https://raw.githubusercontent.com/Zhenye-Na/img-hosting-picgo/master/img/image-20200506203419523.png)
-
-options（更多选项）列表
-
-![image-20200506203453430](https://raw.githubusercontent.com/Zhenye-Na/img-hosting-picgo/master/img/image-20200506203453430.png)
 
 注意在 3.0.0 版本前创建索引方法为 `db.collection.ensureIndex()` , 之后的版本使用了 `db.collection.createIndex()` 方法, `ensureIndex()` 还能用, 但只是 `createIndex()` 的别名.
 
 举个🌰
 
-```
+```sql
 $  db.comment.createIndex({userid:1})
 {
   "createdCollectionAutomatically" : false,
@@ -650,7 +641,7 @@ $ db.comment.createIndex({userid:1,nickname:-1})
 
 语法
 
-```
+```sql
 # 删除某一个索引
 $ db.collection.dropIndex(index)
 
@@ -664,7 +655,7 @@ $ db.collection.dropIndexes()
 
 示例
 
-```
+```sql
 # 删除 comment 集合中 userid 字段上的升序索引
 $ db.comment.dropIndex({userid:1})
 ```
@@ -675,7 +666,7 @@ $ db.comment.dropIndex({userid:1})
 
 分析查询性能 (Analyze Query Performance) 通常使用执行计划 (解释计划 - Explain Plan) 来查看查询的情况
 
-```
+```sql
 $ db.<collection_name>.find( query, options ).explain(options)
 ```
 
@@ -684,8 +675,6 @@ $ db.<collection_name>.find( query, options ).explain(options)
 **未添加索引之前**
 
 `"stage" : "COLLSCAN"`, 表示全集合扫描
-
-![img](https://raw.githubusercontent.com/Zhenye-Na/img-hosting-picgo/master/img/image-20200506205714154.png)
 
 **添加索引之后**
 

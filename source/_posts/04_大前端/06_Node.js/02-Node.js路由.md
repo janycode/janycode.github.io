@@ -1,5 +1,5 @@
 ---
-title: 01-Node.js路由
+title: 02-Node.js路由
 date: 2022-5-22 21:36:21
 tags:
 - Vue
@@ -322,6 +322,12 @@ module.exports = route
 ```
 
 
+
+### 1.4 重定向|跳转
+
+```js
+res.redirect("/home")  //跳转到 /home 路由
+```
 
 
 

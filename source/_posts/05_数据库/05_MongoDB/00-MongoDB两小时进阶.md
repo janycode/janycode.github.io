@@ -48,7 +48,7 @@ MongoDB 将数据存储为一个文档，数据结构由键值(key=>value)对组
 
 官网：https://www.mongodb.com/download-center#community
 
-```bash
+```sh
 # 下载
 curl -O https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-3.0.6.tgz
 # 解压
@@ -64,7 +64,7 @@ mkdir -p /data/db
 
 ## 配置文件
 
-```bash
+```sh
 $ cat /usr/local/etc/mongod.conf 
 systemLog:
   destination: file
@@ -75,12 +75,11 @@ storage:
 net:
   bindIp: 127.0.0.1
   port: 11811
-$
 ```
 
 ## 启动
 
-```bash
+```sh
 $ ./mongod 
 $ ./mongod --dbpath=/data/db --rest
 # 默认端口为：27017
@@ -90,7 +89,7 @@ $ ./mongod --dbpath=/data/db --rest
 
 ## 连接
 
-```bash
+```sh
 $ sudo mongo
 $ sudo mongo --port 11811
 $ sudo mongo -u root -p pwd 127.0.0.1:11811/test
@@ -102,7 +101,7 @@ $ sudo mongo -u root -p pwd 127.0.0.1:11811/test
 
 ## 创建管理员
 
-```bash
+```sh
 > use admin
 switched to db admin
 > db
@@ -125,7 +124,7 @@ bye
 
 版本区别与更多配置：https://docs.mongodb.com/manual/administration/configuration/
 
-```bash
+```sh
 $ cat /usr/local/etc/mongod.conf 
 systemLog:
   destination: file
@@ -143,7 +142,7 @@ $
 
 ## 重启验证
 
-```bash
+```sh
 > show dbs
 2017-04-25T08:41:50.126+0800 E QUERY    [thread1] Error: listDatabases failed:{
     "ok" : 0,
@@ -169,7 +168,7 @@ local  0.000GB
 
 ## 创建普通用户
 
-```bash
+```sh
 > use admin
 switched to db admin
 > db.auth('suoning','123456')
@@ -195,14 +194,14 @@ Successfully added user: {
 
 ## 删除用户
 
-```bash
+```sh
 > db.dropUser("nick")
 true
 ```
 
 ## 查看所有存在用户
 
-```bash
+```sh
 > use admin
 switched to db admin
 > db.auth('suoning','123456')
@@ -234,7 +233,7 @@ switched to db admin
 7. 超级用户角色：root // 这里还有几个角色间接或直接提供了系统超级用户的访问（dbOwner 、userAdmin、userAdminAnyDatabase）
 8. 内部角色：__system
 
-```bash
+```sh
 角色说明：
 Read：允许用户读取指定数据库
 readWrite：允许用户读写指定数据库
@@ -276,7 +275,7 @@ root：只在admin数据库中可用。超级账号，超级权限
 
 ## 创建库与表
 
-```bash
+```sh
 > show dbs
 admin  0.000GB
 local  0.000GB
@@ -301,7 +300,7 @@ mydb
 
 ##  删除库
 
-```bash
+```sh
 > db.dropUser("nick")
 true
 > 
@@ -340,7 +339,7 @@ local  0.000GB
 
 ##  删除表
 
-```bash
+```sh
 > db;
 mydb
 > show tables;
@@ -360,13 +359,13 @@ true
 
 使用 insert() 或 save() 方法向集合中插入文档，语法如下：
 
-```bash
+```sh
 db.COLLECTION_NAME.insert(document)
 ```
 
 创建读写用户：
 
-```bash
+```sh
 > db.createUser({user:'ning',pwd:'123456',roles:[{role:'readWrite',db:'mydb'}]})
 Successfully added user: {
     "user" : "ning",
@@ -385,7 +384,7 @@ Successfully added user: {
 
 插入数据：
 
-```bash
+```sh
 > 
 > db.user.insert({'name':'nick','age':18,'girlfriend':['jenny','coco','julia']})
 WriteResult({ "nInserted" : 1 })
@@ -409,7 +408,7 @@ WriteResult({ "nInserted" : 1 })
 
 remove() 方法的基本语法格式如下所示：
 
-```bash
+```sh
 db.collection.remove(
    <query>,
    <justOne>
@@ -432,7 +431,7 @@ writeConcern :（可选）抛出异常的级别。
 
 删除数据：
 
-```bash
+```sh
 > db.user.find()
 { "_id" : ObjectId("58fef7d55b9ea92ab29fbd4b"), "name" : "nick", "age" : 18, "girlfriend" : [ "jenny", "coco", "julia" ] }
 { "_id" : ObjectId("58fef9165b9ea92ab29fbd4c"), "sex" : "man" }
@@ -447,13 +446,13 @@ WriteResult({ "nRemoved" : 1 })
 
 删除第一条找到的记录可以设置 justOne 为 1：
 
-```bash
+```sh
 >db.COLLECTION_NAME.remove(DELETION_CRITERIA,1)
 ```
 
 删除所有数据：
 
-```bash
+```sh
 >db.col.remove({})
 >db.col.find()
 >
@@ -463,7 +462,7 @@ WriteResult({ "nRemoved" : 1 })
 
 ## 改
 
-```bash
+```sh
 # 只更新一条
 > db.user.find()
 { "_id" : ObjectId("58fef7d55b9ea92ab29fbd4b"), "name" : "nick", "age" : 21, "girlfriend" : [ "jenny", "coco", "julia" ] }
@@ -493,7 +492,7 @@ WriteResult({ "nMatched" : 2, "nUpserted" : 0, "nModified" : 2 })
 
 save() 方法通过传入的文档来替换已有文档。语法格式如下：
 
-```bash
+```sh
 db.collection.save(
    <document>,
    {
@@ -529,7 +528,7 @@ WriteResult({ "nMatched" : 1, "nUpserted" : 0, "nModified" : 1 })
 
 查询数据的语法格式如下：
 
-```bash
+```sh
 db.mydb.find(query, projection)
 
 query ：可选，使用查询操作符指定查询条件
@@ -551,13 +550,13 @@ pretty() 方法以格式化的方式来显示所有文档。
 
 获取"col"集合中 "likes" 大于100，小于 200 的数据，你可以使用以下命令：
 
-```bash
+```sh
 db.col.find({likes : {$lt :200, $gt : 100}}) 
 ```
 
 ###  and or:
 
-```bash
+```sh
 and:
     >db.col.find({key1:value1, key2:value2}).pretty()
 or:
@@ -574,7 +573,7 @@ or:
 
 limit()方法基本语法如下所示：
 
-```bash
+```sh
 >db.COLLECTION_NAME.find().limit(NUMBER)
 ```
 
@@ -582,7 +581,7 @@ skip() 方法脚本语法格式如下：
 
 使用skip()方法来跳过指定数量的数据，skip方法接受一个数字参数作为跳过的记录条数，默认为0。
 
-```bash
+```sh
 >db.COLLECTION_NAME.find().limit(NUMBER).skip(NUMBER)
 ```
 
@@ -590,7 +589,7 @@ skip() 方法脚本语法格式如下：
 
 sort()方法对数据进行排序，sort()方法可以通过参数指定排序的字段，并使用 1 和 -1 来指定排序的方式，其中 1 为升序排列，而-1是用于降序排列。
 
-```bash
+```sh
 >db.COLLECTION_NAME.find().sort({KEY:1})
 ```
 
@@ -598,7 +597,7 @@ sort()方法对数据进行排序，sort()方法可以通过参数指定排序�
 
 获取 "col" 集合中 title 为 String 的数据:
 
-```bash
+```sh
 db.col.find({"title" : {$type : 2}})
 ```
 
@@ -632,7 +631,7 @@ db.col.find({"title" : {$type : 2}})
 
 使用 `ensureIndex()` 方法来创建索引，语法如下：
 
-```bash
+```sh
 >db.COLLECTION_NAME.ensureIndex({KEY:1})
 
 语法中 Key 值为你要创建的索引字段，1为指定按升序创建索引，如果你想按降序来创建索引指定为-1即可
@@ -679,7 +678,7 @@ ensureIndex() 接收可选参数，可选参数列表如下：
 
 聚合的方法使用 `aggregate()` 方法，基本语法格式如下所示：
 
-```bash
+```sh
 >db.COLLECTION_NAME.aggregate(AGGREGATE_OPERATION)
 > db.mycol.aggregate([{$group : {_id : "$by_user", num_tutorial : {$sum : 1}}}])
 
@@ -717,7 +716,7 @@ MongoDB的聚合管道将MongoDB文档在一个管道处理完毕后将结果传
 
 1、$project实例
 
-```bash
+```sh
 db.article.aggregate(
     { $project : {
         title : 1 ,
@@ -735,7 +734,7 @@ db.article.aggregate(
 
 2.$match实例
 
-```bash
+```sh
 db.articles.aggregate( [
                         { $match : { score : { $gt : 70, $lte : 90 } } },
                         { $group: { _id: null, count: { $sum: 1 } } }
@@ -745,7 +744,7 @@ $match用于获取分数大于70小于或等于90记录，然后将符合条件�
 
 3.$skip实例
 
-```bash
+```sh
 db.article.aggregate(
     { $skip : 5 });
 经过$skip管道操作符处理后，前五个文档被"过滤"掉。
@@ -766,7 +765,7 @@ mongo执行计划分析，[详细点此处](http://www.mongoing.com/eshu_explain
 
 关键参数详细：
 
-```bash
+```sh
 executionStats.executionSuccess
 是否执行成功
 
@@ -791,7 +790,7 @@ document扫描次数
 
 这种方法某些情形下会提升性能。 一个有索引的 collection 并且执行一个多字段的查询(一些字段已经索引了)。
 
-```bash
+```sh
 如下查询指定了使用 naem 和 age 索引字段来查询：
 > db.user.find({"name":"nick","age":18}).hint({"name":1,"age":1});
 ```

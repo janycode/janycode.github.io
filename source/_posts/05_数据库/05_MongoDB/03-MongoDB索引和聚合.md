@@ -23,11 +23,11 @@ categories:
 
 - 图例理解
 
-![img](https://pdai.tech/_images/db/mongo/mongo-x-usage-11.png)
+![img](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20260116212023549.png)
 
 - 准备数据
 
-```bash
+```sh
 > db.orders.insertMany( [
      { _id: 1, cust_id: "abc1", ord_date: ISODate("2012-11-02T17:04:11.102Z"), status: "A", amount: 50 },
      { _id: 2, cust_id: "xyz1", ord_date: ISODate("2013-10-01T17:04:11.102Z"), status: "A", amount: 100 },
@@ -49,7 +49,7 @@ categories:
 
 - 聚合操作
 
-```bash
+```sh
 > db.orders.aggregate([
                       { $match: { status: "A" } },
                       { $group: { _id: "$cust_id", total: { $sum: "$amount" } } },
@@ -91,7 +91,7 @@ MongoDB的聚合管道（Pipline）将MongoDB文档在一个阶段（Stage）处
 
 - $project
 
-```bash
+```sh
 > db.orders.aggregate(
      { $project : {
          _id : 0 , // 默认不显示_id
@@ -110,7 +110,7 @@ MongoDB的聚合管道（Pipline）将MongoDB文档在一个阶段（Stage）处
 
 - $skip
 
-```bash
+```sh
  db.orders.aggregate(
      { $skip : 4 });
 { "_id" : 5, "cust_id" : "abc1", "ord_date" : ISODate("2013-11-12T17:04:11.102Z"), "status" : "A", "amount" : 25 }
@@ -121,7 +121,7 @@ MongoDB的聚合管道（Pipline）将MongoDB文档在一个阶段（Stage）处
 
 - $unwind
 
-```bash
+```sh
 > db.inventory2.insertOne({ "_id" : 1, "item" : "ABC1", sizes: [ "S", "M", "L"] })
 { "acknowledged" : true, "insertedId" : 1 }
 > db.inventory2.aggregate( [ { $unwind : "$sizes" } ] )
@@ -135,7 +135,7 @@ MongoDB的聚合管道（Pipline）将MongoDB文档在一个阶段（Stage）处
 
 - $bucket
 
-```bash
+```sh
 > db.artwork.insertMany([
  { "_id" : 1, "title" : "The Pillars of Society", "artist" : "Grosz", "year" : 1926,
      "price" : NumberDecimal("199.99") },
@@ -200,7 +200,7 @@ MongoDB的聚合管道（Pipline）将MongoDB文档在一个阶段（Stage）处
 
 > 非常常用！
 
-```bash
+```sh
 db.artwork.aggregate( [
   {
     $facet: {
@@ -354,7 +354,7 @@ db.artwork.aggregate( [
 
 > 聚合操作使用的比较频繁，在实际的工作中可以参考[官方文档 - Aggregation Pipeline Stages  (opens new window)](https://docs.mongodb.com/v3.6/reference/operator/aggregation-pipeline/)。
 
-![img](https://pdai.tech/_images/db/mongo/mongo-x-usage-17.png)
+![img](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20260116212100037.png)
 
 ### Aggregation Options参数
 
@@ -362,7 +362,7 @@ db.artwork.aggregate( [
 
 - explain
 
-```bash
+```sh
 > db.orders.aggregate(
                       [
                         { $match: { status: "A" } },
@@ -375,7 +375,7 @@ db.artwork.aggregate( [
 )
 {
         "serverInfo" : {
-                "host" : "pdai",
+                "host" : "localhost",
                 "port" : 27017,
                 "version" : "3.6.19",
                 "gitVersion" : "41b289ff734a926e784d6ab42c3129f59f40d5b4"
@@ -440,13 +440,13 @@ db.artwork.aggregate( [
 
 - 图例理解
 
-![img](https://pdai.tech/_images/db/mongo/mongo-x-usage-12.png)
+![img](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20260116212112247.png)
 
 ### 官网给了个例子
 
 - 准备数据
 
-```bash
+```sh
 {
      _id: ObjectId("50a8240b927d5d8b5891743c"),
      cust_id: "abc123",
@@ -464,7 +464,7 @@ db.artwork.aggregate( [
 
 map
 
-```bash
+```sh
 var mapFunction1 = function() {
                        emit(this.cust_id, this.price);
                    };
@@ -475,7 +475,7 @@ var mapFunction1 = function() {
 
 reduce
 
-```bash
+```sh
 var reduceFunction1 = function(keyCustId, valuesPrices) {
                           return Array.sum(valuesPrices);
                       };
@@ -486,7 +486,7 @@ var reduceFunction1 = function(keyCustId, valuesPrices) {
 
 out
 
-```bash
+```sh
 db.orders.mapReduce(
                      mapFunction1,
                      reduceFunction1,
@@ -501,7 +501,7 @@ db.orders.mapReduce(
 
 map
 
-```bash
+```sh
 var mapFunction2 = function() {
                        for (var idx = 0; idx < this.items.length; idx++) {
                            var key = this.items[idx].sku;
@@ -519,7 +519,7 @@ var mapFunction2 = function() {
 
 reduce
 
-```bash
+```sh
 var reduceFunction2 = function(keySKU, countObjVals) {
                      reducedVal = { count: 0, qty: 0 };
 
@@ -537,7 +537,7 @@ var reduceFunction2 = function(keySKU, countObjVals) {
 
 finalize
 
-```bash
+```sh
 var finalizeFunction2 = function (key, reducedVal) {
 
                        reducedVal.avg = reducedVal.qty/reducedVal.count;
@@ -558,7 +558,7 @@ var finalizeFunction2 = function (key, reducedVal) {
 
 以对users中score进行索引时查询的效果
 
-![img](https://pdai.tech/_images/db/mongo/mongo-x-usage-13.png)
+![img](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20260116212127821.png)
 
 ### 索引的类型
 
@@ -566,48 +566,44 @@ var finalizeFunction2 = function (key, reducedVal) {
 
 - 单一索引
 
-![img](https://pdai.tech/_images/db/mongo/mongo-x-usage-14.png)
+![img](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20260116212138962.png)
 
 - 复合索引
 
-![img](https://pdai.tech/_images/db/mongo/mongo-x-usage-15.png)
+![img](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20260116212145914.png)
 
 - 多键索引
 
-![img](https://pdai.tech/_images/db/mongo/mongo-x-usage-16.png)
+![img](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20260116212156225.png)
 
 ### 对索引的操作
 
 - 查看集合索引
 
-```bash
+```sh
 db.col.getIndexes()
-    
 ```
 
 
 
 - 查看集合索引大小
 
-```bash
+```sh
 db.col.totalIndexSize()
-    
 ```
 
 
 
 - 删除集合所有索引
 
-```bash
+```sh
 db.col.dropIndexes()
-    
 ```
 
 
 
 - 删除集合指定索引
 
-```bash
+```sh
 db.col.dropIndex("索引名称")
-  
 ```

@@ -17,8 +17,7 @@ categories:
 
 ### SpringBoot集成MongoDB
 
-使用的版本是SpringBoot 2.6.4
-可以像Mybaits Plus 一样的功能
+使用的版本是SpringBoot 2.6.4，可以像Mybaits Plus 一样的功能
 
 ```xml
 <!-- mongodb -->
@@ -42,7 +41,7 @@ spring:
       database: test_db
 ```
 
-配置类，默认不配置 添加的时候会有一个class字段，_class定义了每一条数据映射的实体类的类型，在使用SpringBoot-MongoDB的api插入数据时，即使引用类型是父类型，_class的值会插入对象的实际类型
+配置类，默认不配置 添加的时候会有一个class字段，_class定义了每一条数据映射的实体类的类型，在使用SpringBoot-MongoDB的api插入数据时，即使引用类型是父类型，_class的值会插入对象的实际类型。
 
 ![image-20220814112110250](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20220814112111.png)
 

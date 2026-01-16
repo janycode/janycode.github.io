@@ -213,7 +213,7 @@ public class Springboot02Application {
 
 
 
-### 10. 分页插件整合
+### 10. 分页插件整合(★)
 
 pom.xml - 【`注意`】如果低版本有循环依赖报错，就升高版本即可，如 **1.4.7** 版本验证无误可用，没有循环依赖问题。
 
@@ -237,7 +237,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-
 import java.util.List;
 
 @RestController
@@ -249,7 +248,7 @@ public class AccountController {
     @RequestMapping("/findByPage")
     public PageInfo<Account> findAll(@RequestParam(defaultValue = "1") Integer pageNum,
                                  @RequestParam(defaultValue = "5") Integer pageSize) {
-
+        //原理：PageHelper 会在代码的下一步执行sql时追加到 limit 中 pageNum 和 pageSize
         PageHelper.startPage(pageNum, pageSize);
         List<Account> accountList = accountService.findAll();
         return new PageInfo<>(accountList);

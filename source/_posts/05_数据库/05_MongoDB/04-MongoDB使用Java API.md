@@ -23,7 +23,7 @@ categories:
     <groupId>org.mongodb</groupId>
     <artifactId>mongo-java-driver</artifactId>
     <version>3.12.6</version>
-</dependency>    
+</dependency>
 ```
 
 
@@ -33,12 +33,9 @@ categories:
 例子请参考 [mongo-java-driver 例子  (opens new window)](http://mongodb.github.io/mongo-java-driver/3.12/driver/getting-started/quick-start/)
 
 ```java
-private static final String MONGO_HOST = "xxx.xxx.xxx.xxx";
-
+    private static final String MONGO_HOST = "xxx.xxx.xxx.xxx";
     private static final Integer MONGO_PORT = 27017;
-
     private static final String MONGO_DB = "testdb";
-
 
     public static void main(String args[]) {
         try {
@@ -84,12 +81,9 @@ private static final String MONGO_HOST = "xxx.xxx.xxx.xxx";
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
         }
     }
-  
 ```
 
 
-
-著作权归https://pdai.tech所有。 链接：https://www.pdai.tech/md/db/nosql-mongo/mongo-x-usage-5.html
 
 ## Spring Data 与 MongoDB
 
@@ -99,19 +93,19 @@ private static final String MONGO_HOST = "xxx.xxx.xxx.xxx";
 
 首先让我们回顾下Spring runtime体系：
 
-![img](https://pdai.tech/_images/db/mongo/mongo-x-usage-spring-4.png)
+![img](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20260116212316093.png)
 
 Spring Data是基于Spring runtime体系的：
 
-> 下面这个图能够直观反映出它们之间的依赖关系，以及包中类之间的以来关系。@pdai
+> 下面这个图能够直观反映出它们之间的依赖关系，以及包中类之间的以来关系。
 
-![img](https://pdai.tech/_images/db/mongo/mongo-x-usage-spring-5.png)
+![img](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20260116212327556.png)
 
 ### springboot-data-mongo层次结构
 
 我们通过引入`springboot-data-mongo-starter`包来看它们之间的层次结构：
 
-![img](https://pdai.tech/_images/db/mongo/mongo-x-usage-spring-1.png)
+![img](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20260116212344795.png)
 
 ## mongodb+Java用法
 
@@ -138,7 +132,7 @@ Spring Data是基于Spring runtime体系的：
 
 [spring-data/mongodb 官方的参考文档  (opens new window)](https://docs.spring.io/spring-data/mongodb/docs/3.0.3.RELEASE/reference/html/#preface)
 
-![img](https://pdai.tech/_images/db/mongo/mongo-x-usage-spring-2.png)
+![img](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20260116212400572.png)
 
 ### 一些案例的参考
 
@@ -151,5 +145,5 @@ Spring Data是基于Spring runtime体系的：
 
 - [官方spring-data-mongodb 例子  (opens new window)](https://spring.io/projects/spring-data-mongodb#samples)
 
-![img](https://pdai.tech/_images/db/mongo/mongo-x-usage-spring-3.png)
+![img](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20260116212410345.png)
 

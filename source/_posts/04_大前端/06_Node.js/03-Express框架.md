@@ -379,7 +379,9 @@ app.use(cookieParser())
 
 ## 5. 获取请求参数
 
-### GET
+### GET - req.query
+
+`req.query`
 
 ```js
 const router = express.Router()
@@ -396,11 +398,15 @@ router.get("/", (req, res) => {
 
 
 
-### POST
+### POST - req.body
 
-需要预先配置解析的工具（放在中间件代码最前面）：
+`req.body`
+
+需要预先配置解析的工具（放在中间件代码最前面）- 针对当前新版 express(v4.17.3) 无需下载第三方任何库：
 
 ```js
+var express = require('express')
+var app = express()
 // 配置解析post参数的中间件 - 注意要放到最前面
 app.use(express.urlencoded({ extended: false })) //urlencode: username=admin&password=123456
 app.use(express.json())                          //json: {"username": "admin", "password": "123456"}
@@ -484,7 +490,17 @@ router.post("/", (req, res) => {
 
 
 
-## 6. 托管静态文件
+## 6. 返回数据
+
+`res.send()` - send 返回代码片段 或 json
+
+`res.json()` - json 返回只能是 json 对象
+
+`res.render()` - render 返回是模版页面，如 ejs 模版
+
+
+
+## 7. 托管静态文件
 
 ### 方式1
 
@@ -497,8 +513,9 @@ public/
 ```
 
 ```js
-// 配置静态资源 - 注意要放到最前面
+// 配置静态资源 - 注意要放到最前面(多个写多行)
 app.use(express.static("public"))
+app.use(express.static("static"))
 ```
 
 访问如下路径就都没有任何问题了：
@@ -523,7 +540,7 @@ static/
 ```
 
 ```js
-// 配置静态资源 - 注意要放到最前面
+// 配置静态资源 - 注意要放到最前面(指定第一个参数时，url访问必须加上该path)
 app.use("/static", express.static("static"))
 ```
 
@@ -540,18 +557,22 @@ http://127.0.0.1:3000/static/hello.html
 
 
 
-## 7. 模板引擎-服务端渲染
+## 8. 模板引擎-服务端渲染
 
-* 服务端渲染，后端嵌套模版，后端渲染模版，SSR（后端把页面组装）
-  * 做好静态页面，动态效果
-  * 把前端代码提供给后端，后端要把静态 html 以及里面的假数据删掉，通过模版进行动态生成 html 里的内容
-* 前后端分离，BSR（前端中组装页面）
-  * 做好静态页面，动态效果
-  * json 模拟，ajax，动态创建页面
-  * 真实接口数据，前后联调
-  * 把前端提供给后端静态资源文件夹
+> * 服务端渲染，后端嵌套模版，后端渲染模版，SSR（后端把页面组装）
+>   * 做好静态页面，动态效果
+>   * 把前端代码提供给后端，后端要把静态 html 以及里面的假数据删掉，通过模版进行动态生成 html 里的内容
+> * 前后端分离，BSR（前端中组装页面）
+>   * 做好静态页面，动态效果
+>   * json 模拟，ajax，动态创建页面
+>   * 真实接口数据，前后联调
+>   * 把前端提供给后端静态资源文件夹
 
-安装：*npm i ejs*
+### 安装
+
+安装：*npm i ejs@3.1.6*
+
+* 插件安装：**EJS language support** - 支持 ejs 的语法着色效果
 
 需要在应用中进行如下设置才能让 Express 渲染模板文件：
 
@@ -559,7 +580,231 @@ http://127.0.0.1:3000/static/hello.html
 
 * view engine, 模板引擎，比如： `app.set('view engine', 'ejs')`
 
+index.js
 
+```js
+//配置模版引擎 - 写在最前面
+app.set("views", "./views")
+app.set("view engine", "ejs")
+```
+
+### 语法
+
+* `<% %>` 流程控制标签，可写 if else，for
+* `<%=  %>` 输出标签，原文输出HTML标签（不会解析HTML）
+* `<%-  %>` 输出标签，HTML会被浏览器解析（*XSS攻击风险*）
+* `<%#  %>` 注释标签，不会显示到浏览器页面源码（只有开发者编辑器中可见）
+* `<%- include('user/show', {user: user}) %>` 导入公共的模版内容
+
+
+
+### 使用
+
+#### **输出标签示例 .ejs**
+
+```ejs
+    <p>
+        <%= isShow ? '用户名密码不匹配错误' : '' %>
+    </p>
+```
+
+LoginRouter.js
+
+```js
+const express = require("express")
+const router = express.Router()
+
+router.get("/", (req, res) => {
+    // 渲染模版给前端，会读取 views/login.ejs 模版页面返回给前端
+    res.render("login", { isShow: false })
+})
+
+router.post("/", (req, res) => {
+    if (req.body.username == "admin" && req.body.password == "123") {
+        console.log("登录成功");
+        res.redirect("/home") //redirect 重定向/跳转到 home
+    } else {
+        console.log("登陆失败");
+        res.render("login", { isShow: true })
+    }
+})
+
+module.exports = router
+```
+
+
+
+#### **for 示例 .ejs**
+
+```ejs
+    <ul>
+        <% for(var i=0;i<list.length;i++) { %>
+            <li><%= list[i] %></li>
+         <% } %>
+    </ul>
+```
+
+HomeRouter.js
+
+```js
+const express = require("express")
+
+const router = express.Router()
+// 路由级别中间件
+router.get("/", (req, res) => {
+    let list = ["aaa", "bbb", "ccc"]
+    res.render("home", { list: list })
+})
+
+module.exports = router
+```
+
+
+
+#### 导入公共模版
+
+如相同的头部、底部，单独写 header.ejs、footer.ejs...
+
+header.ejs - 参数由谁导入谁传递
+
+```ejs
+<header>
+    <% if(isShowBanner) { %>
+        <h1>banner广告</h1>
+    <% } %>
+    <h1>我是公共头部</h1>
+</header>
+
+<style>
+    header {
+        background: yellow;
+    }
+</style>
+```
+
+home.ejs
+
+* `<%- include("./header.ejs") %>` 导入公共模版，不传参数
+* `<%- include("./header.ejs", { isShowBanner:isShowBanner }) %>` 导入公共模版，传参数
+
+```ejs
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <%- include("./header.ejs", { isShowBanner:isShowBanner }) %>
+    home主页。
+    <ul>
+        <% for(var i=0;i<list.length;i++) { %>
+            <li>
+                <%= list[i] %>
+            </li>
+            <% } %>
+    </ul>
+</body>
+
+</html>
+```
+
+HomeRouter.js - 渲染给 home.ejs 参数内容 list, isShowBanner
+
+```js
+const express = require("express")
+
+const router = express.Router()
+// 路由级别中间件
+router.get("/", (req, res) => {
+    let list = ["aaa", "bbb", "ccc"]
+    res.render("home", { list: list, isShowBanner: true })
+})
+
+module.exports = router
+```
+
+
+
+#### 渲染 html
+
+index.js
+
+```js
+//配置模版引擎
+app.set("views", "./views")
+app.set("view engine", "html")
+//支持直接渲染 html 文件
+app.engine("html", require("ejs").renderFile())
+```
+
+将 public 下的 .html 文件，都剪切到了 views 目录下，需要上述配置才能渲染 html 文件。
+
+
+
+### 生成器(★)
+
+教程：https://expressjs.com/en/starter/generator.html#express-application-generator
+
+安装：*npm i -g express-generator*
+
+创建：*express myapp --view=ejs*
+
+依赖：*cd myapp; npm i* 
+
+启动：*npm start* - 有且仅只在 start 时，才能省略 run （等价于 *npm run start*）
+
+* 本质是 package.json 中的 start 配置的 `node ./bin/www`，或添加一条命令，支持改代码自动重启 node 服务
+
+```json
+  "scripts": {
+    "start": "node ./bin/www",
+    "startdev": "node-dev ./bin/www",  //可选 node-dev
+    "startmon": "nodemon ./bin/www"    //可选 nodemon
+  },
+```
+
+最终启动：*npm run startdev*
+
+目录结构：
+
+```js
+├─bin/
+│  ├─www              // http 服务，默认端口 3000
+├─public/             // 公共静态资源
+├─routes/
+│  ├─index.js         // home 首页路由中间件
+│  ├─users.js         // users 示例路由中间件
+├─views/
+│  ├─error.ejs        // error 错误信息 ejs 模版
+│  ├─index.ejs        // home 首页 ejs 模版
+├─app.js              // 默认项目入口
+└─package.json        // 默认依赖
+```
+
+
+
+验证 cookie-parser 的使用，如 router/users.js
+
+```js
+var express = require('express');
+var router = express.Router();
+
+/* GET users listing. */
+router.get('/', function (req, res, next) {
+  // 获取 cookie（浏览器控制台手动设置 cookie: document.cookie="username=jerry"）
+  console.log(req.cookies); // 输出 json 格式: { username: "jerry" }
+  // 设置 cookie 给前端
+  res.cookie("location", "china")
+
+  res.send('respond with a resource');
+});
+
+module.exports = router;
+```
 
 
 

@@ -21,13 +21,13 @@ categories:
 
 [官网下载  (opens new window)](https://www.mongodb.com/try/download/community)
 
-![img](https://pdai.tech/_images/db/mongo/mongo-x-usage-1.png)
+![img](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20260116162630422.png)
 
 - **官网文档**
 
 [官网文档  (opens new window)](https://docs.mongodb.com/v3.6/administration/install-community/)
 
-![img](https://pdai.tech/_images/db/mongo/mongo-x-usage-2.png)
+![img](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20260116162640352.png)
 
 - **菜鸟教程中安装**
 
@@ -40,7 +40,7 @@ categories:
 - 连接
 
 ```bash
-[root@pdai yum.repos.d]# mongo --host 127.0.0.1:27017
+[root@centos yum.repos.d]# mongo --host 127.0.0.1:27017
 MongoDB shell version v3.6.19
 connecting to: mongodb://127.0.0.1:27017/?gssapiServiceName=mongodb
 Implicit session: session { "id" : UUID("cb27e5a9-600f-4f57-9096-c7348a9ae5f9") }
@@ -89,7 +89,7 @@ switched to db testdb
 
 - 图例
 
-![img](https://pdai.tech/_images/db/mongo/mongo-x-usage-3.png)
+![img](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20260116162700064.png)
 
 - 示例
 
@@ -136,7 +136,7 @@ switched to db testdb
 
 - 图例
 
-![img](https://pdai.tech/_images/db/mongo/mongo-x-usage-4.png)
+![img](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20260116162726781.png)
 
 - 示例
 
@@ -199,7 +199,7 @@ switched to db testdb
 
 - 图例
 
-![img](https://pdai.tech/_images/db/mongo/mongo-x-usage-5.png)
+![img](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20260116162740183.png)
 
 - 示例
 
@@ -315,7 +315,7 @@ replace one
 
 - 图例
 
-![img](https://pdai.tech/_images/db/mongo/mongo-x-usage-6.png)
+![img](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20260116162756393.png)
 
 - 示例
 
