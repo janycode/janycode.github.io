@@ -215,7 +215,7 @@ public class Springboot02Application {
 
 ### 10. 分页插件整合
 
-pom.xml
+pom.xml - 【`注意`】如果低版本有循环依赖报错，就升高版本即可，如 **1.4.7** 版本验证无误可用，没有循环依赖问题。
 
 ```xml
 <!--分页插件-->

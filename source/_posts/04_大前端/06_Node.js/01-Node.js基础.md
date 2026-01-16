@@ -287,7 +287,7 @@ yarn install
 
 
 
-### 1.6 nodemon 自动重启
+### 1.6 nodemon|node-dev 自动重启
 
 安装：*npm i nodemon -g*
 
@@ -603,7 +603,7 @@ index.html
                 console.log(res);
             })
     </script>
-</body
+</body>
 ```
 
 
