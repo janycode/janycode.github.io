@@ -1,10 +1,11 @@
 ---
-title: 04-Node.js+MongoDB数据库
+title: 04-Express+MongoDB数据库
 date: 2022-5-22 21:36:21
 tags:
 - Vue
 - Node
 - Node.js
+- Express
 - MongoDB
 categories: 
 - 04_大前端
@@ -15,10 +16,8 @@ categories:
 
 参考：
 
-* Node.js 官网：https://nodejs.org/zh-cn
-* Node.js 下载地址：https://nodejs.cn/download/
-* Node.js 官方文档：http://nodejs.cn/learn/how-much-javascript-do-you-need-to-know-to-use-nodejs
-* Node.js 历史版本：https://registry.npmmirror.com/binary.html?path=node/
+* Express 官网：https://www.expressjs.com.cn/
+* MongoDB 官网下载链接：https://www.mongodb.com/
 
 
 
@@ -200,6 +199,8 @@ config/db.config.js - 添加数据库配置（独立维护在 `config` 目录）
 const mongoose = require("mongoose")
 // 连接数据库: 插入集合和数据时，数据库 jerry_project 会自动创建
 mongoose.connect("mongodb://127.0.0.1:27017/jerry_project")
+// 消除 strictQuery 警告(提前适配 Mongoose 7.x 行为, 7.x仅适配mongo4.2+版本)
+mongoose.set('strictQuery', false)
 ```
 
 bin/www.js - 引入数据库

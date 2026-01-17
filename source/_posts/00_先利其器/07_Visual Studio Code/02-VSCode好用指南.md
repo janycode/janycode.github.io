@@ -143,6 +143,7 @@ npm config set registry https://registry.npmjs.org/
   * 修改配置 `Outline-map: Expand` 为 **cursor**（即在光标移动到时展开对应位置的大纲-其他默认收起）
 
 * **EJS language support** ：支持 ejs 的语法着色效果
+* **ApiDoc Snippet** ：apidoc注释代码提示工具
 * AI 代码补全插件：https://apifox.com/apiskills/vscode-code-completion/
 
 PS：如果插件安装无法联网，把windows文件管理器下 `%USERPROFILE%\.vscode\extensions`，删除该文件夹下所有内容。

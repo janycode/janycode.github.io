@@ -15,10 +15,6 @@ categories:
 
 参考：
 
-* Node.js 官网：https://nodejs.org/zh-cn
-* Node.js 下载地址：https://nodejs.cn/download/
-* Node.js 官方文档：http://nodejs.cn/learn/how-much-javascript-do-you-need-to-know-to-use-nodejs
-* Node.js 历史版本：https://registry.npmmirror.com/binary.html?path=node/
 * Express 官网：https://www.expressjs.com.cn/
 
 
