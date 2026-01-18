@@ -1,5 +1,5 @@
 ---
-title: 07-Express+apidoc接口文档
+title: 08-Express+apidoc接口文档
 date: 2022-5-22 21:36:21
 tags:
 - Vue
@@ -19,6 +19,7 @@ categories:
 * Express 官网：https://www.expressjs.com.cn/
 * apidoc 参考资料：https://juejin.cn/post/7008442300594389022
 * showdoc 官网：https://www.showdoc.com.cn/
+* 验证项目demo：https://github.com/janycode/nodejs-express-mongodb
 
 
 

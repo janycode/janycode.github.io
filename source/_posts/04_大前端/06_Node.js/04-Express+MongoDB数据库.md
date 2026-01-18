@@ -18,6 +18,7 @@ categories:
 
 * Express 官网：https://www.expressjs.com.cn/
 * MongoDB 官网下载链接：https://www.mongodb.com/
+* 验证项目demo：https://github.com/janycode/nodejs-express-mongodb
 
 
 

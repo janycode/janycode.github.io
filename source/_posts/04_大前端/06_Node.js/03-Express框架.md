@@ -45,7 +45,7 @@ Express 是一个轻量、灵活的框架，其核心功能极少， 可通过 E
 
 初始化：*npm init*
 
-安装：*npm i express@4.17.3*
+安装：*npm i express@4* - 如 v4.17.3
 
 引入和使用：
 

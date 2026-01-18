@@ -1,5 +1,5 @@
 ---
-title: 06-Express文件上传
+title: 07-Express文件上传
 date: 2022-5-22 21:36:21
 tags:
 - Vue
@@ -17,6 +17,7 @@ categories:
 参考：
 
 * Express 官网：https://www.expressjs.com.cn/
+* 验证项目demo：https://github.com/janycode/nodejs-express-mongodb
 
 
 

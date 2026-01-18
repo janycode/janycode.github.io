@@ -1,5 +1,5 @@
 ---
-title: 05-Express+JWT登陆鉴权
+title: 06-Express+JWT登陆鉴权
 date: 2022-5-22 21:36:21
 tags:
 - Vue
@@ -22,6 +22,7 @@ categories:
 * Express 官网：https://www.expressjs.com.cn/
 * JWT-npm仓库和文档：https://www.npmjs.com/package/jsonwebtoken
 * 参考资料：https://zhuanlan.zhihu.com/p/677982758
+* 验证项目demo：https://github.com/janycode/nodejs-express-mongodb
 
 
 

@@ -19,9 +19,9 @@ categories:
 
 #### 1.1 框架介绍
 
-官网：https://www.layui.com/
+官网：https://www.layui.com/     ->    https://layui.dev/
 
-文档：https://www.layui.com/doc/
+文档：https://www.layui.com/doc/    ->    https://layui.dev/notes/
 
 经典模块化前端框架：由职业前端倾情打造，面向全层次的前后端开发者，低门槛开箱即用的前端 UI 解决方案。
 

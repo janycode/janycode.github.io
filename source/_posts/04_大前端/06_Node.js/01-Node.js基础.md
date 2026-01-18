@@ -298,6 +298,41 @@ yarn install
 > 另一种方案(开发阶段使用)：*npm i node-dev -g*
 >
 > 启动命令就需要换成：*node-dev ./test.js*
+>
+> 禁用掉无关警告信息：*node-dev --no-notify ./index.js*
+>
+> 设置默认关闭无关警告信息：`D:\nvm\nvm\v18.20.3\node-dev.ps1`
+>
+> ```powershell
+> #!/usr/bin/env pwsh
+> $basedir=Split-Path $MyInvocation.MyCommand.Definition -Parent
+> 
+> $exe=""
+> if ($PSVersionTable.PSVersion -lt "6.0" -or $IsWindows) {
+>   # Fix case when both the Windows and Linux builds of Node
+>   # are installed in the same directory
+>   $exe=".exe"
+> }
+> $ret=0
+> if (Test-Path "$basedir/node$exe") {
+>   # Support pipeline input - 添加 --no-notify 参数关闭警告打印@jerry
+>   if ($MyInvocation.ExpectingInput) {
+>     $input | & "$basedir/node$exe"  "$basedir/node_modules/node-dev/bin/node-dev" --no-notify $args
+>   } else {
+>     & "$basedir/node$exe"  "$basedir/node_modules/node-dev/bin/node-dev" --no-notify $args
+>   }
+>   $ret=$LASTEXITCODE
+> } else {
+>   # Support pipeline input - 添加 --no-notify 参数关闭警告打印@jerry
+>   if ($MyInvocation.ExpectingInput) {
+>     $input | & "node$exe"  "$basedir/node_modules/node-dev/bin/node-dev" --no-notify $args
+>   } else {
+>     & "node$exe"  "$basedir/node_modules/node-dev/bin/node-dev" --no-notify $args
+>   }
+>   $ret=$LASTEXITCODE
+> }
+> exit $ret
+> ```
 
 
 
