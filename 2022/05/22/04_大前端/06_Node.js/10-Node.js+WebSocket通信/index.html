@@ -1,0 +1,878 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=light>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Jerry(姜源)">
+  <meta name="keywords" content="Java,Html,CSS,JavaScript,Python,C,Linux,shell编程经验分享、技术总结、心得体会">
+  
+    <meta name="description" content="参考：  Express 官网：https:&#x2F;&#x2F;www.expressjs.com.cn&#x2F; ws npm仓库文档：https:&#x2F;&#x2F;www.npmjs.com&#x2F;package&#x2F;ws ws 简易聊天室：https:&#x2F;&#x2F;github.com&#x2F;janycode&#x2F;nodejs-express-websocket  1. WebSocket 介绍应用场景：弹幕、媒体聊天、协同编辑、基于位置的应用、体育实况更">
+<meta property="og:type" content="article">
+<meta property="og:title" content="10-Node.js+WebSocket通信">
+<meta property="og:url" content="https://janycode.github.io/2022/05/22/04_%E5%A4%A7%E5%89%8D%E7%AB%AF/06_Node.js/10-Node.js+WebSocket%E9%80%9A%E4%BF%A1/index.html">
+<meta property="og:site_name" content="姜源の云笔记">
+<meta property="og:description" content="参考：  Express 官网：https:&#x2F;&#x2F;www.expressjs.com.cn&#x2F; ws npm仓库文档：https:&#x2F;&#x2F;www.npmjs.com&#x2F;package&#x2F;ws ws 简易聊天室：https:&#x2F;&#x2F;github.com&#x2F;janycode&#x2F;nodejs-express-websocket  1. WebSocket 介绍应用场景：弹幕、媒体聊天、协同编辑、基于位置的应用、体育实况更">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20260113102145988.png">
+<meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20260119120113242.png">
+<meta property="article:published_time" content="2022-05-22T13:36:21.000Z">
+<meta property="article:modified_time" content="2026-01-19T11:47:43.211Z">
+<meta property="article:author" content="Jerry(姜源)">
+<meta property="article:tag" content="Vue">
+<meta property="article:tag" content="Node">
+<meta property="article:tag" content="Node.js">
+<meta property="article:tag" content="WebSocket">
+<meta property="article:tag" content="Socket.io">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20260113102145988.png">
+  
+  
+    <meta name="referrer" content="no-referrer-when-downgrade">
+  
+  
+  <title>10-Node.js+WebSocket通信 - 姜源の云笔记</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"janycode.github.io","root":"/","version":"1.9.0","typing":{"enable":true,"typeSpeed":50,"cursorChar":"|","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":false},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":"bfff735c897eb60ea49b735096b20e47","google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+
+  
+<meta name="generator" content="Hexo 6.2.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 50vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>姜源の云笔记</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tools/">
+                <i class="iconfont icon-slack-fill"></i>
+                工具
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" target="_blank" rel="noopener" href="https://yuancodes.github.io/">
+                <i class="iconfont icon-notebook"></i>
+                Docsify
+              </a>
+            </li>
+          
+        
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="10-Node.js+WebSocket通信"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-author" aria-hidden="true"></i>
+        Jerry(姜源)
+      </span>
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2022-05-22 21:36" pubdate>
+          星期日, 2022/05/22 21:36:21
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          <!-- compatible with older versions-->
+          17k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          <!-- compatible with older versions-->
+          144 分钟
+        
+      </span>
+    
+
+    
+    
+      
+        <span id="busuanzi_container_page_pv" style="display: none">
+          <i class="iconfont icon-eye" aria-hidden="true"></i>
+          <span id="busuanzi_value_page_pv"></span> 次
+        </span>
+        
+      
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">10-Node.js+WebSocket通信</h1>
+            
+            <div class="markdown-body">
+              
+              <p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20260113102145988.png" srcset="/img/loading.gif" lazyload alt="image-20260113102144733"></p>
+<p>参考：</p>
+<ul>
+<li>Express 官网：<a target="_blank" rel="noopener" href="https://www.expressjs.com.cn/">https://www.expressjs.com.cn/</a></li>
+<li>ws npm仓库文档：<a target="_blank" rel="noopener" href="https://www.npmjs.com/package/ws">https://www.npmjs.com/package/ws</a></li>
+<li>ws 简易聊天室：<a target="_blank" rel="noopener" href="https://github.com/janycode/nodejs-express-websocket">https://github.com/janycode/nodejs-express-websocket</a></li>
+</ul>
+<h2 id="1-WebSocket-介绍"><a href="#1-WebSocket-介绍" class="headerlink" title="1. WebSocket 介绍"></a>1. WebSocket 介绍</h2><p>应用场景：弹幕、媒体聊天、协同编辑、基于位置的应用、体育实况更新、股票基金报价实时更新…</p>
+<p>WebSocket并不是全新的协议，而是利用了HTTP协议来建立连接。我们来看看WebSocket连接是如何创建的。</p>
+<p>首先，WebSocket连接 <code>必须由浏览器发起</code>，因为请求协议是一个标准的HTTP请求，格式如下：</p>
+<figure class="highlight http"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs http"><span class="hljs-keyword">GET</span> <span class="hljs-string">ws://localhost:3000/ws/chat</span> <span class="hljs-meta">HTTP/1.1</span><br><span class="hljs-attribute">Host</span><span class="hljs-punctuation">: </span>localhost<br><span class="hljs-attribute">Upgrade</span><span class="hljs-punctuation">: </span>websocket<br><span class="hljs-attribute">Connection</span><span class="hljs-punctuation">: </span>Upgrade<br><span class="hljs-attribute">Origin</span><span class="hljs-punctuation">: </span>http://localhost:3000<br><span class="hljs-attribute">Sec-WebSocket-Key</span><span class="hljs-punctuation">: </span>client-random-string<br><span class="hljs-attribute">Sec-WebSocket-Version</span><span class="hljs-punctuation">: </span>13<br></code></pre></td></tr></table></figure>
+
+<p>WebSocket，简写 ws</p>
+<p>该请求和普通的HTTP请求有几点不同：</p>
+<ul>
+<li>GET请求的地址不是类似 &#x2F;path&#x2F;，而是以 <code>ws://</code> 开头的地址；</li>
+<li>请求头 Upgrade: websocket 和 Connection: Upgrade表示这个连接将要被转换为WebSocket连接；</li>
+<li>Sec-WebSocket-Key 是用于标识这个连接，并非用于加密数据；</li>
+<li>Sec-WebSocket-Version 指定了WebSocket的协议版本。</li>
+</ul>
+<p>随后，服务器如果接受该请求，就会返回如下响应：</p>
+<figure class="highlight http"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs http"><span class="hljs-meta">HTTP/1.1</span> <span class="hljs-number">101</span> Switching Protocols<br><span class="hljs-attribute">Upgrade</span><span class="hljs-punctuation">: </span>websocket<br><span class="hljs-attribute">Connection</span><span class="hljs-punctuation">: </span>Upgrade<br><span class="hljs-attribute">Sec-WebSocket-Accept</span><span class="hljs-punctuation">: </span>server-random-string<br></code></pre></td></tr></table></figure>
+
+<p>该响应代码101表示本次连接的HTTP协议即将被更改，更改后的协议就是Upgrade: websocket指定的WebSocket协议。</p>
+<p>版本号和子协议规定了双方能理解的数据格式，以及是否支持压缩等等。如果仅使用WebSocket的API，就不需要关心这些。</p>
+<p>现在，一个WebSocket连接就建立成功，浏览器和服务器就可以随时主动发送消息给对方。消息有两种，一种是文本，一种是二进制数据。通常，我们可以发送JSON格式的文本，这样，在浏览器处理起来就十分容易。</p>
+<p>为什么WebSocket连接可以实现全双工通信而HTTP连接不行呢？实际上HTTP协议是建立在TCP协议之上的，TCP协议本身就实现了全双工通信，但是HTTP协议的请求－应答机制限制了全双工通信。WebSocket连接建立以后，其实只是简单规定了一下：接下来，咱们通信就不使用HTTP协议了，直接互相发数据吧。</p>
+<p>安全的WebSocket连接机制和HTTPS类似。首先，浏览器用wss:&#x2F;&#x2F;xxx创建WebSocket连接时，会先通过HTTPS创建安全的连接，然后，该HTTPS连接升级为WebSocket连接，底层通信走的仍然是安全的SSL&#x2F;TLS协议。</p>
+<h3 id="浏览器支持"><a href="#浏览器支持" class="headerlink" title="浏览器支持"></a>浏览器支持</h3><p>很显然，要支持WebSocket通信，浏览器得支持这个协议，这样才能发出ws:&#x2F;&#x2F;xxx的请求。目前，支持WebSocket的主流浏览器如下：</p>
+<ul>
+<li>Chrome</li>
+<li>Firefox</li>
+<li>IE &gt;&#x3D; 10</li>
+<li>Sarafi &gt;&#x3D; 6</li>
+<li>Android &gt;&#x3D; 4.4</li>
+<li>iOS &gt;&#x3D; 8</li>
+</ul>
+<h3 id="服务器支持"><a href="#服务器支持" class="headerlink" title="服务器支持"></a>服务器支持</h3><p>由于WebSocket是一个协议，服务器具体怎么实现，取决于所用编程语言和框架本身。Node.js本身支持的协议包括TCP协议和HTTP协议，要支持WebSocket协议，需要对Node.js提供的HTTPServer做额外的开发。</p>
+<p>已经有若干基于Node.js的稳定可靠的WebSocket实现，我们直接用npm安装使用即可。</p>
+<h2 id="2-WS-模块"><a href="#2-WS-模块" class="headerlink" title="2. WS 模块"></a>2. WS 模块</h2><h3 id="2-1-安装"><a href="#2-1-安装" class="headerlink" title="2.1 安装"></a>2.1 安装</h3><p>安装：<em>npm init; npm i express@4 ws</em></p>
+<p>文档：<a target="_blank" rel="noopener" href="https://www.npmjs.com/package/ws">https://www.npmjs.com/package/ws</a></p>
+<h3 id="2-2-使用"><a href="#2-2-使用" class="headerlink" title="2.2 使用"></a>2.2 使用</h3><p>最简单示例，群聊、匿名</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><code class="hljs html"><span class="hljs-meta">&lt;!DOCTYPE <span class="hljs-keyword">html</span>&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">html</span> <span class="hljs-attr">lang</span>=<span class="hljs-string">&quot;en&quot;</span>&gt;</span><br><br><span class="hljs-tag">&lt;<span class="hljs-name">head</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">meta</span> <span class="hljs-attr">charset</span>=<span class="hljs-string">&quot;UTF-8&quot;</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">meta</span> <span class="hljs-attr">name</span>=<span class="hljs-string">&quot;viewport&quot;</span> <span class="hljs-attr">content</span>=<span class="hljs-string">&quot;width=device-width, initial-scale=1.0&quot;</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">title</span>&gt;</span>Document<span class="hljs-tag">&lt;/<span class="hljs-name">title</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">head</span>&gt;</span><br><br><span class="hljs-tag">&lt;<span class="hljs-name">body</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">h1</span>&gt;</span>WebSocket聊天室<span class="hljs-tag">&lt;/<span class="hljs-name">h1</span>&gt;</span><br><br>    <span class="hljs-tag">&lt;<span class="hljs-name">script</span>&gt;</span><span class="language-javascript"></span><br><span class="language-javascript">        <span class="hljs-keyword">var</span> ws = <span class="hljs-keyword">new</span> <span class="hljs-title class_">WebSocket</span>(<span class="hljs-string">&quot;ws://localhost:8080&quot;</span>)</span><br><span class="language-javascript">        ws.<span class="hljs-property">onopen</span> = <span class="hljs-function">() =&gt;</span> &#123;</span><br><span class="language-javascript">            <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&quot;连接成功&quot;</span>);</span><br><span class="language-javascript">        &#125;</span><br><span class="language-javascript">        ws.<span class="hljs-property">onmessage</span> = <span class="hljs-function">(<span class="hljs-params">msObj</span>) =&gt;</span> &#123;</span><br><span class="language-javascript">            <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(msObj.<span class="hljs-property">data</span>);</span><br><span class="language-javascript">        &#125;</span><br><span class="language-javascript">        ws.<span class="hljs-property">onerror</span> = <span class="hljs-function">(<span class="hljs-params">error</span>) =&gt;</span> &#123;</span><br><span class="language-javascript">            <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">error</span>(error);</span><br><span class="language-javascript">        &#125;</span><br><span class="language-javascript">    </span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">body</span>&gt;</span><br><br><span class="hljs-tag">&lt;/<span class="hljs-name">html</span>&gt;</span><br></code></pre></td></tr></table></figure>
+
+<p>index.js</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><code class="hljs js"><span class="hljs-keyword">const</span> express = <span class="hljs-built_in">require</span>(<span class="hljs-string">&quot;express&quot;</span>)<br><span class="hljs-keyword">const</span> app = <span class="hljs-title function_">express</span>()<br><span class="hljs-comment">//访问 public 下的静态资源如 chat.html</span><br>app.<span class="hljs-title function_">use</span>(express.<span class="hljs-title function_">static</span>(<span class="hljs-string">&quot;./public&quot;</span>))<br><span class="hljs-comment">// http响应</span><br>app.<span class="hljs-title function_">get</span>(<span class="hljs-string">&quot;/&quot;</span>, <span class="hljs-function">(<span class="hljs-params">req, res</span>) =&gt;</span> &#123;<br>    res.<span class="hljs-title function_">send</span>(&#123; <span class="hljs-attr">ok</span>: <span class="hljs-number">1</span> &#125;)<br>&#125;)<br><br><span class="hljs-comment">// websocket响应</span><br><span class="hljs-keyword">const</span> <span class="hljs-title class_">WebSocket</span> = <span class="hljs-built_in">require</span>(<span class="hljs-string">&quot;ws&quot;</span>)<br><span class="hljs-keyword">const</span> wss = <span class="hljs-keyword">new</span> <span class="hljs-title class_">WebSocket</span>.<span class="hljs-title class_">WebSocketServer</span>(&#123; <span class="hljs-attr">port</span>: <span class="hljs-number">8080</span> &#125;);<br><span class="hljs-comment">// 监听默认事件 connection，不可修改，修改没什么用</span><br>wss.<span class="hljs-title function_">on</span>(<span class="hljs-string">&#x27;connection&#x27;</span>, <span class="hljs-keyword">function</span> <span class="hljs-title function_">connection</span>(<span class="hljs-params">ws</span>) &#123;<br>    ws.<span class="hljs-title function_">on</span>(<span class="hljs-string">&#x27;error&#x27;</span>, <span class="hljs-variable language_">console</span>.<span class="hljs-property">error</span>);<br>    ws.<span class="hljs-title function_">on</span>(<span class="hljs-string">&#x27;message&#x27;</span>, <span class="hljs-keyword">function</span> <span class="hljs-title function_">message</span>(<span class="hljs-params">data</span>) &#123;<br>        <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&#x27;received: %s&#x27;</span>, data);<br>        <span class="hljs-comment">// Server broadcast：转发给其他人(广播)</span><br>        wss.<span class="hljs-property">clients</span>.<span class="hljs-title function_">forEach</span>(<span class="hljs-keyword">function</span> <span class="hljs-title function_">each</span>(<span class="hljs-params">client</span>) &#123;<br>            <span class="hljs-keyword">if</span> (client != ws &amp;&amp; client.<span class="hljs-property">readyState</span> === <span class="hljs-title class_">WebSocket</span>.<span class="hljs-property">OPEN</span>) &#123;<br>                client.<span class="hljs-title function_">send</span>(data, &#123; <span class="hljs-attr">binary</span>: <span class="hljs-literal">false</span> &#125;);<br>            &#125;<br>        &#125;);<br>    &#125;);<br><br>    ws.<span class="hljs-title function_">send</span>(<span class="hljs-string">&#x27;欢迎来到聊天室！&#x27;</span>);<br>&#125;);<br><br><br>app.<span class="hljs-title function_">listen</span>(<span class="hljs-number">3000</span>)<br></code></pre></td></tr></table></figure>
+
+
+
+<h3 id="2-3-在线聊天室"><a href="#2-3-在线聊天室" class="headerlink" title="2.3 在线聊天室"></a>2.3 在线聊天室</h3><h4 id="简易效果"><a href="#简易效果" class="headerlink" title="简易效果"></a>简易效果</h4><p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20260119120113242.png" srcset="/img/loading.gif" lazyload alt="image-20260119120111670"></p>
+<h4 id="实现"><a href="#实现" class="headerlink" title="实现"></a>实现</h4><p>demo 完整代码参考 github：<a target="_blank" rel="noopener" href="https://github.com/janycode/nodejs-express-websocket">https://github.com/janycode/nodejs-express-websocket</a></p>
+<p>核心代码实现：websocketServer.js 与 chat.ejs</p>
+<p>bin&#x2F;websocketServer.js</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br></pre></td><td class="code"><pre><code class="hljs js"><span class="hljs-comment">// websocket响应</span><br><span class="hljs-keyword">const</span> <span class="hljs-title class_">WebSocket</span> = <span class="hljs-built_in">require</span>(<span class="hljs-string">&quot;ws&quot;</span>);<br><span class="hljs-keyword">const</span> <span class="hljs-variable constant_">JWT</span> = <span class="hljs-built_in">require</span>(<span class="hljs-string">&quot;../util/JWT&quot;</span>);<br><span class="hljs-keyword">const</span> wss = <span class="hljs-keyword">new</span> <span class="hljs-title class_">WebSocket</span>.<span class="hljs-title class_">WebSocketServer</span>(&#123; <span class="hljs-attr">port</span>: <span class="hljs-number">8080</span> &#125;);<br><span class="hljs-comment">// 监听默认事件 connection，不可修改，修改没什么用</span><br>wss.<span class="hljs-title function_">on</span>(<span class="hljs-string">&#x27;connection&#x27;</span>, <span class="hljs-keyword">function</span> <span class="hljs-title function_">connection</span>(<span class="hljs-params">ws, req</span>) &#123;<br>    <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&quot;req.url-&gt;&quot;</span>, req.<span class="hljs-property">url</span>);<br>    <span class="hljs-keyword">const</span> reqUrl = <span class="hljs-keyword">new</span> <span class="hljs-title function_">URL</span>(req.<span class="hljs-property">url</span>, <span class="hljs-string">&quot;http://127.0.0.1:3000&quot;</span>)<br>    <span class="hljs-keyword">const</span> payload = <span class="hljs-variable constant_">JWT</span>.<span class="hljs-title function_">verify</span>(reqUrl.<span class="hljs-property">searchParams</span>.<span class="hljs-title function_">get</span>(<span class="hljs-string">&quot;token&quot;</span>))<br>    <span class="hljs-keyword">if</span> (payload) &#123;<br>        <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&quot;success:&quot;</span>, payload);<br>        ws.<span class="hljs-property">user</span> = payload  <span class="hljs-comment">// .user 是新挂上 ws 的属性</span><br>        ws.<span class="hljs-title function_">send</span>(<span class="hljs-title function_">createMessage</span>(<span class="hljs-title class_">WebSocketType</span>.<span class="hljs-property">GroupChat</span>, ws.<span class="hljs-property">user</span>, <span class="hljs-string">&quot;欢迎来到聊天室-群聊开始...&quot;</span>))<br>        <span class="hljs-comment">// 群发：用户上线时，群发一下用户列表</span><br>        <span class="hljs-title function_">sendTo</span>(<span class="hljs-title class_">WebSocketType</span>.<span class="hljs-property">GroupList</span>, ws.<span class="hljs-property">user</span>, <span class="hljs-title class_">Array</span>.<span class="hljs-title function_">from</span>(wss.<span class="hljs-property">clients</span>).<span class="hljs-title function_">map</span>(<span class="hljs-function"><span class="hljs-params">item</span> =&gt;</span> item.<span class="hljs-property">user</span>))<br>    &#125; <span class="hljs-keyword">else</span> &#123;<br>        <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&quot;未授权&quot;</span>);<br>        ws.<span class="hljs-title function_">send</span>(<span class="hljs-title function_">createMessage</span>(<span class="hljs-title class_">WebSocketType</span>.<span class="hljs-property">Error</span>, <span class="hljs-literal">null</span>, <span class="hljs-string">&quot;未授权！&quot;</span>))<br>    &#125;<br><br>    ws.<span class="hljs-title function_">on</span>(<span class="hljs-string">&#x27;error&#x27;</span>, <span class="hljs-variable language_">console</span>.<span class="hljs-property">error</span>);<br>    ws.<span class="hljs-title function_">on</span>(<span class="hljs-string">&#x27;message&#x27;</span>, <span class="hljs-keyword">function</span> <span class="hljs-title function_">message</span>(<span class="hljs-params">data</span>) &#123;<br>        <span class="hljs-comment">// console.log(&#x27;received: %s&#x27;, data);</span><br>        <span class="hljs-keyword">const</span> msgObj = <span class="hljs-title class_">JSON</span>.<span class="hljs-title function_">parse</span>(data)<br>        <span class="hljs-keyword">switch</span> (msgObj.<span class="hljs-property">type</span>) &#123;<br>            <span class="hljs-keyword">case</span> <span class="hljs-title class_">WebSocketType</span>.<span class="hljs-property">GroupList</span>:<br>                <span class="hljs-comment">//console.log(Array.from(wss.clients).map(item =&gt; item.user)); //wss.clients中有 user&#123;&#125; 对象</span><br>                <span class="hljs-comment">// 在线用户列表</span><br>                <span class="hljs-title function_">sendTo</span>(<span class="hljs-title class_">WebSocketType</span>.<span class="hljs-property">GroupList</span>, ws.<span class="hljs-property">user</span>, <span class="hljs-title class_">Array</span>.<span class="hljs-title function_">from</span>(wss.<span class="hljs-property">clients</span>).<span class="hljs-title function_">map</span>(<span class="hljs-function"><span class="hljs-params">item</span> =&gt;</span> item.<span class="hljs-property">user</span>))<br>                <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&quot;发送用户列表 success -&gt;&quot;</span>, userList);<br>                <span class="hljs-keyword">break</span>;<br>            <span class="hljs-keyword">case</span> <span class="hljs-title class_">WebSocketType</span>.<span class="hljs-property">GroupChat</span>:<br>                <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(msgObj.<span class="hljs-property">data</span>);<br>                <span class="hljs-title function_">sendTo</span>(<span class="hljs-title class_">WebSocketType</span>.<span class="hljs-property">GroupChat</span>, ws.<span class="hljs-property">user</span>, msgObj.<span class="hljs-property">data</span>)<br>                <span class="hljs-keyword">break</span>;<br>            <span class="hljs-keyword">case</span> <span class="hljs-title class_">WebSocketType</span>.<span class="hljs-property">SingleChat</span>:<br>                <span class="hljs-title function_">sendTo</span>(<span class="hljs-title class_">WebSocketType</span>.<span class="hljs-property">SingleChat</span>, ws.<span class="hljs-property">user</span>, msgObj.<span class="hljs-property">data</span>, msgObj.<span class="hljs-property">to</span>)<br>                <span class="hljs-keyword">break</span>;<br>            <span class="hljs-keyword">case</span> <span class="hljs-title class_">WebSocketType</span>.<span class="hljs-property">Error</span>:<br>                <span class="hljs-keyword">break</span>;<br>            <span class="hljs-attr">default</span>:<br>                <span class="hljs-keyword">break</span>;<br>        &#125;<br>    &#125;);<br><br>    ws.<span class="hljs-title function_">on</span>(<span class="hljs-string">&quot;close&quot;</span>, <span class="hljs-function">() =&gt;</span> &#123;<br>        wss.<span class="hljs-property">clients</span>.<span class="hljs-title function_">delete</span>(ws.<span class="hljs-property">user</span>)<br>        <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&quot;close:&quot;</span>, ws.<span class="hljs-property">user</span>);<br>    &#125;)<br><br>    <span class="hljs-comment">//ws.send(&#x27;欢迎来到聊天室！&#x27;);</span><br>&#125;);<br><br><span class="hljs-keyword">const</span> <span class="hljs-title class_">WebSocketType</span> = &#123;<br>    <span class="hljs-title class_">Error</span>: <span class="hljs-number">0</span>,     <span class="hljs-comment">//错误</span><br>    <span class="hljs-title class_">GroupList</span>: <span class="hljs-number">1</span>, <span class="hljs-comment">//获取在线用户列表</span><br>    <span class="hljs-title class_">GroupChat</span>: <span class="hljs-number">2</span>, <span class="hljs-comment">//群聊</span><br>    <span class="hljs-title class_">SingleChat</span>: <span class="hljs-number">3</span> <span class="hljs-comment">//私聊</span><br>&#125;<br><br><span class="hljs-keyword">function</span> <span class="hljs-title function_">createMessage</span>(<span class="hljs-params">type, user, data</span>) &#123;<br>    <span class="hljs-keyword">return</span> <span class="hljs-title class_">JSON</span>.<span class="hljs-title function_">stringify</span>(&#123;<br>        type, user, data<br>    &#125;)<br>&#125;<br><br><span class="hljs-keyword">function</span> <span class="hljs-title function_">sendTo</span>(<span class="hljs-params">type, user, data, to</span>) &#123;<br>    <span class="hljs-comment">// Server broadcast：转发给其他人(广播)</span><br>    wss.<span class="hljs-property">clients</span>.<span class="hljs-title function_">forEach</span>(<span class="hljs-keyword">function</span> <span class="hljs-title function_">each</span>(<span class="hljs-params">client</span>) &#123;<br>        <span class="hljs-keyword">let</span> condition = client.<span class="hljs-property">readyState</span> === <span class="hljs-title class_">WebSocket</span>.<span class="hljs-property">OPEN</span><br>        <span class="hljs-keyword">if</span> (to) &#123;<br>            <span class="hljs-comment">//私聊，添加到发送消息条件上</span><br>            condition = condition &amp;&amp; (client.<span class="hljs-property">user</span>.<span class="hljs-property">username</span> === to)<br>        &#125;<br>        <span class="hljs-keyword">if</span> (condition) &#123;<br>            client.<span class="hljs-title function_">send</span>(<span class="hljs-title function_">createMessage</span>(type, user, <span class="hljs-title class_">JSON</span>.<span class="hljs-title function_">stringify</span>(data)))<br>            <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&quot;广播消息:&quot;</span>, type, user, data);<br>        &#125;<br>    &#125;);<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>views&#x2F;chat.ejs</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br></pre></td><td class="code"><pre><code class="hljs ejs">&lt;!DOCTYPE html&gt;<br>&lt;html lang=&quot;en&quot;&gt;<br><br>&lt;head&gt;<br>    &lt;meta charset=&quot;UTF-8&quot;&gt;<br>    &lt;meta name=&quot;viewport&quot; content=&quot;width=device-width, initial-scale=1.0&quot;&gt;<br>    &lt;title&gt;Document&lt;/title&gt;<br>    &lt;style&gt;<br>        /* 新增：极简样式，让聊天记录更易读（可选但推荐） */<br>        #chatList &#123;<br>            width: 500px;<br>            height: 300px;<br>            border: 1px solid #ccc;<br>            padding: 10px;<br>            overflow-y: auto;<br>            margin: 10px 0;<br>        &#125;<br><br>        .chat-item &#123;<br>            margin: 5px 0;<br>        &#125;<br><br>        .chat-group &#123;<br>            color: #333;<br>        &#125;<br><br>        .chat-single &#123;<br>            color: #0066cc;<br>        &#125;<br><br>        .chat-self &#123;<br>            text-align: right;<br>            color: #009900;<br>        &#125;<br>    &lt;/style&gt;<br>&lt;/head&gt;<br><br>&lt;body&gt;<br>    &lt;h1&gt;WebSocket 聊天室&lt;/h1&gt;<br>    &lt;h3&gt;欢迎 &lt;span id=&quot;myname&quot; style=&quot;color:red&quot;&gt;&lt;/span&gt;，当前在线用户数：&lt;span id=&quot;count&quot; style=&quot;color:green&quot;&gt;&lt;/span&gt;&lt;/h3&gt;<br><br>    &lt;!-- 新增：聊天记录列表容器 --&gt;<br>    &lt;div id=&quot;chatList&quot;&gt;&lt;/div&gt;<br><br>    &lt;input type=&quot;text&quot; id=&quot;text&quot;&gt;&lt;button id=&quot;send&quot;&gt;发送&lt;/button&gt;<br>    &lt;select id=&quot;select&quot;&gt;&lt;/select&gt;<br><br>    &lt;script&gt;<br>        let select = document.querySelector(&quot;#select&quot;)<br>        let myname = document.querySelector(&quot;#myname&quot;)<br>        let count = document.querySelector(&quot;#count&quot;)<br>        let send = document.querySelector(&quot;#send&quot;)<br>        let text = document.querySelector(&quot;#text&quot;)<br>        // 新增：获取聊天记录容器<br>        let chatList = document.querySelector(&quot;#chatList&quot;)<br><br>        //当前登陆用户信息显示<br>        const params = new URLSearchParams(window.location.search);<br>        const username = params.get(&#x27;username&#x27;); // 新增：缓存当前用户名<br>        console.log(&quot;登陆用户:&quot;, username);<br>        myname.innerHTML = username<br><br>        const WebSocketType = &#123;<br>            Error: 0,     //错误<br>            GroupList: 1, //获取在线用户列表<br>            GroupChat: 2, //群聊<br>            SingleChat: 3 //私聊<br>        &#125;<br>        // 建立 socket 连接，带着 token，后端验证<br>        const ws = new WebSocket(`ws://localhost:8080?token=$&#123;localStorage.getItem(&quot;token&quot;)&#125;`)<br>        ws.onopen = () =&gt; &#123;<br>            console.log(&quot;连接成功&quot;);<br>        &#125;<br>        ws.onmessage = (msgObj) =&gt; &#123;<br>            console.log(&quot;msgObj.data-&gt;&quot;, msgObj.data);<br>            msgJSON = JSON.parse(msgObj.data)<br>            switch (msgJSON.type) &#123;<br>                case WebSocketType.Error:<br>                    localStorage.removeItem(&quot;token&quot;)<br>                    location.href = &quot;/login&quot;<br>                    break<br>                case WebSocketType.GroupChat:<br>                    console.log((msgJSON.user ? msgJSON.user.username : &quot;广播：&quot;) + &quot;:&quot; + msgJSON.data);<br>                    // 新增：渲染群聊消息到列表，如果当前就是我自己，就不需要再把我自己放上去<br>                    if (msgJSON.user?.username !== username) &#123;<br>                        renderChatMsg(msgJSON.user?.username || &quot;广播&quot;, msgJSON.data, &quot;group&quot;);<br>                    &#125;<br>                    break<br>                case WebSocketType.GroupList:<br>                    const onlineList = JSON.parse(msgJSON.data)<br>                    if (Array.isArray(onlineList)) &#123;<br>                        console.log(&quot;在线用户数-&gt;&quot;, onlineList.length);<br>                        count.innerHTML = `$&#123;onlineList.length&#125;`<br>                    &#125;<br>                    select.innerHTML = &quot;&quot;<br>                    select.innerHTML = `&lt;option&gt;全部&lt;/option&gt;` + onlineList.map(item =&gt; `<br>                        &lt;option&gt;$&#123;item.username&#125;&lt;/option&gt;<br>                    `)<br>                    break<br>                case WebSocketType.SingleChat:<br>                    console.log((msgJSON.user ? msgJSON.user.username : &quot;广播：&quot;) + &quot;:&quot; + msgJSON.data);<br>                    // 新增：渲染私聊消息到列表<br>                    renderChatMsg(msgJSON.user?.username || &quot;私聊&quot;, msgJSON.data, &quot;single&quot;);<br>                    break<br>                default:<br>                    console.log(&quot;default&quot;);<br>                    break<br>            &#125;<br>        &#125;<br>        ws.onerror = (error) =&gt; &#123;<br>            console.error(error);<br>        &#125;<br><br>        send.onclick = () =&gt; &#123;<br>            if (text.value.trim() === &quot;&quot;) return; // 新增：空消息不发送<br>            if (select.value === &quot;全部&quot;) &#123;<br>                console.log(&quot;群发&quot;);<br>                ws.send(createMessage(WebSocketType.GroupChat, text.value))<br>                // 新增：自己发送的群聊消息，直接渲染（避免等后端回传）<br>                renderChatMsg(&quot;我&quot;, text.value, &quot;self&quot;);<br>            &#125; else &#123;<br>                console.log(&quot;私聊&quot;);<br>                ws.send(createMessage(WebSocketType.SingleChat, text.value, select.value))<br>                // 新增：自己发送的私聊消息，直接渲染<br>                renderChatMsg(`我（私聊给$&#123;select.value&#125;）`, text.value, &quot;self&quot;);<br>            &#125;<br>            text.value = &quot;&quot;; // 新增：发送后清空输入框<br>        &#125;<br><br>        // 新增：渲染聊天消息的核心函数（最小改动的关键）<br>        function renderChatMsg(sender, content, type) &#123;<br>            const chatItem = document.createElement(&quot;div&quot;);<br>            chatItem.className = `chat-item chat-$&#123;type&#125;`;<br>            chatItem.innerHTML = `&lt;strong&gt;$&#123;sender&#125;：&lt;/strong&gt;$&#123;content&#125;`;<br>            chatList.appendChild(chatItem);<br>            // 新增：自动滚动到最新消息<br>            chatList.scrollTop = chatList.scrollHeight;<br>        &#125;<br><br>        function createMessage(type, data, to) &#123;<br>            return JSON.stringify(&#123; type, data, to &#125;)<br>        &#125;<br>    &lt;/script&gt;<br>&lt;/body&gt;<br><br>&lt;/html&gt;<br></code></pre></td></tr></table></figure>
+
+
+
+<h2 id="3-socket-io-模块"><a href="#3-socket-io-模块" class="headerlink" title="3. socket.io 模块"></a>3. socket.io 模块</h2><h3 id="3-1-安装"><a href="#3-1-安装" class="headerlink" title="3.1 安装"></a>3.1 安装</h3><p>安装：<em>npm init; npm i express@4 socket.io</em></p>
+<p>文档：<a target="_blank" rel="noopener" href="https://www.npmjs.com/package/socket.io">https://www.npmjs.com/package/socket.io</a></p>
+<h3 id="3-2-使用"><a href="#3-2-使用" class="headerlink" title="3.2 使用"></a>3.2 使用</h3><p>前后端都是 socket.on 监听，socket.emit 触发，减少了很多学习成本。</p>
+<p>bin&#x2F;www</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs js"><span class="hljs-keyword">var</span> app = <span class="hljs-built_in">require</span>(<span class="hljs-string">&#x27;../app&#x27;</span>);<br><span class="hljs-keyword">var</span> debug = <span class="hljs-built_in">require</span>(<span class="hljs-string">&#x27;debug&#x27;</span>)(<span class="hljs-string">&#x27;server:server&#x27;</span>);<br><span class="hljs-keyword">var</span> http = <span class="hljs-built_in">require</span>(<span class="hljs-string">&#x27;http&#x27;</span>);<br><span class="hljs-comment">// 1.引入socket服务器</span><br><span class="hljs-keyword">var</span> socketioServer = <span class="hljs-built_in">require</span>(<span class="hljs-string">&quot;./socketioServer&quot;</span>)<br><span class="hljs-comment">//...</span><br><span class="hljs-keyword">var</span> server = http.<span class="hljs-title function_">createServer</span>(app);<br><span class="hljs-comment">// 2.引入socket.io</span><br><span class="hljs-title function_">socketioServer</span>(server);<br></code></pre></td></tr></table></figure>
+
+<p>bin&#x2F;socketioServer.js</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br></pre></td><td class="code"><pre><code class="hljs js"><span class="hljs-keyword">const</span> <span class="hljs-variable constant_">JWT</span> = <span class="hljs-built_in">require</span>(<span class="hljs-string">&#x27;../util/JWT&#x27;</span>);<br><br><span class="hljs-comment">// socket.io响应</span><br><span class="hljs-keyword">function</span> <span class="hljs-title function_">start</span>(<span class="hljs-params">server</span>) &#123;<br>    <span class="hljs-keyword">const</span> io = <span class="hljs-built_in">require</span>(<span class="hljs-string">&#x27;socket.io&#x27;</span>)(server)<br>    io.<span class="hljs-title function_">on</span>(<span class="hljs-string">&#x27;connection&#x27;</span>, <span class="hljs-function">(<span class="hljs-params">socket</span>) =&gt;</span> &#123;<br>        <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&quot;connection success  111&quot;</span>, socket.<span class="hljs-property">handshake</span>.<span class="hljs-property">query</span>.<span class="hljs-property">token</span>);<br>        <span class="hljs-comment">// token解析</span><br>        <span class="hljs-keyword">const</span> payload = <span class="hljs-variable constant_">JWT</span>.<span class="hljs-title function_">verify</span>(socket.<span class="hljs-property">handshake</span>.<span class="hljs-property">query</span>.<span class="hljs-property">token</span>)<br>        <span class="hljs-keyword">if</span> (payload) &#123;<br>            socket.<span class="hljs-property">user</span> = payload<br>            <span class="hljs-comment">//发送欢迎</span><br>            socket.<span class="hljs-title function_">emit</span>(<span class="hljs-title class_">WebSocketType</span>.<span class="hljs-property">GroupChat</span>, <span class="hljs-title function_">createMessage</span>(socket.<span class="hljs-property">user</span>, <span class="hljs-string">&quot;欢迎来到聊天室&quot;</span>))<br>            <span class="hljs-comment">//给所有发送用户列表(实时获取)</span><br>            <span class="hljs-title function_">sendAll</span>(io, socket.<span class="hljs-property">user</span>)<br>        &#125; <span class="hljs-keyword">else</span> &#123;<br>            socket.<span class="hljs-title function_">emit</span>(<span class="hljs-title class_">WebSocketType</span>.<span class="hljs-property">Error</span>, <span class="hljs-title function_">createMessage</span>(socket.<span class="hljs-property">user</span>, <span class="hljs-string">&quot;token过期，未授权&quot;</span>))<br>        &#125;<br><br>        socket.<span class="hljs-title function_">on</span>(<span class="hljs-title class_">WebSocketType</span>.<span class="hljs-property">GroupList</span>, <span class="hljs-function">() =&gt;</span> &#123;<br>            <span class="hljs-comment">// 用户列表需要实时获取</span><br>            <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&quot;sockets user:&quot;</span>, <span class="hljs-title class_">Array</span>.<span class="hljs-title function_">from</span>(io.<span class="hljs-property">sockets</span>.<span class="hljs-property">sockets</span>).<span class="hljs-title function_">map</span>(<span class="hljs-function"><span class="hljs-params">item</span> =&gt;</span> item[<span class="hljs-number">1</span>].<span class="hljs-property">user</span>))<br>            <span class="hljs-title function_">sendAll</span>(io, socket.<span class="hljs-property">user</span>)<br>        &#125;)<br>        socket.<span class="hljs-title function_">on</span>(<span class="hljs-title class_">WebSocketType</span>.<span class="hljs-property">GroupChat</span>, <span class="hljs-function">(<span class="hljs-params">msg</span>) =&gt;</span> &#123;<br>            <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&quot;群聊：&quot;</span>, msg);<br>            <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&quot;群聊 data：&quot;</span>, <span class="hljs-title class_">JSON</span>.<span class="hljs-title function_">parse</span>(msg).<span class="hljs-property">data</span>);<br>            <span class="hljs-comment">//给所有人发</span><br>            <span class="hljs-comment">// io.sockets.emit(WebSocketType.GroupChat, createMessage(socket.user, msg.data))</span><br>            <span class="hljs-comment">//除了自己不发，其他人发</span><br>            socket.<span class="hljs-property">broadcast</span>.<span class="hljs-title function_">emit</span>(<span class="hljs-title class_">WebSocketType</span>.<span class="hljs-property">GroupChat</span>, <span class="hljs-title function_">createMessage</span>(socket.<span class="hljs-property">user</span>, <span class="hljs-title class_">JSON</span>.<span class="hljs-title function_">parse</span>(msg).<span class="hljs-property">data</span>))<br>        &#125;)<br>        socket.<span class="hljs-title function_">on</span>(<span class="hljs-title class_">WebSocketType</span>.<span class="hljs-property">SingleChat</span>, <span class="hljs-function">(<span class="hljs-params">msg</span>) =&gt;</span> &#123;<br>            <span class="hljs-keyword">const</span> msgObj = <span class="hljs-title class_">JSON</span>.<span class="hljs-title function_">parse</span>(msg)<br>            <span class="hljs-title class_">Array</span>.<span class="hljs-title function_">from</span>(io.<span class="hljs-property">sockets</span>.<span class="hljs-property">sockets</span>).<span class="hljs-title function_">forEach</span>(<span class="hljs-function"><span class="hljs-params">item</span> =&gt;</span> &#123;<br>                <span class="hljs-keyword">if</span> (item[<span class="hljs-number">1</span>].<span class="hljs-property">user</span>.<span class="hljs-property">username</span> === msgObj.<span class="hljs-property">to</span>) &#123;<br>                    item[<span class="hljs-number">1</span>].<span class="hljs-title function_">emit</span>(<span class="hljs-title class_">WebSocketType</span>.<span class="hljs-property">SingleChat</span>, <span class="hljs-title function_">createMessage</span>(socket.<span class="hljs-property">user</span>, msgObj.<span class="hljs-property">data</span>))<br>                &#125;<br>            &#125;)<br>        &#125;)<br><br>        socket.<span class="hljs-title function_">on</span>(<span class="hljs-string">&#x27;disconnect&#x27;</span>, <span class="hljs-function">() =&gt;</span> &#123;<br>            <span class="hljs-title function_">sendAll</span>(io, socket.<span class="hljs-property">user</span>)<br>        &#125;);<br>    &#125;);<br>&#125;<br><br><span class="hljs-keyword">const</span> <span class="hljs-title class_">WebSocketType</span> = &#123;<br>    <span class="hljs-title class_">Error</span>: <span class="hljs-number">0</span>,     <span class="hljs-comment">//错误</span><br>    <span class="hljs-title class_">GroupList</span>: <span class="hljs-number">1</span>, <span class="hljs-comment">//获取在线用户列表</span><br>    <span class="hljs-title class_">GroupChat</span>: <span class="hljs-number">2</span>, <span class="hljs-comment">//群聊</span><br>    <span class="hljs-title class_">SingleChat</span>: <span class="hljs-number">3</span> <span class="hljs-comment">//私聊</span><br>&#125;<br><br><span class="hljs-keyword">function</span> <span class="hljs-title function_">createMessage</span>(<span class="hljs-params">user, data</span>) &#123;<br>    <span class="hljs-keyword">return</span> <span class="hljs-title class_">JSON</span>.<span class="hljs-title function_">stringify</span>(&#123;<br>        user, data<br>    &#125;)<br>&#125;<br><br><span class="hljs-keyword">function</span> <span class="hljs-title function_">sendAll</span>(<span class="hljs-params">io, user</span>) &#123;<br>    <span class="hljs-keyword">const</span> userList = <span class="hljs-title class_">Array</span>.<span class="hljs-title function_">from</span>(io.<span class="hljs-property">sockets</span>.<span class="hljs-property">sockets</span>).<span class="hljs-title function_">map</span>(<span class="hljs-function"><span class="hljs-params">item</span> =&gt;</span> item[<span class="hljs-number">1</span>].<span class="hljs-property">user</span>).<span class="hljs-title function_">filter</span>(<span class="hljs-function"><span class="hljs-params">item</span> =&gt;</span> item)<br>    io.<span class="hljs-property">sockets</span>.<span class="hljs-title function_">emit</span>(<span class="hljs-title class_">WebSocketType</span>.<span class="hljs-property">GroupList</span>, <span class="hljs-title function_">createMessage</span>(user, userList))<br>&#125;<br><br><span class="hljs-variable language_">module</span>.<span class="hljs-property">exports</span> = start<br></code></pre></td></tr></table></figure>
+
+<p>views&#x2F;chat_sosketio.ejs</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br></pre></td><td class="code"><pre><code class="hljs ejs">&lt;!DOCTYPE html&gt;<br>&lt;html lang=&quot;en&quot;&gt;<br><br>&lt;head&gt;<br>    &lt;meta charset=&quot;UTF-8&quot;&gt;<br>    &lt;meta name=&quot;viewport&quot; content=&quot;width=device-width, initial-scale=1.0&quot;&gt;<br>    &lt;title&gt;Document&lt;/title&gt;<br>    &lt;style&gt;<br>        /* 新增：极简样式，让聊天记录更易读（可选但推荐） */<br>        #chatList &#123;<br>            width: 500px;<br>            height: 300px;<br>            border: 1px solid #ccc;<br>            padding: 10px;<br>            overflow-y: auto;<br>            margin: 10px 0;<br>        &#125;<br><br>        .chat-item &#123;<br>            margin: 5px 0;<br>        &#125;<br><br>        .chat-group &#123;<br>            color: #333;<br>        &#125;<br><br>        .chat-single &#123;<br>            color: #0066cc;<br>        &#125;<br><br>        .chat-self &#123;<br>            text-align: right;<br>            color: #009900;<br>        &#125;<br>    &lt;/style&gt;<br>    &lt;script src=&quot;/javascripts/socket.io.min.js&quot;&gt;&lt;/script&gt;<br>&lt;/head&gt;<br><br>&lt;body&gt;<br>    &lt;h1&gt;WebSocket 聊天室&lt;/h1&gt;<br>    &lt;h3&gt;欢迎 &lt;span id=&quot;myname&quot; style=&quot;color:red&quot;&gt;&lt;/span&gt;，当前在线用户数：&lt;span id=&quot;count&quot; style=&quot;color:green&quot;&gt;&lt;/span&gt;&lt;/h3&gt;<br><br>    &lt;!-- 新增：聊天记录列表容器 --&gt;<br>    &lt;div id=&quot;chatList&quot;&gt;&lt;/div&gt;<br><br>    &lt;input type=&quot;text&quot; id=&quot;text&quot;&gt;&lt;button id=&quot;send&quot;&gt;发送&lt;/button&gt;<br>    &lt;select id=&quot;select&quot;&gt;&lt;/select&gt;<br><br>    &lt;script&gt;<br>        let select = document.querySelector(&quot;#select&quot;)<br>        let myname = document.querySelector(&quot;#myname&quot;)<br>        let count = document.querySelector(&quot;#count&quot;)<br>        let send = document.querySelector(&quot;#send&quot;)<br>        let text = document.querySelector(&quot;#text&quot;)<br>        // 新增：获取聊天记录容器<br>        let chatList = document.querySelector(&quot;#chatList&quot;)<br><br>        //当前登陆用户信息显示 socket.io[演示]存了 localStorage<br>        const username = localStorage.getItem(&quot;username&quot;);<br>        console.log(&quot;登陆用户:&quot;, username);<br>        myname.innerHTML = username<br>        count.innerHTML = 0<br><br>        const WebSocketType = &#123;<br>            Error: 0,     //错误<br>            GroupList: 1, //获取在线用户列表<br>            GroupChat: 2, //群聊<br>            SingleChat: 3 //私聊<br>        &#125;<br>        // 建立 socket 连接，带着 token，后端验证<br>        const socket = io(`ws://localhost:3000?token=$&#123;localStorage.getItem(&quot;token&quot;)&#125;`)<br>        socket.on(WebSocketType.GroupChat, msg =&gt; &#123;<br>            console.log(&quot;msg 2:&quot;, JSON.parse(msg));<br>            const msgJSON = JSON.parse(msg)<br>            // 新增：渲染群聊消息到列表，如果当前就是我自己，就不需要再把我自己放上去<br>            if (msgJSON.user?.username !== username) &#123;<br>                renderChatMsg(msgJSON.user?.username || &quot;广播&quot;, msgJSON.data, &quot;group&quot;);<br>            &#125;<br>        &#125;)<br>        socket.on(WebSocketType.Error, msg =&gt; &#123;<br>            localStorage.removeItem(&quot;token&quot;)<br>            location.href = &quot;/login&quot;<br>        &#125;)<br>        socket.on(WebSocketType.GroupList, msg =&gt; &#123;<br>            console.log(&quot;msg 1:&quot;, JSON.parse(msg));<br>            const onlineList = JSON.parse(msg).data<br>            if (Array.isArray(onlineList)) &#123;<br>                console.log(&quot;在线用户数-&gt;&quot;, onlineList.length);<br>                count.innerHTML = `$&#123;onlineList.length&#125;`<br>            &#125;<br>            select.innerHTML = &quot;&quot;<br>            select.innerHTML = `&lt;option&gt;全部&lt;/option&gt;` + onlineList.map(item =&gt; `<br>                        &lt;option&gt;$&#123;item.username&#125;&lt;/option&gt;<br>                    `)<br>        &#125;)<br>        socket.on(WebSocketType.SingleChat, msg =&gt; &#123;<br>            console.log(&quot;msg 3:&quot;, JSON.parse(msg));<br>            const msgJSON = JSON.parse(msg)<br>            // 新增：渲染私聊消息到列表<br>            renderChatMsg(msgJSON.user?.username || &quot;私聊&quot;, msgJSON.data, &quot;single&quot;);<br>        &#125;)<br><br>        send.onclick = () =&gt; &#123;<br>            if (text.value.trim() === &quot;&quot;) return; // 新增：空消息不发送<br>            if (select.value === &quot;全部&quot;) &#123;<br>                console.log(&quot;群发&quot;);<br>                socket.emit(WebSocketType.GroupChat, createMessage(text.value))<br>                // 新增：自己发送的群聊消息，直接渲染（避免等后端回传）<br>                renderChatMsg(&quot;我&quot;, text.value, &quot;self&quot;);<br>            &#125; else &#123;<br>                console.log(&quot;私聊&quot;);<br>                socket.emit(WebSocketType.SingleChat, createMessage(text.value, select.value))<br>                // 新增：自己发送的私聊消息，直接渲染<br>                renderChatMsg(`我（私聊给$&#123;select.value&#125;）`, text.value, &quot;self&quot;);<br>            &#125;<br>            text.value = &quot;&quot;; // 新增：发送后清空输入框<br>        &#125;<br>        // 新增：渲染聊天消息的核心函数（最小改动的关键）<br>        function renderChatMsg(sender, content, type) &#123;<br>            const chatItem = document.createElement(&quot;div&quot;);<br>            chatItem.className = `chat-item chat-$&#123;type&#125;`;<br>            chatItem.innerHTML = `&lt;strong&gt;$&#123;sender&#125;：&lt;/strong&gt;$&#123;content&#125;`;<br>            chatList.appendChild(chatItem);<br>            // 新增：自动滚动到最新消息<br>            chatList.scrollTop = chatList.scrollHeight;<br>        &#125;<br>        function createMessage(data, to) &#123;<br>            return JSON.stringify(&#123; data, to &#125;)<br>        &#125;<br>    &lt;/script&gt;<br>&lt;/body&gt;<br><br>&lt;/html&gt;<br></code></pre></td></tr></table></figure>
+
+
+
+<h3 id="3-3-在线聊天室"><a href="#3-3-在线聊天室" class="headerlink" title="3.3 在线聊天室"></a>3.3 在线聊天室</h3><h4 id="效果同上"><a href="#效果同上" class="headerlink" title="效果同上"></a>效果同上</h4><h4 id="实现-1"><a href="#实现-1" class="headerlink" title="实现"></a>实现</h4><p>demo 完整代码参考 github：<a target="_blank" rel="noopener" href="https://github.com/janycode/nodejs-express-websocket">https://github.com/janycode/nodejs-express-websocket</a></p>
+<p>核心代码实现：socketioServer.js 与 chat_sosketio.ejs</p>
+<p>ejs 页面的客户端涉及 js 库引入：<a target="_blank" rel="noopener" href="https://github.com/socketio/socket.io/blob/main/packages/socket.io/client-dist/socket.io.min.js">socket.io.min.js</a></p>
+
+              
+            </div>
+            <hr/>
+            <div>
+              <div>
+  <img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20241112163319.png" srcset="/img/loading.gif" lazyload>
+</div>
+<div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/04-%E5%A4%A7%E5%89%8D%E7%AB%AF/" class="category-chain-item">04_大前端</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/04-%E5%A4%A7%E5%89%8D%E7%AB%AF/06-Node-js/" class="category-chain-item">06_Node.js</a>
+  
+  
+
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/Vue/">#Vue</a>
+      
+        <a href="/tags/Node/">#Node</a>
+      
+        <a href="/tags/Node-js/">#Node.js</a>
+      
+        <a href="/tags/WebSocket/">#WebSocket</a>
+      
+        <a href="/tags/Socket-io/">#Socket.io</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>10-Node.js+WebSocket通信</div>
+      <div>https://janycode.github.io/2022/05/22/04_大前端/06_Node.js/10-Node.js+WebSocket通信/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Jerry(姜源)</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2022年5月22日</div>
+        </div>
+      
+      
+      <div class="license-meta-item">
+        <div>许可协议</div>
+        <div>
+          
+            
+            
+              <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+              <span class="hint--top hint--rounded" aria-label="BY - 姜源">
+                <i class="iconfont icon-by"></i>
+              </span>
+              </a>
+            
+          
+        </div>
+      </div>
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2022/05/22/04_%E5%A4%A7%E5%89%8D%E7%AB%AF/06_Node.js/09-Koa%E6%A1%86%E6%9E%B6/" title="09-Koa框架">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">09-Koa框架</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2022/05/22/04_%E5%A4%A7%E5%89%8D%E7%AB%AF/06_Node.js/06-Express+JWT%E7%99%BB%E9%99%86%E9%89%B4%E6%9D%83/" title="06-Express+JWT登陆鉴权">
+                        <span class="hidden-mobile">06-Express+JWT登陆鉴权</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+  <article id="comments" lazyload>
+    
+  <div id="SOHUCS" sid='https://janycode.github.io/2022/05/22/04_%E5%A4%A7%E5%89%8D%E7%AB%AF/06_Node.js/10-Node.js+WebSocket%E9%80%9A%E4%BF%A1/'></div>
+  <script type="text/javascript">
+    Fluid.utils.loadComments('#SOHUCS', function() {
+      Fluid.utils.createScript("https://changyan.sohu.com/upload/changyan.js", function() {
+        window.changyan.api.config({"appid":"cyw5OHIcO","appkey":"fea3446b3df4b3f129f34da4cbc87e51"})
+      });
+    });
+  </script>
+  <noscript>Please enable JavaScript to view the comments</noscript>
+
+
+  </article>
+
+
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://simple.blog.csdn.net" target="_blank" rel="nofollow noopener"><span>CSDN</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/janycode" target="_blank" rel="nofollow noopener"><span>GitHub</span></a> <i class="iconfont icon-love"></i> <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="busuanzi_container_site_pv" style="display: none">
+        总访问量(PV) 
+        <span id="busuanzi_value_site_pv"></span>
+         次，
+      </span>
+    
+    
+      <span id="busuanzi_container_site_uv" style="display: none">
+        总访客数(UV) 
+        <span id="busuanzi_value_site_uv"></span>
+         人
+      </span>
+    
+    
+  
+</div>
+
+  
+  
+  
+</div>
+
+<!-- live2d 动画 -->
+<script src="https://eqcn.ajz.miesnfu.com/wp-content/plugins/wp-3d-pony/live2dw/lib/L2Dwidget.min.js"></script>
+<script>
+    L2Dwidget.init({
+        "model": {
+            jsonPath: "https://unpkg.com/live2d-widget-model-haruto@1.0.5/assets/haruto.model.json",
+            "scale": 1
+        },
+        "display": {
+            "position": "right",
+            "width": 100,
+            "height": 200,
+            "hOffset": 35,
+            "vOffset": -85
+        },
+        "mobile": {
+            "show": false,
+            "scale": 0.1
+        },
+        "react": {
+            "opacityDefault": 0.75,
+            "opacityOnHover": 0.2
+        }
+    });
+</script>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <!-- Baidu Analytics -->
+    <script defer>
+      if (!Fluid.ctx.dnt) {
+        var _hmt = _hmt || [];
+        (function() {
+          var hm = document.createElement("script");
+          hm.src = "https://hm.baidu.com/hm.js?bfff735c897eb60ea49b735096b20e47";
+          var s = document.getElementsByTagName("script")[0];
+          s.parentNode.insertBefore(hm, s);
+        })();
+      }
+    </script>
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.0/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      headingSelector : CONFIG.toc.headingSelector || 'h1,h2,h3,h4,h5,h6',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      collapseDepth   : CONFIG.toc.collapseDepth || 0,
+      scrollSmooth    : true,
+      headingsOffset  : -boardTop
+    });
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+  });
+</script>
+
+
+  <script>
+  (function() {
+    var enableLang = CONFIG.code_language.enable && CONFIG.code_language.default;
+    var enableCopy = CONFIG.copy_btn;
+    if (!enableLang && !enableCopy) {
+      return;
+    }
+
+    function getBgClass(ele) {
+      return Fluid.utils.getBackgroundLightness(ele) >= 0 ? 'code-widget-light' : 'code-widget-dark';
+    }
+
+    var copyTmpl = '';
+    copyTmpl += '<div class="code-widget">';
+    copyTmpl += 'LANG';
+    copyTmpl += '</div>';
+    jQuery('.markdown-body pre').each(function() {
+      var $pre = jQuery(this);
+      if ($pre.find('code.mermaid').length > 0) {
+        return;
+      }
+      if ($pre.find('span.line').length > 0) {
+        return;
+      }
+
+      var lang = '';
+
+      if (enableLang) {
+        lang = CONFIG.code_language.default;
+        if ($pre[0].children.length > 0 && $pre[0].children[0].classList.length >= 2 && $pre.children().hasClass('hljs')) {
+          lang = $pre[0].children[0].classList[1];
+        } else if ($pre[0].getAttribute('data-language')) {
+          lang = $pre[0].getAttribute('data-language');
+        } else if ($pre.parent().hasClass('sourceCode') && $pre[0].children.length > 0 && $pre[0].children[0].classList.length >= 2) {
+          lang = $pre[0].children[0].classList[1];
+          $pre.parent().addClass('code-wrapper');
+        } else if ($pre.parent().hasClass('markdown-body') && $pre[0].classList.length === 0) {
+          $pre.wrap('<div class="code-wrapper"></div>');
+        }
+        lang = lang.toUpperCase().replace('NONE', CONFIG.code_language.default);
+      }
+      $pre.append(copyTmpl.replace('LANG', lang).replace('code-widget">',
+        getBgClass($pre[0]) + (enableCopy ? ' code-widget copy-btn" data-clipboard-snippet><i class="iconfont icon-copy"></i>' : ' code-widget">')));
+
+      if (enableCopy) {
+        Fluid.utils.createScript('https://lib.baomitu.com/clipboard.js/2.0.10/clipboard.min.js', function() {
+          var clipboard = new window.ClipboardJS('.copy-btn', {
+            target: function(trigger) {
+              var nodes = trigger.parentNode.childNodes;
+              for (var i = 0; i < nodes.length; i++) {
+                if (nodes[i].tagName === 'CODE') {
+                  return nodes[i];
+                }
+              }
+            }
+          });
+          clipboard.on('success', function(e) {
+            e.clearSelection();
+            e.trigger.innerHTML = e.trigger.innerHTML.replace('icon-copy', 'icon-success');
+            setTimeout(function() {
+              e.trigger.innerHTML = e.trigger.innerHTML.replace('icon-success', 'icon-copy');
+            }, 2000);
+          });
+        });
+      }
+    });
+  })();
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>
