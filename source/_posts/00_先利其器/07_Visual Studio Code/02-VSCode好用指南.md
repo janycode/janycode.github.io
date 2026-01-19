@@ -22,19 +22,7 @@ categories:
 
 
 
-## 快捷键速查表
-
-* Windows/Linux快捷键
-
-![image-20251207212734054](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20251207212735.png)
-
-* MAC快捷键
-
-![image-20251207212704144](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20251207212712.png)
-
-
-
-## 界面
+## VSCode界面
 
 ![img](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20251207223406.jpg)
 
@@ -59,11 +47,9 @@ ctrl + shift + P 输入 *settings.json* 打开 *Open User Settgins*，添加如�
 
 
 
-### 自动格式化
+### 自动格式化（按需）
 
-打开设置，找到 format on save/paste/type，3项开启：保存/粘贴/键入一行
-
-
+打开设置，找到 format on `paste`/save/type，3项开启：粘贴(范围格式化)/保存/键入一行
 
 
 
@@ -254,3 +240,12 @@ module.exports = {
 
 
 
+## 快捷键速查表
+
+* Windows/Linux快捷键
+
+![image-20251207212734054](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20251207212735.png)
+
+* MAC快捷键
+
+![image-20251207212704144](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20251207212712.png)
