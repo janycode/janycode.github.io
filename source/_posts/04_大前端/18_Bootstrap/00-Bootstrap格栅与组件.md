@@ -5,7 +5,7 @@ tags:
 - jQuery
 categories: 
 - 04_大前端
-- 18_BootStrap
+- 18_Bootstrap
 ---
 
 ![image-20251125100829463](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20251128131801.png)

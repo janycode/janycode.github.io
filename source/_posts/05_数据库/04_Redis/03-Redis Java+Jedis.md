@@ -6,7 +6,7 @@ tags:
 - Jedis
 categories: 
 - 05_数据库
-- 03_Redis
+- 04_Redis
 ---
 
 ![image-20200815230439632](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20200815230440.png)
