@@ -182,7 +182,7 @@ react开发需要引入多个依赖文件：react.js、react-dom.js，分别又�
 
 把创建的工程目录下的`src目录清空`，然后在里面重新创建一个`index.js`（必须是这个文件名），写入以下代码：
 
-```react
+```js
 // 从 react 的包当中引入了 React。只要你要写 React.js 组件就必须引入React, 因为react里有一种语法叫JSX，稍后会讲到JSX，要写JSX，就必须引入React
 import React from "react"
 // ReactDOM 可以帮助我们把 React 组件渲染到页面上去，没有其它的作用了。它是从 react-dom 中引入的，而不是从 react 引入
@@ -255,7 +255,7 @@ React.js 就把 JavaScript 的语法扩展了一下，让 JavaScript 语言能�
 
 前置：index.js
 
-```react
+```js
 import { createRoot } from "react-dom/client"
 import 组件名 from '组件路径'
 
@@ -271,7 +271,7 @@ createRoot(document.getElementById("root"))
 
 ES6 的加入让 JavaScript 直接支持使用 class 来定义一个类，`react 创建组件的方式就是使用【类的继承】`，ES6 class 是目前官方推荐的使用方式，它使用了ES6标准语法来构建。
 
-```react
+```js
 import React from 'react'
 class JerryApp extends React.Component {
     render() {
@@ -289,7 +289,7 @@ export default JerryApp
 
 index.js - 类中的名字 可以与 导入后的名字不一样，即导入时可以自定义名字，一般保持一致即可。但强制要求`一定要保持首字母大写`！
 
-```react
+```js
 import { createRoot } from "react-dom/client"
 import App from './01-base/01-class' //1.导入 js 模块
 
@@ -303,7 +303,7 @@ createRoot(document.getElementById("root"))
 
 具名函数
 
-```react
+```js
 function JerryApp() {
     return (
         <div>hello, function JerryApp</div>
@@ -314,7 +314,7 @@ export default JerryApp
 
 匿名函数
 
-```react
+```js
 export default () => (
     <div>hello, noname function JerryApp</div>
 )
@@ -322,7 +322,7 @@ export default () => (
 
 index.js
 
-```react
+```js
 import { createRoot } from "react-dom/client"
 import App from './01-base/02-function'
 
@@ -338,7 +338,7 @@ createRoot(document.getElementById("root"))
 
 可以使用该插件的快捷指令输入，比如快速创建一个组件内容 rcc （React -> Component -> Class）
 
-```react
+```js
 import React, { Component } from 'react'
 // 类组件：与函数组件不要两掺！
 class Navbar extends Component {
@@ -386,7 +386,7 @@ export default class JerryApp extends Component {
 
 `React推荐我们使用行内样式，因为React觉得每一个组件都是一个独立的整体。`
 
-```react
+```js
 {/* 注意这里的两个括号，第一个表示我们在要JSX里插入JS了，第二个是对象的括号 */}
 <p style={{color:'red', fontSize:'14px'}}>Hello world</p>
 ```
@@ -403,7 +403,7 @@ export default class JerryApp extends Component {
 * class 在 React 中用 `className`
 * for 在 React 中用 `htmlFor`，主要用于 label
 
-```react
+```js
 import React, { Component } from 'react'
 import './css/01-index.css' //导入 css 样式模块，原理是 webpack 的支持
 
@@ -445,7 +445,7 @@ React的事件并不是原生事件，而是合成事件。
 * `this.handleClick()`-页面刷新就会执行，点击无效果【注意：`不要加括号`】！！！ `this.handleClick`-点击时才执行
 * `onClick={() => { this.handleClick4() }}` 匿名函数中包含了函数调用时，页面进入不会被触发，点击时才触发
 
-```react
+```js
 import React, { Component } from 'react'
 
 export default class JerryApp extends Component {
@@ -493,7 +493,7 @@ export default class JerryApp extends Component {
 * 直接在组件内定义一个**非箭头函数**的方法，然后在 `constructor 里 bind(this)` -`推荐`
 * `<button onClick={() => this.handleClick4() }>按钮</button>` - `【最推荐】`传参好用
 
-```react
+```js
 import React, { Component } from 'react'
 
 export default class JerryApp extends Component {
@@ -527,7 +527,7 @@ export default class JerryApp extends Component {
 * event.stopPropagation - 阻止冒泡，与原生 dom 一样拥有该属性
 * event.preventDefault - 默认行为，与原生 dom 一样拥有该属性
 
-```react
+```js
 import React, { Component } from 'react'
 
 export default class JerryApp extends Component {
