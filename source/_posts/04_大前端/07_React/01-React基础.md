@@ -56,6 +56,8 @@ React不是一个完整的MVC框架，最多可以认为是MVC中的V（View）�
 
 
 
+> React 哲学思想：**`如无必要，勿增实体！`**
+
 
 
 ### 1.4 虚拟dom
@@ -272,8 +274,8 @@ createRoot(document.getElementById("root"))
 ES6 的加入让 JavaScript 直接支持使用 class 来定义一个类，`react 创建组件的方式就是使用【类的继承】`，ES6 class 是目前官方推荐的使用方式，它使用了ES6标准语法来构建。
 
 ```js
-import React from 'react'
-class JerryApp extends React.Component {
+import React, { Component } from 'react'
+class JerryApp extends Component {
     render() {
         return (  // 多行可以使用小括号包裹
             <section>  {/* JSX 必须有一个父组件 */}
@@ -439,9 +441,9 @@ export default class JerryApp extends Component {
 
 React的事件并不是原生事件，而是合成事件。
 
-**原理**：*React并不会真正的绑定事件到每一个具体的\<\>元素标签上，而是通过事件代理的方式。*
+**原理**：*React并不会真正的绑定事件到每一个具体的\<\>元素标签上，而是通过事件代理的方式。* - 占用内存小，无需考虑解绑(节点消失事件也消失)
 
-* 如果处理内容过多，不推荐把函数逻辑写在 dom 中
+* 如果处理内容过多，不推荐把函数逻辑写在 dom 中；内容逻辑较少，可以适当写
 * `this.handleClick()`-页面刷新就会执行，点击无效果【注意：`不要加括号`】！！！ `this.handleClick`-点击时才执行
 * `onClick={() => { this.handleClick4() }}` 匿名函数中包含了函数调用时，页面进入不会被触发，点击时才触发
 
@@ -545,6 +547,72 @@ export default class JerryApp extends Component {
     }
 }
 ```
+
+
+
+### 4.5 Ref 应用
+
+* `myRef = createRef()` 创建 ref 引用对象
+* `ref={this.myRef}`  绑定引用对象
+* `this.myRef.current` 获取引用对象的对象内容，.value 就可以获取如 input 输入框的内容
+* 注意：this 的指向不能出错！！！参考【事件处理】
+
+```js
+import React, { Component, createRef } from 'react'
+
+export default class JerryApp extends Component {
+    myRef = createRef()
+    render() {
+        return (
+            <div>
+                <input ref={this.myRef} />
+                <button onClick={this.handleClick1}>add1</button>
+                <button onClick={this.handleClick2.bind(this)}>add2</button>
+            </div>
+        )
+    }
+    handleClick1 = () => {
+        console.log("click", this.myRef); // ref 对象
+        console.log("ref current", this.myRef.current); // <input> 标签
+        console.log("ref value", this.myRef.current.value); // input 输出的内容
+    }
+    handleClick2 () {
+        console.log("click", this.myRef); // ref 对象
+        console.log("ref current", this.myRef.current); // <input> 标签
+        console.log("ref value", this.myRef.current.value); // input 输出的内容
+    }
+}
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

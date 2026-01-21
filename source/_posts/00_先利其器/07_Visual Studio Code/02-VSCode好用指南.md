@@ -113,6 +113,15 @@ npm config set registry https://registry.npmjs.org/
 * **TRAE AI (formerly MarsCode)**: Coding Assistant，豆包智能编程助手，提供代码解释、单测生成、问题修复、技术问答等，提升编码效率与质量。
 * **Code Spell Checker**，标志错的单词，还可以提示单词的正确拼法。
 * **indent-rainbow**，提示我们的缩进是否到位，每步交替四种不同的颜色，没有到位的话颜色变红
+
+  * ```json
+    通过添加以下设置到settings.json文件并重新加载VSCode来移除错误的颜色。
+    "indentRainbow.ignoreErrorLanguages": ["*"],
+    "indentRainbow.colorOnWhiteSpaceOnly": true,
+    ```
+
+    
+
 * **IntelliJ IDEA Keybindings**，转变快捷键习惯与 IDEA 风格
 * **Preview on Web Server**，在web服务器上预览，重启vscode后，可以访问8080端口
   * 快捷键有冲突，记得修改快捷键，目前使用 `Ctrl+Alt+Shift+字母`  S 是停止，R 是重启，L 是快速预览
@@ -135,7 +144,7 @@ npm config set registry https://registry.npmjs.org/
 
 PS：如果插件安装无法联网，把windows文件管理器下 `%USERPROFILE%\.vscode\extensions`，删除该文件夹下所有内容。
 
-
+> 插件库推荐：https://www.kancloud.cn/nineqing/visualstudiocode/3170860
 
 
 
