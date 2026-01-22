@@ -99,7 +99,7 @@ npm config set registry https://registry.npmjs.org/
 
 
 
-## 插件列表(★)
+## 插件列表 (★)
 
 * **Chinese (Simplified) (简体中文) Language Pack for Visual Studio Code**，中文插件包，第一个必装
 * **Auto Rename Tag**，自动修改成对标签，默认生效
@@ -120,8 +120,6 @@ npm config set registry https://registry.npmjs.org/
     "indentRainbow.colorOnWhiteSpaceOnly": true,
     ```
 
-    
-
 * **IntelliJ IDEA Keybindings**，转变快捷键习惯与 IDEA 风格
 * **Preview on Web Server**，在web服务器上预览，重启vscode后，可以访问8080端口
   * 快捷键有冲突，记得修改快捷键，目前使用 `Ctrl+Alt+Shift+字母`  S 是停止，R 是重启，L 是快速预览
@@ -139,7 +137,7 @@ npm config set registry https://registry.npmjs.org/
 
 * **EJS language support** ：支持 ejs 的语法着色效果
 * **ApiDoc Snippet** ：apidoc注释代码提示工具
-* **ES7 React/Redux/GraphQL/React-Native snippets** ：React 开发语法插件，有快捷输入指令，如 rcc
+* **ES7+ React/Redux/React-Native snippets** ：React 开发语法插件，有快捷输入指令，如 rcc/rfc...
 * AI 代码补全插件：https://apifox.com/apiskills/vscode-code-completion/
 
 PS：如果插件安装无法联网，把windows文件管理器下 `%USERPROFILE%\.vscode\extensions`，删除该文件夹下所有内容。

@@ -14,17 +14,6 @@ categories:
 
 * React 官网：https://zh-hans.react.dev/
 * React 教程：https://zh-hans.react.dev/learn
-* 参考 React17 文档（英文）：https://17.reactjs.org/docs/getting-started.html
-
-> 版本：`node 20`、`react 19`
->
-> 说明：
->
-> **版本差异**：React 17 和 19 核心一致，19 是增量升级，基于 17 的内容学习不影响以后的使用，仅需补充 19 的新特性。
->
-> **主流版本**：当下 React 18/19 是主流，17 核心语法通用。
->
-> **Node.js 选择**：优先用 nvm 切换到 Node.js 20（LTS），备选 18，放弃 16。
 
 ## 1. 组件数据挂载
 

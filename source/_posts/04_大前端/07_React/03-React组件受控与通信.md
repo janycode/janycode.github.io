@@ -14,17 +14,6 @@ categories:
 
 * React 官网：https://zh-hans.react.dev/
 * React 教程：https://zh-hans.react.dev/learn
-* 参考 React17 文档（英文）：https://17.reactjs.org/docs/getting-started.html
-
-> 版本：`node 20`、`react 19`
->
-> 说明：
->
-> **版本差异**：React 17 和 19 核心一致，19 是增量升级，基于 17 的内容学习不影响以后的使用，仅需补充 19 的新特性。
->
-> **主流版本**：当下 React 18/19 是主流，17 核心语法通用。
->
-> **Node.js 选择**：优先用 nvm 切换到 Node.js 20（LTS），备选 18，放弃 16。
 
 
 ## 1.受控与非受控组件
@@ -279,8 +268,8 @@ export default class JerryApp extends Component {
 * 父传子：`传递属性` —— 父组件上自定义标签属性 xxx，子组件使用 `this.props.xxx` 接收
 * 子传父：`传递方法` —— 父组件上自定义事件回调 callback 函数 myevent(如修改父state)，子组件使用 `this.props.myevent()` 触发父组件执行函数
 
-* `ref 标记` (父组件拿到子组件的引用，从而调用子组件的方法)
-  * 在父组件中清除子组件的 input 输入框的 value 值。**this.refs.form.reset()**
+* `ref 标记` (父组件拿到子组件的引用，从而调用子组件的方法)——比**表单域组件(父子通信)**的方式更方便。
+  * 在父组件中清除子组件的 input 输入框的 value 值。`this.refs.form.reset()`
 
 父子通信示例：
 
@@ -340,9 +329,745 @@ class Sidebar extends Component {
 
 
 
+#### 受控组件(父子通信)
+
+目录
+
+```txt
+component/
+  Center.js
+  Cinema.js
+  Film.js
+  Infomation.js
+  Navbar.js
+  Tabbar.js
+index.js
+```
+
+index.js
+
+```js
+import React, { Component } from 'react'
+import './css/02-maizuo.css'
+import Film from './component2/Film'
+import Cinema from './component2/Cinema'
+import Infomation from './component2/Infomation'
+import Center from './component2/Center'
+import Tabbar from './component2/Tabbar'
+import Navbar from './component2/Navbar'
+
+export default class JerryApp extends Component {
+  state = {
+    currentId: 1,
+    list: [
+      { id: 1, text: '电影' },
+      { id: 2, text: '影院' },
+      { id: 3, text: '资讯' },
+      { id: 4, text: '我的' },
+    ],
+  }
+  render() {
+    return (
+      <div>
+        <Navbar
+          myevent={() => {
+            console.log('navbar myevent....')
+            this.setState({
+              currentId: 4,
+            })
+          }}
+        ></Navbar>
+        {
+          this.which() // 函数表达式
+        }
+        <Tabbar
+          myevent={id => {
+            // 父组件定义的方法，子组件传的方法参数 id
+            this.setState({ currentId: id })
+          }}
+          currentId={this.state.currentId}
+          list={this.state.list}
+        ></Tabbar>
+      </div>
+    )
+  }
+
+  which() {
+    switch (this.state.currentId) {
+      case 1:
+        return <Film></Film>
+      case 2:
+        return <Cinema></Cinema>
+      case 3:
+        return <Infomation></Infomation>
+      case 4:
+        return <Center></Center>
+    }
+  }
+}
+```
+
+Navbar.js
+
+```js
+import React, { Component } from 'react'
+
+export default class Navbar extends Component {
+  render() {
+    return (
+      <div style={{ background: 'yellow', textAlign: 'center', overflow: 'hidden' }}>
+        <button style={{ float: 'left' }}>back</button>
+        <span>热卖电影</span>
+        <button
+          style={{ float: 'right' }}
+          onClick={() => {
+            this.props.myevent()
+          }}
+        >
+          center
+        </button>
+      </div>
+    )
+  }
+}
+
+```
+
+Tabbar.js - 类组件 & 函数组件
+
+```js
+// import React, { Component } from 'react'
+
+// export default class Tabbar extends Component {
+//   render() {
+//     return (
+//       <div>
+        // <ul>
+        //   {this.props.list.map(item => (
+        //     <li
+        //       key={item.id}
+        //       /* 使用 this.props 接收父组件传过来参数的 currentId 控制高亮 */
+        //       className={this.props.currentId === item.id ? 'active' : ''}
+        //       onClick={() => this.handleClick(item.id)}
+        //     >
+        //       {item.text}
+        //     </li>
+        //   ))}
+        // </ul>
+//       </div>
+//     )
+//   }
+  // handleClick(id) {
+  //   this.setState({
+  //     currentId: id,
+  //   })
+  //   // 通知父组件，修改父组件的状态
+  //   this.props.myevent(id)
+  // }
+// }
+
+import React from 'react'
+
+export default function Tabbar(props) {
+  return (
+    <div>
+      <ul>
+        {props.list.map(item => (
+          <li
+            key={item.id}
+            /* 使用 this.props 接收父组件传过来参数的 currentId 控制高亮 */
+            className={props.currentId === item.id ? 'active' : ''}
+            onClick={() => props.myevent(item.id)}
+          >
+            {item.text}
+          </li>
+        ))}
+      </ul>
+    </div>
+  )
+}
+```
+
+效果：点击导航栏的 center，会导致组件内容切换为 center的内容，且 Tabbar 也会高亮到 我的。
+
+#### 表单域组件(父子通信)
+
+```js
+import React, { Component } from 'react'
+
+export default class JerryApp extends Component {
+  state = {
+    username: localStorage.getItem('username'),
+    password: '',
+  }
+  render() {
+    return (
+      <div>
+        <h1>登录页面</h1>
+        <Field
+          /* 父传子：属性 */
+          label="用户名"
+          type="text"
+          /* 子传父：子组件触发自定义事件 onChangeEvent */
+          onChangeEvent={value => {
+            console.log(value)
+            this.setState({ username: value })
+            localStorage.setItem('username', value)
+          }}
+          /* 通过 value 绑定父的 state 给子，用于重置时清空表单 */
+          value={this.state.username}
+        />
+        <Field
+          label="密码"
+          type="password"
+          onChangeEvent={value => {
+            console.log(value)
+            this.setState({ password: value })
+          }}
+          value={this.state.password}
+        />
+        <button
+          onClick={() => {
+            console.log('登录:', this.state.username, this.state.password)
+          }}
+        >
+          登陆
+        </button>
+        <button
+          onClick={() => {
+            this.setState({
+              username: '',
+              password: '',
+            })
+          }}
+        >
+          重置
+        </button>
+      </div>
+    )
+  }
+}
+
+class Field extends Component {
+  render() {
+    return (
+      <div>
+        <label>{this.props.label}</label>
+        <input
+          type={this.props.type}
+          onChange={evt => {
+            this.props.onChangeEvent(evt.target.value)
+          }}
+          value={this.props.value}
+        />
+      </div>
+    )
+  }
+}
+```
+
+#### 表单域组件(ref 方式)
+
+```js
+import React, { Component, createRef } from 'react'
+
+export default class JerryApp extends Component {
+  username = createRef()
+  password = createRef()
+  render() {
+    return (
+      <div>
+        <h1>登录页面</h1>
+        <Field
+          /* 父传子：属性 */
+          label="用户名"
+          type="text"
+          /* ref 绑定父的 Ref 变量，就可以【强取】拿到子组件的 state状态 */
+          ref={this.username}
+        />
+        <Field label="密码" type="password" ref={this.password} />
+        <button
+          onClick={() => {
+            console.log(this.username.current.state.value, this.password.current.state.value)
+          }}
+        >
+          登陆
+        </button>
+        <button
+          onClick={() => {
+            this.username.current.clear()
+            this.password.current.clear()
+          }}
+        >
+          重置
+        </button>
+      </div>
+    )
+  }
+}
+
+class Field extends Component {
+  state = {
+    value: '',
+  }
+  clear() {
+    this.setState({ value: '' })
+  }
+  setValue(value) {
+    this.setState({ value: value })
+  }
+  render() {
+    return (
+      <div>
+        <label>{this.props.label}</label>
+        <input
+          type={this.props.type}
+          onChange={evt => {
+            this.setState({
+              value: evt.target.value /* 设置为自己的 state */,
+            })
+          }}
+          value={this.state.value}
+        />
+      </div>
+    )
+  }
+}
+```
+
 
 
 ### 2.2 非父子通信
+
+#### ① 状态提升(中间人模式)
+
+React中的状态提升就是将多个组件需要共享的状态提升到它们最近的父组件上，在父组件上改变这个状态然后通过props分发给子组件。
+
+```js
+import React, { Component } from 'react'
+import axios from 'axios'
+
+export default class JerryApp extends Component {
+  constructor() {
+    super()
+
+    this.state = {
+      filmList: [],
+      info: '',
+    }
+
+    //演示：临时请求数据，axios 第三方库
+    axios({
+      url: 'https://m.maizuo.com/gateway?cityId=410100&pageNum=1&pageSize=10&type=1&k=7050049',
+      headers: {
+        'x-client-info': '{"a":"3000","ch":"1002","v":"5.2.1","e":"17689720181688867040133121","bc":"410100"}',
+        'x-host': 'mall.film-ticket.film.list',
+      },
+    })
+      .then(res => {
+        console.log(res.data.data.films)
+        this.setState({
+          filmList: res.data.data.films,
+        })
+      })
+      .catch(err => {
+        console.error('请求出错', err)
+      })
+  }
+
+  render() {
+    return (
+      <div>
+        {this.state.filmList.map(item => (
+          <FilmItem
+            key={item.filmId}
+            {...item}
+            onEvent={value => {
+              console.log("父：", value)
+              this.setState({ info: value })
+            }}
+          ></FilmItem>
+        ))}
+        <FilmDetail info={this.state.info}></FilmDetail>     {/* 父传子：属性 */}
+      </div>
+    )
+  }
+}
+/* 受控组件 */
+class FilmItem extends Component {
+  render() {
+    //console.log(this.props); // 接收 {...item}
+    let { name, poster, grade, synopsis, director } = this.props
+    return (
+      <div style={{ overflow: 'hidden', padding: '10px' }}>
+        <img
+          src={poster}
+          alt={name}
+          style={{ width: '100px', float: 'left' }}
+          onClick={() => {
+            console.log('FilmItem:', director)
+            this.props.onEvent(director)                /* 子传父：调用父的方法 */
+          }}
+        />
+        <h4>{name}</h4>
+        <div>观众评分:{grade}</div>
+      </div>
+    )
+  }
+}
+
+class FilmDetail extends Component {
+  obj = { position: 'fixed', right: 0, top: '100px', backgroundColor: 'yellow', width: '300px', height: '300px' }
+  render() {
+    return <div style={this.obj}>{this.props.info}</div>
+  }
+}
+```
+
+效果：
+
+![chrome-capture-2026-01-22](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20260122120047193.gif)
+
+#### ② 发布订阅模式
+
+```js
+import React, { Component } from 'react'
+import axios from 'axios'
+
+// 订阅发布中心
+var bus = {
+  list: [],
+  subscribe(cb) {
+    //订阅
+    this.list.push(cb)
+  },
+  publish(text) {
+    //发布
+    this.list.forEach(cb => cb && cb(text))
+  },
+}
+
+export default class JerryApp extends Component {
+  constructor() {
+    super()
+
+    this.state = {
+      filmList: [],
+    }
+
+    //演示：临时请求数据，axios 第三方库
+    axios({
+      url: 'https://m.maizuo.com/gateway?cityId=410100&pageNum=1&pageSize=10&type=1&k=7050049',
+      headers: {
+        'x-client-info': '{"a":"3000","ch":"1002","v":"5.2.1","e":"17689720181688867040133121","bc":"410100"}',
+        'x-host': 'mall.film-ticket.film.list',
+      },
+    })
+      .then(res => {
+        console.log(res.data.data.films)
+        this.setState({
+          filmList: res.data.data.films,
+        })
+      })
+      .catch(err => {
+        console.error('请求出错', err)
+      })
+  }
+
+  render() {
+    return (
+      <div>
+        {this.state.filmList.map(item => (
+          <FilmItem key={item.filmId} {...item}></FilmItem>
+        ))}
+        <FilmDetail></FilmDetail> {/* 父传子：属性 */}
+      </div>
+    )
+  }
+}
+/* 受控组件 */
+class FilmItem extends Component {
+  render() {
+    //console.log(this.props); // 接收 {...item}
+    let { name, poster, grade, director } = this.props
+    return (
+      <div style={{ overflow: 'hidden', padding: '10px' }}>
+        <img
+          src={poster}
+          alt={name}
+          style={{ width: '100px', float: 'left' }}
+          onClick={() => {
+            console.log('FilmItem:', director)
+            bus.publish(director) //发布
+          }}
+        />
+        <h4>{name}</h4>
+        <div>观众评分:{grade}</div>
+      </div>
+    )
+  }
+}
+
+class FilmDetail extends Component {
+  constructor() {
+    super()
+    this.state = {
+      info: '',
+    }
+    bus.subscribe(value => {
+      //订阅
+      console.log('我是订阅者')
+      this.setState({ info: value })
+    })
+  }
+
+  obj = { position: 'fixed', right: 0, top: '100px', backgroundColor: 'yellow', width: '300px', height: '300px' }
+  render() {
+    return <div style={this.obj}>{this.state.info}</div>
+  }
+}
+```
+
+效果：同上。
+
+
+
+#### ③ context 状态树传参
+
+React 提供的`跨级通信方案`，原理是 `生产者消费者` 模式。
+
+* 注意：GlobalContext.Consumer 内必须是`回调函数写法`，通过 context 方法改变根组件状态
+
+* 优点：跨组件访问数据
+
+* 缺点：react 组件树种某个上级组件 shouldComponetUpdate 返回 false，当 context 更新时，不会引起下级组件更新
+
+```js
+import React, { Component, createContext } from 'react'
+import axios from 'axios'
+
+// 创建 context 对象
+const GlobalContext = createContext()
+
+export default class JerryApp extends Component {
+  constructor() {
+    super()
+
+    this.state = {
+      filmList: [],
+      info: '',
+    }
+
+    //演示：临时请求数据，axios 第三方库
+    axios({
+      url: 'https://m.maizuo.com/gateway?cityId=410100&pageNum=1&pageSize=10&type=1&k=7050049',
+      headers: {
+        'x-client-info': '{"a":"3000","ch":"1002","v":"5.2.1","e":"17689720181688867040133121","bc":"410100"}',
+        'x-host': 'mall.film-ticket.film.list',
+      },
+    })
+      .then(res => {
+        console.log(res.data.data.films)
+        this.setState({
+          filmList: res.data.data.films,
+        })
+      })
+      .catch(err => {
+        console.error('请求出错', err)
+      })
+  }
+
+  render() {
+    // 使用全局 context Provider 包裹组件最外层标签，指定 value 属性传 obj
+    return (
+      <GlobalContext.Provider
+        value={{
+          info: this.state.info,
+          changeInfo: value => {
+            this.setState({ info: value })
+          },
+        }}
+      >
+        <div>
+          {this.state.filmList.map(item => (
+            <FilmItem key={item.filmId} {...item}></FilmItem>
+          ))}
+          <FilmDetail></FilmDetail>
+        </div>
+      </GlobalContext.Provider>
+    )
+  }
+}
+/* 受控组件 */
+class FilmItem extends Component {
+  render() {
+    let { name, poster, grade, director } = this.props
+    // 使用全局 context Consumer 包裹组件最外层标签，且使用{()=>{...}} 匿名回调再次包裹
+    return (
+      <GlobalContext.Consumer>
+        {value => {
+          return (
+            <div style={{ overflow: 'hidden', padding: '10px' }}>
+              <img
+                src={poster}
+                alt={name}
+                style={{ width: '100px', float: 'left' }}
+                onClick={() => {
+                  console.log('FilmItem:', director)
+                  value.changeInfo(director) // 修改 context Provider 中的对象值 value.changeXxx()
+                }}
+              />
+              <h4>{name}</h4>
+              <div>观众评分:{grade}</div>
+            </div>
+          )
+        }}
+      </GlobalContext.Consumer>
+    )
+  }
+}
+
+class FilmDetail extends Component {
+  obj = { position: 'fixed', right: 0, top: '100px', backgroundColor: 'yellow', width: '300px', height: '300px' }
+  render() {
+    // 使用全局 context Consumer 包裹组件最外层标签，且使用{()=>{...}} 匿名回调再次包裹
+    return (
+      <GlobalContext.Consumer>
+        {value => {
+          return <div style={this.obj}>detail-{value.info}</div> //使用 context Provider 中的对象值 value.info
+        }}
+      </GlobalContext.Consumer>
+    )
+  }
+}
+```
+
+
+
+### 3. 插槽
+
+#### this.props.children
+
+`this.props.children[index]` 固定属性 children 数组，默认是插槽替换过来所有内容，也可以通过下标控制插槽内容的顺序。
+
+1. 提高组件的复用性
+2. 一定程度减少父子通信
+
+```js
+import React, { Component } from 'react'
+
+export default class JerryApp extends Component {
+  render() {
+    return (
+      <div>
+        <Child>
+          <div>app child-div1</div>
+          <div>app child-div2</div>
+          <div>app child-div3</div>
+        </Child>
+      </div>
+    )
+  }
+}
+
+class Child extends Component {
+  render() {
+      return (
+        <div>
+          child-具名插槽-特殊属性 this.props.children
+          {this.props.children[2]}
+          {this.props.children[1]}
+          {this.props.children[0]}
+        </div>
+      )
+  }
+}
+```
+
+效果：
+
+```txt
+child-具名插槽-特殊属性 this.props.children
+app child-div3
+app child-div2
+app child-div1
+```
+
+
+
+插槽抽屉：
+
+```js
+import React, { Component } from 'react'
+
+export default class JerryApp extends Component {
+  state = {
+    isShow: false,
+  }
+
+  handleEvent = () => {
+    this.setState({ isShow: !this.state.isShow })
+  }
+  render() {
+    return (
+      <div>
+        <Navbar>
+          <button onClick={() => {
+              this.setState({ isShow: !this.state.isShow })
+            }}
+          >
+            click
+          </button>
+        </Navbar>
+        <Sidebar isShow={this.state.isShow}></Sidebar>
+      </div>
+    )
+  }
+}
+
+class Navbar extends Component {
+  render() {
+    return (
+      <div style={{ background: 'yellow' }}>
+        {this.props.children}  {/* 插槽：将父组件定义的 button 替换进来 */}
+        <span>navbar</span>
+      </div>
+    )
+  }
+}
+
+class Sidebar extends Component {
+  render() {
+    return (
+      <div style={{ display: this.props.isShow ? '' : 'none', background: 'red' }}>
+        <ul>
+          <li>1111</li>
+          <li>1111</li>
+          <li>1111</li>
+        </ul>
+      </div>
+    )
+  }
+}
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

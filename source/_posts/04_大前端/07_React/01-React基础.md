@@ -25,6 +25,14 @@ categories:
 > **主流版本**：当下 React 18/19 是主流，17 核心语法通用。
 >
 > **Node.js 选择**：优先用 nvm 切换到 Node.js 20（LTS），备选 18，放弃 16。
+>
+> React 17、18、19 三个版本的**官方发布时间及关键定位**如下：
+>
+> |   版本   |        发布时间         |                     核心定位 & 关键意义                      |
+> | :------: | :---------------------: | :----------------------------------------------------------: |
+> | React 17 | **2020 年 10 月 20 日** | 「过渡版本」，无重大新特性，核心目标是**为后续版本铺路**（如渐进式升级、事件系统重构），完全兼容 React 16 生态，无破坏性变更。 |
+> | React 18 | **2022 年 3 月 29 日**  | 「性能升级版本」，引入**并发渲染（Concurrent Mode）** 核心引擎，新增 `createRoot` 渲染 API、自动批处理、Suspense 增强等，是 17 到 19 的关键过渡。 |
+> | React 19 | **2024 年 6 月 18 日**  | 「功能增强版本」，稳定支持**服务器组件（RSC）**、`useActionState`、自动优化 `useMemo/useCallback`、简化表单 / 异步逻辑，进一步弱化类组件，强化 Hooks 生态。 |
 
 ## 1. React介绍
 
@@ -554,7 +562,7 @@ export default class JerryApp extends Component {
 
 * `myRef = createRef()` 创建 ref 引用对象
 * `ref={this.myRef}`  绑定引用对象
-* `this.myRef.current` 获取引用对象的对象内容，.value 就可以获取如 input 输入框的内容
+* `this.myRef.current` 获取引用对象的对象内容，`.value` 就可以获取如 input 输入框的内容
 * 注意：this 的指向不能出错！！！参考【事件处理】
 
 ```js
