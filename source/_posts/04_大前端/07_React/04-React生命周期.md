@@ -8,7 +8,7 @@ categories:
 - 07_React
 ---
 
-![image-20260120163108775](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20260120163110162.png)
+![React](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20260123164723034.png)
 
 参考：
 
