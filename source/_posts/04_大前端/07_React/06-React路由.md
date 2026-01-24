@@ -60,7 +60,7 @@ V5 与 `V6` 的对比
 
 安装：*npm i react-router-dom@6*
 
-版本：*"react-router-dom": "^6.30.3"*
+版本：`"react-router-dom": "^6.30.3"`
 
 
 
@@ -138,7 +138,7 @@ export default function MRouter() {
 
 #### 一级路由
 
-```js
+```html
     <Route path="/films" element={<Film />} />
     <Route path="/cinemas" element={<Cinema />} />
     <Route path="/center" element={<Center />} />
@@ -158,7 +158,7 @@ localhost:3000/#/center
 
 第一种：整页（或组件）替换
 
-```js
+```html
     <Route path="/cinemas" element={<Cinema />} />
     {/* 二级路由：整个页面组件进行替换，即 url看着是二级路径，但实际组件是全新替换 */}
     <Route path="/cinemas/search" element={<Search />} />
@@ -168,7 +168,7 @@ localhost:3000/#/center
 
 第二种：只替换内部组件，需要路由容器（决定替换位置）; index 代表默认该组件的根目录会默认进入/加载的组件。
 
-```js
+```html
     {/* 二级路由：页面内替换掉路由容器 <Outlet />，此处 path="/films/nowplaying" 或 path="nowplaying" */}
     <Route path="/films" element={<Film />}>
         {/* <Route index element={<Nowplaying />} /> */}               {/* 二级路由默认重定向，方式一 */}
@@ -200,14 +200,14 @@ export default function Film() {
 
 方案1：
 
-```js
+```html
     {/* 重定向方案1：匹配 / 根目录 */}
     <Route path="/" element={<Navigate to="/films" />} />
 ```
 
 方案2：
 
-```js
+```html
     {/* 重定向方案2：匹配 / 根目录，自定义组件 Redirect.js */}
     <Route path="/" element={<Redirect to="/films" />} />
 ```
@@ -232,7 +232,7 @@ export default function Redirect({ to }) {
 
 ### 3.3 404 路由
 
-```js
+```html
     {/* 404兜底路由：未匹配到任何路由，进入 404 */}
     <Route path="*" element={<NotFound />} />
 ```
@@ -243,10 +243,10 @@ export default function Redirect({ to }) {
 
 #### 声明式导航
 
-`NavLink` 组件，可以做为声明式导航使用。
+**`<NavLink>`** 组件，可以做为声明式导航使用。
 
-* **to="/xxx"** 或 **to={aaa}**，也支持变量定义动态跳转
-* **className**，支持回调函数写法，形参解构有一个 isActive 参数，用于判断后取值自定义的高亮 css 样式
+* `to="/xxx"` 或 `to={aaa}`，也支持变量定义动态跳转
+* `className`，支持回调函数写法，形参解构有一个 `isActive` 参数，用于判断后取值自定义的高亮 css 样式
 
 compontents/Tabbar.js
 
@@ -297,14 +297,14 @@ component/Tabbar.css
 
 #### 编程式导航 ①
 
-`const navigate = useNavigate()` 方法可以做编程式导航。
+**`const navigate = useNavigate()`** 方法可以做编程式导航。
 
-* **navegate(path)**，跳转不同的路径，或者 url 动态参数拼接传递
+* `navegate(path)`，跳转不同的路径，或者 url 动态参数拼接传递
 
-`const [searchParams, setSearchParams] = useSearchParams()`  方法可以获取跳转过来的 url 上携带的参数。
+**`const [searchParams, setSearchParams] = useSearchParams()`**  方法可以获取跳转过来的 url 上携带的参数。
 
-* **searchParams.get("id")**，获取 url 上携带的参数，如 id 字段的值
-* **setSearchParams({id: 888})**，可以在当前页面继续扩展跳转到当前 Detail 组件上的值，以拿到新的 id，渲染新的 Detail 页面
+* `searchParams.get("id")`，获取 url 上携带的参数，如 id 字段的值
+* `setSearchParams({id: 888})`，可以在当前页面继续扩展跳转到当前 Detail 组件上的值，以拿到新的 id，渲染新的 Detail 页面
 
 views/films/Nowplaying.js
 
@@ -365,9 +365,9 @@ export default function Detail() {
 }
 ```
 
-Detail 对应路由配置 router/index.js：
+Detail 对应路由配置 router/index.js
 
-```js
+```html
     <Route path="/detail" element={<Detail />} />
 ```
 
@@ -406,7 +406,7 @@ export default function Detail() {
 
 Detail 对应路由配置 router/index.js
 
-```js
+```html
     {/* 动态路由：匹配 /detail/xxx 对应 myid 拿到的就是 xxx 值 */}
     <Route path="/detail/:myid" element={<Detail />} />
 ```
@@ -417,9 +417,9 @@ Detail 对应路由配置 router/index.js
 
 `封装组件` 以解决每次进入路由时，执行组件的判断逻辑，如登陆的 token 校验判断 `<AuthComponent>`。
 
-router/index.js
+路由配置：router/index.js
 
-```js
+```html
     {/* 路由拦截：需要封装独立验证组件来让组件每次都会执行拦截验证逻辑 */}
     <Route path="/center" element={<AuthComponent>
         <Center />   {/* <Center /> 对应组件中 props.children 即为 slot 插槽替换值 */}
@@ -479,7 +479,7 @@ function App() {
 export default App
 ```
 
-`BrowserRouter` - 路径没有 # 号，更类似与 api，也更美观（需要后端配置如果没有匹配到路由默认进入 index 首页即可，如 nginx 配置）
+`BrowserRouter` - 路径没有 # 号，更类似与 api，也更美观，即 vue 的路由 history 模式。
 
 * eg:  http://localhost:3000/films/nowplaying
 
@@ -539,7 +539,7 @@ export default function LazyLoad(path) {
 }
 ```
 
-components/LazyLoad.js - **使用 NotFound 组件兜底，比如有的组件不存在触发导入失败，需要进 404**
+components/LazyLoad.js - **使用 NotFound 组件兜底，比如有的组件不存在触发导入失败，需要进 404** 【`推荐`】
 
 ```js
 import React, { Suspense } from 'react';
@@ -570,7 +570,7 @@ export default function LazyLoad(path) {
 }
 ```
 
-router/index.js - 使用懒加载，`记得去掉顶部 import 导包，否则懒加载等于没加，无效`
+路由配置：router/index.js - 使用懒加载（`<Routes>`标签写法完整版）`记得去掉顶部 import 导包，否则懒加载等于没加，无效`
 
 ```js
 import { Route, Routes } from 'react-router-dom'
@@ -626,7 +626,7 @@ export default function MRouter() {
 
 如果项目中同时使用了 Hooks 函数式组件 和 类组件时，在类组件中实现跳转的方案如下。
 
-示例：Nowplaying.js -> FilmItem.js -> withRouter.js
+示例：Nowplaying.js >> FilmItem.js >> withRouter.js
 
 components/withRouter.js
 
@@ -638,7 +638,7 @@ export default function withRouter(Component) {
         const push = useNavigate()
         const match = useParams()
         const location = useLocation()
-        /* 传递 props，并额外携带 history 参数 */
+        /* 传递 props，并额外携带 history 参数；也可以携带其他参数，如 a="1" */
         return <Component a="1" {...props} history={{ push, match, location }} />
     }
 }
@@ -646,13 +646,17 @@ export default function withRouter(Component) {
 
 views/films/FilmItem.js
 
-* 哪个组件使用 `export default withRouter(组件名)` 导出，哪个组件就拥有了 `this.props.history` 的能力
+* 需要跳转的类组件使用 `export default withRouter(组件名)` 导出，该组件就拥有了 `this.props.history` 被增强的能力
+  * this.props.history.push  跳转页面
+  * this.props.history.match  获取参数
+  * this.props.history.location  获取当前路由
+
 
 ```js
 import { Component } from 'react'
 import withRouter from '../../components/withRouter';
 
-// class类组件：没有 useNavigate，所以需要自己封装 withRouter 高阶组件，来实现路由跳转
+// class 【类组件】：没有 useNavigate，所以需要自己封装 withRouter 高阶组件，来实现路由跳转
 class FilmItem extends Component {
     render() {
         // console.log(this.props);
@@ -675,7 +679,7 @@ class FilmItem extends Component {
 export default withRouter(FilmItem)
 
 // import { useNavigate } from 'react-router-dom'
-// // function 函数式组件不需要 withRouter 封装，天然就可以使用 useNavigate 钩子函数能力
+// // function 【函数式组件】不需要 withRouter 封装，天然就可以使用 useNavigate 钩子函数能力
 // export default function FilmItem(item) {
 //     const navigate = useNavigate() //编程式导航
 //     const handleChangePage = (id) => {
@@ -734,7 +738,7 @@ export default function Nowplaying() {
 
 > 不用写一堆 `<Routes> <Route path="/xx" element={xx} /> </Routes>`，而是用一个数组定义所有路由规则，`useRoutes` 会自动帮你生成对应的路由组件。
 
-router/index.js - 第二个版本（与 vue-router 风格一致）
+路由配置：router/index.js - 第二个版本（与 vue-router 风格一致）
 
 ```js
 import { useRoutes } from 'react-router-dom'
@@ -753,17 +757,17 @@ export default function MRouter() {
                     element: <Redirect to="/films/nowplaying" />,
                 },
                 {
-                    path: "nowplaying",
-                    element: LazyLoad("films/Nowplaying"),
+                    path: "nowplaying", // uri: /films/nowplaying
+                    element: LazyLoad("films/Nowplaying"),  //注意：自定义封装懒加载的相对路径!
                 },
                 {
-                    path: "comingsoon",
-                    element: LazyLoad("films/Comingsoon"),
+                    path: "comingsoon", // uri: /films/comingsoon
+                    element: LazyLoad("films/Comingsoon"),  //注意：自定义封装懒加载的相对路径!
                 },
             ]
         },
         {
-            path: "/detail/:myid",
+            path: "/detail/:myid",  // 取值时使用自定义动态参数 myid
             element: LazyLoad("Detail")
         },
         {
@@ -800,4 +804,8 @@ export default function MRouter() {
     )
 }
 ```
+
+
+
+## 4. 反向代理
 
