@@ -50,9 +50,9 @@ V5 与 `V6` 的对比
   * element: 新增用于决定路由匹配时，渲染哪个组件。代替v5的 component 和 render
 * `<Routes>` 代替了 `<Switch>`
 * `<Outlet></Outlet>` 让嵌套路由更简单
-* useNavigate 代替 useHistory
+* `useNavigate` 代替 useHistory
 * 移除了 `<NavLink/>` 的 activeClassName 和 activeStyle
-* 钩子 useRoutes 代替 react-router-config
+* 钩子 `useRoutes` 代替 react-router-config
 
 
 
@@ -825,8 +825,8 @@ export default function MRouter() {
 首先，使用npm或Yarn安装：`http-proxy-middleware`
 
 ```sh
-$ npm install http-proxy-middleware --save
-$ # or
+$ npm i http-proxy-middleware --save
+# or
 $ yarn add http-proxy-middleware
 ```
 

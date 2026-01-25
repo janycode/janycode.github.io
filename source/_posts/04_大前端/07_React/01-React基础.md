@@ -42,7 +42,7 @@ React 起源于 `Facebook` 的内部项目，因为该公司对市场上所有 J
 
 ### 1.2 React与传统MVC的关系
 
-轻量级的视图层**库**！*A JavaScript library for building user interfaces*
+轻量级的视图层库！*A JavaScript library for building user interfaces*
 
 React不是一个完整的MVC框架，最多可以认为是MVC中的V（View），甚至React并不非常认可MVC开发模式；React 构建页面 UI 的库。
 
@@ -64,7 +64,7 @@ React不是一个完整的MVC框架，最多可以认为是MVC中的V（View）�
 
 
 
-> React 哲学思想：**`如无必要，勿增实体！`**
+> React 哲学思想：`如无必要，勿增实体！`
 
 
 
@@ -344,7 +344,7 @@ createRoot(document.getElementById("root"))
 
 #### 嵌套组件
 
-安装插件：**ES7 React/Redux/GraphQL/React-Native snippets**
+安装插件：**ES7+ React/Redux/GraphQL/React-Native snippets**
 
 可以使用该插件的快捷指令输入，比如快速创建一个组件内容 rcc （React -> Component -> Class）
 

@@ -782,7 +782,7 @@ const store = createStore(reducer, composeEnhancers(applyMiddleware(reduxThunk, 
 | 16.8/17/18 |        8.x / 9.x        | 8.x 配 4.x/5.x；9.x 配 5.x |
 |    19+     |       9.x 及以上        |         5.x 及以上         |
 
-因此**保留旧代码方案 **：`降级 React 到 18.x，继续用 redux@4.x + react-redux@8.x`
+因此 **保留旧代码方案 ** ：`降级 React 到 18.x，继续用 redux@4.x + react-redux@8.x`
 
 ```sh
 # 降级 React + React DOM 到 18.x
