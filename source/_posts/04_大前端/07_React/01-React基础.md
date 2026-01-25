@@ -38,7 +38,7 @@ categories:
 
 ### 1.1 React起源与发展
 
-React 起源于 Facebook 的内部项目，因为该公司对市场上所有 JavaScript MVC 框架，都不满意，就决定自己写一套，用来架设Instagram 的网站。做出来以后，发现这套东西很好用，就在2013年5月开源了。
+React 起源于 `Facebook` 的内部项目，因为该公司对市场上所有 JavaScript MVC 框架，都不满意，就决定自己写一套，用来架设Instagram 的网站。做出来以后，发现这套东西很好用，就在2013年5月开源了。
 
 ### 1.2 React与传统MVC的关系
 
@@ -133,13 +133,13 @@ Happy hacking!
 
 目录结构：
 
-```txt
-├── README.md            使用方法的文档
-├── node_modules         所有的依赖安装的目录
-├── package-lock.json    锁定安装时的包的版本号,保证团队的依赖能保证一致。
+```js
+├── README.md            //使用方法的文档
+├── node_modules         //所有的依赖安装的目录
+├── package-lock.json    //锁定安装时的包的版本号,保证团队的依赖能保证一致。
 ├── package.json
-├── public               静态公共目录
-└── src                  开发用的源代码目录
+├── public               //静态公共目录
+└── src                  //开发用的源代码目录
 ```
 
 npm安装失败解决：

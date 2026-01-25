@@ -780,7 +780,7 @@ export default class App extends Component {
 
 目录：
 
-```txt
+```js
 swiper/
   Swiper.js
   SwiperItem.js

@@ -68,7 +68,7 @@ V5 与 `V6` 的对比
 
 目录：
 
-```txt
+```js
 src/
   router/
     index.js   //新创建路由封装
@@ -227,6 +227,9 @@ export default function Redirect({ to }) {
     return <div>Redirect</div>
 }
 ```
+
+* `navigate(-1)`：返回上一页（等价于 V5 的 `history.goBack()`）
+* `navigate(1)`：前进下一页（等价于 V5 的 `history.goForward()`）
 
 
 
@@ -808,4 +811,211 @@ export default function MRouter() {
 
 
 ## 4. 反向代理
+
+### 4.1 官网方案
+
+官网方案：https://create-react-app.dev/docs/proxying-api-requests-in-development/#configuring-the-proxy-manually
+
+> 注意：此功能支持更高版本。`react-scripts@2.0.0`
+
+如果这个选项对你来说不够灵活，你可以直接访问 Express 应用实例，并连接你自己的代理中间件。`proxy`
+
+你可以将此功能与 中的属性结合使用，但建议将所有逻辑整合到 。`proxy package.json src/setupProxy.js`
+
+首先，使用npm或Yarn安装：`http-proxy-middleware`
+
+```sh
+$ npm install http-proxy-middleware --save
+$ # or
+$ yarn add http-proxy-middleware
+```
+
+接下来，创建并放置以下内容：`src/setupProxy.js`
+
+```js
+const { createProxyMiddleware } = require('http-proxy-middleware');
+
+module.exports = function (app) {
+  // ...
+};
+```
+
+你现在可以按自己的意愿注册代理票了！这里有一个使用上述方法的例子：`http-proxy-middleware`
+
+```js
+const { createProxyMiddleware } = require('http-proxy-middleware');
+
+module.exports = function (app) {
+  app.use(
+    '/api',
+    createProxyMiddleware({
+      target: 'http://localhost:5000',
+      changeOrigin: true,
+    })
+  );
+};
+```
+
+> **注：**你不需要在任何地方导入这个文件。当你启动开发服务器时，它会自动注册。
+>
+> **注：**该文件仅支持 Node 的 JavaScript 语法。确保只使用支持的语言功能（例如不支持Flow、ES模块等）。
+>
+> **注：**将路径传递给代理函数，允许你对路径使用整体匹配和/或模式匹配，这比快速路由匹配更灵活。
+
+
+
+### 4.2 实现代码
+
+安装：*npm i http-proxy-middleware@2*  - 使用大版本 2 开头，才能兼容当前使用的路由技术栈。
+
+src/setupProxy.js - `修改此文件一定注意必须重启当前服务！`
+
+* **匹配请求前缀的请求 url 才会替换反向代理配置的域名**，不匹配的则不会替换域名。
+
+```js
+const { createProxyMiddleware } = require('http-proxy-middleware');
+
+// React 配置反向代理（注意：需要重启服务器！）
+// eg: https://m.maoyan.com/ajax/comingList?ci=73&token=&limit=10&optimus_risk_level=71&optimus_code=10
+module.exports = function (app) {
+    app.use(
+        '/ajax',  //请求前缀，如 /ajax/list, /ajax/detail, /ajax/center
+        createProxyMiddleware({
+            target: 'https://m.maoyan.com',
+            changeOrigin: true,
+        })
+    );
+};
+```
+
+views/films/Comingsoon.js
+
+```js
+import axios from "axios"
+import { useEffect, useState } from "react"
+import FilmItem from "./FilmItem"
+
+export default function Comingsoon() {
+  const [filmList, setFilmList] = useState([])
+  useEffect(() => {
+    // eg: https://m.maoyan.com/ajax/comingList?ci=73&token=&limit=10&optimus_risk_level=71&optimus_code=10
+    axios({
+      //配置了反向代理，注意：删除 url 中的域名！
+      url: '/ajax/comingList?ci=73&token=&limit=10&optimus_risk_level=71&optimus_code=10',
+    }).then(res => {
+      console.log(res.data)
+      setFilmList(res.data.coming)
+    })
+  }, [])
+  return (
+    <div>
+      <ul>
+        {
+          filmList.map(item => (
+            <FilmItem key={item.id} filmId={item.id} name={item.nm}></FilmItem>
+          ))
+        }
+      </ul>
+    </div>
+  )
+}
+```
+
+效果：成功请求。
+
+![image-20260124104741159](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20260124104742420.png)
+
+
+
+## 5. CSS module
+
+参考资料：https://facebook.github.io/create-react-app/docs/adding-a-css-modules-stylesheet
+
+> 在 React 中默认 css 文件会被加载拼接到 head 标签中，即默认对全局生效。因此需要做如下操作：
+>
+> * `.module.css 重命名和引入使用 style 对象`。
+>
+> * 如果使用了 .module.css 但是还想全局影响：
+>
+>   * ```css
+>     ：global(#jerry) {
+>         background: red;
+>     }
+>     ```
+
+目录结构划分：
+
+```js
+views/
+  Film/        //自定义模块1文件夹
+    Film.css   //自定义模块1样式
+    Film.js    //自定义模块1脚本
+  Cinema/      //自定义模块2文件夹
+    Cinema.css //自定义模块2样式
+    Cinema.js  //自定义模块2脚本
+  ...
+```
+
+示例 Film.module.css - `把 Film.css 文件重命名为 Film.module.css`
+
+```css
+.jerry-active {
+    border-bottom: 1px solid red;
+    color: orange;
+}
+```
+
+Film.js - 对当前高亮标签的设置取值
+
+```js
+import { NavLink, Outlet } from 'react-router-dom';
+import style from './css/Film.module.css';  //导入 css module
+
+console.log(style); //{jerry-active: 'Film_jerry-active__LQkJn'}
+export default function Film() {
+    return (
+        <div>
+            <div style={{ width: '100%', height: '150px', backgroundColor: 'yellow' }}>大轮播</div>
+            <ul style={{ listStyle: "none", display: 'flex', justifyContent: 'space-around' }}>
+                <li>
+                    <NavLink to="/films/nowplaying" className={({ isActive }) => (isActive ? style['jerry-active'] : '')}>正在热映</NavLink>
+                </li>
+                <li>
+                    <NavLink to="/films/comingsoon" className={({ isActive }) => (isActive ? style['jerry-active'] : '')}>即将上映</NavLink>
+                </li>
+            </ul>
+
+            {/* 路由容器，如加载子组件 Nowplaying 或 Comingsoon */}
+            <Outlet />
+        </div>
+    )
+}
+
+```
+
+CSS Modules 中类名的访问规则：
+
+|     CSS 类名写法     |  JS 中访问方式  |                             示例                             |
+| :------------------: | :-------------: | :----------------------------------------------------------: |
+| 纯字母（无特殊符号） |   点语法 `.`    |                  `.active` → `style.active`                  |
+| 含 `-`/`_`/ 数字开头 | 方括号语法 `[]` | `.jerry-active` → `style['jerry-active']`；<br />`.123-active` → `style['123-active']` |
+| 驼峰命名（**推荐**） |   点语法 `.`    |             `.jerryActive` → `style.jerryActive`             |
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 

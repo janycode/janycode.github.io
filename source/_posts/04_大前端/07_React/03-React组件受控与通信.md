@@ -333,7 +333,7 @@ class Sidebar extends Component {
 
 目录
 
-```txt
+```js
 component/
   Center.js
   Cinema.js

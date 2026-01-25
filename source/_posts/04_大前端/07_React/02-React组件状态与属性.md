@@ -470,7 +470,7 @@ export default class JerryApp extends Component {
 
 目录
 
-```txt
+```js
 src/
   css/
     index.css
