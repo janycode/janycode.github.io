@@ -1,5 +1,5 @@
 ---
-title: 07-React-Redux公共状态管理
+title: 07-React+Redux公共状态管理
 date: 2022-5-22 21:36:21
 tags:
 - React
@@ -771,7 +771,7 @@ const store = createStore(reducer, composeEnhancers(applyMiddleware(reduxThunk, 
 
 
 
-### 5.2 安装(兼容)
+### 5.2 安装(v18降级兼容)
 
 安装：*npm i react-redux@8*
 

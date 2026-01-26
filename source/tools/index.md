@@ -2,192 +2,1016 @@
 title: 自用工具
 date: 2016-10-20 02:36:08
 layout: tools
-comment: 'changyan'
----
-
-<center><h1>工欲善其事，必先利其器</h1></center>
-
-<a href="javascript:void(0)" onMouseOut="hideImg()" onmouseover="showImg()">ASCII码字符(图)</a>
-
-<div id="asciiImg" style="display:none;height:50px;back-ground:#f00;position:absolute;">
-    <img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/image-20200523091606519.png">
-</div>
-
-
-<br>
-
----
-
-### Java文档
-
-Java SE API 官方文档： [1.6中文](https://tool.oschina.net/apidocs/apidoc?api=jdk-zh)  [1.7英文](https://docs.oracle.com/javase/7/docs/api/index.html)   [1.8中文](https://www.matools.com/api/java8)  [1.8 英文](https://docs.oracle.com/javase/8/docs/api/index.html)
-
-Java EE API 官方文档： [1.7英文](https://docs.oracle.com/javaee/7/api/toc.htm)  [1.8英文](https://javaee.github.io/javaee-spec/javadocs/)
-
-<br>
-
----
-
-### 开发工具
-
-|     类型      |             工具名              |                           链接地址                           |                             备注                             |
-| :-----------: | :-----------------------------: | :----------------------------------------------------------: | :----------------------------------------------------------: |
-|   Java 环境   |           **JDK1.8**            | [官方下载](https://janycode.github.io/2016/04/28/02_%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/01_Java/01_JavaSE/01_%E5%9F%BA%E7%A1%80%E8%AF%AD%E6%B3%95/01-JDK%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA/index.html) |                    下载与本地环境变量配置                    |
-|  Tomcat 环境  |           **Tomcat**            |            [官方下载](http://tomcat.apache.org/)             |                        下载解压文件夹                        |
-|  Maven 环境   |            **Maven**            |            [官方下载](https://mvnrepository.com/)            |                        下载解压文件夹                        |
-|  Jmeter 压测  |           **Jmeter**            |  [官方下载](https://jmeter.apache.org/download_jmeter.cgi)   |                        下载解压文件夹                        |
-|   Java IDE    | **Intellij IDEA 2023.1(`new`)** | [百度网盘](https://pan.baidu.com/s/1td5tmXFJUMt3obVDs2x20A?pwd=frvn) |                         提取码: frvn                         |
-|  数据库建模   |     **PowerDesigner 16.5**      | [百度网盘](https://pan.baidu.com/s/1ChK0u4tS9qQQBYLUklngNQ)  |                         提取码: mgut                         |
-| MySQL 客户端  |     **Navicat  Premium 15**     | [百度网盘](https://pan.baidu.com/s/1nLYd8LcC4jDSFrbhxZZnfw)  | 提取码: 1zmt, 候选[DBeaver](https://dbeaver.io/download/)，都比Navicat强 |
-| Redis 客户端  | **AnotherRedisDesktopManager**  | [Gitee下载](https://gitee.com/qishibo/AnotherRedisDesktopManager/releases) |                  开源免费，功能比普通的强大                  |
-| HTTP 接口测试 |           **Postman**           |        [官方下载](https://www.postman.com/downloads/)        | HTTP接口测试工具, 候选 [Apifox](https://www.apifox.cn/)/[Apipost](https://www.apipost.cn/) |
-
-<br>
-
----
-
-### 在线工具
-
-| No.  |                         网站                         |                             地址                             |                             备注                             |
-| :----: | :--------------------------------------------------: | :----------------------------------------------------------: | :----------------------------------------------------------: |
-| 01   |                        MySQL                         | [5.7 点击访问](https://cdn.mysql.com//Downloads/MySQLInstaller/mysql-installer-community-5.7.28.0.msi)<br>[8.0 点击访问](https://dev.mysql.com/downloads/mysql/) |                MySQL 5.7直接下载，8.0进下载页                |
-| 02 |       <span style="color:orange">Maven</span>        |            [在线访问](https://mvnrepository.com/)            |                  资源库、依赖库 jar 包下载                   |
-| 03 |       <span style="color:orange">Tomcat</span>       |            [点击访问](http://tomcat.apache.org/)             |                 Tomcat 官网，web 服务器下载                  |
-| 04 |                       W3school                       |      [在线访问](https://www.w3school.com.cn/index.html)      |              HTML/CSS/JavaScript/XML/jQuery手册              |
-| 05 |                        牛客网                        |            [在线访问](https://www.nowcoder.com/)             |                       `面试题/算法题`                        |
-| 06 |                     在线工具集合                     | [在线访问](https://tool.oschina.net/)<br>[JSON转换](https://www.bejson.com/) |     手册/对照表/转码/插件/JSON/加密等强大工具集`BEJSON`      |
-| 07 |                     在线文档查询                     |         [点击访问](https://tool.oschina.net/apidocs)         |                 语言、框架、工具类等在线文档                 |
-| 08 |                   Java 干货集散地                    |           [点击访问](http://www.hollischuang.com/)           |                     阿里首席 Java 架构师                     |
-| 09 |                      jQuery.js                       | [进入 .js 下载](https://jquery.com/download/)<br>[获取官网CDN](https://code.jquery.com/)<br>[中文文档](https://www.jquery123.com/) | jquery-X.X.X.min.js 函数库下载<br>CDN 选择 minified (压缩版)的即可 |
-| 10 |                     Lombok 插件                      |        [点击访问](https://projectlombok.org/download)        |            Intellij IDEA 减少冗余代码 Lombok 插件            |
-| 11 |                Color Scheme Designer                 |         [点击访问](http://www.peise.net/tools/web/)          |           Web 单色/互补色/三角色等16进制色`配色`器           |
-| 12 |      <span style="color:orange">Draw.io</span>       |                  [点击访问](http://draw.io)                  | 在线流程图神器, [本地版本](https://pan.baidu.com/s/1ULhjKkQy799dJ98Ck48DdA)(提取码: q5ls) |
-| 13 |     <span style="color:orange">ProcessOn</span>      |            [点击访问](https://www.processon.com/)            |           在线思维导图/流程图/UML类图神器，免费9个           |
-| 14 |                      Bootstrap                       |             [点击访问](https://v3.bootcss.com/)              |                    目前最受欢迎的前端框架                    |
-| 15 |                 Bootstrap 可视化工具                 |       [点击访问](https://www.bootcss.com/p/layoutit/)        |            Bootstrap 可视化布局在线编辑、生成代码            |
-| 16 |                    Wiki 极客学院                     |          [点击访问](https://wiki.jikexueyuan.com/)           |              全免费的综合技术能力学习，资料齐全              |
-| 17 |                         Hexo                         |            [点击访问](https://hexo.bootcss.com/)             |           博客框架官网+中文文档、API以及插件和主体           |
-| 18 |                 Bootstrap Validator                  | [访问官网](https://github.com/nghuuphuoc/bootstrapvalidator)<br>[访问文档](http://bootstrapvalidator.votintsev.ru/api/) |          数据校验、表单验证，基于bootstrap、jQuery           |
-| 19 |                       ECharts                        |     [点击访问](https://echarts.apache.org/zh/index.html)     |             百度数据可视化图表，基于 JavaScript              |
-| 20 |                 HTML/CSS/JS在线运行                  |            [点击访问](http://java.jsrun.net/new)             |           HTML/CSS/JS在线运行工具，`自动提示+补全`           |
-| 21 |                     Java在线运行                     |           [点击访问](http://www.dooccn.com/java/)            |          Java在线运行工具，`自动提示+补全+支持导包`          |
-| 22 |                  Regex 正则在线测试                  |          [点击访问](http://tool.chinaz.com/regex/)           |                `正则测试`，常用正则，代码生成                |
-| 23 |                    数据结构可视化                    | [在线访问](https://www.cs.usfca.edu/~galles/visualization/Algorithms.html) |          数据结构可视化查看，插入数据+动态过程展示           |
-| 24 |                 MySQL数据库在线建模                  |              [在线访问](https://dbdiagram.io/d)              |          `数据库在线建模`，独立的语法，导出.sql脚本          |
-| 25 |                MySQL测试/假数据生成器                |       [在线访问](https://www.onlinedatagenerator.com/)       |           `测试数据生成`，好用且强大，生成.sql脚本           |
-| 26 |                   MyBatis逆向工程                    |  [点击访问](https://github.com/mybatis/generator/releases)   |                      实体类+dao双实现类                      |
-| 27 |                  Spring 代码生成器                   |        [在线访问](https://java.bejson.com/generator/)        |               解放双手，强大的一批，谁用谁知道               |
-| 28 |                       CDN查找                        |             [在线访问](https://www.bootcdn.cn/)              |           稳定、快速、免费的前端开源项目 CDN 加速            |
-| 29 |                   前端测试数据生成                   |                [在线访问](http://mockjs.com/)                |                 生成随机数据，拦截 Ajax 请求                 |
-| 30 |                     产品原型设计                     |              [在线访问](https://lanhuapp.com/)               |                    高效的产品设计协作平台                    |
-| 31 |                    jQuery 插件库                     |               [在线访问](http://www.jq22.com/)               |                   各种页面组件和插件效果库                   |
-| 32 | <span style="color:orange">Redis 命令在线测试</span> |              [在线访问](https://try.redis.io/)               |              非常方便的 redis 命令在线测试工具               |
-
-<br>
-
----
-
-### 办公工具
-
-| No.  |                        工具                        |                             下载                             |                             备注                             |
-| :--: | :------------------------------------------------: | :----------------------------------------------------------: | :----------------------------------------------------------: |
-|  01  |                      Evernote                      |        [进入下载](https://www.yinxiang.com/download/)        |                    印象笔记，自用笔记工具                    |
-|  02  |                 SourceInsight 4.0                  |     [进入下载](https://www.sourceinsight.com/download/)      |                  C语言代码工程管理/编辑工具                  |
-|  03  |     <span style="color:orange">Xshell 5</span>     |       [进入下载](https://www.netsarang.com/zh/xshell/)       | 终端 SSH 工具，[Xshell 5版本](https://pan.baidu.com/s/1O5zFOfah6M2YxOO7XTGOYg)(提取码: a7jb)不限主机数 |
-|  04  |                   Sublime Text 3                   |           [进入下载](http://www.sublimetext.com/3)           |            html/css/js/python 编辑神器，没有之一             |
-|  05  |      <span style="color:orange">ToDesk</span>      |  [进入下载](https://www.teamviewer.cn/cn/download/windows/)  |        远程连接神器，个人免费100终端，完胜 TeamViewer        |
-|  06  | <span style="color:orange">Beyond Compare 4</span> | [网盘下载](https://pan.baidu.com/s/1HIM7taNKwtYmhqkYm4RV8Q)  |           代码对比神器，无限30天脚本(提取码: 29le)           |
-|  07  |     VMware WorkStation 10<br>Ubuntu 16.04.iso      | [VMware下载](https://my.vmware.com/de/web/vmware/info/slug/desktop_end_user_computing/vmware_workstation/10_0)<br>[Ubuntu下载](http://old-releases.ubuntu.com/releases/16.04.0/) |            VMware虚拟机工具 + ubuntu(linux) 镜像             |
-|  08  |                    Editplus 64                     |      [进入下载](https://www.editplus.com/download.html)      |           编辑器（效率高，支持查看/修改2进制文件）           |
-|  09  |    <span style="color:orange">Notepad++</span>     |     [进入下载](https://notepad-plus-plus.org/downloads/)     |     编辑器（log神器, 查找/过滤神器,支持列操作,json插件）     |
-|  10  |    <span style="color:orange">Everything</span>    |         [进入下载](https://www.voidtools.com/zh-cn/)         |           查找文件神器，使用64位安装版配合 uTools            |
-|  11  |                       cmder                        |                [进入下载](https://cmder.net/)                |        windows命令行神器（兼容linux命令在win上使用）         |
-|  12  |      <span style="color:orange">Q-dir</span>       | [进入下载](https://www.softwareok.com/?seite=faq-Windows-10&faq=1) |             文件资源管理多窗口视图神器(有中文版)             |
-|  13  |    <span style="color:orange">Desktopcal</span>    |          [进入下载](http://chs.desktopcal.com/chs/)          | 桌面日历日程神器，目前在用 [win11日历]() (候选 [晓日程](http://xricheng.com/index.html) ) |
-|  14  |    <span style="color:orange">Xmind ZEN</span>     |         [进入下载](https://www.xmind.cn/xmind2020/)          |                       本地思维导图神器                       |
-|  15  |                     Anaconda 3                     |   [进入下载](https://www.anaconda.com/products/individual)   |         开源Python版本，含180多个科学包及其依赖项。          |
-|  16  |                 Tftp / hfs / Xftp                  |        [进入下载](https://www.netsarang.com/zh/xftp/)        |                 ftp和http的文件上传下载工具                  |
-|  17  |                       Winscp                       |       [进入下载](https://winscp.net/eng/download.php)        |         支持ftp/scp等协议的文件上传下载工具(可连接)          |
-|  18  |                     Putty Plus                     |          [进入下载](https://ttyplus.com/downloads/)          |               服务器/终端连接工具，小巧而强大                |
-|  19  |   <span style="color:orange">TortoiseSVN</span>    |      [进入下载](https://tortoisesvn.net/downloads.html)      |                   SVN代码版本 GUI 管理工具                   |
-|  20  |   <span style="color:orange">TortoiseGit</span>    |        [进入下载](https://tortoisegit.org/download/)         |                   Git代码版本 GUI 管理工具                   |
-|  21  |      <span style="color:orange">Typora</span>      |          [进入下载](https://www.typora.io/#windows)          |      最好用的 Markdown 本地工具，没有之一(vue主题最佳)       |
-|  22  |                      Eclipse                       |        [进入下载](https://www.eclipse.org/downloads/)        |                      Java 集成开发工具                       |
-|  23  |                   Intellij IDEA                    |     [进入下载](https://www.jetbrains.com/idea/download/)     |             最好用的 Java 集成开发工具，没有之一             |
-|  24  |                     HBuilderX                      |       [进入下载](https://www.dcloud.io/hbuilderx.html)       |         小巧、轻便、强大的 HTML/CSS/JS 网页开发神器          |
-|  25  |                       SQLyog                       |      [进入下载](https://www.webyog.com/product/sqlyog)       |          快速而简洁的图形化管理 MySQL 数据库的工具           |
-|  26  |     <span style="color:orange">Git Bash</span>     |            [进入下载](https://gitforwindows.org/)            |             目前世界上最先进的分布式版本控制工具             |
-|  27  |      <span style="color:orange">uTools</span>      |               [进入下载](https://www.u.tools/)               |                       你的生产力工具集                       |
-|  28  |                      油猴脚本                      |           [进入下载](http://www.tampermonkey.net/)           | 免费的浏览器扩展和最为流行的用户脚本管理器，脚本大全：[GreasyFork](https://greasyfork.org/zh-CN) |
-|  29  |                    操作系统镜像                    |            [进入下载](https://msdn.itellyou.cn/)             |                 系统级的镜像、工具、资源下载                 |
-|  30  |                      抓包工具                      | [WireShark](https://www.wireshark.org/)<br>[ClarleSproxy](https://www.charlesproxy.com/) |               极其强大的两款HTTP/网口抓包工具                |
-|  31  |    <span style="color:orange">FinalShell</span>    | [百度网盘](https://pan.baidu.com/s/1DYzmAMPyPeLi-pbAGJbu_A)  |          国产免费最好用的终端连接工具，提取码: 81nk          |
-|  32  |                   在线文档翻译器                   |    [在线访问](https://www.onlinedoctranslator.com/zh-CN/)    |               PDF翻译工具，无需登陆，完全免费                |
-
-<br>
-
----
-
-### AI工具
-
-| No.  |      工具      |                      下载                      |                     备注                     |
-| :--: | :------------: | :--------------------------------------------: | :------------------------------------------: |
-|  01  | next-ai-drawio | [在线使用](https://next-ai-drawio.jiang.jp/zh) | 免费的 AI 画架构图，在线对话，基于drawio实现 |
-|  02  |    AI Short    |      [在线使用](https://www.aishort.top/)      |        多种 AI 提示词搜索、管理、共享        |
-
-
-
-<br>
-
----
-
-### web组件库
-
-| No.  |          工具           |                         下载                          |                          备注                          |
-| :--: | :---------------------: | :---------------------------------------------------: | :----------------------------------------------------: |
-|  01  | element-ui/element-plus |        [官网](https://element-plus.org/zh-CN/)        |                   系统管理后台组件库                   |
-|  02  |          vant           |  [官网](https://vant-ui.github.io/vant/#/zh-CN/home)  |                    移动端页面组件库                    |
-|  03  |       uiverse.io        |              [官网](https://uiverse.io/)              |     最大开源UI库，适配React、Vue、Lit等，开箱即用      |
-|  04  |   VUE后台管理系统模板   |            [官网](http://vue.easydo.work/)            | 最全的前端管理系统模版开源库，含预览地址、官网、教程等 |
-|  05  |      open-lovable       | [开源地址](https://github.com/firecrawl/open-lovable) |                克隆任何网站为React应用                 |
-|  06  |        vue bits         |             [官网](https://vue-bits.dev/)             |             vue组件库，各种酷炫特效的组件              |
-|  07  |          UXbot          |             [官网](https://www.uxbot.cn/)             |                快速将想法变成ui网站界面                |
-
-
-
-
-
-<br>
-
----
-
-### 系统辅助
-
-| No.  |                        工具                        |                            下载                             |                       备注                       |
-| :--: | :------------------------------------------------: | :---------------------------------------------------------: | :----------------------------------------------: |
-|  01  |     <span style="color:green">PotPlayer</span>     |      [进入下载](http://www.potplayercn.com/download/)       |        免费，最好用的本地播放器，没有之一        |
-|  02  |       <span style="color:green">Geek</span>        |          [进入下载](https://geekuninstaller.com/)           |         免费，最好用的卸载工具，没有之一         |
-|  03  |     <span style="color:green">Bandizip</span>      |            [进入下载](http://www.bandisoft.com/)            |        免费，最好用的解压缩工具，没有之一        |
-|  04  |      <span style="color:green">WizTree</span>      |          [进入下载](https://www.diskanalyzer.com/)          |      免费，最好用的大文件分析工具，没有之一      |
-|  05  | <span style="color:green">FastStone Capture</span> | [百度网盘](https://pan.baidu.com/s/1ey4iK8GDObNINXSjCk4shg) | 破解版，最好用的截图工具，功能强大(提取码: r4oa) |
-| 06  | <span style="color:green">ImTip</span> | [进入官网](https://imtip.aardio.com/) |       最好用的系统级输入法跟踪提示工具       |
-
-<br>
-
 ---
 
 
-
-### CodePart
-
-<iframe id="embed_dom" name="embed_dom" frameborder="0" style="display:block;width:895px; height:666px;" src="https://www.processon.com/embed/5e3b6d5ce4b00de9fd7dd195"></iframe>
-
-
-<script type="text/javascript"> 
-  function showImg(){ 
-      document.getElementById("asciiImg").style.display='block'; 
-  } 
-  function hideImg(){ 
-      document.getElementById("asciiImg").style.display='none'; 
-  } 
-</script>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>全栈工程师 - 自用工具库</title>
+    <!-- 引入字体图标 -->
+    <link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* 全局样式重置 */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        /* 全局主题 */
+        :root {
+            --bg-primary: #121212;
+            --bg-secondary: #1e1e1e;
+            --bg-tertiary: #2d2d2d;
+            --text-primary: #e0e0e0;
+            --text-secondary: #9e9e9e;
+            --accent-green: #00ff9d;
+            --accent-orange: #ff7a00;
+            --accent-blue: #0099ff;
+            --border-color: #333;
+            --shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+            --transition: all 0.3s ease;
+        }
+        body {
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            padding: 20px;
+            background-image: 
+                linear-gradient(rgba(18, 18, 18, 0.95), rgba(18, 18, 18, 0.95)),
+                url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23333333' fill-opacity='0.2'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+        }
+        /* 容器 */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        /* 头部样式 */
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--border-color);
+        }
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            background: linear-gradient(90deg, var(--accent-green), var(--accent-blue));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            letter-spacing: 2px;
+        }
+        .header .subtitle {
+            color: var(--text-secondary);
+            font-size: 1rem;
+        }
+        /* ASCII图片悬浮效果 */
+        .ascii-link {
+            display: inline-block;
+            margin: 20px 0;
+            color: var(--accent-orange);
+            text-decoration: none;
+            font-size: 1.1rem;
+            transition: var(--transition);
+        }
+        .ascii-link:hover {
+            color: var(--accent-green);
+            transform: translateX(5px);
+        }
+        #asciiImg {
+            display: none;
+            position: absolute;
+            z-index: 100;
+            background-color: var(--bg-secondary);
+            padding: 10px;
+            border-radius: 8px;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border-color);
+        }
+        #asciiImg img {
+            max-height: 300px;
+            border-radius: 4px;
+        }
+        /* 分类卡片样式 */
+        .category-card {
+            background-color: var(--bg-secondary);
+            border-radius: 10px;
+            margin-bottom: 30px;
+            box-shadow: var(--shadow);
+            overflow: hidden;
+            transition: var(--transition);
+        }
+        .category-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.7);
+        }
+        /* 分类标题 */
+        .category-header {
+            background-color: var(--bg-tertiary);
+            padding: 15px 20px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-left: 4px solid var(--accent-green);
+        }
+        .category-header h2 {
+            font-size: 1.3rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .category-header h2 i {
+            color: var(--accent-green);
+        }
+        .category-header .toggle-icon {
+            color: var(--text-secondary);
+            transition: var(--transition);
+        }
+        .category-header.active .toggle-icon {
+            transform: rotate(180deg);
+            color: var(--accent-green);
+        }
+        /* 分类内容 */
+        .category-content {
+            padding: 20px;
+            display: block;
+        }
+        .category-content.collapsed {
+            display: none;
+        }
+        /* 链接样式 */
+        a {
+            color: var(--accent-blue);
+            text-decoration: none;
+            transition: var(--transition);
+        }
+        a:hover {
+            color: var(--accent-green);
+            text-decoration: underline;
+        }
+        /* 表格样式 */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+            background-color: var(--bg-tertiary);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+        th {
+            background-color: var(--bg-secondary);
+            color: var(--accent-green);
+            font-weight: 600;
+            position: relative;
+        }
+        th::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 50px;
+            height: 2px;
+            //background-color: var(--accent-green);
+        }
+        tr:last-child td {
+            border-bottom: none;
+        }
+        tr:hover {
+            background-color: rgba(45, 45, 45, 0.8);
+        }
+        /* 高亮文本 */
+        .highlight-orange {
+            color: var(--accent-orange);
+            font-weight: 600;
+        }
+        .highlight-green {
+            color: var(--accent-green);
+            font-weight: 600;
+        }
+        /* 响应式表格 */
+        @media (max-width: 768px) {
+            table, thead, tbody, th, td, tr {
+                display: block;
+            }
+            thead tr {
+                position: absolute;
+                top: -9999px;
+                left: -9999px;
+            }
+            tr {
+                margin-bottom: 15px;
+                border: 1px solid var(--border-color);
+                border-radius: 8px;
+            }
+            td {
+                border: none;
+                position: relative;
+                padding-left: 50%;
+            }
+            td::before {
+                position: absolute;
+                top: 12px;
+                left: 12px;
+                width: 45%;
+                padding-right: 10px;
+                white-space: nowrap;
+                content: attr(data-label);
+                font-weight: bold;
+                color: var(--accent-green);
+            }
+        }
+        /* iframe样式 */
+        iframe {
+            width: 100%;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            margin: 20px 0;
+        }
+        /* 响应式调整 */
+        @media (max-width: 992px) {
+            .container {
+                padding: 10px;
+            }
+            .header h1 {
+                font-size: 2rem;
+            }
+        }
+        @media (max-width: 576px) {
+            body {
+                padding: 10px;
+            }
+            .header h1 {
+                font-size: 1.8rem;
+            }
+            .category-header h2 {
+                font-size: 1.1rem;
+            }
+            td, th {
+                padding: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- 头部 -->
+        <div class="header">
+            <h1>工欲善其事，必先利其器</h1>
+            <p class="subtitle">全栈工程师的工具集 | 持续更新</p>
+            <!-- ASCII图片悬浮链接 -->
+            <a href="javascript:void(0)" onMouseOut="hideImg()" onmouseover="showImg()" class="ascii-link">
+                <i class="fas fa-code"></i> ASCII码字符(图)
+            </a>
+            <div id="asciiImg" style="display:none;">
+                <img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/image-20200523091606519.png" alt="ASCII码字符图">
+            </div>
+        </div>
+        <!-- Java文档分类 -->
+        <div class="category-card">
+            <div class="category-header" onclick="toggleCategory('java-docs')">
+                <h2><i class="fab fa-java"></i> Java文档</h2>
+                <i class="fas fa-chevron-down toggle-icon"></i>
+            </div>
+            <div id="java-docs" class="category-content">
+                <p>Java SE API 官方文档： 
+                    <a href="https://tool.oschina.net/apidocs/apidoc?api=jdk-zh">1.6中文</a> | 
+                    <a href="https://docs.oracle.com/javase/7/docs/api/index.html">1.7英文</a> | 
+                    <a href="https://www.matools.com/api/java8">1.8中文</a> | 
+                    <a href="https://docs.oracle.com/javase/8/docs/api/index.html">1.8 英文</a>
+                </p>
+                <br>
+                <p>Java EE API 官方文档： 
+                    <a href="https://docs.oracle.com/javaee/7/api/toc.htm">1.7英文</a> | 
+                    <a href="https://javaee.github.io/javaee-spec/javadocs/">1.8英文</a>
+                </p>
+            </div>
+        </div>
+        <!-- 开发工具分类 -->
+        <div class="category-card">
+            <div class="category-header" onclick="toggleCategory('dev-tools')">
+                <h2><i class="fas fa-tools"></i> 开发工具</h2>
+                <i class="fas fa-chevron-down toggle-icon"></i>
+            </div>
+            <div id="dev-tools" class="category-content">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>类型</th>
+                            <th>工具名</th>
+                            <th>链接地址</th>
+                            <th>备注</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td data-label="类型">Java 环境</td>
+                            <td data-label="工具名"><strong>JDK1.8</strong></td>
+                            <td data-label="链接地址"><a href="https://janycode.github.io/2016/04/28/02_%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/01_Java/01_JavaSE/01_%E5%9F%BA%E7%A1%80%E8%AF%AD%E6%B3%95/01-JDK%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA/index.html">官方下载</a></td>
+                            <td data-label="备注">下载与本地环境变量配置</td>
+                        </tr>
+                        <tr>
+                            <td data-label="类型">Tomcat 环境</td>
+                            <td data-label="工具名"><strong>Tomcat</strong></td>
+                            <td data-label="链接地址"><a href="http://tomcat.apache.org/">官方下载</a></td>
+                            <td data-label="备注">下载解压文件夹</td>
+                        </tr>
+                        <tr>
+                            <td data-label="类型">Maven 环境</td>
+                            <td data-label="工具名"><strong>Maven</strong></td>
+                            <td data-label="链接地址"><a href="https://mvnrepository.com/">官方下载</a></td>
+                            <td data-label="备注">下载解压文件夹</td>
+                        </tr>
+                        <tr>
+                            <td data-label="类型">Jmeter 压测</td>
+                            <td data-label="工具名"><strong>Jmeter</strong></td>
+                            <td data-label="链接地址"><a href="https://jmeter.apache.org/download_jmeter.cgi">官方下载</a></td>
+                            <td data-label="备注">下载解压文件夹</td>
+                        </tr>
+                        <tr>
+                            <td data-label="类型">Java IDE</td>
+                            <td data-label="工具名"><strong>Intellij IDEA 2023.1(`new`)</strong></td>
+                            <td data-label="链接地址"><a href="https://pan.baidu.com/s/1td5tmXFJUMt3obVDs2x20A?pwd=frvn">百度网盘</a></td>
+                            <td data-label="备注">提取码: frvn</td>
+                        </tr>
+                        <tr>
+                            <td data-label="类型">数据库建模</td>
+                            <td data-label="工具名"><strong>PowerDesigner 16.5</strong></td>
+                            <td data-label="链接地址"><a href="https://pan.baidu.com/s/1ChK0u4tS9qQQBYLUklngNQ">百度网盘</a></td>
+                            <td data-label="备注">提取码: mgut</td>
+                        </tr>
+                        <tr>
+                            <td data-label="类型">MySQL 客户端</td>
+                            <td data-label="工具名"><strong>Navicat Premium 15</strong></td>
+                            <td data-label="链接地址"><a href="https://pan.baidu.com/s/1nLYd8LcC4jDSFrbhxZZnfw">百度网盘</a></td>
+                            <td data-label="备注">提取码: 1zmt, 候选<a href="https://dbeaver.io/download/">DBeaver</a>，都比Navicat强</td>
+                        </tr>
+                        <tr>
+                            <td data-label="类型">Redis 客户端</td>
+                            <td data-label="工具名"><strong>AnotherRedisDesktopManager</strong></td>
+                            <td data-label="链接地址"><a href="https://gitee.com/qishibo/AnotherRedisDesktopManager/releases">Gitee下载</a></td>
+                            <td data-label="备注">开源免费，功能比普通的强大</td>
+                        </tr>
+                        <tr>
+                            <td data-label="类型">HTTP 接口测试</td>
+                            <td data-label="工具名"><strong>Postman</strong></td>
+                            <td data-label="链接地址"><a href="https://www.postman.com/downloads/">官方下载</a></td>
+                            <td data-label="备注">HTTP接口测试工具, 候选 <a href="https://www.apifox.cn/">Apifox</a>/<a href="https://www.apipost.cn/">Apipost</a></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <!-- 在线工具分类 -->
+        <div class="category-card">
+            <div class="category-header" onclick="toggleCategory('online-tools')">
+                <h2><i class="fas fa-globe"></i> 在线工具</h2>
+                <i class="fas fa-chevron-down toggle-icon"></i>
+            </div>
+            <div id="online-tools" class="category-content">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>No.</th>
+                            <th>网站</th>
+                            <th>地址</th>
+                            <th>备注</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td data-label="No.">01</td>
+                            <td data-label="网站">MySQL</td>
+                            <td data-label="地址">
+                                <a href="https://cdn.mysql.com//Downloads/MySQLInstaller/mysql-installer-community-5.7.28.0.msi">5.7 点击访问</a><br>
+                                <a href="https://dev.mysql.com/downloads/mysql/">8.0 点击访问</a>
+                            </td>
+                            <td data-label="备注">MySQL 5.7直接下载，8.0进下载页</td>
+                        </tr>
+                        <tr>
+                            <td data-label="No.">02</td>
+                            <td data-label="网站" class="highlight-orange">Maven</td>
+                            <td data-label="地址"><a href="https://mvnrepository.com/">在线访问</a></td>
+                            <td data-label="备注">资源库、依赖库 jar 包下载</td>
+                        </tr>
+                        <tr>
+                            <td data-label="No.">03</td>
+                            <td data-label="网站" class="highlight-orange">Tomcat</td>
+                            <td data-label="地址"><a href="http://tomcat.apache.org/">点击访问</a></td>
+                            <td data-label="备注">Tomcat 官网，web 服务器下载</td>
+                        </tr>
+                        <tr>
+                            <td data-label="No.">04</td>
+                            <td data-label="网站">W3school</td>
+                            <td data-label="地址"><a href="https://www.w3school.com.cn/index.html">在线访问</a></td>
+                            <td data-label="备注">HTML/CSS/JavaScript/XML/jQuery手册</td>
+                        </tr>
+                        <tr>
+                            <td data-label="No.">05</td>
+                            <td data-label="网站">牛客网</td>
+                            <td data-label="地址"><a href="https://www.nowcoder.com/">在线访问</a></td>
+                            <td data-label="备注"><code>面试题/算法题</code></td>
+                        </tr>
+                        <tr>
+                            <td data-label="No.">06</td>
+                            <td data-label="网站">在线工具集合</td>
+                            <td data-label="地址">
+                                <a href="https://tool.oschina.net/">在线访问</a><br>
+                                <a href="https://www.bejson.com/">JSON转换</a>
+                            </td>
+                            <td data-label="备注">手册/对照表/转码/插件/JSON/加密等强大工具集<code>BEJSON</code></td>
+                        </tr>
+                        <tr>
+                            <td data-label="No.">07</td>
+                            <td data-label="网站">在线文档查询</td>
+                            <td data-label="地址"><a href="https://tool.oschina.net/apidocs">点击访问</a></td>
+                            <td data-label="备注">语言、框架、工具类等在线文档</td>
+                        </tr>
+                        <tr>
+                            <td data-label="No.">08</td>
+                            <td data-label="网站">Java 干货集散地</td>
+                            <td data-label="地址"><a href="http://www.hollischuang.com/">点击访问</a></td>
+                            <td data-label="备注">阿里首席 Java 架构师</td>
+                        </tr>
+                        <tr>
+                            <td data-label="No.">09</td>
+                            <td data-label="网站">jQuery.js</td>
+                            <td data-label="地址">
+                                <a href="https://jquery.com/download/">进入 .js 下载</a><br>
+                                <a href="https://code.jquery.com/">获取官网CDN</a><br>
+                                <a href="https://www.jquery123.com/">中文文档</a>
+                            </td>
+                            <td data-label="备注">jquery-X.X.X.min.js 函数库下载<br>CDN 选择 minified (压缩版)的即可</td>
+                        </tr>
+                        <tr>
+                            <td data-label="No.">10</td>
+                            <td data-label="网站">Lombok 插件</td>
+                            <td data-label="地址"><a href="https://projectlombok.org/download">点击访问</a></td>
+                            <td data-label="备注">Intellij IDEA 减少冗余代码 Lombok 插件</td>
+                        </tr>
+                        <tr>
+                            <td data-label="No.">11</td>
+                            <td data-label="网站">Color Scheme Designer</td>
+                            <td data-label="地址"><a href="http://www.peise.net/tools/web/">点击访问</a></td>
+                            <td data-label="备注">Web 单色/互补色/三角色等16进制色<code>配色</code>器</td>
+                        </tr>
+                        <tr>
+                            <td data-label="No.">12</td>
+                            <td data-label="网站" class="highlight-orange">Draw.io</td>
+                            <td data-label="地址"><a href="http://draw.io">点击访问</a></td>
+                            <td data-label="备注">在线流程图神器, <a href="https://pan.baidu.com/s/1ULhjKkQy799dJ98Ck48DdA">本地版本</a>(提取码: q5ls)</td>
+                        </tr>
+                        <tr>
+                            <td data-label="No.">13</td>
+                            <td data-label="网站" class="highlight-orange">ProcessOn</td>
+                            <td data-label="地址"><a href="https://www.processon.com/">点击访问</a></td>
+                            <td data-label="备注">在线思维导图/流程图/UML类图神器，免费9个</td>
+                        </tr>
+                        <tr>
+                            <td data-label="No.">14</td>
+                            <td data-label="网站">Bootstrap</td>
+                            <td data-label="地址"><a href="https://v3.bootcss.com/">点击访问</a></td>
+                            <td data-label="备注">目前最受欢迎的前端框架</td>
+                        </tr>
+                        <tr>
+                            <td data-label="No.">15</td>
+                            <td data-label="网站">Bootstrap 可视化工具</td>
+                            <td data-label="地址"><a href="https://www.bootcss.com/p/layoutit/">点击访问</a></td>
+                            <td data-label="备注">Bootstrap 可视化布局在线编辑、生成代码</td>
+                        </tr>
+                        <tr>
+                            <td data-label="No.">16</td>
+                            <td data-label="网站">Wiki 极客学院</td>
+                            <td data-label="地址"><a href="https://wiki.jikexueyuan.com/">点击访问</a></td>
+                            <td data-label="备注">全免费的综合技术能力学习，资料齐全</td>
+                        </tr>
+                        <tr>
+                            <td data-label="No.">17</td>
+                            <td data-label="网站">Hexo</td>
+                            <td data-label="地址"><a href="https://hexo.bootcss.com/">点击访问</a></td>
+                            <td data-label="备注">博客框架官网+中文文档、API以及插件和主体</td>
+                        </tr>
+                        <tr>
+                            <td data-label="No.">18</td>
+                            <td data-label="网站">Bootstrap Validator</td>
+                            <td data-label="地址">
+                                <a href="https://github.com/nghuuphuoc/bootstrapvalidator">访问官网</a><br>
+                                <a href="http://bootstrapvalidator.votintsev.ru/api/">访问文档</a>
+                            </td>
+                            <td data-label="备注">数据校验、表单验证，基于bootstrap、jQuery</td>
+                        </tr>
+                        <tr>
+                            <td data-label="No.">19</td>
+                            <td data-label="网站">ECharts</td>
+                            <td data-label="地址"><a href="https://echarts.apache.org/zh/index.html">点击访问</a></td>
+                            <td data-label="备注">百度数据可视化图表，基于 JavaScript</td>
+                        </tr>
+                        <tr>
+                            <td data-label="No.">20</td>
+                            <td data-label="网站">HTML/CSS/JS在线运行</td>
+                            <td data-label="地址"><a href="http://java.jsrun.net/new">点击访问</a></td>
+                            <td data-label="备注">HTML/CSS/JS在线运行工具，<code>自动提示+补全</code></td>
+                        </tr>
+                        <tr>
+                            <td data-label="No.">21</td>
+                            <td data-label="网站">Java在线运行</td>
+                            <td data-label="地址"><a href="http://www.dooccn.com/java/">点击访问</a></td>
+                            <td data-label="备注">Java在线运行工具，<code>自动提示+补全+支持导包</code></td>
+                        </tr>
+                        <tr>
+                            <td data-label="No.">22</td>
+                            <td data-label="网站">Regex 正则在线测试</td>
+                            <td data-label="地址"><a href="http://tool.chinaz.com/regex/">点击访问</a></td>
+                            <td data-label="备注"><code>正则测试</code>，常用正则，代码生成</td>
+                        </tr>
+                        <tr>
+                            <td data-label="No.">23</td>
+                            <td data-label="网站">数据结构可视化</td>
+                            <td data-label="地址"><a href="https://www.cs.usfca.edu/~galles/visualization/Algorithms.html">在线访问</a></td>
+                            <td data-label="备注">数据结构可视化查看，插入数据+动态过程展示</td>
+                        </tr>
+                        <tr>
+                            <td data-label="No.">24</td>
+                            <td data-label="网站">MySQL数据库在线建模</td>
+                            <td data-label="地址"><a href="https://dbdiagram.io/d">在线访问</a></td>
+                            <td data-label="备注"><code>数据库在线建模</code>，独立的语法，导出.sql脚本</td>
+                        </tr>
+                        <tr>
+                            <td data-label="No.">25</td>
+                            <td data-label="网站">MySQL测试/假数据生成器</td>
+                            <td data-label="地址"><a href="https://www.onlinedatagenerator.com/">在线访问</a></td>
+                            <td data-label="备注"><code>测试数据生成</code>，好用且强大，生成.sql脚本</td>
+                        </tr>
+                        <tr>
+                            <td data-label="No.">26</td>
+                            <td data-label="网站">MyBatis逆向工程</td>
+                            <td data-label="地址"><a href="https://github.com/mybatis/generator/releases">点击访问</a></td>
+                            <td data-label="备注">实体类+dao双实现类</td>
+                        </tr>
+                        <tr>
+                            <td data-label="No.">27</td>
+                            <td data-label="网站">Spring 代码生成器</td>
+                            <td data-label="地址"><a href="https://java.bejson.com/generator/">在线访问</a></td>
+                            <td data-label="备注">解放双手，强大的一批，谁用谁知道</td>
+                        </tr>
+                        <tr>
+                            <td data-label="No.">28</td>
+                            <td data-label="网站">CDN查找</td>
+                            <td data-label="地址"><a href="https://www.bootcdn.cn/">在线访问</a></td>
+                            <td data-label="备注">稳定、快速、免费的前端开源项目 CDN 加速</td>
+                        </tr>
+                        <tr>
+                            <td data-label="No.">29</td>
+                            <td data-label="网站">前端测试数据生成</td>
+                            <td data-label="地址"><a href="http://mockjs.com/">在线访问</a></td>
+                            <td data-label="备注">生成随机数据，拦截 Ajax 请求</td>
+                        </tr>
+                        <tr>
+                            <td data-label="No.">30</td>
+                            <td data-label="网站">产品原型设计</td>
+                            <td data-label="地址"><a href="https://lanhuapp.com/">在线访问</a></td>
+                            <td data-label="备注">高效的产品设计协作平台</td>
+                        </tr>
+                        <tr>
+                            <td data-label="No.">31</td>
+                            <td data-label="网站">jQuery 插件库</td>
+                            <td data-label="地址"><a href="http://www.jq22.com/">在线访问</a></td>
+                            <td data-label="备注">各种页面组件和插件效果库</td>
+                        </tr>
+                        <tr>
+                            <td data-label="No.">32</td>
+                            <td data-label="网站" class="highlight-orange">Redis 命令在线测试</td>
+                            <td data-label="地址"><a href="https://try.redis.io/">在线访问</a></td>
+                            <td data-label="备注">非常方便的 redis 命令在线测试工具</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <!-- 办公工具分类 -->
+        <div class="category-card">
+            <div class="category-header" onclick="toggleCategory('office-tools')">
+                <h2><i class="fas fa-briefcase"></i> 办公工具</h2>
+                <i class="fas fa-chevron-down toggle-icon"></i>
+            </div>
+            <div id="office-tools" class="category-content">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>No.</th>
+                            <th>工具</th>
+                            <th>下载</th>
+                            <th>备注</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td data-label="No.">01</td>
+                            <td data-label="工具">Evernote</td>
+                            <td data-label="下载"><a href="https://www.yinxiang.com/download/">进入下载</a></td>
+                            <td data-label="备注">印象笔记，自用笔记工具</td>
+                        </tr>
+                        <tr>
+                            <td data-label="No.">02</td>
+                            <td data-label="工具">SourceInsight 4.0</td>
+                            <td data-label="下载"><a href="https://www.sourceinsight.com/download/">进入下载</a></td>
+                            <td data-label="备注">C语言代码工程管理/编辑工具</td>
+                        </tr>
+                        <tr>
+                            <td data-label="No.">03</td>
+                            <td data-label="工具" class="highlight-orange">Xshell 5</td>
+                            <td data-label="下载"><a href="https://www.netsarang.com/zh/xshell/">进入下载</a></td>
+                            <td data-label="备注">终端 SSH 工具，<a href="https://pan.baidu.com/s/1O5zFOfah6M2YxOO7XTGOYg">Xshell 5版本</a>(提取码: a7jb)不限主机数</td>
+                        </tr>
+                        <tr>
+                            <td data-label="No.">04</td>
+                            <td data-label="工具">Sublime Text 3</td>
+                            <td data-label="下载"><a href="http://www.sublimetext.com/3">进入下载</a></td>
+                            <td data-label="备注">html/css/js/python 编辑神器，没有之一</td>
+                        </tr>
+                        <tr>
+                            <td data-label="No.">05</td>
+                            <td data-label="工具" class="highlight-orange">ToDesk</td>
+                            <td data-label="下载"><a href="https://www.teamviewer.cn/cn/download/windows/">进入下载</a></td>
+                            <td data-label="备注">远程连接神器，个人免费100终端，完胜 TeamViewer</td>
+                        </tr>
+                        <tr>
+                            <td data-label="No.">06</td>
+                            <td data-label="工具" class="highlight-orange">Beyond Compare 4</td>
+                            <td data-label="下载"><a href="https://pan.baidu.com/s/1HIM7taNKwtYmhqkYm4RV8Q">网盘下载</a></td>
+                            <td data-label="备注">代码对比神器，无限30天脚本(提取码: 29le)</td>
+                        </tr>
+                        <tr>
+                            <td data-label="No.">07</td>
+                            <td data-label="工具">VMware WorkStation 10<br>Ubuntu 16.04.iso</td>
+                            <td data-label="下载">
+                                <a href="https://my.vmware.com/de/web/vmware/info/slug/desktop_end_user_computing/vmware_workstation/10_0">VMware下载</a><br>
+                                <a href="http://old-releases.ubuntu.com/releases/16.04.0/">Ubuntu下载</a>
+                            </td>
+                            <td data-label="备注">VMware虚拟机工具 + ubuntu(linux) 镜像</td>
+                        </tr>
+                        <tr>
+                            <td data-label="No.">08</td>
+                            <td data-label="工具">Editplus 64</td>
+                            <td data-label="下载"><a href="https://www.editplus.com/download.html">进入下载</a></td>
+                            <td data-label="备注">编辑器（效率高，支持查看/修改2进制文件）</td>
+                        </tr>
+                        <tr>
+                            <td data-label="No.">09</td>
+                            <td data-label="工具" class="highlight-orange">Notepad++</td>
+                            <td data-label="下载"><a href="https://notepad-plus-plus.org/downloads/">进入下载</a></td>
+                            <td data-label="备注">编辑器（log神器, 查找/过滤神器,支持列操作,json插件）</td>
+                        </tr>
+                        <tr>
+                            <td data-label="No.">10</td>
+                            <td data-label="工具" class="highlight-orange">Everything</td>
+                            <td data-label="下载"><a href="https://www.voidtools.com/zh-cn/">进入下载</a></td>
+                            <td data-label="备注">查找文件神器，使用64位安装版配合 uTools</td>
+                        </tr>
+                        <tr>
+                            <td data-label="No.">11</td>
+                            <td data-label="工具">cmder</td>
+                            <td data-label="下载"><a href="https://cmder.net/">进入下载</a></td>
+                            <td data-label="备注">windows命令行神器（兼容linux命令在win上使用）</td>
+                        </tr>
+                        <tr>
+                            <td data-label="No.">12</td>
+                            <td data-label="工具" class="highlight-orange">Q-dir</td>
+                            <td data-label="下载"><a href="https://www.softwareok.com/?seite=faq-Windows-10&faq=1">进入下载</a></td>
+                            <td data-label="备注">文件资源管理多窗口视图神器(有中文版)</td>
+                        </tr>
+                        <tr>
+                            <td data-label="No.">13</td>
+                            <td data-label="工具" class="highlight-orange">Desktopcal</td>
+                            <td data-label="下载"><a href="http://chs.desktopcal.com/chs/">进入下载</a></td>
+                            <td data-label="备注">桌面日历日程神器，目前在用 win11日历 (候选 <a href="http://xricheng.com/index.html">晓日程</a> )</td>
+                        </tr>
+                        <tr>
+                            <td data-label="No.">14</td>
+                            <td data-label="工具" class="highlight-orange">Xmind ZEN</td>
+                            <td data-label="下载"><a href="https://www.xmind.cn/xmind2020/">进入下载</a></td>
+                            <td data-label="备注">本地思维导图神器</td>
+                        </tr>
+                        <tr>
+                            <td data-label="No.">15</td>
+                            <td data-label="工具">Anaconda 3</td>
+                            <td data-label="下载"><a href="https://www.anaconda.com/products/individual">进入下载</a></td>
+                            <td data-label="备注">开源Python版本，含180多个科学包及其依赖项。</td>
+                        </tr>
+                        <tr>
+                            <td data-label="No.">16</td>
+                            <td data-label="工具">Tftp / hfs / Xftp</td>
+                            <td data-label="下载"><a href="https://www.netsarang.com/zh/xftp/">进入下载</a></td>
+                            <td data-label="备注">ftp和http的文件上传下载工具</td>
+                        </tr>
+                        <tr>
+                            <td data-label="No.">17</td>
+                            <td data-label="工具">Winscp</td>
+                            <td data-label="下载"><a href="https://winscp.net/eng/download.php">进入下载</a></td>
+                            <td data-label="备注">支持ftp/scp等协议的文件上传下载工具(可连接)</td>
+                        </tr>
+                        <tr>
+                            <td data-label="No.">18</td>
+                            <td data-label="工具">Putty Plus</td>
+                            <td data-label="下载"><a href="https://ttyplus.com/downloads/">进入下载</a></td>
+                            <td data-label="备注">服务器/终端连接工具，小巧而强大</td>
+                        </tr>
+                        <tr>
+                            <td data-label="No.">19</td>
+                            <td data-label="工具" class="highlight-orange">TortoiseSVN</td>
+                            <td data-label="下载"><a href="https://tortoisesvn.net/downloads.html">进入下载</a></td>
+                            <td data-label="备注">SVN代码版本 GUI 管理工具</td>
+                        </tr>
+                        <tr>
+                            <td data-label="No.">20</td>
+                            <td data-label="工具" class="highlight-orange">TortoiseGit</td>
+                            <td data-label="下载"><a href="https://tortoisegit.org/download/">进入下载</a></td>
+                            <td data-label="备注">Git代码版本 GUI 管理工具</td>
+                        </tr>
+                        <tr>
+                            <td data-label="No.">21</td>
+                            <td data-label="工具" class="highlight-orange">Typora</td>
+                            <td data-label="下载"><a href="https://www.typora.io/#windows">进入下载</a></td>
+                            <td data-label="备注">最好用的 Markdown 本地工具，没有之一(vue主题最佳)</td>
+                        </tr>
+                        <tr>
+                            <td data-label="No.">22</td>
+                            <td data-label="工具">Eclipse</td>
+                            <td data-label="下载"><a href="https://www.eclipse.org/downloads/">进入下载</a></td>
+                            <td data-label="备注">Java 集成开发工具</td>
+                        </tr>
+                        <tr>
+                            <td data-label="No.">23</td>
+                            <td data-label="工具">Intellij IDEA</td>
+                            <td data-label="下载"><a href="https://www.jetbrains.com/idea/download/">进入下载</a></td>
+                            <td data-label="备注">最好用的 Java 集成开发工具，没有之一</td>
+                        </tr>
+                        <tr>
+                            <td data-label="No.">24</td>
+                            <td data-label="工具">HBuilderX</td>
+                            <td data-label="下载"><a href="https://www.dcloud.io/hbuilderx.html">进入下载</a></td>
+                            <td data-label="备注">小巧、轻便、强大的 HTML/CSS/JS 网页开发神器</td>
+                        </tr>
+                        <tr>
+                            <td data-label="No.">25</td>
+                            <td data-label="工具">SQLyog</td>
+                            <td data-label="下载"><a href="https://www.webyog.com/product/sqlyog">进入下载</a></td>
+                            <td data-label="备注">快速而简洁的图形化管理 MySQL 数据库的工具</td>
+                        </tr>
+                        <tr>
+                            <td data-label="No.">26</td>
+                            <td data-label="工具" class="highlight-orange">Git Bash</td>
+                            <td data-label="下载"><a href="https://gitforwindows.org/">进入下载</a></td>
+                            <td data-label="备注">目前世界上最先进的分布式版本控制工具</td>
+                        </tr>
+                        <tr>
+                            <td data-label="No.">27</td>
+                            <td data-label="工具" class="highlight-orange">uTools</td>
+                            <td data-label="下载"><a href="https://www.u.tools/">进入下载</a></td>
+                            <td data-label="备注">你的生产力工具集</td>
+                        </tr>
+                        <tr>
+                            <td data-label="No.">28</td>
+                            <td data-label="工具">油猴脚本</td>
+                            <td data-label="下载"><a href="http://www.tampermonkey.net/">进入下载</a></td>
+                            <td data-label="备注">免费的浏览器扩展和最为流行的用户脚本管理器，脚本大全：<a href="https://greasyfork.org/zh-CN">GreasyFork</a></td>
+                        </tr>
+                        <tr>
+                            <td data-label="No.">29</td>
+                            <td data-label="工具">操作系统镜像</td>
+                            <td data-label="下载"><a href="https://msdn.itellyou.cn/">进入下载</a></td>
+                            <td data-label="备注">系统级的镜像、工具、资源下载</td>
+                        </tr>
+                        <tr>
+                            <td data-label="No.">30</td>
+                            <td data-label="工具">抓包工具</td>
+                            <td data-label="下载">
+                                <a href="https://www.wireshark.org/">WireShark</a><br>
+                                <a href="https://www.charlesproxy.com/">ClarleSproxy</a>
+                            </td>
+                            <td data-label="备注">极其强大的两款HTTP/网口抓包工具</td>
+                        </tr>
+                        <tr>
+                            <td data-label="No.">31</td>
+                            <td data-label="工具" class="highlight-orange">FinalShell</td>
+                            <td data-label="下载"><a href="https://pan.baidu.com/s/1DYzmAMPyPeLi-pbAGJbu_A">百度网盘</a></td>
+                            <td data-label="备注">国产免费最好用的终端连接工具，提取码: 81nk</td>
+                        </tr>
+                        <tr>
+                            <td data-label="No.">32</td>
+                            <td data-label="工具">在线文档翻译器</td>
+                            <td data-label="下载"><a href="https://www.onlinedoctranslator.com/zh-CN/">在线访问</a></td>
+                            <td data-label="备注">PDF翻译工具，无需登陆，完全免费</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <!-- AI工具分类 -->
+        <div class="category-card">
+            <div class="category-header" onclick="toggleCategory('ai-tools')">
+                <h2><i class="fas fa-robot"></i> AI工具</h2>
+                <i class="fas fa-chevron-down toggle-icon"></i>
+            </div>
+            <div id="ai-tools" class="category-content">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>No.</th>
+                            <th>工具</th>
+                            <th>下载</th>
+                            <th>备注</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td data-label="No.">01</td>
+                            <td data-label="工具">next-ai-drawio</td>
+                            <td data-label="下载"><a href="https://next-ai-drawio.jiang.jp/zh">在线使用</a></td>
+                            <td data-label="备注">免费的 AI 画架构图，在线对话，基于drawio实现</td>
+                        </tr>
+                        <tr>
+                            <td data-label="No.">02</td>
+                            <td data-label="工具">AI Short</td>
+                            <td data-label="下载"><a href="https://www.aishort.top/">在线使用</a></td>
+                            <td data-label="备注">多种 AI 提示词搜索、管理、共享</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <!-- web组件库分类 -->
+        <div class="category-card">
+            <div class="category-header" onclick="toggleCategory('web-components')">
+                <h2><i class="fas fa-code-branch"></i> web组件库</h2>
+                <i class="fas fa-chevron-down toggle-icon"></i>
+            </div>
+            <div id="web-components" class="category-content">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>No.</th>
+                            <th>工具</th>
+                            <th>下载</th>
+                            <th>备注</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td data-label="No.">01</td>
+                            <td data-label="工具">element-ui/element-plus</td>
+                            <td data-label="下载"><a href="https://element-plus.org/zh-CN/">官网</a></td>
+                            <td data-label="备注">系统管理后台组件库</td>
+                        </tr>
+                        <tr>
+                            <td data-label="No.">02</td>
+                            <td data-label="工具">vant</td>
+                            <td data-label="下载"><a href="https://vant-ui.github.io/vant/#/zh-CN/home">官网</a></td>
+                            <td data-label="备注">移动端页面组件库</td>
+                        </tr>
+                        <tr>
+                            <td data-label="No.">03</td>
+                            <td data-label="工具">uiverse.io</td>
+                            <td data-label="下载"><a href="https://uiverse.io/">官网</a></td>
+                            <td data-label="备注">最大开源UI库，适配React、Vue、Lit等，开箱即用</td>
+                        </tr>
+                        <tr>
+                            <td data-label="No.">04</td>
+                            <td data-label="工具">VUE后台管理系统模板</td>
+                            <td data-label="下载"><a href="http://vue.easydo.work/">官网</a></td>
+                            <td data-label="备注">最全的前端管理系统模版开源库，含预览地址、官网、教程等</td>
+                        </tr>
+                        <tr>
+                            <td data-label="No.">05</td>
+                            <td data-label="工具">open-lovable</td>
+                            <td data-label="下载"><a href="https://github.com/firecrawl/open-lovable">开源地址</a></td>
+                            <td data-label="备注">克隆任何网站为React应用</td>
+                        </tr>
+                        <tr>
+                            <td data-label="No.">06</td>
+                            <td data-label="工具">vue bits</td>
+                            <td data-label="下载"><a href="https://vue-bits.dev/">官网</a></td>
+                            <td data-label="备注">vue组件库，各种酷炫特效的组件</td>
+                        </tr>
+                        <tr>
+                            <td data-label="No.">07</td>
+                            <td data-label="工具">UXbot</td>
+                            <td data-label="下载"><a href="https://www.uxbot.cn/">官网</a></td>
+                            <td data-label="备注">快速将想法变成ui网站界面</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <!-- 系统辅助分类 -->
+        <div class="category-card">
+            <div class="category-header" onclick="toggleCategory('system-tools')">
+                <h2><i class="fas fa-desktop"></i> 系统辅助</h2>
+                <i class="fas fa-chevron-down toggle-icon"></i>
+            </div>
+            <div id="system-tools" class="category-content">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>No.</th>
+                            <th>工具</th>
+                            <th>下载</th>
+                            <th>备注</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td data-label="No.">01</td>
+                            <td data-label="工具" class="highlight-green">PotPlayer</td>
+                            <td data-label="下载"><a href="http://www.potplayercn.com/download/">进入下载</a></td>
+                            <td data-label="备注">免费，最好用的本地播放器，没有之一</td>
+                        </tr>
+                        <tr>
+                            <td data-label="No.">02</td>
+                            <td data-label="工具" class="highlight-green">Geek</td>
+                            <td data-label="下载"><a href="https://geekuninstaller.com/">进入下载</a></td>
+                            <td data-label="备注">免费，最好用的卸载工具，没有之一</td>
+                        </tr>
+                        <tr>
+                            <td data-label="No.">03</td>
+                            <td data-label="工具" class="highlight-green">Bandizip</td>
+                            <td data-label="下载"><a href="http://www.bandisoft.com/">进入下载</a></td>
+                            <td data-label="备注">免费，最好用的解压缩工具，没有之一</td>
+                        </tr>
+                        <tr>
+                            <td data-label="No.">04</td>
+                            <td data-label="工具" class="highlight-green">WizTree</td>
+                            <td data-label="下载"><a href="https://www.diskanalyzer.com/">进入下载</a></td>
+                            <td data-label="备注">免费，最好用的大文件分析工具，没有之一</td>
+                        </tr>
+                        <tr>
+                            <td data-label="No.">05</td>
+                            <td data-label="工具" class="highlight-green">FastStone Capture</td>
+                            <td data-label="下载"><a href="https://pan.baidu.com/s/1ey4iK8GDObNINXSjCk4shg">百度网盘</a></td>
+                            <td data-label="备注">破解版，最好用的截图工具，功能强大(提取码: r4oa)</td>
+                        </tr>
+                        <tr>
+                            <td data-label="No.">06</td>
+                            <td data-label="工具" class="highlight-green">ImTip</td>
+                            <td data-label="下载"><a href="https://imtip.aardio.com/">进入官网</a></td>
+                            <td data-label="备注">最好用的系统级输入法跟踪提示工具</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <!-- CodePart -->
+        <div class="category-card">
+            <div class="category-header" onclick="toggleCategory('code-part')">
+                <h2><i class="fas fa-code"></i> CodePart</h2>
+                <i class="fas fa-chevron-down toggle-icon"></i>
+            </div>
+            <div id="code-part" class="category-content">
+                <iframe id="embed_dom" name="embed_dom" frameborder="0" style="display:block;width:100%; height:666px;" src="https://www.processon.com/embed/5e3b6d5ce4b00de9fd7dd195"></iframe>
+            </div>
+        </div>
+    </div>
+    <!-- 脚本 -->
+    <script>
+        // 显示/隐藏ASCII图片
+        function showImg() {
+            document.getElementById('asciiImg').style.display = 'block';
+        }
+        function hideImg() {
+            document.getElementById('asciiImg').style.display = 'none';
+        }
+        // 分类折叠/展开功能
+        function toggleCategory(id) {
+            const content = document.getElementById(id);
+            const header = content.parentElement.querySelector('.category-header');
+            content.classList.toggle('collapsed');
+            header.classList.toggle('active');
+            // 点击时让ASCII图片隐藏（防止遮挡）
+            hideImg();
+        }
+        // 页面加载完成后初始化 - 默认展开第一个分类
+        document.addEventListener('DOMContentLoaded', function() {
+            const firstCategory = document.querySelector('.category-content');
+            if (firstCategory) {
+                firstCategory.classList.remove('collapsed');
+                firstCategory.parentElement.querySelector('.category-header').classList.add('active');
+            }
+            // 让ASCII图片跟随鼠标
+            document.addEventListener('mousemove', function(e) {
+                const img = document.getElementById('asciiImg');
+                if (img.style.display === 'block') {
+                    img.style.left = (e.pageX + 10) + 'px';
+                    img.style.top = (e.pageY + 10) + 'px';
+                }
+            });
+        });
+    </script>
+</body>

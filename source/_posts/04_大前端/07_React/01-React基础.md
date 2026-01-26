@@ -171,6 +171,17 @@ webpack compiled successfully
 
 
 
+### 2.4 版本降级(★)
+
+如果不想使用最新的 react19 版本，可以选择降级到 react18，以求稳定性：
+
+```sh
+# 降级 React + React DOM 到 18.x
+npm i react@18 react-dom@18
+```
+
+
+
 ## 3. 第一个React应用
 
 ### 3.1 v17 与 v19
