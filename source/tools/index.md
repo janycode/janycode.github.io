@@ -4,7 +4,6 @@ date: 2016-10-20 02:36:08
 layout: tools
 ---
 
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -18,18 +17,18 @@ layout: tools
             padding: 0;
             box-sizing: border-box;
         }
-        /* 全局主题 */
+        /* 全局主题 - 浅色科技风调整 */
         :root {
-            --bg-primary: #121212;
-            --bg-secondary: #1e1e1e;
-            --bg-tertiary: #2d2d2d;
-            --text-primary: #e0e0e0;
-            --text-secondary: #9e9e9e;
-            --accent-green: #00ff9d;
-            --accent-orange: #ff7a00;
-            --accent-blue: #0099ff;
-            --border-color: #333;
-            --shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+            --bg-primary: #f8f9fa;
+            --bg-secondary: #ffffff;
+            --bg-tertiary: #f0f4f8;
+            --text-primary: #2d3748;
+            --text-secondary: #718096;
+            --accent-green: #00b894;
+            --accent-orange: #e67e22;
+            --accent-blue: #0984e3;
+            --border-color: #dee2e6;
+            --shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
             --transition: all 0.3s ease;
         }
         body {
@@ -39,8 +38,8 @@ layout: tools
             line-height: 1.6;
             padding: 20px;
             background-image: 
-                linear-gradient(rgba(18, 18, 18, 0.95), rgba(18, 18, 18, 0.95)),
-                url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23333333' fill-opacity='0.2'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+                linear-gradient(rgba(248, 249, 250, 0.95), rgba(248, 249, 250, 0.95)),
+                url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23cbd5e0' fill-opacity='0.1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
         }
         /* 容器 */
         .container {
@@ -106,7 +105,7 @@ layout: tools
         }
         .category-card:hover {
             transform: translateY(-5px);
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.7);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
         }
         /* 分类标题 */
         .category-header {
@@ -178,15 +177,15 @@ layout: tools
             position: absolute;
             bottom: 0;
             left: 0;
-            width: 50px;
+            width: 40px;
             height: 2px;
-            //background-color: var(--accent-green);
+            /*background-color: var(--accent-green);*/
         }
         tr:last-child td {
             border-bottom: none;
         }
         tr:hover {
-            background-color: rgba(45, 45, 45, 0.8);
+            background-color: rgba(224, 231, 255, 0.5);
         }
         /* 高亮文本 */
         .highlight-orange {
