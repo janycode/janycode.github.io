@@ -67,19 +67,6 @@ layout: tools
             color: var(--text-secondary);
             font-size: 1rem;
         }
-        /* ASCII图片悬浮效果 */
-        .ascii-link {
-            display: inline-block;
-            margin: 20px 0;
-            color: var(--accent-orange);
-            text-decoration: none;
-            font-size: 1.1rem;
-            transition: var(--transition);
-        }
-        .ascii-link:hover {
-            color: var(--accent-green);
-            transform: translateX(5px);
-        }
         #asciiImg {
             display: none;
             position: absolute;
@@ -267,10 +254,10 @@ layout: tools
             <h1>工欲善其事，必先利其器</h1>
             <p class="subtitle">全栈工程师的工具集 | 持续更新</p>
             <!-- ASCII图片悬浮链接 -->
-            <a href="javascript:void(0)" onMouseOut="hideImg()" onmouseover="showImg()" class="ascii-link">
+            <a href="javascript:void(0)" onMouseOut="hideImg()" onmouseover="showImg()">
                 <i class="fas fa-code"></i> ASCII码字符(图)
             </a>
-            <div id="asciiImg" style="display:none;">
+            <div id="asciiImg" style="display:none;height:50px;back-ground:#f00;position:absolute;">
                 <img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/image-20200523091606519.png" alt="ASCII码字符图">
             </div>
         </div>
@@ -337,7 +324,7 @@ layout: tools
                         </tr>
                         <tr>
                             <td data-label="类型">Java IDE</td>
-                            <td data-label="工具名"><strong>Intellij IDEA 2023.1(`new`)</strong></td>
+                            <td data-label="工具名"><strong>Intellij IDEA 2023.1</strong></td>
                             <td data-label="链接地址"><a href="https://pan.baidu.com/s/1td5tmXFJUMt3obVDs2x20A?pwd=frvn">百度网盘</a></td>
                             <td data-label="备注">提取码: frvn</td>
                         </tr>
@@ -979,14 +966,13 @@ layout: tools
         </div>
     </div>
     <!-- 脚本 -->
-    <script>
-        // 显示/隐藏ASCII图片
-        function showImg() {
-            document.getElementById('asciiImg').style.display = 'block';
-        }
-        function hideImg() {
-            document.getElementById('asciiImg').style.display = 'none';
-        }
+    <script type="text/javascript"> 
+      function showImg(){ 
+          document.getElementById("asciiImg").style.display='block'; 
+      } 
+      function hideImg(){ 
+          document.getElementById("asciiImg").style.display='none'; 
+      } 
         // 分类折叠/展开功能
         function toggleCategory(id) {
             const content = document.getElementById(id);
