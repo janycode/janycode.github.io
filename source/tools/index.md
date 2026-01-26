@@ -4,7 +4,6 @@ date: 2016-10-20 02:36:08
 layout: tools
 ---
 
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -31,7 +30,6 @@ layout: tools
             --border-color: #dee2e6;
             --shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
             --transition: all 0.3s ease;
-            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
             background-color: var(--bg-primary);
             color: var(--text-primary);
             line-height: 1.6;
@@ -179,7 +177,7 @@ layout: tools
             left: 0;
             width: 40px;
             height: 2px;
-            background-color: var(--accent-green);
+            /*background-color: var(--accent-green);*/
         }
         #tool-library-container tr:last-child td {
             border-bottom: none;
@@ -274,7 +272,7 @@ layout: tools
                 <h1>工欲善其事，必先利其器</h1>
                 <p class="subtitle">全栈工程师的工具集 | 持续更新</p>
                 <!-- ASCII图片悬浮链接 -->
-                <a href="javascript:void(0)" onMouseOut="hideImg()" onmouseover="showImg()" class="ascii-link">
+                <a href="javascript:void(0)" class="ascii-link" id="asciiLink">
                     <i class="fas fa-code"></i> ASCII码字符(图)
                 </a>
                 <div id="asciiImg" style="display:none;">
@@ -283,7 +281,7 @@ layout: tools
             </div>
             <!-- Java文档分类 -->
             <div class="category-card">
-                <div class="category-header" onclick="toggleCategory('java-docs')">
+                <div class="category-header" data-target="java-docs">
                     <h2><i class="fab fa-java"></i> Java文档</h2>
                     <i class="fas fa-chevron-down toggle-icon"></i>
                 </div>
@@ -303,7 +301,7 @@ layout: tools
             </div>
             <!-- 开发工具分类 -->
             <div class="category-card">
-                <div class="category-header" onclick="toggleCategory('dev-tools')">
+                <div class="category-header" data-target="dev-tools">
                     <h2><i class="fas fa-tools"></i> 开发工具</h2>
                     <i class="fas fa-chevron-down toggle-icon"></i>
                 </div>
@@ -378,7 +376,7 @@ layout: tools
             </div>
             <!-- 在线工具分类 -->
             <div class="category-card">
-                <div class="category-header" onclick="toggleCategory('online-tools')">
+                <div class="category-header" data-target="online-tools">
                     <h2><i class="fas fa-globe"></i> 在线工具</h2>
                     <i class="fas fa-chevron-down toggle-icon"></i>
                 </div>
@@ -604,7 +602,7 @@ layout: tools
             </div>
             <!-- 办公工具分类 -->
             <div class="category-card">
-                <div class="category-header" onclick="toggleCategory('office-tools')">
+                <div class="category-header" data-target="office-tools">
                     <h2><i class="fas fa-briefcase"></i> 办公工具</h2>
                     <i class="fas fa-chevron-down toggle-icon"></i>
                 </div>
@@ -823,7 +821,7 @@ layout: tools
             </div>
             <!-- AI工具分类 -->
             <div class="category-card">
-                <div class="category-header" onclick="toggleCategory('ai-tools')">
+                <div class="category-header" data-target="ai-tools">
                     <h2><i class="fas fa-robot"></i> AI工具</h2>
                     <i class="fas fa-chevron-down toggle-icon"></i>
                 </div>
@@ -856,7 +854,7 @@ layout: tools
             </div>
             <!-- web组件库分类 -->
             <div class="category-card">
-                <div class="category-header" onclick="toggleCategory('web-components')">
+                <div class="category-header" data-target="web-components">
                     <h2><i class="fas fa-code-branch"></i> web组件库</h2>
                     <i class="fas fa-chevron-down toggle-icon"></i>
                 </div>
@@ -919,7 +917,7 @@ layout: tools
             </div>
             <!-- 系统辅助分类 -->
             <div class="category-card">
-                <div class="category-header" onclick="toggleCategory('system-tools')">
+                <div class="category-header" data-target="system-tools">
                     <h2><i class="fas fa-desktop"></i> 系统辅助</h2>
                     <i class="fas fa-chevron-down toggle-icon"></i>
                 </div>
@@ -976,7 +974,7 @@ layout: tools
             </div>
             <!-- CodePart -->
             <div class="category-card">
-                <div class="category-header" onclick="toggleCategory('code-part')">
+                <div class="category-header" data-target="code-part">
                     <h2><i class="fas fa-code"></i> CodePart</h2>
                     <i class="fas fa-chevron-down toggle-icon"></i>
                 </div>
@@ -987,28 +985,37 @@ layout: tools
         </div>
         <!-- 脚本 -->
         <script>
-            // 显示/隐藏ASCII图片
-            function showImg() {
-                document.getElementById('asciiImg').style.display = 'block';
-            }
-            function hideImg() {
-                document.getElementById('asciiImg').style.display = 'none';
-            }
-            // 分类折叠/展开功能
-            function toggleCategory(id) {
-                const content = document.getElementById(id);
-                const header = content.parentElement.querySelector('.category-header');
-                content.classList.toggle('collapsed');
-                header.classList.toggle('active');
-                // 点击时让ASCII图片隐藏（防止遮挡）
-                hideImg();
-            }
-            // 页面加载完成后初始化 - 默认展开第一个分类
+            // 页面加载完成后执行
             document.addEventListener('DOMContentLoaded', function() {
-                const firstCategory = document.querySelector('#tool-library-container .category-content');
-                if (firstCategory) {
-                    firstCategory.classList.remove('collapsed');
-                    firstCategory.parentElement.querySelector('.category-header').classList.add('active');
+                // 显示/隐藏ASCII图片
+                function showImg() {
+                    document.getElementById('asciiImg').style.display = 'block';
+                }
+                function hideImg() {
+                    document.getElementById('asciiImg').style.display = 'none';
+                }
+                // 分类折叠/展开功能
+                function toggleCategory(targetId) {
+                    const content = document.getElementById(targetId);
+                    const header = content.parentElement.querySelector('.category-header');
+                    content.classList.toggle('collapsed');
+                    header.classList.toggle('active');
+                    // 点击时让ASCII图片隐藏（防止遮挡）
+                    hideImg();
+                }
+                // 绑定所有分类头部的点击事件
+                const categoryHeaders = document.querySelectorAll('#tool-library-container .category-header');
+                categoryHeaders.forEach(header => {
+                    header.addEventListener('click', function() {
+                        const targetId = this.getAttribute('data-target');
+                        toggleCategory(targetId);
+                    });
+                });
+                // 绑定ASCII链接的鼠标事件
+                const asciiLink = document.getElementById('asciiLink');
+                if (asciiLink) {
+                    asciiLink.addEventListener('mouseover', showImg);
+                    asciiLink.addEventListener('mouseout', hideImg);
                 }
                 // 让ASCII图片跟随鼠标
                 document.addEventListener('mousemove', function(e) {
@@ -1018,6 +1025,12 @@ layout: tools
                         img.style.top = (e.pageY + 10) + 'px';
                     }
                 });
+                // 默认展开第一个分类
+                const firstCategory = document.querySelector('#tool-library-container .category-content');
+                if (firstCategory) {
+                    firstCategory.classList.remove('collapsed');
+                    firstCategory.parentElement.querySelector('.category-header').classList.add('active');
+                }
             });
         </script>
     </div>
