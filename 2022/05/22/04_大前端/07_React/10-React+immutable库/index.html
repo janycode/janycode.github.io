@@ -1,0 +1,840 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=light>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Jerry(姜源)">
+  <meta name="keywords" content="Java,Html,CSS,JavaScript,Python,C,Linux,shell编程经验分享、技术总结、心得体会">
+  
+    <meta name="description" content="参考：  immutable 官网：https:&#x2F;&#x2F;immutable-js.com&#x2F; immutable 源码：https:&#x2F;&#x2F;github.com&#x2F;immutable-js&#x2F;immutable-js   背景：  对象&#x3D; 引用赋值(浅拷贝)，修改复制后的对象，会影响原对象 对象... 展开赋值(浅拷贝+1层)，只比浅拷贝多复制一层数据（只有一层结构时完全可以使用），深层的值修改还会影响原对象">
+<meta property="og:type" content="article">
+<meta property="og:title" content="10-React+immutable库">
+<meta property="og:url" content="https://janycode.github.io/2022/05/22/04_%E5%A4%A7%E5%89%8D%E7%AB%AF/07_React/10-React+immutable%E5%BA%93/index.html">
+<meta property="og:site_name" content="姜源の云笔记">
+<meta property="og:description" content="参考：  immutable 官网：https:&#x2F;&#x2F;immutable-js.com&#x2F; immutable 源码：https:&#x2F;&#x2F;github.com&#x2F;immutable-js&#x2F;immutable-js   背景：  对象&#x3D; 引用赋值(浅拷贝)，修改复制后的对象，会影响原对象 对象... 展开赋值(浅拷贝+1层)，只比浅拷贝多复制一层数据（只有一层结构时完全可以使用），深层的值修改还会影响原对象">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20260123164723034.png">
+<meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20260126135521375.gif">
+<meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20260126150412628.png">
+<meta property="article:published_time" content="2022-05-22T13:36:21.000Z">
+<meta property="article:modified_time" content="2026-01-26T11:54:27.400Z">
+<meta property="article:author" content="Jerry(姜源)">
+<meta property="article:tag" content="React">
+<meta property="article:tag" content="immutable">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20260123164723034.png">
+  
+  
+    <meta name="referrer" content="no-referrer-when-downgrade">
+  
+  
+  <title>10-React+immutable库 - 姜源の云笔记</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"janycode.github.io","root":"/","version":"1.9.0","typing":{"enable":true,"typeSpeed":50,"cursorChar":"|","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":false},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":"bfff735c897eb60ea49b735096b20e47","google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+
+  
+<meta name="generator" content="Hexo 6.2.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 50vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>姜源の云笔记</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tools/">
+                <i class="iconfont icon-slack-fill"></i>
+                工具
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" target="_blank" rel="noopener" href="https://yuancodes.github.io/">
+                <i class="iconfont icon-notebook"></i>
+                Docsify
+              </a>
+            </li>
+          
+        
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="10-React+immutable库"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-author" aria-hidden="true"></i>
+        Jerry(姜源)
+      </span>
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2022-05-22 21:36" pubdate>
+          星期日, 2022/05/22 21:36:21
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          <!-- compatible with older versions-->
+          7.3k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          <!-- compatible with older versions-->
+          61 分钟
+        
+      </span>
+    
+
+    
+    
+      
+        <span id="busuanzi_container_page_pv" style="display: none">
+          <i class="iconfont icon-eye" aria-hidden="true"></i>
+          <span id="busuanzi_value_page_pv"></span> 次
+        </span>
+        
+      
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">10-React+immutable库</h1>
+            
+            <div class="markdown-body">
+              
+              <p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20260123164723034.png" srcset="/img/loading.gif" lazyload alt="React"></p>
+<p>参考：</p>
+<ul>
+<li>immutable 官网：<a target="_blank" rel="noopener" href="https://immutable-js.com/">https://immutable-js.com/</a></li>
+<li>immutable 源码：<a target="_blank" rel="noopener" href="https://github.com/immutable-js/immutable-js">https://github.com/immutable-js/immutable-js</a></li>
+</ul>
+<blockquote>
+<p>背景：</p>
+<ul>
+<li>对象<code>= 引用赋值(浅拷贝)</code>，修改复制后的对象，会影响原对象</li>
+<li>对象<code>... 展开赋值(浅拷贝+1层)</code>，只比浅拷贝多复制一层数据（<strong>只有一层结构时完全可以使用</strong>），深层的值修改还会影响原对象</li>
+<li>对象<code>JSON.parse() 与 JSON.stringify()</code>，可以实现深拷贝，但致命问题是：不能有 undefined 的字段值(该字段会被忽略即删除)</li>
+<li>对象<code>deepcopy递归赋值</code>，可以实现深拷贝，但问题是：一层一层复制，性能不好，内存占用高</li>
+</ul>
+</blockquote>
+<h2 id="1-immutable-不可变结构"><a href="#1-immutable-不可变结构" class="headerlink" title="1. immutable 不可变结构"></a>1. immutable 不可变结构</h2><h3 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h3><p><code>Immutable.js</code> 是一个用于创建<strong>不可变数据结构</strong>的 JavaScript 库。不可变数据一旦创建，就不能再被更改。对不可变对象的任何修改或添加删除操作都会返回一个新的不可变对象。</p>
+<h3 id="性能优化方式"><a href="#性能优化方式" class="headerlink" title="性能优化方式"></a>性能优化方式</h3><p>Immutable 实现的原理是 Persistent Data Structure（<code>持久化数据结构</code>），也就是<strong>使用旧数据创建新数据时，要保证旧数据同时可用且不变</strong>。同时为了避免 deepCopy 把所有节点都复制一遍带来的性能损耗，Immutable 使用了 Structural Sharing（<code>结构共享</code>），即如果对象树中一个节点发生变化，只修改这个节点和受它影响的父节点，其它节点则进行共享。</p>
+<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20260126135521375.gif" srcset="/img/loading.gif" lazyload alt="img"></p>
+<h2 id="2-immutable-应用"><a href="#2-immutable-应用" class="headerlink" title="2. immutable 应用"></a>2. immutable 应用</h2><h3 id="2-1-安装"><a href="#2-1-安装" class="headerlink" title="2.1 安装"></a>2.1 安装</h3><p>安装：<em>npm i immutable</em>  - 最新版本 5.x</p>
+<h3 id="2-2-使用"><a href="#2-2-使用" class="headerlink" title="2.2 使用"></a>2.2 使用</h3><h4 id="Map"><a href="#Map" class="headerlink" title="Map"></a>Map</h4><p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20260126150412628.png" srcset="/img/loading.gif" lazyload alt="image-20260126150410920"></p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs js"><span class="hljs-keyword">import</span> &#123; <span class="hljs-title class_">Map</span> &#125; <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;immutable&#x27;</span><br><span class="hljs-keyword">var</span> obj = &#123;<span class="hljs-attr">name</span>: <span class="hljs-string">&quot;jerry&quot;</span>, <span class="hljs-attr">age</span>: <span class="hljs-number">22</span>&#125;<br><br><span class="hljs-keyword">const</span> oldImmuObj = <span class="hljs-title class_">Map</span>(obj)<br><span class="hljs-keyword">const</span> newImmuObj = oldImmuObj.<span class="hljs-title function_">set</span>(<span class="hljs-string">&quot;name&quot;</span>, <span class="hljs-string">&quot;tom&quot;</span>)<br><span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(oldImmuObj, newImmuObj); <span class="hljs-comment">//新旧值互不影响</span><br><span class="hljs-comment">// 1. get() 获取 immutable Map</span><br><span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(oldImmuObj.<span class="hljs-title function_">get</span>(<span class="hljs-string">&quot;name&quot;</span>), newImmuObj.<span class="hljs-title function_">get</span>(<span class="hljs-string">&quot;name&quot;</span>)); <span class="hljs-comment">//jerry tom</span><br><span class="hljs-comment">// 2. toJS() 转换为普通对象，可以 . 直接访问</span><br><span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(oldImmuObj.<span class="hljs-title function_">toJS</span>().<span class="hljs-property">name</span>, newImmuObj.<span class="hljs-title function_">toJS</span>().<span class="hljs-property">name</span>); <span class="hljs-comment">//jerry tom</span><br></code></pre></td></tr></table></figure>
+
+<p>组件中使用：① <code>链式</code>调用 .set(key, value) 赋值； ② <code>访问</code>方式取决于是 Map 还是 toJS() 后的普通对象；③ 多层 Map 时可以直接进行判断和<code>阻断</code></p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br></pre></td><td class="code"><pre><code class="hljs js"><span class="hljs-keyword">import</span> &#123; <span class="hljs-title class_">Component</span> &#125; <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;react&#x27;</span><br><span class="hljs-keyword">import</span> &#123; <span class="hljs-title class_">Map</span> &#125; <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;immutable&#x27;</span><br><br><span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">App</span> <span class="hljs-keyword">extends</span> <span class="hljs-title class_ inherited__">Component</span> &#123;<br>    state = &#123;<br>        <span class="hljs-attr">info1</span>: <span class="hljs-title class_">Map</span>(&#123; <span class="hljs-attr">name</span>: <span class="hljs-string">&quot;jerry&quot;</span>, <span class="hljs-attr">age</span>: <span class="hljs-number">22</span> &#125;),<br>        <span class="hljs-attr">info2</span>: &#123; <span class="hljs-attr">name</span>: <span class="hljs-string">&quot;jerry&quot;</span>, <span class="hljs-attr">age</span>: <span class="hljs-number">22</span> &#125;,<br>        <span class="hljs-comment">/* 多级 json 结构，就需要多级包裹 Map(&#123;k1: v1, Map(&#123;k2: v2&#125;) &#125;) */</span><br>        <span class="hljs-attr">info3</span>: <span class="hljs-title class_">Map</span>(&#123; <span class="hljs-attr">name</span>: <span class="hljs-string">&quot;jerry&quot;</span>, <span class="hljs-attr">age</span>: <span class="hljs-number">22</span>, <span class="hljs-attr">filter</span>: <span class="hljs-title class_">Map</span>(&#123; <span class="hljs-attr">text</span>: <span class="hljs-string">&quot;&quot;</span>, <span class="hljs-attr">up</span>: <span class="hljs-literal">true</span>, <span class="hljs-attr">down</span>: <span class="hljs-literal">false</span> &#125;) &#125;)<br>    &#125;<br><br>    <span class="hljs-title function_">render</span>(<span class="hljs-params"></span>) &#123;<br>        <span class="hljs-keyword">return</span> (<br>            <span class="language-xml"><span class="hljs-tag">&lt;<span class="hljs-name">div</span>&gt;</span></span><br><span class="language-xml">                &#123;/* 写法1 */&#125;</span><br><span class="language-xml">                <span class="hljs-tag">&lt;<span class="hljs-name">div</span>&gt;</span></span><br><span class="language-xml">                    &#123;this.state.info1.toJS().name&#125;-&#123;this.state.info1.toJS().age&#125;</span><br><span class="language-xml">                    <span class="hljs-tag">&lt;<span class="hljs-name">button</span> <span class="hljs-attr">onClick</span>=<span class="hljs-string">&#123;()</span> =&gt;</span> &#123;</span><br><span class="language-xml">                        this.setState(&#123;</span><br><span class="language-xml">                            info1: this.state.info1.set(&quot;name&quot;, &quot;tom&quot;).set(&quot;age&quot;, 18)</span><br><span class="language-xml">                        &#125;)</span><br><span class="language-xml">                    &#125;&#125;&gt;click1<span class="hljs-tag">&lt;/<span class="hljs-name">button</span>&gt;</span></span><br><span class="language-xml">                <span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span></span><br><span class="language-xml">                &#123;/* 写法2：与写法1效果一样 */&#125;</span><br><span class="language-xml">                <span class="hljs-tag">&lt;<span class="hljs-name">div</span>&gt;</span></span><br><span class="language-xml">                    &#123;this.state.info2.name&#125;-&#123;this.state.info2.age&#125;</span><br><span class="language-xml">                    <span class="hljs-tag">&lt;<span class="hljs-name">button</span> <span class="hljs-attr">onClick</span>=<span class="hljs-string">&#123;()</span> =&gt;</span> &#123;</span><br><span class="language-xml">                        let oldInfo = Map(this.state.info2)</span><br><span class="language-xml">                        let newInfo = oldInfo.set(&quot;name&quot;, &quot;spike&quot;).set(&quot;age&quot;, 28)</span><br><span class="language-xml">                        this.setState(&#123;</span><br><span class="language-xml">                            info2: newInfo.toJS()</span><br><span class="language-xml">                        &#125;)</span><br><span class="language-xml">                    &#125;&#125;&gt;click2<span class="hljs-tag">&lt;/<span class="hljs-name">button</span>&gt;</span></span><br><span class="language-xml">                <span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span></span><br><span class="language-xml">                &#123;/* 复杂多层结构时的应用 */&#125;</span><br><span class="language-xml">                <span class="hljs-tag">&lt;<span class="hljs-name">div</span>&gt;</span></span><br><span class="language-xml">                    &#123;this.state.info3.get(&quot;name&quot;)&#125;</span><br><span class="language-xml">                    <span class="hljs-tag">&lt;<span class="hljs-name">button</span> <span class="hljs-attr">onClick</span>=<span class="hljs-string">&#123;()</span> =&gt;</span> &#123;</span><br><span class="language-xml">                        this.setState(&#123;</span><br><span class="language-xml">                            info3: this.state.info3.set(&quot;name&quot;, &quot;tom&quot;).set(&quot;age&quot;, 18)</span><br><span class="language-xml">                        &#125;)</span><br><span class="language-xml">                    &#125;&#125;&gt;click1<span class="hljs-tag">&lt;/<span class="hljs-name">button</span>&gt;</span></span><br><span class="language-xml">                    <span class="hljs-tag">&lt;<span class="hljs-name">Child</span> <span class="hljs-attr">filter</span>=<span class="hljs-string">&#123;this.state.info3.get(</span>&quot;<span class="hljs-attr">filter</span>&quot;)&#125; /&gt;</span></span><br><span class="language-xml">                <span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span></span><br><span class="language-xml">            <span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span></span><br>        )<br>    &#125;<br>&#125;<br><br><span class="hljs-keyword">class</span> <span class="hljs-title class_">Child</span> <span class="hljs-keyword">extends</span> <span class="hljs-title class_ inherited__">Component</span> &#123;<br>    <span class="hljs-comment">// 阻断没有变化的 子级 Map 对象，防止多次被触发更新，因为 Child 只用了 filter 这个没改变的值</span><br>    <span class="hljs-title function_">shouldComponentUpdate</span>(<span class="hljs-params">nextProps, nextState</span>) &#123;<br>        <span class="hljs-comment">// 判断老的对象跟要更新的一样，就不去做重复更新</span><br>        <span class="hljs-keyword">if</span> (<span class="hljs-variable language_">this</span>.<span class="hljs-property">props</span>.<span class="hljs-property">filter</span> === nextProps.<span class="hljs-property">filter</span>) &#123;<br>            <span class="hljs-keyword">return</span> <span class="hljs-literal">false</span><br>        &#125;<br>        <span class="hljs-keyword">return</span> <span class="hljs-literal">true</span><br>    &#125;<br>    <span class="hljs-title function_">componentDidUpdate</span>(<span class="hljs-params">prevProps, prevState</span>) &#123;<br>        <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&quot;componentDidUpdate&quot;</span>);<br>    &#125;<br><br>    <span class="hljs-title function_">render</span>(<span class="hljs-params"></span>) &#123;<br>        <span class="hljs-keyword">return</span> (<br>            <span class="language-xml"><span class="hljs-tag">&lt;<span class="hljs-name">div</span>&gt;</span></span><br><span class="language-xml">                Child</span><br><span class="language-xml">            <span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span></span><br>        )<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+
+
+<h4 id="List"><a href="#List" class="headerlink" title="List"></a>List</h4><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs js"><span class="hljs-keyword">import</span> &#123;<span class="hljs-title class_">List</span>&#125; <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;immutable&#x27;</span><br><br><span class="hljs-keyword">let</span> arr1 = <span class="hljs-title class_">List</span>([<span class="hljs-number">1</span>, <span class="hljs-number">2</span>, <span class="hljs-number">3</span>])<br><span class="hljs-keyword">let</span> arr2 = arr1.<span class="hljs-title function_">push</span>(<span class="hljs-number">4</span>)<br><span class="hljs-keyword">let</span> arr3 = arr1.<span class="hljs-title function_">concat</span>([<span class="hljs-number">5</span>, <span class="hljs-number">6</span>, <span class="hljs-number">7</span>])<br><span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(arr1.<span class="hljs-property">size</span>); <span class="hljs-comment">//3</span><br><span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(arr2.<span class="hljs-property">size</span>); <span class="hljs-comment">//4</span><br><span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(arr3.<span class="hljs-property">size</span>); <span class="hljs-comment">//6</span><br></code></pre></td></tr></table></figure>
+
+<p>组件中使用：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br></pre></td><td class="code"><pre><code class="hljs js"><span class="hljs-keyword">import</span> &#123; <span class="hljs-title class_">Component</span> &#125; <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;react&#x27;</span><br><span class="hljs-keyword">import</span> &#123; <span class="hljs-title class_">List</span>, <span class="hljs-title class_">Map</span>, fromJS &#125; <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;immutable&#x27;</span>  <span class="hljs-comment">//导入使用 fromJS 模块</span><br><br><span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">App</span> <span class="hljs-keyword">extends</span> <span class="hljs-title class_ inherited__">Component</span> &#123;<br>    state = &#123;<br>        <span class="hljs-comment">// info1: Map(&#123;</span><br>        <span class="hljs-comment">//     name: &quot;jerry&quot;,</span><br>        <span class="hljs-comment">//     location: Map(&#123;</span><br>        <span class="hljs-comment">//         province: &quot;广东&quot;,</span><br>        <span class="hljs-comment">//         city: &quot;深圳&quot;</span><br>        <span class="hljs-comment">//     &#125;),</span><br>        <span class="hljs-comment">//     favor: List([&quot;读书&quot;, &quot;看报&quot;, &quot;写代码&quot;])</span><br>        <span class="hljs-comment">// &#125;),</span><br>        <span class="hljs-attr">info1</span>: <span class="hljs-title function_">fromJS</span>(&#123;<br>            <span class="hljs-attr">name</span>: <span class="hljs-string">&quot;jerry&quot;</span>,<br>            <span class="hljs-attr">location</span>: &#123;<br>                <span class="hljs-attr">province</span>: <span class="hljs-string">&quot;广东&quot;</span>,<br>                <span class="hljs-attr">city</span>: <span class="hljs-string">&quot;深圳&quot;</span><br>            &#125;,<br>            <span class="hljs-attr">favor</span>: [<span class="hljs-string">&quot;读书&quot;</span>, <span class="hljs-string">&quot;看报&quot;</span>, <span class="hljs-string">&quot;写代码&quot;</span>]<br>        &#125;)<br>    &#125;<br>    <span class="hljs-title function_">componentDidMount</span>(<span class="hljs-params"></span>) &#123; <br>        <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-variable language_">this</span>.<span class="hljs-property">state</span>.<span class="hljs-property">info1</span>);<br>        <br>     &#125;<br>    <span class="hljs-title function_">render</span>(<span class="hljs-params"></span>) &#123;<br>        <span class="hljs-keyword">return</span> (<br>            <span class="language-xml"><span class="hljs-tag">&lt;<span class="hljs-name">div</span>&gt;</span></span><br><span class="language-xml">                <span class="hljs-tag">&lt;<span class="hljs-name">h1</span>&gt;</span>个人信息修改<span class="hljs-tag">&lt;/<span class="hljs-name">h1</span>&gt;</span></span><br><span class="language-xml">                <span class="hljs-tag">&lt;<span class="hljs-name">button</span> <span class="hljs-attr">onClick</span>=<span class="hljs-string">&#123;()</span> =&gt;</span> &#123;</span><br><span class="language-xml">                    this.setState(&#123;</span><br><span class="language-xml">                        // Map 基础修改方式</span><br><span class="language-xml">                        //info1: this.state.info1.set(&quot;name&quot;, &quot;tom&quot;).set(&quot;location&quot;, this.state.info1.get(&quot;location&quot;).set(&quot;city&quot;, &quot;广州&quot;))</span><br><span class="language-xml">                        // fromJS 修改方式</span><br><span class="language-xml">                        info1: this.state.info1.set(&quot;name&quot;, &quot;tom&quot;).setIn([&quot;location&quot;, &quot;city&quot;], &quot;广州&quot;)</span><br><span class="language-xml">                    &#125;)</span><br><span class="language-xml">                &#125;&#125;&gt;click<span class="hljs-tag">&lt;/<span class="hljs-name">button</span>&gt;</span></span><br><span class="language-xml">                <span class="hljs-tag">&lt;<span class="hljs-name">div</span>&gt;</span></span><br><span class="language-xml">                    &#123;this.state.info1.get(&quot;name&quot;)&#125;</span><br><span class="language-xml">                    <span class="hljs-tag">&lt;<span class="hljs-name">br</span> /&gt;</span></span><br><span class="language-xml">                    &#123;this.state.info1.get(&quot;location&quot;).get(&quot;province&quot;)&#125;</span><br><span class="language-xml">                    -</span><br><span class="language-xml">                    &#123;this.state.info1.get(&quot;location&quot;).get(&quot;city&quot;)&#125;</span><br><span class="language-xml">                    <span class="hljs-tag">&lt;<span class="hljs-name">br</span> /&gt;</span></span><br><span class="language-xml">                    <span class="hljs-tag">&lt;<span class="hljs-name">ul</span>&gt;</span></span><br><span class="language-xml">                        &#123;</span><br><span class="language-xml">                            this.state.info1.get(&quot;favor&quot;).map((item, index) =&gt;</span><br><span class="language-xml">                                <span class="hljs-tag">&lt;<span class="hljs-name">li</span> <span class="hljs-attr">key</span>=<span class="hljs-string">&#123;item&#125;</span>&gt;</span>&#123;item&#125;<span class="hljs-tag">&lt;<span class="hljs-name">button</span> <span class="hljs-attr">onClick</span>=<span class="hljs-string">&#123;()</span> =&gt;</span> &#123;</span><br><span class="language-xml">                                    console.log(index);</span><br><span class="language-xml">                                    this.setState(&#123;</span><br><span class="language-xml">                                        // List 基础修改方式</span><br><span class="language-xml">                                        //info1: this.state.info1.set(&quot;favor&quot;, this.state.info1.get(&quot;favor&quot;).splice(index, 1))</span><br><span class="language-xml">                                        // fromJS 修改方式 + 列表删除方式</span><br><span class="language-xml">                                        // info1: this.state.info1.setIn([&quot;favor&quot;, index], &quot;1111&quot;)</span><br><span class="language-xml">                                        info1: this.state.info1.updateIn([&quot;favor&quot;], (list) =&gt; list.splice(index, 1))</span><br><span class="language-xml">                                    &#125;)</span><br><span class="language-xml">                                &#125;&#125;&gt;del<span class="hljs-tag">&lt;/<span class="hljs-name">button</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">li</span>&gt;</span></span><br><span class="language-xml">                            )</span><br><span class="language-xml">                        &#125;</span><br><span class="language-xml">                    <span class="hljs-tag">&lt;/<span class="hljs-name">ul</span>&gt;</span></span><br><span class="language-xml">                <span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span></span><br><span class="language-xml">            <span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span></span><br>        )<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<h5 id="fromJS"><a href="#fromJS" class="headerlink" title="fromJS"></a>fromJS</h5><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><code class="hljs js"><span class="hljs-keyword">const</span> nested = <span class="hljs-title function_">fromJS</span>(&#123; <span class="hljs-attr">a</span>: &#123; <span class="hljs-attr">b</span>: &#123; <span class="hljs-attr">c</span>: [<span class="hljs-number">3</span>, <span class="hljs-number">4</span>, <span class="hljs-number">5</span>] &#125; &#125; &#125;);<br><span class="hljs-comment">//Map&#123;a:Map&#123;b:Map&#123;c:List[3,4,5]&#125;&#125;&#125;</span><br><span class="hljs-keyword">const</span> nested2 = nested.<span class="hljs-title function_">mergeDeep</span>(&#123; <span class="hljs-attr">a</span>: &#123; <span class="hljs-attr">b</span>: &#123; <span class="hljs-attr">d</span>: <span class="hljs-number">6</span> &#125; &#125; &#125;);<br><span class="hljs-comment">//Map&#123;a:Map&#123;b:Map&#123;c:List[3,4,5],d:6&#125;&#125;&#125;</span><br><span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(nested2.<span class="hljs-title function_">getIn</span>([<span class="hljs-string">&#x27;a&#x27;</span>, <span class="hljs-string">&#x27;b&#x27;</span>, <span class="hljs-string">&#x27;d&#x27;</span>]));<span class="hljs-comment">//6</span><br><span class="hljs-comment">//如果取一级属性直接通过get方法，如果取多级属性</span><br><span class="hljs-title function_">getIn</span>([<span class="hljs-string">&quot;a&quot;</span>, <span class="hljs-string">&quot;b&quot;</span>, <span class="hljs-string">&quot;c&quot;</span>])<br><span class="hljs-comment">//setIn设置新的值</span><br><span class="hljs-keyword">const</span> nested3 = nested2.<span class="hljs-title function_">setIn</span>([<span class="hljs-string">&#x27;a&#x27;</span>, <span class="hljs-string">&#x27;b&#x27;</span>, <span class="hljs-string">&#x27;d&#x27;</span>], <span class="hljs-string">&quot;jerry&quot;</span>);<br><span class="hljs-comment">//Map&#123;a:Map&#123;b:Map&#123;c:List[3,4,5],d:&quot;kerwin&quot;&#125;&#125;&#125;</span><br><span class="hljs-comment">//updateIn回调函数更新</span><br><span class="hljs-keyword">const</span> nested4 = nested2.<span class="hljs-title function_">updateIn</span>([<span class="hljs-string">&#x27;a&#x27;</span>, <span class="hljs-string">&#x27;b&#x27;</span>, <span class="hljs-string">&#x27;d&#x27;</span>], <span class="hljs-function"><span class="hljs-params">value</span> =&gt;</span> value + <span class="hljs-number">1</span>);<br><span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(nested4);<br><span class="hljs-comment">//Map&#123;a:Map&#123;b:Map&#123;c:List[3,4,5],d:7&#125;&#125;&#125;</span><br><span class="hljs-keyword">const</span> nested5 = nested4.<span class="hljs-title function_">updateIn</span>([<span class="hljs-string">&#x27;a&#x27;</span>, <span class="hljs-string">&#x27;b&#x27;</span>, <span class="hljs-string">&#x27;c&#x27;</span>], <span class="hljs-function"><span class="hljs-params">list</span> =&gt;</span> list.<span class="hljs-title function_">push</span>(<span class="hljs-number">6</span>));<br><span class="hljs-comment">//Map&#123;a:Map&#123;b:Map&#123;c:List[3,4,5,6],d:7&#125;&#125;&#125;</span><br></code></pre></td></tr></table></figure>
+
+
+
+
+
+<h2 id="3-immutable-Redux"><a href="#3-immutable-Redux" class="headerlink" title="3. immutable + Redux"></a>3. immutable + Redux</h2><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><code class="hljs js"><span class="hljs-keyword">import</span> &#123; fromJS &#125; <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;immutable&quot;</span><br><br><span class="hljs-comment">//reducer.js</span><br><span class="hljs-keyword">const</span> initialState = <span class="hljs-title function_">fromJS</span>(&#123;<br>    <span class="hljs-attr">category</span>: <span class="hljs-string">&quot;&quot;</span>,<br>    <span class="hljs-attr">material</span>: <span class="hljs-string">&quot;&quot;</span><br>&#125;)<br><span class="hljs-keyword">const</span> <span class="hljs-title function_">reducer</span> = (<span class="hljs-params">prevstate = initialState, action = &#123;&#125;</span>) =&gt; &#123;<br>    <span class="hljs-keyword">let</span> &#123; type, payload &#125; = action<br>    <span class="hljs-keyword">switch</span> (type) &#123;<br>        <span class="hljs-keyword">case</span> <span class="hljs-attr">GET_HOME</span>:<br>            <span class="hljs-keyword">var</span> newstate = prevstate.<span class="hljs-title function_">set</span>(<span class="hljs-string">&quot;category&quot;</span>, <span class="hljs-title function_">fromJS</span>(payload.<span class="hljs-property">category</span>))<br>            <span class="hljs-keyword">var</span> newstate2 = newstate.<span class="hljs-title function_">set</span>(<span class="hljs-string">&quot;material&quot;</span>, <span class="hljs-title function_">fromJS</span>(payload.<span class="hljs-property">material</span>))<br>            <span class="hljs-keyword">return</span> newstate2;<br>        <span class="hljs-attr">default</span>:<br>            <span class="hljs-keyword">return</span> prevstate<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs js"><span class="hljs-comment">//home.js- 传入 reducer 的 props</span><br><span class="hljs-keyword">const</span> <span class="hljs-title function_">mapStateToProps</span> = (<span class="hljs-params">state</span>) =&gt; &#123;<br>    <span class="hljs-keyword">return</span> &#123;<br>        <span class="hljs-attr">category</span>: state.<span class="hljs-property">homeReducer</span>.<span class="hljs-title function_">getIn</span>([<span class="hljs-string">&quot;category&quot;</span>]) || <span class="hljs-title class_">Map</span>(&#123;&#125;),<br>        <span class="hljs-attr">material</span>: state.<span class="hljs-property">homeReducer</span>.<span class="hljs-title function_">getIn</span>([<span class="hljs-string">&quot;material&quot;</span>]) || <span class="hljs-title class_">Map</span>(&#123;&#125;)<br>    &#125;<br>&#125;<br><span class="hljs-variable language_">this</span>.<span class="hljs-property">props</span>.<span class="hljs-property">category</span>.<span class="hljs-title function_">get</span>(<span class="hljs-string">&quot;相关属性&quot;</span>)<br><span class="hljs-variable language_">this</span>.<span class="hljs-property">props</span>.<span class="hljs-property">category</span>.<span class="hljs-title function_">toJS</span>() <span class="hljs-comment">//或者转成普通对象</span><br></code></pre></td></tr></table></figure>
+
+<p>缺点：</p>
+<ul>
+<li>容易跟原生混淆</li>
+<li>文档与调试不方便</li>
+</ul>
+
+              
+            </div>
+            <hr/>
+            <div>
+              <div>
+  <img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20241112163319.png" srcset="/img/loading.gif" lazyload>
+</div>
+<div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/04-%E5%A4%A7%E5%89%8D%E7%AB%AF/" class="category-chain-item">04_大前端</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/04-%E5%A4%A7%E5%89%8D%E7%AB%AF/07-React/" class="category-chain-item">07_React</a>
+  
+  
+
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/React/">#React</a>
+      
+        <a href="/tags/immutable/">#immutable</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>10-React+immutable库</div>
+      <div>https://janycode.github.io/2022/05/22/04_大前端/07_React/10-React+immutable库/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Jerry(姜源)</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2022年5月22日</div>
+        </div>
+      
+      
+      <div class="license-meta-item">
+        <div>许可协议</div>
+        <div>
+          
+            
+            
+              <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+              <span class="hint--top hint--rounded" aria-label="BY - 姜源">
+                <i class="iconfont icon-by"></i>
+              </span>
+              </a>
+            
+          
+        </div>
+      </div>
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2022/05/22/04_%E5%A4%A7%E5%89%8D%E7%AB%AF/07_React/09-React%20AntDesign%E7%BB%84%E4%BB%B6%E5%BA%93/" title="09-React AntDesign组件库">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">09-React AntDesign组件库</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2022/05/22/04_%E5%A4%A7%E5%89%8D%E7%AB%AF/07_React/08-React+Mobx%E5%85%AC%E5%85%B1%E7%8A%B6%E6%80%81%E7%AE%A1%E7%90%86/" title="08-React+Mobx公共状态管理">
+                        <span class="hidden-mobile">08-React+Mobx公共状态管理</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+  <article id="comments" lazyload>
+    
+  <div id="SOHUCS" sid='https://janycode.github.io/2022/05/22/04_%E5%A4%A7%E5%89%8D%E7%AB%AF/07_React/10-React+immutable%E5%BA%93/'></div>
+  <script type="text/javascript">
+    Fluid.utils.loadComments('#SOHUCS', function() {
+      Fluid.utils.createScript("https://changyan.sohu.com/upload/changyan.js", function() {
+        window.changyan.api.config({"appid":"cyw5OHIcO","appkey":"fea3446b3df4b3f129f34da4cbc87e51"})
+      });
+    });
+  </script>
+  <noscript>Please enable JavaScript to view the comments</noscript>
+
+
+  </article>
+
+
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://simple.blog.csdn.net" target="_blank" rel="nofollow noopener"><span>CSDN</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/janycode" target="_blank" rel="nofollow noopener"><span>GitHub</span></a> <i class="iconfont icon-love"></i> <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="busuanzi_container_site_pv" style="display: none">
+        总访问量(PV) 
+        <span id="busuanzi_value_site_pv"></span>
+         次，
+      </span>
+    
+    
+      <span id="busuanzi_container_site_uv" style="display: none">
+        总访客数(UV) 
+        <span id="busuanzi_value_site_uv"></span>
+         人
+      </span>
+    
+    
+  
+</div>
+
+  
+  
+  
+</div>
+
+<!-- live2d 动画 -->
+<script src="https://eqcn.ajz.miesnfu.com/wp-content/plugins/wp-3d-pony/live2dw/lib/L2Dwidget.min.js"></script>
+<script>
+    L2Dwidget.init({
+        "model": {
+            jsonPath: "https://unpkg.com/live2d-widget-model-haruto@1.0.5/assets/haruto.model.json",
+            "scale": 1
+        },
+        "display": {
+            "position": "right",
+            "width": 100,
+            "height": 200,
+            "hOffset": 35,
+            "vOffset": -85
+        },
+        "mobile": {
+            "show": false,
+            "scale": 0.1
+        },
+        "react": {
+            "opacityDefault": 0.75,
+            "opacityOnHover": 0.2
+        }
+    });
+</script>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <!-- Baidu Analytics -->
+    <script defer>
+      if (!Fluid.ctx.dnt) {
+        var _hmt = _hmt || [];
+        (function() {
+          var hm = document.createElement("script");
+          hm.src = "https://hm.baidu.com/hm.js?bfff735c897eb60ea49b735096b20e47";
+          var s = document.getElementsByTagName("script")[0];
+          s.parentNode.insertBefore(hm, s);
+        })();
+      }
+    </script>
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.0/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      headingSelector : CONFIG.toc.headingSelector || 'h1,h2,h3,h4,h5,h6',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      collapseDepth   : CONFIG.toc.collapseDepth || 0,
+      scrollSmooth    : true,
+      headingsOffset  : -boardTop
+    });
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+  });
+</script>
+
+
+  <script>
+  (function() {
+    var enableLang = CONFIG.code_language.enable && CONFIG.code_language.default;
+    var enableCopy = CONFIG.copy_btn;
+    if (!enableLang && !enableCopy) {
+      return;
+    }
+
+    function getBgClass(ele) {
+      return Fluid.utils.getBackgroundLightness(ele) >= 0 ? 'code-widget-light' : 'code-widget-dark';
+    }
+
+    var copyTmpl = '';
+    copyTmpl += '<div class="code-widget">';
+    copyTmpl += 'LANG';
+    copyTmpl += '</div>';
+    jQuery('.markdown-body pre').each(function() {
+      var $pre = jQuery(this);
+      if ($pre.find('code.mermaid').length > 0) {
+        return;
+      }
+      if ($pre.find('span.line').length > 0) {
+        return;
+      }
+
+      var lang = '';
+
+      if (enableLang) {
+        lang = CONFIG.code_language.default;
+        if ($pre[0].children.length > 0 && $pre[0].children[0].classList.length >= 2 && $pre.children().hasClass('hljs')) {
+          lang = $pre[0].children[0].classList[1];
+        } else if ($pre[0].getAttribute('data-language')) {
+          lang = $pre[0].getAttribute('data-language');
+        } else if ($pre.parent().hasClass('sourceCode') && $pre[0].children.length > 0 && $pre[0].children[0].classList.length >= 2) {
+          lang = $pre[0].children[0].classList[1];
+          $pre.parent().addClass('code-wrapper');
+        } else if ($pre.parent().hasClass('markdown-body') && $pre[0].classList.length === 0) {
+          $pre.wrap('<div class="code-wrapper"></div>');
+        }
+        lang = lang.toUpperCase().replace('NONE', CONFIG.code_language.default);
+      }
+      $pre.append(copyTmpl.replace('LANG', lang).replace('code-widget">',
+        getBgClass($pre[0]) + (enableCopy ? ' code-widget copy-btn" data-clipboard-snippet><i class="iconfont icon-copy"></i>' : ' code-widget">')));
+
+      if (enableCopy) {
+        Fluid.utils.createScript('https://lib.baomitu.com/clipboard.js/2.0.10/clipboard.min.js', function() {
+          var clipboard = new window.ClipboardJS('.copy-btn', {
+            target: function(trigger) {
+              var nodes = trigger.parentNode.childNodes;
+              for (var i = 0; i < nodes.length; i++) {
+                if (nodes[i].tagName === 'CODE') {
+                  return nodes[i];
+                }
+              }
+            }
+          });
+          clipboard.on('success', function(e) {
+            e.clearSelection();
+            e.trigger.innerHTML = e.trigger.innerHTML.replace('icon-copy', 'icon-success');
+            setTimeout(function() {
+              e.trigger.innerHTML = e.trigger.innerHTML.replace('icon-success', 'icon-copy');
+            }, 2000);
+          });
+        });
+      }
+    });
+  })();
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>
