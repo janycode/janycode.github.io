@@ -986,7 +986,7 @@ layout: tools
         <!-- 脚本 -->
         <script>
             // 页面加载完成后执行
-            document.addEventListener('DOMContentLoaded', function() {
+            //document.addEventListener('DOMContentLoaded', function() {
                 // 显示/隐藏ASCII图片
                 function showImg() {
                     document.getElementById('asciiImg').style.display = 'block';
@@ -1031,7 +1031,7 @@ layout: tools
                     firstCategory.classList.remove('collapsed');
                     firstCategory.parentElement.querySelector('.category-header').classList.add('active');
                 }
-            });
+            //});
         </script>
     </div>
 </body>
