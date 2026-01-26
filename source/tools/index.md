@@ -272,10 +272,10 @@ layout: tools
                 <h1>工欲善其事，必先利其器</h1>
                 <p class="subtitle">全栈工程师的工具集 | 持续更新</p>
                 <!-- ASCII图片悬浮链接 -->
-                <a href="javascript:void(0)" class="ascii-link" id="asciiLink">
+                <a href="javascript:void(0)" id="asciiLink">
                     <i class="fas fa-code"></i> ASCII码字符(图)
                 </a>
-                <div id="asciiImg" style="display:none;">
+                <div id="asciiImg" style="display:none;height:50px;back-ground:#f00;position:absolute;">
                     <img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/image-20200523091606519.png" alt="ASCII码字符图">
                 </div>
             </div>
