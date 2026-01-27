@@ -66,6 +66,57 @@ V5 与 `V6` 的对比
 
 ## 3.React Router V6 使用
 
+### 3.0 路由配置参考(★)
+
+router/index.js + 懒加载(参考[3.7路由懒加载](#/3.7路由懒加载))
+
+```js
+import { Route, Routes } from 'react-router-dom'
+import AuthComponent from '../components/AuthComponent'
+import LazyLoad from '../components/LazyLoad'
+import Redirect from '../components/Redirect'
+import Film from '../views/Film'
+
+export default function MRouter() {
+    return (
+        <div>
+            <Routes>
+                {/* <Route path="/" element={<Film />} /> */}
+                {/* <Route index element={<Film />} /> */} {/* 只匹配父路径 */}
+                {/* 二级路由：页面内替换掉路由容器 <Outlet />，此处 path="/films/nowplaying" 或 path="nowplaying" */}
+                <Route path="/films" element={<Film />}>
+                    {/* <Route index element={<Nowplaying />} /> */}               {/* 二级路由默认重定向，方式一 */}
+                    <Route index element={<Redirect to="/films/nowplaying" />} />  {/* 二级路由默认重定向，方式二 */}
+                    <Route path="nowplaying" element={LazyLoad("films/Nowplaying")} />  {/* 注意 LazyLoad 的二级路径 */}
+                    <Route path="comingsoon" element={LazyLoad("films/Comingsoon")} />
+                </Route>
+                {/* <Route path="/cinemas" element={<Cinema />} /> */}
+                {/* 懒加载 */}
+                <Route path="/cinemas" element={LazyLoad("Cinema")} />
+                {/* 二级路由：整个页面组件进行替换，即 url看着是二级路径，但实际组件是全新替换 */}
+                <Route path="/cinemas/search" element={LazyLoad("Search")} />
+                {/* 路由拦截：需要封装独立验证组件来让组件每次都会执行拦截验证逻辑 */}
+                <Route path="/center" element={<AuthComponent>
+                    {LazyLoad("Center")}  {/* <Center /> 对应组件中 props.children 即为 slot 插槽替换值 */}
+                </AuthComponent>} />
+                <Route path="/login" element={LazyLoad("Login")} />
+                {/* <Route path="/detail" element={<Detail />} /> */}
+                {/* 动态路由：匹配 /detail/xxx 对应 myid 拿到的就是 xxx 值 */}
+                <Route path="/detail/:myid" element={LazyLoad("Detail")} />
+                {/* 重定向方案1：匹配 / 根目录 */}
+                {/* <Route path="/" element={<Navigate to="/films" />} /> */}
+                {/* 重定向方案2：匹配 / 根目录，自定义组件 Redirect.js */}
+                <Route path="/" element={<Redirect to="/films" />} />
+                {/* 404兜底路由：未匹配到任何路由，进入 404 */}
+                <Route path="*" element={LazyLoad("NotFound")} />
+            </Routes>
+        </div>
+    )
+}
+```
+
+
+
 目录：
 
 ```js
@@ -83,7 +134,7 @@ src/
 
 #### 基本使用
 
-App.js - 引入 `HashRouter` 路由模式(参考3.6路由模式)，路径中拼接 `#` 进行访问，如 localhost:3000/#/films
+App.js - 引入 `HashRouter` 路由模式(参考[3.6路由模式](#/3.6路由模式))，路径中拼接 `#` 进行访问，如 localhost:3000/#/films
 
 ```js
 import { HashRouter } from 'react-router-dom'  //引入路由模块
@@ -522,7 +573,7 @@ export default App
 > }
 > ```
 
-### 3.7 路由懒加载
+### 3.7 路由懒加载(★)
 
 `React.lazy()` + `<React.Suspense>` 组合进行封装，懒加载以提高性能，按需加载。
 

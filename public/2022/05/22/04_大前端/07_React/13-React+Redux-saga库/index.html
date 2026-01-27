@@ -1,0 +1,836 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=light>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Jerry(姜源)">
+  <meta name="keywords" content="Java,Html,CSS,JavaScript,Python,C,Linux,shell编程经验分享、技术总结、心得体会">
+  
+    <meta name="description" content="参考：  redux-saga 官网：https:&#x2F;&#x2F;redux-saga-in-chinese.js.org&#x2F;index.html  1. 介绍 在saga中，全局监听器和接收器使用Generator函数和saga自身的一些辅助函数实现对整个流程的管控。 1.1 原理：生成器12345678910111213141516171819function *test() &amp;#123;    cons">
+<meta property="og:type" content="article">
+<meta property="og:title" content="13-React+Redux-saga库">
+<meta property="og:url" content="https://janycode.github.io/2022/05/22/04_%E5%A4%A7%E5%89%8D%E7%AB%AF/07_React/13-React+Redux-saga%E5%BA%93/index.html">
+<meta property="og:site_name" content="姜源の云笔记">
+<meta property="og:description" content="参考：  redux-saga 官网：https:&#x2F;&#x2F;redux-saga-in-chinese.js.org&#x2F;index.html  1. 介绍 在saga中，全局监听器和接收器使用Generator函数和saga自身的一些辅助函数实现对整个流程的管控。 1.1 原理：生成器12345678910111213141516171819function *test() &amp;#123;    cons">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20260123164723034.png">
+<meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20260127174704246.png">
+<meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20260127184248994.png">
+<meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20260127190351633.png">
+<meta property="article:published_time" content="2022-05-22T13:36:21.000Z">
+<meta property="article:modified_time" content="2026-01-27T12:21:50.820Z">
+<meta property="article:author" content="Jerry(姜源)">
+<meta property="article:tag" content="React">
+<meta property="article:tag" content="redux-saga">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20260123164723034.png">
+  
+  
+    <meta name="referrer" content="no-referrer-when-downgrade">
+  
+  
+  <title>13-React+Redux-saga库 - 姜源の云笔记</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"janycode.github.io","root":"/","version":"1.9.0","typing":{"enable":true,"typeSpeed":50,"cursorChar":"|","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":false},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":"bfff735c897eb60ea49b735096b20e47","google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+
+  
+<meta name="generator" content="Hexo 6.2.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 50vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>姜源の云笔记</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tools/">
+                <i class="iconfont icon-slack-fill"></i>
+                工具
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" target="_blank" rel="noopener" href="https://yuancodes.github.io/">
+                <i class="iconfont icon-notebook"></i>
+                Docsify
+              </a>
+            </li>
+          
+        
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="13-React+Redux-saga库"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-author" aria-hidden="true"></i>
+        Jerry(姜源)
+      </span>
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2022-05-22 21:36" pubdate>
+          星期日, 2022/05/22 21:36:21
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          <!-- compatible with older versions-->
+          4.1k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          <!-- compatible with older versions-->
+          34 分钟
+        
+      </span>
+    
+
+    
+    
+      
+        <span id="busuanzi_container_page_pv" style="display: none">
+          <i class="iconfont icon-eye" aria-hidden="true"></i>
+          <span id="busuanzi_value_page_pv"></span> 次
+        </span>
+        
+      
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">13-React+Redux-saga库</h1>
+            
+            <div class="markdown-body">
+              
+              <p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20260123164723034.png" srcset="/img/loading.gif" lazyload alt="React"></p>
+<p>参考：</p>
+<ul>
+<li>redux-saga 官网：<a target="_blank" rel="noopener" href="https://redux-saga-in-chinese.js.org/index.html">https://redux-saga-in-chinese.js.org/index.html</a></li>
+</ul>
+<h2 id="1-介绍"><a href="#1-介绍" class="headerlink" title="1. 介绍"></a>1. 介绍</h2><p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20260127174704246.png" srcset="/img/loading.gif" lazyload alt="image-20260127174702284"></p>
+<p>在<em>saga</em>中，全局监听器和接收器使用<em>Generator</em>函数和<em>saga</em>自身的一些辅助函数实现对整个流程的管控。</p>
+<h3 id="1-1-原理：生成器"><a href="#1-1-原理：生成器" class="headerlink" title="1.1 原理：生成器"></a>1.1 原理：生成器</h3><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><code class="hljs js"><span class="hljs-keyword">function</span> *<span class="hljs-title function_">test</span>(<span class="hljs-params"></span>) &#123;<br>    <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&quot;1111&quot;</span>);<br>    <span class="hljs-keyword">var</span> input1 = <span class="hljs-keyword">yield</span> <span class="hljs-string">&quot;111-输出&quot;</span>;<br>    <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&quot;2222&quot;</span>, input1);<br>    <span class="hljs-keyword">var</span> input2 = <span class="hljs-keyword">yield</span> <span class="hljs-string">&quot;222-输出&quot;</span>;<br>    <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&quot;3333&quot;</span>, input2);<br>    <span class="hljs-keyword">var</span> input3 = <span class="hljs-keyword">yield</span> <span class="hljs-string">&quot;333-输出&quot;</span>;<br>    <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&quot;4444&quot;</span>, input3);<br>&#125;<br><br><span class="hljs-keyword">var</span> res = <span class="hljs-title function_">test</span>()<br><span class="hljs-keyword">var</span> res1 = res.<span class="hljs-title function_">next</span>() <span class="hljs-comment">// next 一次会走到第一个 yield</span><br><span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(res1);<br><span class="hljs-keyword">var</span> res2 = res.<span class="hljs-title function_">next</span>(<span class="hljs-string">&quot;aaa&quot;</span>) <span class="hljs-comment">// next 二次会走到第二个 yield</span><br><span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(res2);<br><span class="hljs-keyword">var</span> res3 = res.<span class="hljs-title function_">next</span>(<span class="hljs-string">&quot;bbb&quot;</span>) <span class="hljs-comment">// next 三次会走到第三个 yield</span><br><span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(res3);<br><span class="hljs-keyword">var</span> res4 = res.<span class="hljs-title function_">next</span>(<span class="hljs-string">&quot;ccc&quot;</span>)<br><span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(res4);<br></code></pre></td></tr></table></figure>
+
+<p>输出：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs js"><span class="hljs-number">1111</span><br>&#123;<span class="hljs-attr">value</span>: <span class="hljs-string">&#x27;111-输出&#x27;</span>, <span class="hljs-attr">done</span>: <span class="hljs-literal">false</span>&#125;<br><span class="hljs-number">2222</span> aaa<br>&#123;<span class="hljs-attr">value</span>: <span class="hljs-string">&#x27;222-输出&#x27;</span>, <span class="hljs-attr">done</span>: <span class="hljs-literal">false</span>&#125;<br><span class="hljs-number">3333</span> bbb<br>&#123;<span class="hljs-attr">value</span>: <span class="hljs-string">&#x27;333-输出&#x27;</span>, <span class="hljs-attr">done</span>: <span class="hljs-literal">false</span>&#125;<br><span class="hljs-number">4444</span> ccc<br>&#123;<span class="hljs-attr">value</span>: <span class="hljs-literal">undefined</span>, <span class="hljs-attr">done</span>: <span class="hljs-literal">true</span>&#125;<br></code></pre></td></tr></table></figure>
+
+
+
+<h3 id="1-2-原理：可执行生成器"><a href="#1-2-原理：可执行生成器" class="headerlink" title="1.2 原理：可执行生成器"></a>1.2 原理：可执行生成器</h3><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br></pre></td><td class="code"><pre><code class="hljs js"><span class="hljs-keyword">function</span> <span class="hljs-title function_">getData1</span>(<span class="hljs-params"></span>) &#123;<br>    <span class="hljs-keyword">return</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">Promise</span>(<span class="hljs-function">(<span class="hljs-params">resolve, reject</span>) =&gt;</span> &#123;<br>        <span class="hljs-built_in">setTimeout</span>(<span class="hljs-function">() =&gt;</span> &#123;<br>            <span class="hljs-title function_">resolve</span>(<span class="hljs-string">&quot;data1&quot;</span>)<br>        &#125;, <span class="hljs-number">1000</span>)<br>    &#125;)<br>&#125;<br><span class="hljs-keyword">function</span> <span class="hljs-title function_">getData2</span>(<span class="hljs-params"></span>) &#123;<br>    <span class="hljs-keyword">return</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">Promise</span>(<span class="hljs-function">(<span class="hljs-params">resolve, reject</span>) =&gt;</span> &#123;<br>        <span class="hljs-built_in">setTimeout</span>(<span class="hljs-function">() =&gt;</span> &#123;<br>            <span class="hljs-title function_">resolve</span>(<span class="hljs-string">&quot;data2&quot;</span>)<br>        &#125;, <span class="hljs-number">1000</span>)<br>    &#125;)<br>&#125;<br><span class="hljs-keyword">function</span> <span class="hljs-title function_">getData3</span>(<span class="hljs-params"></span>) &#123;<br>    <span class="hljs-keyword">return</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">Promise</span>(<span class="hljs-function">(<span class="hljs-params">resolve, reject</span>) =&gt;</span> &#123;<br>        <span class="hljs-built_in">setTimeout</span>(<span class="hljs-function">() =&gt;</span> &#123;<br>            <span class="hljs-title function_">resolve</span>(<span class="hljs-string">&quot;data3&quot;</span>)<br>        &#125;, <span class="hljs-number">1000</span>)<br>    &#125;)<br>&#125;<br><br><span class="hljs-keyword">function</span>* <span class="hljs-title function_">gen</span>(<span class="hljs-params"></span>) &#123;<br>    <span class="hljs-keyword">var</span> f1 = <span class="hljs-keyword">yield</span> <span class="hljs-title function_">getData1</span>()<br>    <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(f1);<br>    <span class="hljs-keyword">var</span> f2 = <span class="hljs-keyword">yield</span> <span class="hljs-title function_">getData2</span>(f1)<br>    <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(f2);<br>    <span class="hljs-keyword">var</span> f3 = <span class="hljs-keyword">yield</span> <span class="hljs-title function_">getData3</span>(f2)<br>    <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(f3);<br>&#125;<br><br><span class="hljs-keyword">function</span> <span class="hljs-title function_">run</span>(<span class="hljs-params">fn</span>) &#123;<br>    <span class="hljs-keyword">var</span> g = <span class="hljs-title function_">fn</span>()<br>    <span class="hljs-keyword">function</span> <span class="hljs-title function_">next</span>(<span class="hljs-params">data</span>) &#123;<br>        <span class="hljs-keyword">var</span> result = g.<span class="hljs-title function_">next</span>(data)<br>        <span class="hljs-keyword">if</span> (result.<span class="hljs-property">done</span>) &#123;<br>            <span class="hljs-keyword">return</span> result.<span class="hljs-property">value</span><br>        &#125;<br>        result.<span class="hljs-property">value</span>.<span class="hljs-title function_">then</span>(<span class="hljs-function"><span class="hljs-params">res</span> =&gt;</span> &#123;<br>            <span class="hljs-title function_">next</span>(res)<br>        &#125;)<br>    &#125;<br>    <span class="hljs-title function_">next</span>()<br>&#125;<br><br><span class="hljs-title function_">run</span>(gen)<br></code></pre></td></tr></table></figure>
+
+<p>输出：</p>
+<p>data1</p>
+<p>data2</p>
+<p>data3</p>
+<h2 id="2-使用-redux-saga"><a href="#2-使用-redux-saga" class="headerlink" title="2. 使用 redux-saga"></a>2. 使用 redux-saga</h2><h3 id="2-1-安装"><a href="#2-1-安装" class="headerlink" title="2.1 安装"></a>2.1 安装</h3><p>安装：<em>npm i redux-saga</em>  - 当前版本 v1.4.2</p>
+<h3 id="2-2-使用"><a href="#2-2-使用" class="headerlink" title="2.2 使用"></a>2.2 使用</h3><p>目录：</p>
+<figure class="highlight txt"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs txt">src/<br>  redux/<br>    reducer.js<br>    saga.js<br>    store.js<br>  App.js<br></code></pre></td></tr></table></figure>
+
+<p>App.js</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><code class="hljs js"><span class="hljs-keyword">import</span> <span class="hljs-title class_">React</span>, &#123; <span class="hljs-title class_">Component</span> &#125; <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;react&#x27;</span><br><span class="hljs-keyword">import</span> <span class="hljs-string">&#x27;./02-可执行生成器&#x27;</span><br><span class="hljs-keyword">import</span> store <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;./redux/store&#x27;</span>;<br><br><span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">App</span> <span class="hljs-keyword">extends</span> <span class="hljs-title class_ inherited__">Component</span> &#123;<br>  <span class="hljs-title function_">render</span>(<span class="hljs-params"></span>) &#123;<br>    <span class="hljs-keyword">return</span> (<br>        <span class="language-xml"><span class="hljs-tag">&lt;<span class="hljs-name">div</span>&gt;</span></span><br><span class="language-xml">            <span class="hljs-tag">&lt;<span class="hljs-name">button</span> <span class="hljs-attr">onClick</span>=<span class="hljs-string">&#123;()</span> =&gt;</span> &#123;</span><br><span class="language-xml">                if (store.getState().list1.length === 0) &#123;</span><br><span class="language-xml">                    //dispatch 发布</span><br><span class="language-xml">                    store.dispatch(&#123;</span><br><span class="language-xml">                        type: &quot;get-list&quot;</span><br><span class="language-xml">                    &#125;)</span><br><span class="language-xml">                &#125; else &#123;</span><br><span class="language-xml">                    console.log(&quot;走缓存：&quot;, store.getState().list1);</span><br><span class="language-xml">                &#125;</span><br><span class="language-xml">            &#125;&#125;&gt;click-ajax-异步缓存<span class="hljs-tag">&lt;/<span class="hljs-name">button</span>&gt;</span></span><br><span class="language-xml">      <span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span></span><br>    )<br>  &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>redux&#x2F;store.js</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs js"><span class="hljs-keyword">import</span> &#123; applyMiddleware, createStore &#125; <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;redux&quot;</span>;<br><span class="hljs-keyword">import</span> createSagaMiddleware <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;redux-saga&quot;</span>;<br><span class="hljs-keyword">import</span> reducer <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;./reducer&quot;</span>;<br><span class="hljs-keyword">import</span> watchSaga <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;./saga&quot;</span>;<br><br><span class="hljs-keyword">const</span> <span class="hljs-title class_">SagaMiddleware</span> = <span class="hljs-title function_">createSagaMiddleware</span>()<br><span class="hljs-keyword">const</span> store = <span class="hljs-title function_">createStore</span>(reducer, <span class="hljs-title function_">applyMiddleware</span>(<span class="hljs-title class_">SagaMiddleware</span>))<br><br><span class="hljs-title class_">SagaMiddleware</span>.<span class="hljs-title function_">run</span>(watchSaga) <span class="hljs-comment">//saga任务</span><br><br><span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> store<br></code></pre></td></tr></table></figure>
+
+<p>redux&#x2F;saga.js</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><code class="hljs js"><span class="hljs-keyword">import</span> &#123;take, put, fork, call&#125; <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;redux-saga/effects&#x27;</span><br><br><span class="hljs-keyword">function</span>* <span class="hljs-title function_">watchSaga</span>(<span class="hljs-params"></span>) &#123;<br>    <span class="hljs-keyword">while</span> (<span class="hljs-literal">true</span>) &#123;<br>        <span class="hljs-comment">// take 监听组件发来的 action</span><br>        <span class="hljs-keyword">yield</span> <span class="hljs-title function_">take</span>(<span class="hljs-string">&quot;get-list&quot;</span>)<br>        <span class="hljs-comment">// fork 同步立即执行异步处理函数 fn</span><br>        <span class="hljs-keyword">yield</span> <span class="hljs-title function_">fork</span>(getList)<br>    &#125;<br>&#125;<br><br><span class="hljs-comment">// 异步处理函数</span><br><span class="hljs-keyword">function</span> *<span class="hljs-title function_">getList</span>(<span class="hljs-params"></span>) &#123;<br>    <span class="hljs-comment">//call 函数发异步请求</span><br>    <span class="hljs-keyword">let</span> res = <span class="hljs-keyword">yield</span> <span class="hljs-title function_">call</span>(getListAction) <span class="hljs-comment">//阻塞调用 fn</span><br>    <span class="hljs-keyword">yield</span> <span class="hljs-title function_">put</span>(&#123;<br>        <span class="hljs-attr">type</span>: <span class="hljs-string">&quot;change-list&quot;</span>,<br>        <span class="hljs-attr">payload</span>: res<br>    &#125;)<br>    <span class="hljs-comment">//put 函数发出新的 action</span><br>&#125;<br><br><span class="hljs-keyword">function</span> <span class="hljs-title function_">getListAction</span>(<span class="hljs-params"></span>) &#123;<br>    <span class="hljs-keyword">return</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">Promise</span>(<span class="hljs-function">(<span class="hljs-params">resolve, reject</span>) =&gt;</span> &#123;<br>        <span class="hljs-built_in">setTimeout</span>(<span class="hljs-function">() =&gt;</span> &#123;<br>            <span class="hljs-title function_">resolve</span>([<span class="hljs-string">&quot;111&quot;</span>, <span class="hljs-string">&quot;222&quot;</span>, <span class="hljs-string">&quot;333&quot;</span>])<br>        &#125;, <span class="hljs-number">2000</span>);<br>    &#125;)<br>&#125;<br><br><span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> watchSaga<br></code></pre></td></tr></table></figure>
+
+<p>redux&#x2F;reducer.js</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><code class="hljs js"><span class="hljs-keyword">function</span> <span class="hljs-title function_">reducer</span>(<span class="hljs-params">prevState = &#123;</span><br><span class="hljs-params">    list1: []</span><br><span class="hljs-params">&#125;, action = &#123;&#125;</span>) &#123;<br>    <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(action);<br>    <span class="hljs-keyword">var</span> newState = &#123;...prevState&#125;<br>    <span class="hljs-keyword">switch</span> (action.<span class="hljs-property">type</span>) &#123;<br>        <span class="hljs-keyword">case</span> <span class="hljs-string">&quot;change-list&quot;</span>:<br>            newState.<span class="hljs-property">list1</span> = action.<span class="hljs-property">payload</span><br>            <span class="hljs-keyword">return</span> newState<br>        <span class="hljs-attr">default</span>:<br>            <span class="hljs-keyword">return</span> prevState<br>    &#125;<br>&#125;<br><br><span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> reducer<br></code></pre></td></tr></table></figure>
+
+<p>效果：点击按钮先触发 action1，即 get-list，然后触发 Promise 2s后拿到数据 change-list 中获取到值，后面再点击就走缓存。</p>
+<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20260127184248994.png" srcset="/img/loading.gif" lazyload alt="image-20260127184247970"></p>
+<h3 id="2-3-多个-saga-监听"><a href="#2-3-多个-saga-监听" class="headerlink" title="2.3 多个 saga 监听"></a>2.3 多个 saga 监听</h3><p>案例源码：<a target="_blank" rel="noopener" href="https://github.com/janycode/react-ts-demo/tree/main/src/09-redux-saga/redux">https://github.com/janycode/react-ts-demo/tree/main/src/09-redux-saga/redux</a></p>
+<h3 id="2-4-takeEvery-写法"><a href="#2-4-takeEvery-写法" class="headerlink" title="2.4 takeEvery 写法"></a>2.4 takeEvery 写法</h3><p>案例源码：<a target="_blank" rel="noopener" href="https://github.com/janycode/react-ts-demo/commit/3c902f411c4647c546c6b61f4c1a5316e4e009d1">https://github.com/janycode/react-ts-demo/commit/3c902f411c4647c546c6b61f4c1a5316e4e009d1</a></p>
+<p>效果（2.3 &amp; 2.4）：</p>
+<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20260127190351633.png" srcset="/img/loading.gif" lazyload alt="image-20260127190348272"></p>
+
+              
+            </div>
+            <hr/>
+            <div>
+              <div>
+  <img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20241112163319.png" srcset="/img/loading.gif" lazyload>
+</div>
+<div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/04-%E5%A4%A7%E5%89%8D%E7%AB%AF/" class="category-chain-item">04_大前端</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/04-%E5%A4%A7%E5%89%8D%E7%AB%AF/07-React/" class="category-chain-item">07_React</a>
+  
+  
+
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/React/">#React</a>
+      
+        <a href="/tags/redux-saga/">#redux-saga</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>13-React+Redux-saga库</div>
+      <div>https://janycode.github.io/2022/05/22/04_大前端/07_React/13-React+Redux-saga库/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Jerry(姜源)</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2022年5月22日</div>
+        </div>
+      
+      
+      <div class="license-meta-item">
+        <div>许可协议</div>
+        <div>
+          
+            
+            
+              <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+              <span class="hint--top hint--rounded" aria-label="BY - 姜源">
+                <i class="iconfont icon-by"></i>
+              </span>
+              </a>
+            
+          
+        </div>
+      </div>
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2022/05/22/04_%E5%A4%A7%E5%89%8D%E7%AB%AF/07_React/12-React%E5%8D%95%E5%85%83%E6%B5%8B%E8%AF%95/" title="12-React单元测试">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">12-React单元测试</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2022/05/22/04_%E5%A4%A7%E5%89%8D%E7%AB%AF/07_React/14-React%E7%9A%84Portal&amp;forwardRef&amp;memo/" title="14-React的Portal&amp;forwardRef&amp;memo">
+                        <span class="hidden-mobile">14-React的Portal&amp;forwardRef&amp;memo</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+  <article id="comments" lazyload>
+    
+  <div id="SOHUCS" sid='https://janycode.github.io/2022/05/22/04_%E5%A4%A7%E5%89%8D%E7%AB%AF/07_React/13-React+Redux-saga%E5%BA%93/'></div>
+  <script type="text/javascript">
+    Fluid.utils.loadComments('#SOHUCS', function() {
+      Fluid.utils.createScript("https://changyan.sohu.com/upload/changyan.js", function() {
+        window.changyan.api.config({"appid":"cyw5OHIcO","appkey":"fea3446b3df4b3f129f34da4cbc87e51"})
+      });
+    });
+  </script>
+  <noscript>Please enable JavaScript to view the comments</noscript>
+
+
+  </article>
+
+
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://simple.blog.csdn.net" target="_blank" rel="nofollow noopener"><span>CSDN</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/janycode" target="_blank" rel="nofollow noopener"><span>GitHub</span></a> <i class="iconfont icon-love"></i> <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="busuanzi_container_site_pv" style="display: none">
+        总访问量(PV) 
+        <span id="busuanzi_value_site_pv"></span>
+         次，
+      </span>
+    
+    
+      <span id="busuanzi_container_site_uv" style="display: none">
+        总访客数(UV) 
+        <span id="busuanzi_value_site_uv"></span>
+         人
+      </span>
+    
+    
+  
+</div>
+
+  
+  
+  
+</div>
+
+<!-- live2d 动画 -->
+<script src="https://eqcn.ajz.miesnfu.com/wp-content/plugins/wp-3d-pony/live2dw/lib/L2Dwidget.min.js"></script>
+<script>
+    L2Dwidget.init({
+        "model": {
+            jsonPath: "https://unpkg.com/live2d-widget-model-haruto@1.0.5/assets/haruto.model.json",
+            "scale": 1
+        },
+        "display": {
+            "position": "right",
+            "width": 100,
+            "height": 200,
+            "hOffset": 35,
+            "vOffset": -85
+        },
+        "mobile": {
+            "show": false,
+            "scale": 0.1
+        },
+        "react": {
+            "opacityDefault": 0.75,
+            "opacityOnHover": 0.2
+        }
+    });
+</script>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <!-- Baidu Analytics -->
+    <script defer>
+      if (!Fluid.ctx.dnt) {
+        var _hmt = _hmt || [];
+        (function() {
+          var hm = document.createElement("script");
+          hm.src = "https://hm.baidu.com/hm.js?bfff735c897eb60ea49b735096b20e47";
+          var s = document.getElementsByTagName("script")[0];
+          s.parentNode.insertBefore(hm, s);
+        })();
+      }
+    </script>
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.0/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      headingSelector : CONFIG.toc.headingSelector || 'h1,h2,h3,h4,h5,h6',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      collapseDepth   : CONFIG.toc.collapseDepth || 0,
+      scrollSmooth    : true,
+      headingsOffset  : -boardTop
+    });
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+  });
+</script>
+
+
+  <script>
+  (function() {
+    var enableLang = CONFIG.code_language.enable && CONFIG.code_language.default;
+    var enableCopy = CONFIG.copy_btn;
+    if (!enableLang && !enableCopy) {
+      return;
+    }
+
+    function getBgClass(ele) {
+      return Fluid.utils.getBackgroundLightness(ele) >= 0 ? 'code-widget-light' : 'code-widget-dark';
+    }
+
+    var copyTmpl = '';
+    copyTmpl += '<div class="code-widget">';
+    copyTmpl += 'LANG';
+    copyTmpl += '</div>';
+    jQuery('.markdown-body pre').each(function() {
+      var $pre = jQuery(this);
+      if ($pre.find('code.mermaid').length > 0) {
+        return;
+      }
+      if ($pre.find('span.line').length > 0) {
+        return;
+      }
+
+      var lang = '';
+
+      if (enableLang) {
+        lang = CONFIG.code_language.default;
+        if ($pre[0].children.length > 0 && $pre[0].children[0].classList.length >= 2 && $pre.children().hasClass('hljs')) {
+          lang = $pre[0].children[0].classList[1];
+        } else if ($pre[0].getAttribute('data-language')) {
+          lang = $pre[0].getAttribute('data-language');
+        } else if ($pre.parent().hasClass('sourceCode') && $pre[0].children.length > 0 && $pre[0].children[0].classList.length >= 2) {
+          lang = $pre[0].children[0].classList[1];
+          $pre.parent().addClass('code-wrapper');
+        } else if ($pre.parent().hasClass('markdown-body') && $pre[0].classList.length === 0) {
+          $pre.wrap('<div class="code-wrapper"></div>');
+        }
+        lang = lang.toUpperCase().replace('NONE', CONFIG.code_language.default);
+      }
+      $pre.append(copyTmpl.replace('LANG', lang).replace('code-widget">',
+        getBgClass($pre[0]) + (enableCopy ? ' code-widget copy-btn" data-clipboard-snippet><i class="iconfont icon-copy"></i>' : ' code-widget">')));
+
+      if (enableCopy) {
+        Fluid.utils.createScript('https://lib.baomitu.com/clipboard.js/2.0.10/clipboard.min.js', function() {
+          var clipboard = new window.ClipboardJS('.copy-btn', {
+            target: function(trigger) {
+              var nodes = trigger.parentNode.childNodes;
+              for (var i = 0; i < nodes.length; i++) {
+                if (nodes[i].tagName === 'CODE') {
+                  return nodes[i];
+                }
+              }
+            }
+          });
+          clipboard.on('success', function(e) {
+            e.clearSelection();
+            e.trigger.innerHTML = e.trigger.innerHTML.replace('icon-copy', 'icon-success');
+            setTimeout(function() {
+              e.trigger.innerHTML = e.trigger.innerHTML.replace('icon-success', 'icon-copy');
+            }, 2000);
+          });
+        });
+      }
+    });
+  })();
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>
