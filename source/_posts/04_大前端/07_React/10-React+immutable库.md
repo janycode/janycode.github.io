@@ -9,7 +9,7 @@ categories:
 - 07_React
 ---
 
-![React](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20260123164723034.png)
+![re269r227-react-logo-react-logo-import-io](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20260128100650181.png)
 
 参考：
 

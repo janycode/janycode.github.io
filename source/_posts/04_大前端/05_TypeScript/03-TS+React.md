@@ -15,9 +15,9 @@ categories:
 参考：
 
 * TypeScript 语法文档：https://zhongsp.gitbooks.io/typescript-handbook/content/
-* 案例源码：
+* 案例源码：https://github.com/janycode/react-ts-demo
 
-> 所有文件格式都是 `.ts` 后缀名。
+> 所有文件格式都是 `.ts` 后缀名，React 项目中是 `.tsx` 后缀名（因为使组件化了默认支持 xml 结构）。
 
 ## 1. 创建项目
 

@@ -178,6 +178,8 @@ npm install 包名@版本         #安装指定版本，如 npm i md5@1
 npm outdated                 #检查package.json中过时的包列表
 ```
 
+* 使用参数 `--legacy-peer-deps` 告诉 npm 忽略对等依赖冲突，并以与较旧的 npm 版本相同的方式安装依赖。这种方法不会严格强制对等依赖解析，这可以帮助避免安装失败，同时保留依赖树的整体完整性。
+
 npm init 初始化一个 npm 仓库，会创建一个 `package.json`，用于维护包的基本信息和依赖版本。
 
 ```sh
