@@ -1,9 +1,9 @@
 ---
-title: 01-全栈项目搭建-Vue3
+title: 02-全栈项目搭建-React
 date: 2023-9-28 21:36:21
 tags:
-- Vue
-- SpringBoot
+- React
+- antd
 - 全栈
 categories: 
 - 17_项目设计
