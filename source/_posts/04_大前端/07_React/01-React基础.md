@@ -450,6 +450,103 @@ export default class JerryApp extends Component {
 }
 ```
 
+#### CSS module(★)
+
+参考资料：https://facebook.github.io/create-react-app/docs/adding-a-css-modules-stylesheet
+
+> 在 React 中默认 css 文件会被加载拼接到 head 标签中，即**默认对全局生效**。因此**局部样式**需要做如下操作：
+>
+> * `.module.css 重命名和引入使用 style 对象`。
+>
+> * 如果使用了 .module.css 但是还想全局影响：
+>
+> ```css
+> ：global(#jerry) {
+>     background: red;
+> }
+> ```
+
+目录结构划分：
+
+```js
+views/
+  Film/        //自定义模块1文件夹
+    Film.css   //自定义模块1样式
+    Film.js    //自定义模块1脚本
+  Cinema/      //自定义模块2文件夹
+    Cinema.css //自定义模块2样式
+    Cinema.js  //自定义模块2脚本
+  ...
+```
+
+示例 Film.module.css - `把 Film.css 文件重命名为 Film.module.css`
+
+```css
+.jerry-active {
+    border-bottom: 1px solid red;
+    color: orange;
+}
+```
+
+Film.js - 对当前高亮标签的设置取值
+
+```js
+import { NavLink, Outlet } from 'react-router-dom';
+import style from './css/Film.module.css';  //导入 css module
+
+console.log(style); //{jerry-active: 'Film_jerry-active__LQkJn'}
+export default function Film() {
+    return (
+        <div>
+            <div style={{ width: '100%', height: '150px', backgroundColor: 'yellow' }}>大轮播</div>
+            <ul style={{ listStyle: "none", display: 'flex', justifyContent: 'space-around' }}>
+                <li>
+                    <NavLink to="/films/nowplaying" className={({ isActive }) => (isActive ? style['jerry-active'] : '')}>正在热映</NavLink>
+                </li>
+                <li>
+                    <NavLink to="/films/comingsoon" className={({ isActive }) => (isActive ? style['jerry-active'] : '')}>即将上映</NavLink>
+                </li>
+            </ul>
+
+            {/* 路由容器，如加载子组件 Nowplaying 或 Comingsoon */}
+            <Outlet />
+        </div>
+    )
+}
+
+```
+
+CSS Modules 中类名的访问规则：
+
+|     CSS 类名写法     |  JS 中访问方式  |                             示例                             |
+| :------------------: | :-------------: | :----------------------------------------------------------: |
+| 纯字母（无特殊符号） |   点语法 `.`    |                  `.active` → `style.active`                  |
+| 含 `-`/`_`/ 数字开头 | 方括号语法 `[]` | `.jerry-active` → `style['jerry-active']`；<br />`.123-active` → `style['123-active']` |
+| 驼峰命名（**推荐**） |   点语法 `.`    |             `.jerryActive` → `style.jerryActive`             |
+
+#### sass 引入
+
+安装：*npm i sass*
+
+就可以新建 .scss 文件，然后引入 .scss 样式文件。
+
+```js
+import style from './Child.module.scss'
+
+export default function Child() {
+  return (
+      <div>
+          <ul>
+              <li className={style.item}>aaa</li>
+              <li className={style.item}>bbb</li>
+          </ul>
+      </div>
+  )
+}
+```
+
+
+
 
 
 ### 4.4 事件处理
