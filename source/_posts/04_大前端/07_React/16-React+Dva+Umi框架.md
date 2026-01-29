@@ -24,7 +24,7 @@ categories:
 
 ### 1.1 介绍
 
-dva 首先是一个基于 redux 和 redux saga 的数据流方案，然后为了简化开发体验，dva 还额外内置了 react router 和 fetch，所以也可以理解为一个`轻量级的应用框架/脚手架`。
+dva 首先是一个基于 redux 和 redux saga 的数据流方案（可以理解为`公共状态管理`），然后为了简化开发体验，dva 还额外内置了 react router 和 fetch，所以也可以理解为一个`轻量级的应用框架/脚手架`。
 
 数据流图：
 
@@ -49,6 +49,149 @@ dva 首先是一个基于 redux 和 redux saga 的数据流方案，然后为了
 ### 1.3 使用
 
 案例源码：https://github.com/janycode/react-dva-demo
+
+#### 目录结构
+
+![image-20260129100509939](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20260129100511156.png)
+
+#### 核心应用
+
+src/models/maizuo.js - 数据流模型
+
+```js
+import { getCinemaListService } from "../services/maizuo";
+
+export default {
+
+    namespace: 'maizuo',
+
+    state: {
+        isShow: true,
+        list: []
+    },
+
+    reducers: {
+        hide(prevState, action) {
+            return { ...prevState, isShow: false }
+        },
+        show(prevState, action) {
+            return { ...prevState, isShow: true }
+        },
+        changeCinemaList(prevState, { payload }) {
+            return { ...prevState, list: payload }
+        }
+    },
+
+    subscriptions: {
+        setup({ dispatch, history }) {
+            console.log("初始化");
+        },
+    },
+
+    // 异步：redux-saga 生成器函数
+    effects: {
+        *getCinemaList({ payload }, { call, put }) {
+            const res = yield call(getCinemaListService)
+            console.log(res.data.data.cinemas);
+            yield put({
+                type: "changeCinemaList",
+                payload: res.data.data.cinemas
+            })
+        }
+    },
+};
+```
+
+src/index.js - 手动注册数据流模型
+
+```js
+import dva from 'dva';
+import './index.css';
+
+// 1. Initialize
+const app = dva({
+    // 切换路由模式：默认是 hash
+    history: require("history").createBrowserHistory()
+});
+
+// 2. Plugins
+// app.use({});
+
+// 3. Model
+app.model(require('./models/maizuo').default);  //注册带命名空间的 store，如 maizuo
+// app.model(require('./models/aaa').default);  //注册带命名空间的 store，如 aaa
+// app.model(require('./models/bbb').default);  //注册带命名空间的 store，如 bbb
+
+// 4. Router
+app.router(require('./router').default);
+
+// 5. Start
+app.start('#root');
+```
+
+src/routes/App.js - connect 连接数据流模型，控制 Tabbar 显隐。
+
+```js
+import React, { Component } from 'react'
+import Tabbar from '../components/Tabbar'
+import { connect } from 'dva'
+
+class App extends Component {
+    render() {
+        return (
+            <div>
+                {this.props.children}
+                {this.props.isShow && <Tabbar></Tabbar>}
+            </div>
+        )
+    }
+}
+// 高阶组件：会给 this.props 中携带 state
+export default connect((state) => {
+    console.log(state); //{maizuo: {isShow: true}}
+    return {
+        a: 1,
+        isShow: state.maizuo.isShow
+    }
+})(App)
+```
+
+src/routes/Cinema.js - connect 连接数据流模型，使用 dispatch 和 缓存
+
+```js
+import { connect } from 'dva'
+import React, { Component } from 'react'
+
+class Cinema extends Component {
+    componentDidMount() {
+        if (this.props.list.length === 0) {
+            // dispatch，使用名字空间
+            this.props.dispatch({
+                type: "maizuo/getCinemaList"
+            })
+        } else {
+            console.log("走缓存", this.props.list);
+        }
+    }
+    render() {
+        return (
+            <div>
+                {
+                    this.props.list.map(item => 
+                        <li key={item.cinemaId}>{item.name}</li>
+                    )
+                }
+            </div>
+        )
+    }
+}
+// 高阶组件：给 this.props 赋值携带的 state 和 dispatch
+export default connect((state) => {
+    return {
+        list: state.maizuo.list
+    }
+})(Cinema)
+```
 
 
 
@@ -119,7 +262,7 @@ https://github.com/janycode/react-umi3-demo/commit/2fa98ef7d8a40dee0c02b5f72baec
   // ],
 ```
 
-*umi* 会根据 *pages* 目录自动生成路由配置。需要注释 **.umirc.js** 中 **routes** 相关**,**否则自动配置不生效
+*umi* 会根据 *pages* 目录自动生成路由配置。需要注释 **.umirc.js** 中 **routes** 相关, 否则自动配置不生效
 
 基础路由：
 
@@ -586,17 +729,279 @@ export default function City(props: any) {
 
 #### Dva 集成
 
+* 按目录约定注册 model，无需手动 app.model
+* 文件名即 namespace，可以省去 model 导出的 namespace key
+* 无需手写 router.js，交给 umi 处理，支持 model 和 component 的按需加载
+* 内置 query-string 处理，无需再手动解码和编码
+* 内置 dva-loading 和 dva-immer，其中 dva-immer需通过配置开启(简化 reducer 编写)
+
+.umirc.ts
+
+```js
+dva:{
+  //自定义配置
+}
+```
+
+##### 集成同步数据流
+
+案例源码：https://github.com/janycode/react-umi3-demo/commit/bdde457dcedc2705baece0346e18158c0f388083
+
+src/models/CityModel.ts - 传递 cityId 和 cityName
+
+* 目录命名必须为 `models` 才能自动注册 src/models/xxx：携带城市名称 和 id 到 cinema 页面
+* 【同步数据流】放 reducers 中即可被 dispatch
+
+```js
+export default {
+    namespace: "city", //命名空间，为了业务不冲突
+    state: {
+        cityName: "北京", //默认状态值
+        cityId: "110100"
+    },
+    reducers: {
+        // 【同步数据流】放 reducers 中即可被 dispatch
+        changeCity(prevState: any, action: any) {
+            console.log('action=', action);
+            return {
+                ...prevState,
+                cityName: action.payload.cityName,
+                cityId: action.payload.cityId
+            }
+        }
+    }
+}
+```
+
+src/pages/City.tsx - 注意命名空间必须携带。
+
+```js
+import React, { useEffect, useState } from 'react';
+import { IndexBar, List } from 'antd-mobile';
+import { connect } from 'umi';
+
+function City(props: any) {
+  const [cityList, setCityList] = useState<any>([]);
+
+  const filterCity = (cities: any) => {
+    const letterArr: string[] = [];
+    const newlist: any = [];
+    for (var i = 65; i < 91; i++) {
+      letterArr.push(String.fromCharCode(i));
+    }
+    //cities.filter((item: any) => item.pinyin.substring(0, 1).toUpperCase())
+    for (var c in letterArr) {
+      var citiesItems = cities.filter(
+        (item: any) =>
+          item.pinyin.substring(0, 1).toUpperCase() === letterArr[c],
+      );
+      citiesItems.length &&
+        newlist.push({
+          title: letterArr[c],
+          items: citiesItems,
+        });
+    }
+    return newlist;
+  };
+
+  //https://m.maizuo.com/gateway?k=1418008
+  useEffect(() => {
+    fetch('https://m.maizuo.com/gateway?k=1418008', {
+      headers: {
+        'x-client-info':
+          '{"a":"3000","ch":"1002","v":"5.2.1","e":"17689720181688867040133121","bc":"440300"}',
+        'x-host': 'mall.film-ticket.city.list',
+      },
+    })
+      .then((res) => res.json())
+      .then((res) => {
+        console.log(res.data.cities);
+        setCityList(filterCity(res.data.cities));
+      });
+  }, []);
+
+  const changeCity = (item: any) => {
+      console.log(item);
+      //集成 dva - 自动注册 src/models/xxx：携带城市名称 和 id 到 cinema 页面
+      props.dispatch({
+          type: 'city/changeCity', //注意命名空间必须携带
+          payload: {
+              cityName: item.name,
+              cityId: item.cityId
+          }
+      });
+      props.history.push(`/cinema`)
+  };
+
+  return (
+    <div style={{ height: window.innerHeight }}>
+      <IndexBar>
+        {cityList.map((group: any) => {
+          const { title, items } = group;
+          return (
+            <IndexBar.Panel index={title} title={title} key={title}>
+              <List>
+                {items.map((item: any, index: number) => (
+                  <List.Item key={index} onClick={() => changeCity(item)}>
+                    {item.name}
+                  </List.Item>
+                ))}
+              </List>
+            </IndexBar.Panel>
+          );
+        })}
+      </IndexBar>
+    </div>
+  );
+}
+// 集成 dva：使用 connect 增强 City，使其 props 携带 dispatch
+export default connect()(City)
+```
 
 
 
+##### 集成异步数据流
 
+案例源码：
 
+* https://github.com/janycode/react-umi3-demo/commit/67c385f016eff3765c06d399ab8117fba3e40e57
+* https://github.com/janycode/react-umi3-demo/commit/f113bf9c2b4755382e42ea32e9863314a9aad4ef
 
+src/models/CinemaModel.ts - 【异步数据流】要放在 effects 中使用生成器函数，才能被 dispatch
 
+```js
+export default {
+  namespace: 'cinema',
+  state: {
+    list: [],
+  },
+  reducers: {
+    changeList(prevState: any, action: any) {
+      console.log('cinema action=', action);
+      return {
+        ...prevState,
+        list: action.payload,
+      };
+    },
+    clearList(prevState: any, action: any) {
+      return {
+        ...prevState,
+        list: [],
+      };
+    },
+  },
+  effects: {
+    // 【异步数据流】要放在 effects 中使用生成器函数，才能被 dispatch
+    *getList(action: any, { call, put }: any): any {
+      console.log('getList', action);
+      // call 调用 异步请求方法，携带参数
+      var res = yield call(requestCinemaList, action.payload.cityId);
+      yield put({
+        type: 'changeList', //进入 同步数据流 reducers
+        payload: res,
+      });
+    },
+  },
+};
 
+async function requestCinemaList(cityId: string) {
+  var res = await fetch(
+    `https://m.maizuo.com/gateway?cityId=${cityId}&ticketFlag=1&k=8862890`,
+    {
+      headers: {
+        'x-client-info':
+          '{"a":"3000","ch":"1002","v":"5.2.1","e":"17689720181688867040133121","bc":"440300"}',
+        'x-host': 'mall.film-ticket.cinema.list',
+      },
+    },
+  ).then((res) => res.json());
+  return res.data.cinemas;
+}
+```
 
+src/pages/Cinema.tsx
 
+* 请求数据 与 清空数据(携带参数请求为带条件的数据)
+* 控制 antd-mobile 的 DotLoading 组件，Umi 的 state 中会默认携带 `state.loading.global` 参数来关联显隐 加载中...
 
+```js
+import { NavBar, DotLoading } from 'antd-mobile';
+import { DownOutline, SearchOutline } from 'antd-mobile-icons';
+import { useEffect } from 'react';
+import { connect, history } from 'umi';
+
+function Cinema(props: any) {
+  useEffect(() => {
+    if (props.list.length === 0) {
+      //请求数据
+      props.dispatch({
+        type: "cinema/getList",
+        payload: {
+          cityId: props.cityId  //带着参数
+        }
+      })
+    } else {
+      console.log("cinema list 走缓存");
+    }
+  }, []);
+
+  const back = () => {
+    // 清空 cinema list，为了展示切换城市后最新的数据
+    props.dispatch({
+      type:"cinema/clearList"
+    })
+    history.push('/city');
+  };
+  return (
+    <div>
+      <NavBar
+        onBack={back}
+        back={
+          <div>
+            {props.cityName}
+            <DownOutline />
+          </div>
+        }
+        backIcon={false}
+        right={<SearchOutline />}
+      >
+        影院
+      </NavBar>
+      {
+        props.loading && 
+        /* 加载中 白点... */
+        <span style={{ fontSize: 14 }}>
+          <DotLoading />
+        </span>
+      }
+      <ul>
+        {props.list.map((item: any) => (
+          <li key={item.cinemaId}>{item.name}</li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+
+// 集成 dva：使用高阶函数 connect
+const MapStateToProps = (state: any) => {
+  console.log(state);
+  return {
+    a: 1,
+    loading: state.loading.global,  //Umi中会默认携带
+    cityName: state.city.cityName,
+    cityId: state.city.cityId,
+    list: state.cinema.list,
+  };
+};
+export default connect(MapStateToProps)(Cinema);
+```
+
+##### 默认开启 Redux 插件
+
+Umi默认开启了 Redux 插件，可以追踪到数据流：
+
+![image-20260129105516093](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20260129105517442.png)
 
 
 
