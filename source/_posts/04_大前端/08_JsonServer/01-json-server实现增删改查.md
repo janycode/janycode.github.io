@@ -16,11 +16,14 @@ categories:
 * json-server 源码：https://github.com/typicode/json-server
 * json-server 文档：https://rtool.cn/jsonserver/docs/introduction
 
-> `json-server --watch db.json --port 8000`
+> `json-server -w db.json -p 8000`
 >
 > 注意：`db.json`  **即在当前 db.json 目录下启动**，如果附带其他路径，会出现一个很莫名其妙的问题。
 >
-> 问题：这个问题就是如果 json 数据中 id 主键为数字时，会导致 修改、删除 接口调用操作 json 文件时找不到该接口，报 404 问题。
+> 问题：
+>
+> 1. 如果 json 数据中 id 主键为数字时，会导致 修改、删除 接口调用操作 json 文件时找不到该接口，报 404 问题。
+> 2. 如果手动修改了 db.json 文件保存之后，最好手动重启 json-server，否则关联父级或子级查询效果会不达预期。
 
 ## 介绍
 
@@ -440,9 +443,86 @@ const reviseUser = async () => {
 
 ## 关联检索
 
+### _embed 方式检索关联子级数据
+
+注意: 这里 `_embed` 需要和子表名 (要关联的子集属性名) 匹配，同时确保关联的 id 如 classId 的值为 **字符串**（如果为数字则关联不上）
+
+```json
+http://localhost:3004/classes?_embed=users
+```
+
+得到的数据:
+
+```json
+[
+  {
+    "id": "1",
+    "title": "前端",
+    "staffIds": [
+      "1001",
+      "1004",
+      "1005"
+    ],
+    "users": [
+      {
+        "id": "1001",
+        "name": "liaoyi",
+        "phone": "13246566776",
+        "age": 22,
+        "classId": "1"
+      },
+      {
+        "name": "陈温柔",
+        "phone": "18779756000",
+        "age": "22",
+        "id": "1004",
+        "sex": "0",
+        "classId": "1"
+      },
+      {
+        "name": "夏琪",
+        "phone": "13246579999",
+        "age": "22",
+        "id": "1005",
+        "classId": "1"
+      }
+    ]
+  },
+  {
+    "id": "2",
+    "title": "后端",
+    "staffIds": [
+      "1002",
+      "1003"
+    ],
+    "users": [
+      {
+        "name": "林更新",
+        "age": "44",
+        "id": "1002",
+        "classId": "2"
+      },
+      {
+        "name": "李响",
+        "phone": "18779756778",
+        "age": "26",
+        "id": "1003",
+        "classId": "2"
+      }
+    ]
+  }
+]
+```
+
 ### _expand 方式检索关联父级数据
 
-这里的 `_expand`=class 匹配的其实是为了和 users 对象中的 classId做关联，但是已经存在classId字段了，我们需要写出 class, 比如检索的是 repaId 我们旧写成 repa：
+> 实测无效，关键字还是 `_embed` 既可以检索子级也可以检索父级，如：children 中有 rightId
+>
+> http://localhost:8000/rights?_embed=children
+>
+> http://localhost:8000/children?_embed=right
+
+这里的 `_expand`=class 匹配的其实是为了和 users 对象中的 classId做关联，但是已经存在 classId 字段了，我们需要写出 class, 比如检索的是 repaId 我们旧写成 repa：
 
 ```json
 // class 是一个别名
@@ -531,77 +611,6 @@ http://localhost:3004/users?_expand=class
             ]
         }
     }
-]
-```
-
-### _embed 方式检索关联子级数据
-
-注意: 这里 `_embed` 需要和子表名 (要关联的子集属性名) 匹配。
-
-```json
-http://localhost:3004/classes?_embed=users
-```
-
-得到的数据:
-
-```json
-[
-  {
-    "id": "1",
-    "title": "前端",
-    "staffIds": [
-      "1001",
-      "1004",
-      "1005"
-    ],
-    "users": [
-      {
-        "id": "1001",
-        "name": "liaoyi",
-        "phone": "13246566776",
-        "age": 22,
-        "classId": "1"
-      },
-      {
-        "name": "陈温柔",
-        "phone": "18779756000",
-        "age": "22",
-        "id": "1004",
-        "sex": "0",
-        "classId": "1"
-      },
-      {
-        "name": "夏琪",
-        "phone": "13246579999",
-        "age": "22",
-        "id": "1005",
-        "classId": "1"
-      }
-    ]
-  },
-  {
-    "id": "2",
-    "title": "后端",
-    "staffIds": [
-      "1002",
-      "1003"
-    ],
-    "users": [
-      {
-        "name": "林更新",
-        "age": "44",
-        "id": "1002",
-        "classId": "2"
-      },
-      {
-        "name": "李响",
-        "phone": "18779756778",
-        "age": "26",
-        "id": "1003",
-        "classId": "2"
-      }
-    ]
-  }
 ]
 ```
 

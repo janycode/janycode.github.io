@@ -24,6 +24,8 @@ categories:
 >
 > 后端：json-server 模拟后端数据
 >
+> 功能：**基于 React 实现的 CMS 文章发布系统、包含一整套用户管理、权限管理、登录校验、审核管理、发布管理等功能，项目搭建快速起步架子**。
+>
 > 一页效果：
 >
 > 
@@ -50,11 +52,21 @@ categories:
     1. *json-server --watch .\db\test.json --port 8000*
 
     2. 新版 json-server 中的主键 id 只能为字符串，否则影响 删改 功能
-13. 完善侧边栏 Sidebar 功能
+13. 完善**侧边栏 Sidebar** 功能
 14. 权限控制的数据流程图
     ![权限控制的数据流程图](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20260129185156792.png)
-15. 完善权限列表页的功能：Table 组件、树形展示、权限控制开关、删除等
-16. 1
+15. 完善**权限列表**页功能：Table 组件、树形展示、权限控制开关、删除等
+16. 完善**角色列表**页功能：角色列表：完善Table组 件展示、删除弹窗和删除数据、编辑弹窗Tree树形结构、属性结构勾选和编辑数据生效后端
+17. 完善**用户列表**页功能：Form子组件封装复用与新增和编辑、数据的增删改查、表头筛选支持、国家化i18n配置
+18. 完善**登陆退出**的功能：登陆功能、粒子背景效果、用户信息结构、用户登陆菜单权限、用户列表数据权限、跳转等
+
+    * 引入[粒子效果](https://github.com/tsparticles/react/#readme)，安装 `npm i @tsparticles/react @tsparticles/slim`，按照[文档demo](https://github.com/tsparticles/react/#readme)使用即可，
+
+      1. 适配 react19 和 antd6 的粒子效果：https://github.com/tsparticles/react/#readme
+
+      2. particles 粒子库官网（更换其他特效）：https://particles.js.org/
+
+20. ...
 
 
 
