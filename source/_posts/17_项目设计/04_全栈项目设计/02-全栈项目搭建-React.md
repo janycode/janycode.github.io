@@ -31,7 +31,7 @@ categories:
 > 
 
 
-## 项目搭建和实现流程
+## 项目搭建
 
 实现步骤：https://github.com/janycode/react-news-manage-system-demo/commits/main/
 
@@ -55,22 +55,34 @@ categories:
 13. 完善**侧边栏 Sidebar** 功能
 14. 权限控制的数据流程图
     ![权限控制的数据流程图](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20260129185156792.png)
-15. 完善**权限列表**页功能：Table 组件、树形展示、权限控制开关、删除等
-16. 完善**角色列表**页功能：角色列表：完善Table组 件展示、删除弹窗和删除数据、编辑弹窗Tree树形结构、属性结构勾选和编辑数据生效后端
-17. 完善**用户列表**页功能：Form子组件封装复用与新增和编辑、数据的增删改查、表头筛选支持、国家化i18n配置
-18. 完善**登陆退出**的功能：登陆功能、粒子背景效果、用户信息结构、用户登陆菜单权限、用户列表数据权限、跳转等
-
-    * 引入[粒子效果](https://github.com/tsparticles/react/#readme)，安装 `npm i @tsparticles/react @tsparticles/slim`，按照[文档demo](https://github.com/tsparticles/react/#readme)使用即可，
-
-      1. 适配 react19 和 antd6 的粒子效果：https://github.com/tsparticles/react/#readme
-
-      2. particles 粒子库官网（更换其他特效）：https://particles.js.org/
-
-20. ...
 
 
 
+## 业务实现
 
+1. 完善**权限列表**页功能：Table 组件、树形展示、权限控制开关、删除等
+2. 完善**角色列表**页功能：角色列表：完善Table组 件展示、删除弹窗和删除数据、编辑弹窗Tree树形结构、属性结构勾选和编辑数据生效后端
+3. 完善**用户列表**页功能：Form子组件封装复用与新增和编辑、数据的增删改查、表头筛选支持、国家化i18n配置
+4. 完善**登陆退出**的功能：登陆功能、粒子背景效果、用户信息结构、用户登陆菜单权限、用户列表数据权限、跳转等
+
+   * 引入[粒子效果](https://github.com/tsparticles/react/#readme)，安装 `yarn add @tsparticles/react @tsparticles/slim`，按照[文档demo](https://github.com/tsparticles/react/#readme)使用即可，
+
+     1. 适配 react19 和 antd6 的粒子效果：https://github.com/tsparticles/react/#readme
+
+     2. particles 粒子库官网（更换其他特效）：https://particles.js.org/
+
+5. 完善**路由权限**的功能：动态路由渲染、本地路由映射与路由权限校验、安装`nprogress`库用于侧边栏路由加载展示进度条、封装 axios 基地址
+
+6. 完善**撰写新闻**页功能：优化Form表单中异步请求后设置默认值问题、安装[react-draft-wysiwyg](https://github.com/jpuri/react-draft-wysiwyg)引入富文本编辑器并封装、引入 Steps 步骤条组件
+   - 引入富文本编辑器，安装 `yarn add react-draft-wysiwyg draft-js draftjs-to-html html-to-draftjs`
+
+
+7. 完善**草稿箱**页功能：列表、删除、提交审核、预览(Descriptions 描述列表组件)、编辑（回显富文本）、引入时间格式化和时区扩展
+   - 安装 `yarn add moment moment-timezone`
+
+8. 完善**我的新闻**页功能：列表、撤销、更新、发布功能 （或者叫**审核列表**）
+9. 完善**审核新闻**页功能：列表、通过、驳回功能
+10. ...
 
 
 
