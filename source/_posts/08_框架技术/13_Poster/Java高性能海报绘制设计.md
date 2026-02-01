@@ -9,7 +9,9 @@ categories:
 ---
 
 参考资料: Graphics2D绘图，基于Java绘图封装的工具 生成海报图片
+
 https://www.cnblogs.com/Lbox/p/14368349.html
+
 https://blog.csdn.net/qq_26212181/article/details/97621758
 
 
@@ -38,8 +40,11 @@ https://blog.csdn.net/qq_26212181/article/details/97621758
 ### 3. 海报模板JSON定义规范
 
 后端设计海报最大的问题在于调试不方便，如果没有可视化界面，需要计算每一个元素的坐标，宽高或字体的颜色大小，调试一张海报可能需要一天的时间。 所以设计过程中结合了一款前端开源海报可视化编辑项目 painter-custom-poster进行调试。
+
 painter-custom-poster可以对图片，文字，矩形元素进行可视化调整，然后导出json格式文档。
+
 我们生成海报的模板就以此json文档为基础，添加适当的自定义字段后，由JAVA解析JSON渲染生成海报图片。
+
 painter-custom-poster还可以导出调试JSON，可以在需要时再次导入此JSON恢复调试页面，方便后续再次调试。
 
 | 字段               | 说明                                                         | 是否支持              |

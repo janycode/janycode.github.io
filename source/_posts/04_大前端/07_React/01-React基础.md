@@ -14,7 +14,11 @@ categories:
 
 * React 官网：https://zh-hans.react.dev/
 * React 教程：https://zh-hans.react.dev/learn
-* 参考 React17 文档（英文）：https://17.reactjs.org/docs/getting-started.html
+* React17 文档（英文）：https://17.reactjs.org/docs/getting-started.html
+* React18 的新内容：https://zh-hans.react.dev/blog/2022/03/29/react-v18#whats-new-in-react-18
+* 如何升级到 React18：https://zh-hans.react.dev/blog/2022/03/08/react-18-upgrade-guide
+* React19 的新内容：https://zh-hans.react.dev/blog/2024/12/05/react-19#whats-new-in-react-19
+* 如何升级到 React19：https://zh-hans.react.dev/blog/2024/04/25/react-19-upgrade-guide
 
 > 版本：`node 20`、`react 19`
 >
