@@ -62,7 +62,7 @@ categories:
 
 
 
-### 2.2 使用
+### 2.2 使用(新vs旧用法)
 
 场景：显示或隐藏 Tabbar，即进入详情页隐藏页面底部 Tabbar 为例，其他页面默认还是保持展示页面底部 Tabbar。
 
@@ -84,6 +84,9 @@ src/
 ```
 
 redux/store.js
+
+* 旧版本 redux 创建 store 使用：`import { createStore } from 'redux'`
+* 新版本 redux 创建 store 使用： `import { legacy_createStore as createStore } from 'redux'`
 
 ```js
 import { createStore } from 'redux'  // 引入 redux4.1.2 为例
@@ -260,7 +263,7 @@ export default store
 
 
 
-### 2.4 reducer 合并
+### 2.4 reducer 合并 combineReducers()
 
 如果如果不同的 action 所处理的状态之间没有联系，就可以把 Reducer 函数拆分。不同的函数负责处理不同属性，最终把它们合并成一个大的 Reducer 即可。
 
@@ -731,10 +734,9 @@ const reducer = combineReducers({
     TabbarReducer,
     CinemaListReducer
 })
-
 // Redux DevTools Extension插件支持：2.拷贝官方需要的此行代码
 const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose; 
-// Redux DevTools Extension插件支持：composeEnhancers(applyMiddleware(...))
+// Redux DevTools Extension插件支持：composeEnhancers() 简单使用可以不传参数，使用异步中间件时传入applyMiddleware
 const store = createStore(reducer, composeEnhancers(applyMiddleware(reduxThunk, reduxPromise)))
 ```
 
@@ -991,8 +993,12 @@ export default jerryconnect(() => {
 
 src/redux/store.js - `persistConfig`, `persistedReducer`, `store`, `persistor` 按照官方说明最终导出 store, persistor
 
+* **选择性持久化**：persistConfig 中 whitelist 可以限制只持久化的 reducer
+
 ```js
 import ...
+//Redux DevTools Extension插件支持：1.导入 compose
+import { applyMiddleware, combineReducers, compose, createStore } from 'redux'  //redux4.1.2
 import storage from 'redux-persist/lib/storage' // redux-persist 持久化：1.导入，默认存 localStorage
 import { persistStore, persistReducer } from 'redux-persist' // redux-persist 持久化：1.导入
 

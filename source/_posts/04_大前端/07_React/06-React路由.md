@@ -68,7 +68,7 @@ V5 与 `V6` 的对比
 
 ### 3.0 路由配置参考(★)
 
-router/index.js + 懒加载(参考[3.7路由懒加载](#/3.7路由懒加载))
+router/index.js + 懒加载 - 完整配置 (参考[3.7路由懒加载](#/_37-路由懒加载★))
 
 ```js
 import { Route, Routes } from 'react-router-dom'
