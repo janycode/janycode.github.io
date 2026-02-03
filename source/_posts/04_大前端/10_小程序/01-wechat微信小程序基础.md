@@ -331,7 +331,9 @@ Page({
 
 
 
-### 4.5 事件绑定
+### 4.5 事件绑定 bindtap
+
+#### bindtap
 
 官方文档：https://developers.weixin.qq.com/miniprogram/dev/framework/view/wxml/event.html
 
@@ -372,7 +374,36 @@ Page({
 
 
 
-### 案例：todolist
+#### evt.target & evt.currentTarget
+
+**`evt.target`**：指向**实际触发事件的那个元素**（事件的「触发源」），是用户真实点击 / 操作的节点；
+
+**`evt.currentTarget`**：指向**绑定了该事件的那个元素**（事件的「绑定者」），是写了`bindtap`/`catchtap`等事件的节点；
+
+只有**事件绑定元素本身被直接触发**时，二者才指向同一个元素，取值一致；`若触发的是绑定元素的【子元素】，二者指向不同，取值可能不同`。
+
+```xml
+<!-- 事件绑定在view上（currentTarget），text是view的子元素（target可能是它） -->
+<view bindtap="getParam" data-num="100" style="padding:20rpx; background:#f0f0f0;">
+  <text>点击我（子元素）</text>
+</view>
+```
+
+```js
+Page({
+  // 事件处理函数
+  getParam(evt) {
+    const targetParam = evt.target.dataset.num; // 获取触发源的参数
+    const currentTargetParam = evt.currentTarget.dataset.num; // 获取事件绑定者的参数
+    console.log('evt.target.dataset.num：', targetParam); // undefined
+    console.log('evt.currentTarget.dataset.num：', currentTargetParam); // 100
+  }
+});
+```
+
+
+
+### eg：todolist - evt.target
 
 * `bindinput="func"` 绑定输入事件方法，通过 `evt.detail.value` 拿到输入值
 * `value="{{xxx}}"` 绑定 input 输入框中的值，以按需置空
@@ -460,7 +491,7 @@ Page({
 
 ![image-20260202182134064](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20260202182135613.png)
 
-### 案例：高亮切换
+### eg：高亮切换 - evt.currentTarget
 
 * `evt.currentTarget.dataset.x` 拿到绑定事件的事件源，即接参，可用于高亮或其他
 
@@ -795,11 +826,14 @@ Page({
 
 ### 8.3 scroll-view
 
+#### 组件内下拉刷新
+
 官方文档：https://developers.weixin.qq.com/miniprogram/dev/component/scroll-view.html
 
 `scroll-view` 可滚动视图区域。使用竖向滚动时，需要给[scroll-view](https://developers.weixin.qq.com/miniprogram/dev/component/scroll-view.html)一个固定高度，通过 WXSS 设置 height。组件属性的长度单位默认为px，[2.4.0](https://developers.weixin.qq.com/miniprogram/dev/framework/compatibility.html)起支持传入单位(rpx/px)。
 
 * 可以实现非页面级别的 **下拉刷新** 。
+* 水平方向滚动需要2个条件，标签组件上 `enable-flex="{{true}}"` 以及样式 flex 弹性盒布局中需要设置收缩属性为0 `flex-shrink: 0;` 
 
 ```xml
 <!--pages/8-scrollview/8-scrollview.wxml-->
@@ -866,39 +900,645 @@ Page({
 })
 ```
 
+#### 全局下拉刷新
+
+如 pages/home/home.json
+
+* `"enablePullDownRefresh": true` 放在具体的 page json 配置里，就对应的 page 支持下拉刷新
+
+```json
+{
+  "usingComponents": {},
+  "navigationBarTitleText": "首页",
+  "enablePullDownRefresh": true       //开启【首页】的下拉刷新
+}
+```
+
+app.json
+
+* `"enablePullDownRefresh": true` 放在 app.json 的 window 属性中，全局所有页面都支持下拉刷新
+
+```json
+{
+  "pages": [...],
+  "window": {
+    "backgroundTextStyle": "dark",  //背景文本样式，需设置为 dark 否则看不到
+    ...
+  },
+  ...
+}
+```
+
+![image-20260203163530441](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20260203163531985.png)
+
+下拉刷新触发事件：都需要在具体的 page.js 中处理 `onPullDownRefresh()` 下拉逻辑。
+
+```js
+// pages/home/home.js
+Page({
+  ...
+  /**
+   * 页面相关事件处理函数--监听用户下拉动作
+   */
+  onPullDownRefresh() {
+    setTimeout(() => {
+      //更新数据
+      console.log("下拉更新数据了");
+      wx.stopPullDownRefresh() //停止下拉刷新
+    }, 1000) //eg: 1s时间
+  },
+  ...
+})
+```
+
+
+
 
 
 ### 8.4 其他组件
 
+#### ifcon
 
+icon 组件：https://developers.weixin.qq.com/miniprogram/dev/component/icon.html
+
+```xml
+<!-- icon -->
+<icon class="icon-box-img" type="success" size="50"></icon>
+<icon class="icon-box-img" type="info" size="50"></icon>
+<icon class="icon-box-img" type="warn" size="50" color="#C9C9C9"></icon>
+<icon class="icon-box-img" type="warn" size="50"></icon>
+```
+
+
+
+#### checkbox
+
+checkbox 组件：https://developers.weixin.qq.com/miniprogram/dev/component/checkbox.html
+
+```xml
+<!--pages/9-checkbox/9-checkbox.wxml-->
+<wxs src="./sum.wxs" module="sum"/>
+<view wx:for="{{checkList}}" wx:key="index" style="display: flex; justify-content: space-around; padding: 10px;">
+  <checkbox bind:tap="handleCheckBoxTap" data-index="{{index}}" checked="{{item.isChecked}}" />
+  <view>
+    <view>商品：{{item.name}}</view>
+    <view>价格：¥{{item.price}}</view>
+  </view>
+  <view>{{item.number}}</view>
+</view>
+<view>
+金额计算：{{sum(checkList)}}
+</view>
+```
+
+```js
+<!--pages/9-checkbox/9-checkbox.wxs-->
+function sum(list) {
+  var total = 0
+  for (var i = 0; i < list.length; i++) {
+    if (list[i].isChecked) {
+      total += list[i].number * list[i].price
+    }
+  }
+  return total
+}
+module.exports = sum
+```
+
+```js
+// pages/9-other/9-other.js
+Page({
+  data: {
+    checkList: [
+      {
+        id: 1,
+        name: "aaa",
+        price: 100,
+        number: 11,
+        isChecked: true
+      },
+      {
+        id: 2,
+        name: "bbb",
+        price: 200,
+        number: 12,
+        isChecked: false
+      },
+      {
+        id: 3,
+        name: "ccc",
+        price: 300,
+        number: 13,
+        isChecked: false
+      },
+    ]
+  },
+
+  handleCheckBoxTap(evt) {
+    console.log("handleCheckBoxTap index=", evt.target.dataset.index);
+    var index = evt.target.dataset.index
+    this.data.checkList[index].isChecked = !this.data.checkList[index].isChecked
+    console.log(this.data.checkList);
+    this.setData({
+      checkList: [...this.data.checkList]
+    })
+  },
+  ...
+})
+```
+
+![image-20260203102352328](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20260203102353919.png)
+
+
+
+#### form
+
+form 组件：https://developers.weixin.qq.com/miniprogram/dev/component/form.html
+
+等等...
 
 
 
 ### 8.5 自定义组件
 
-#### 自定义组件
+官方文档：https://developers.weixin.qq.com/miniprogram/dev/framework/custom-component/
+
+#### 定义与使用
+
+根目录下创建 components/，以 navbar 为例，在 components/ 目录下创建 navbar/ 目录，再右键 `新建 Component`，输入 navbar 即可生成4文件结构：
+
+```xml
+<!--components/navbar/navbar.wxml-->
+<view class="box">
+  <view wx:for="{{list}}" wx:key="index" class="item {{current === index ? 'active' : ''}}" bindtap="handleTap" data-index="{{index}}">
+    {{item}}
+  </view>
+</view>
+```
+
+```css
+/* components/navbar/navbar.wxss */
+.box{
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+}
+.box .item{
+  flex: 1;
+  text-align: center;
+  height: 50px;
+  line-height: 50px;
+}
+.active {
+  color: red;
+}
+```
+
+```js
+// components/navbar/navbar.js
+Component({                     // 注册一个组件
+  properties: {},
+  data: {
+    list: ["正在热映", "即将上映"],
+    current: 0
+  },
+  methods: {
+    handleTap(evt) {
+      // console.log(evt.currentTarget.dataset.index);
+      this.setData({
+        current: evt.currentTarget.dataset.index
+      })
+    }
+  }
+})
+```
+
+其他组件引入/复用该组件：
+
+```json
+<!--pages/10-selfcomponent/10-selfcomponent.json-->
+{
+  "usingComponents": {
+    "navbar": "../../components/navbar/navbar"   //引入自定义组件
+  }
+}
+```
+
+
+```xml
+<!--pages/10-selfcomponent/10-selfcomponent.wxml-->
+<view>父组件中使用自定义组件：</view>
+<navbar></navbar>
+```
+
+![image-20260203104730120](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20260203104731270.png)
 
 
 
 #### 父传子
 
+父组件：
+
+```json
+<!--pages/10-selfcomponent/10-selfcomponent.json-->
+{
+  "usingComponents": {
+    "navbar": "../../components/navbar/navbar"   //引入自定义组件
+  }
+}
+```
+
+```xml
+<!--pages/10-selfcomponent/10-selfcomponent.wxml-->
+<view>父组件中使用自定义组件(传递参数 list, current 给 navbar)：</view>
+<navbar list="{{cateItems}}" current="{{current}}"></navbar>
+
+<swiper bindchange="handleSwiperChange">
+  <swiper-item wx:for="{{cateList}}" wx:key="index">
+    {{item}}
+  </swiper-item>
+</swiper>
+<view>当前轮播索引：{{current}}</view>
+```
+
+```js
+// pages/10-selfcomponent/10-selfcomponent.js
+Page({
+  data: {
+    cateItems: ['衣服', '裤子', '帽子', '手套'],
+    cateList: ['衣服内容', '裤子内容', '帽子内容', '手套内容'],
+    current: 0
+  },
+  handleSwiperChange(evt) {
+    console.log(evt.detail.current);
+    this.setData({
+      current: evt.detail.current
+    })
+  },
+  ...
+})
+```
+
+子组件：navbar
+
+```xml
+<!--components/navbar/navbar.wxml-->
+<view class="box">
+  <view wx:for="{{list}}" wx:key="index" class="item {{current === index ? 'active' : ''}}" bindtap="handleTap" data-index="{{index}}">
+    {{item}}
+  </view>
+</view>
+```
+
+```css
+/* components/navbar/navbar.wxss */
+.box{
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+}
+.box .item{
+  flex: 1;
+  text-align: center;
+  height: 50px;
+  line-height: 50px;
+}
+.active {
+  color: red;
+}
+```
+
+```js
+// components/navbar/navbar.js
+Component({
+  // 接收并校验父传过来的属性，value 为默认值，接收 list、current
+  properties: {
+    list: {
+      type: Array,
+      value: ["正在热映", "即将上映"]  //默认值
+    },
+    current: {
+      type: Number,
+      value: 0      //默认值
+    }
+  },
+  data: {},
+  methods: {
+    handleTap(evt) {
+      // console.log(evt.currentTarget.dataset.index);
+      this.setData({
+        current: evt.currentTarget.dataset.index
+      })
+    }
+  }
+})
+```
+
+效果：当前是滑动 swiper 可以从父传子，给到 navbar 同步 current 索引值，高亮 navbar（但是点击 navbar 去切换 swiper 需要子传父）。
+
+![image-20260203111230836](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20260203111232050.png)
+
 
 
 #### 子传父
+
+官方文档：https://developers.weixin.qq.com/miniprogram/dev/framework/custom-component/events.html
+
+子传父使用的是 `事件` 方式。（父传子 代码基础上进行优化，子组件最好不要自行修改属性值）
+
+父组件：
+
+* 定义 `bindParentEvent` 事件回调函数 - 监听函数
+* swiper 组件自带的 `current` 属性控制滑块位置，父与子之间的 current 完全同步通信
+
+```xml
+<!--pages/10-selfcomponent/10-selfcomponent.wxml-->
+<view>父组件中使用自定义组件：</view>
+<navbar list="{{cateItems}}" current="{{current}}" bindParentEvent="handleChangeEvent"></navbar>
+
+<!-- swiper 组件上的 current 控制滑块位置，父与子之间的 current 完全同步通信 -->
+<swiper bindchange="handleSwiperChange" current="{{current}}">
+  <swiper-item wx:for="{{cateList}}" wx:key="index">
+    {{item}}
+  </swiper-item>
+</swiper>
+<view>当前轮播索引：{{current}}</view>
+```
+
+```js
+// pages/10-selfcomponent/10-selfcomponent.js
+Page({
+  data: {
+    cateItems: ['衣服', '裤子', '帽子', '手套'],
+    cateList: ['衣服内容', '裤子内容', '帽子内容', '手套内容'],
+    current: 0
+  },
+  handleSwiperChange(evt) {
+    console.log(evt.detail.current);
+    this.setData({
+      current: evt.detail.current
+    })
+  },
+  // 自定义父组件事件名(bind开头)和回调函数 bindParentEvent="handleChangeEvent"
+  handleChangeEvent(evt) {
+    console.log("父组件 handleChangeEvent evt=", evt.detail);
+    this.setData({
+      current: evt.detail  //evt.detail 是 子组件传入的事件参数
+    })
+  },
+  ...
+})
+```
+
+子组件：
+
+* 自定义组件触发事件时，需要使用 `triggerEvent` 方法，指定事件名、detail对象和事件选项
+
+```js
+// components/navbar/navbar.js
+Component({
+  properties: {
+    // 接收并校验父传过来的属性，value 为默认值
+    list: {
+      type: Array,
+      value: ["正在热映", "即将上映"]  //默认值
+    },
+    current: {
+      type: Number,
+      value: 0 //默认值
+    }
+  },
+  data: {},
+  methods: {
+    handleTap(evt) {
+      console.log(evt.currentTarget.dataset.index);
+      //通知父组件触发父组件回调函数: bindParentEvent  并携带参数 index
+      this.triggerEvent("ParentEvent", evt.currentTarget.dataset.index)
+    }
+  }
+})
+```
+
+效果：当前滑动 swiper 可以从父传子，给到 navbar 同步 current 索引值，高亮 navbar。而且点击 navbar 也可以同步切换 swiper 内容。
+
+![image-20260203111230836](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20260203111232050.png)
 
 
 
 #### slot 插槽
 
+官方文档：[slot](https://developers.weixin.qq.com/miniprogram/dev/component/xr-frame/core/slot.html) 与 [组件wxml的slot](https://developers.weixin.qq.com/miniprogram/dev/framework/custom-component/wxml-wxss.html#%E7%BB%84%E4%BB%B6-wxml-%E7%9A%84-slot)
 
+父：
+
+```json
+{
+  "usingComponents": {
+    "top-header": "../../components/topheader/topheader",
+    "footer": "../../components/footer/footer"
+  }
+}
+```
+
+```xml
+<!--pages/11-slot/11-slot.wxml-->
+<top-header>
+  <button slot="left">返回</button>
+  <button slot="right">菜单</button>
+</top-header>
+<!-- 插槽可以一定程度避免父子通信，更便捷 -->
+<button bindtap="handleShowFooter">显示Footer</button>
+<footer wx:if="{{isShowFooter}}"></footer>
+```
+
+```js
+// pages/11-slot/11-slot.js
+Page({
+  data: {
+    isShowFooter: false
+  },
+  handleShowFooter() {
+    this.setData({
+      isShowFooter: !this.data.isShowFooter
+    })
+  },
+  ...
+})
+```
+
+子：footer
+
+```xml
+<!--components/footer/footer.wxml-->
+<view class="footer">footer</view>
+```
+
+```css
+/* components/footer/footer.wxss */
+.footer {
+  width: 100%;
+  height: 200rpx;
+  position: fixed;
+  left: 0;
+  bottom: 0;
+  background-color: yellow;
+}
+```
+
+![image-20260203115548746](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20260203115550260.png)
 
 #### 生命周期-自定义组件
+
+官方文档：https://developers.weixin.qq.com/miniprogram/dev/framework/custom-component/lifetimes.html
+
+父：
+
+```json
+{
+  "usingComponents": {
+    "count": "../../components/count/count"
+  }
+}
+```
+
+```xml
+<!--pages/12-lifecycle/12-lifecycle.wxml-->
+<view>抢购倒计时</view>
+<count wx:if="{{isCreated}}" bindMyEvent="handleMyEvent"></count>
+```
+
+```js
+// pages/12-lifecycle/12-lifecycle.js
+Page({
+  data: {
+    isCreated: true
+  },
+  handleMyEvent() {
+    this.setData({
+      isCreated: !this.data.isCreated
+    })
+  },
+  ...
+})
+```
+
+子：components/count/count.xx
+
+```xml
+<!--components/count/count.wxml-->
+<text>{{count}}</text>
+```
+
+```js
+// components/count/count.js
+Component({
+  lifetimes: {
+    attached: function() {
+      // 在组件实例进入页面节点树时执行
+      console.log("attached");
+      this.intervalId = setInterval(() => {
+        if (this.data.count === 0) {
+          this.triggerEvent("MyEvent")  //通知父组件移除自己
+          return
+        }
+        this.setData({
+          count: --this.data.count
+        })
+      }, 1000)
+    },
+    detached: function() {
+      // 在组件实例被从页面节点树移除时执行
+      console.log("detached");
+      clearInterval(this.intervalId) // 销毁定时器
+    },
+  },
+  ...
+})
+```
 
 
 
 ## 9. 页面生命周期
 
+示例：
 
+```js
+// pages/request/request.js
+Page({
+  /**
+   * 页面的初始数据
+   */
+  data: {
+    datalist: []
+  },
+  //请求数据：没有跨域限制，但需要配置安全域名
+  handleAjax() {
+    wx.request({
+      url: 'https://m.maoyan.com/ajax/movieOnInfoList',
+      method: 'get',
+      data: {},
+      success: (res) => {
+        console.log("success:", res.data.movieList);
+        this.setData({
+          datalist: res.data.movieList
+        })
+      },
+      fail: () => {
+        console.log("fail");
+      }
+    })
+  },
+  /**
+   * 生命周期函数--监听页面加载
+   */
+  onLoad(options) {
+    console.log("onLoad");
+    this.handleAjax()
+  },
+  /**
+   * 生命周期函数--监听页面初次渲染完成
+   */
+  onReady() {
+    console.log("onReady");
+  },
+  /**
+   * 生命周期函数--监听页面显示
+   */
+  onShow() {
+    console.log("onShow");
+  },
+  /**
+   * 生命周期函数--监听页面隐藏
+   */
+  onHide() {
+    console.log("onHide");
+  },
+  /**
+   * 生命周期函数--监听页面卸载
+   */
+  onUnload() {
+    console.log("onUnload");
+  },
+  /**
+   * 页面相关事件处理函数--监听用户下拉动作
+   */
+  onPullDownRefresh() {
+    console.log("onPullDownRefresh");
+  },
+  /**
+   * 页面上拉触底事件的处理函数
+   */
+  onReachBottom() {
+    console.log("onReachBottom");
+  },
+  /**
+   * 用户点击右上角分享
+   */
+  onShareAppMessage() {
+    console.log("onShareAppMessage");
+  }
+})
+```
 
 
 
