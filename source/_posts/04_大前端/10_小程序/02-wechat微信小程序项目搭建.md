@@ -855,7 +855,7 @@ pages/search/search.xx
 ```json
 {
   "usingComponents": {
-    "mp-searchbar": "weui-miniprogram/searchbar/searchbar"
+    "mp-searchbar": "weui-miniprogram/searchbar/searchbar"  //引入 weUI searchbar
   },
   "navigationBarTitleText": "搜索"
 }
@@ -1045,57 +1045,836 @@ Page({
 
 ## 7. 分类模块
 
+> 官方的扩展组件文档没有使用 demo，需要结合源码查看
+>
+> 扩展组件：https://developers.weixin.qq.com/miniprogram/dev/platform-capabilities/extended/component-plus/
+>
+> 源码示例：https://github.com/wechat-miniprogram/miniprogram-component-plus
+>
+> 源码 demo位置：/tools/demo/example/xxx，如 vtabs 在 /tools/demo/example/vtabs/...
+>
+> 或者通过该链接地址直接通过浏览器打开 微信开发工具 ：https://developers.weixin.qq.com/s/SG4tK2mD77f7
+
 ### vtabs 组件
 
+`vtabs` [纵向选项卡组件](https://developers.weixin.qq.com/miniprogram/dev/platform-capabilities/extended/component-plus/vtabs.html)，需与 `<vtabs-content>` 组件结合使用。
 
+安装：*npm i @miniprogram-component-plus/vtabs @miniprogram-component-plus/vtabs-content* - 安装完 `工具-构建npm`
 
-### 数据渲染
+引入：pages/category/category.json
+
+```json
+{
+  "usingComponents": {
+    "mp-vtabs": "@miniprogram-component-plus/vtabs",
+    "mp-vtabs-content": "@miniprogram-component-plus/vtabs-content"
+  },
+  "navigationBarTitleText": "分类"
+}
+```
+
+[分类页面](https://github.com/janycode/wx-wechat-mall-applet-demo/commit/71eccff8f1312ea429dc7c69ab4245975b4be71d)：vtabs组件源码demo分析和使用、样式高度问题处理、跳转详情处理
+
+```xml
+<!--pages/category/category.wxml-->
+<mp-vtabs vtabs="{{vtabs}}" activeTab="{{activeTab}}" bindtabclick="onTabCLick" bindchange="onChange" class="test">
+  <block wx:for="{{vtabs}}" wx:key="title">
+    <mp-vtabs-content tabIndex="{{index}}">
+      <view class="item-title">{{item.title}}</view>
+      <view class="vtabs-content-item">
+        <view wx:for="{{item.goods}}" wx:key="id" class="item" bindtap="handleGoodTap" data-id="{{item.id}}" data-title="{{item.title}}">
+          <image src="{{BASE_URL + item.poster}}" mode="widthFix" />
+          <view>{{item.title}}</view>
+        </view>
+      </view>
+    </mp-vtabs-content>
+  </block>
+</mp-vtabs>
+```
+
+```css
+/* pages/category/category.wxss */
+/* page 拷贝过来的样式 */
+page {
+  background-color: #FFFFFF;
+  height: 100%;
+}
+/* 标题 */
+.item-title {
+  padding: 10px;
+  border-bottom: 1px solid lightgray;
+}
+.vtabs-content-item {
+  display: flex;
+  flex-wrap: wrap;
+  /* height: 100vh; 可以让每个分类单独一屏，会有样式问题 */
+}
+.vtabs-content-item .item {
+  width: 50%;
+  height: 300rpx;   /* 300rpx 社区文档建议，可以正常显示 */
+  padding: 30rpx;
+  box-sizing: border-box;
+}
+.item image {
+  width: 200rpx;
+}
+.item view {
+  font-size: 13px;
+  text-align: center;
+}
+```
+
+```js
+const { request } = require("../../utils/request")
+// pages/category/category.js
+Page({
+  data: {
+    BASE_URL: '',
+    vtabs: [],
+    activeTab: 0
+  },
+  onLoad(options) {
+    // 获取小程序全局实例，将全局基地址赋值到页面data
+    this.setData({
+      BASE_URL: getApp().globalData.BASE_URL
+    });
+    request({ url: "/categories?_embed=goods" }).then(res => {
+      console.log(res);
+      this.setData({
+        vtabs: res
+      })
+    }).catch(err => {
+      console.error(err);
+    })
+  },
+  // 点击分类事件
+  onTabCLick(e) {
+    const index = e.detail.index
+    console.log('tabClick', index)
+  },
+  // 滑动右侧列表触发事件
+  onChange(e) {
+    const index = e.detail.index
+    console.log('change', index)
+  },
+  // 点击右侧商品触发事件
+  handleGoodTap(evt) {
+    const { id, title } = evt.currentTarget.dataset
+    console.log(id, title);
+    //跳转详情页
+    wx.navigateTo({ url: `/pages/detail/detail?id=${id}&title=${title}`})
+  },
+  ...
+})
+```
+
+![image-20260204111209612](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20260204111211238.png)
 
 
 
 ## 8. 授权模块(★)
 
+模拟本地存储/删除 token：
+
+```sh
+wx.setStorageSync("token", {name: "jerry"})
+wx.removeStorageSync("token")
+```
+
+[微信授权与手机号绑定](https://github.com/janycode/wx-wechat-mall-applet-demo/commit/5f610eddfe523f1da321f79c254bb69cf39d53fe)：微信授权流程、手机号绑定页面逻辑、购物车页auth拦截、个人中心页auth拦截
+
 ### 微信授权
+
+获取用户信息：https://developers.weixin.qq.com/miniprogram/dev/api/open-api/user-info/wx.getUserProfile.html
+
+获取用户头像和昵称：https://developers.weixin.qq.com/miniprogram/dev/framework/open-ability/userProfile.html
+
+```xml
+<!--pages/auth/auth.wxml-->
+<button type="primary" bindtap="handleAuth">微信授权</button>
+```
+
+```js
+// pages/auth/auth.js
+Page({
+  handleAuth() {
+    // 推荐使用wx.getUserProfile获取用户信息，开发者每次通过该接口获取用户个人信息均需用户确认
+    // 开发者妥善保管用户快速填写的头像昵称，避免重复弹窗
+    wx.getUserProfile({
+      desc: '用于完善会员资料', // 声明获取用户个人信息后的用途，后续会展示在弹窗中，请谨慎填写
+      success: (res) => {
+        console.log(res);
+        var { userInfo } = res
+        wx.setStorageSync("token", userInfo)
+        wx.navigateTo({ url: '/pages/telform/telform' })
+      }
+    })
+  }
+})
+```
 
 
 
 ### 手机绑定
 
+WeUI FormPage组件：https://wechat-miniprogram.github.io/weui/docs/form-page.html
+
+WeUI Cells组件：https://wechat-miniprogram.github.io/weui/docs/cells.html
+
+```json
+{
+  "usingComponents": {
+    "mp-form-page": "weui-miniprogram/form-page/form-page",
+    "mp-form": "weui-miniprogram/form/form",
+    "mp-cells": "weui-miniprogram/cells/cells",
+    "mp-cell": "weui-miniprogram/cell/cell"
+  },
+  "navigationBarTitleText": "手机号授权"
+}
+```
+
+```xml
+<!--pages/telform/telform.wxml-->
+<mp-form-page title="手机绑定" subtitle="您的手机号将会与您的微信绑定">
+  <!-- 手机号输入 -->
+  <mp-cells title="信息" >
+    <mp-cell prop="mobile" title="手机号" required ext-class=" weui-cell_vcode">
+      <input bindinput="formInputMobile" data-field="mobile" class="weui-input" placeholder="请输入正确的手机号" />
+    </mp-cell>
+    <mp-cell prop="mobile" title="验证码" ext-class=" weui-cell_vcode">
+      <input bindinput="formInputCode" class="weui-input" placeholder="请输入验证码" value="{{code}}" />
+      <view slot="footer" class="weui-vcode-btn" bindtap="formRequestCode" >获取验证码</view>
+    </mp-cell>
+  </mp-cells>
+  <!-- 按钮 -->
+  <view slot="button">
+    <button class="weui-btn" type="primary" bindtap="submitForm">确定</button>
+  </view>
+</mp-form-page>
+```
+
+```js
+import { request } from "../../utils/request";
+
+// pages/telform/telform.js
+Page({
+  data: {
+    tel: '',
+    code: ''
+  },
+
+  formInputMobile(evt) {
+    console.log("手机号=", evt.detail.value);
+    this.setData({ tel: evt.detail.value })
+  },
+  formInputCode(evt) {
+    console.log("验证码=", evt.detail.value);
+    //this.setData({ code: evt.detail.value })
+  },
+  formRequestCode() {
+    //校验手机号
+    if (this.data.tel === '') {
+      wx.showToast({
+        title: '请输入手机号',
+        icon: 'fail',
+        duration: 2000
+      })
+      return
+    } else {
+      if (this.data.tel.length != 11) {
+        wx.showToast({
+          title: '请输入正确的手机号',
+          icon: 'fail',
+          duration: 2000
+        })
+        return
+      } else {
+        //正则校验手机号是否符合规则 todo
+      }
+    }
+    wx.showToast({
+      title: '测试验证码1234',
+      icon: 'success',
+      duration: 2000
+    })
+    // request({ url: '/code'}).then(res => {...})
+    this.setData({ code: '1234' }) //测试验证码
+  },
+
+  submitForm() {
+    //校验验证码
+    if (this.data.code === '' || this.data.code.length != 4) {
+      wx.showToast({
+        title: '请输入验证码',
+        icon: 'fail',
+        duration: 2000
+      })
+      return
+    }
+    wx.setStorageSync("tel", this.data.tel)
+    var userInfo = wx.getStorageSync("token")
+    request({
+      url: `/users?tel=${this.data.tel}&nickName=${userInfo.nickName}`
+    }).then(res => {
+      console.log(res);
+      if (res.length === 0) {
+        // 用户不存在，新增
+        request({
+          url: "/users",
+          method: "post",
+          data: {
+            ...userInfo,
+            tel: this.data.tel
+          }
+        }).then(res => {
+          console.log("1111");
+          wx.navigateBack({ delta: 2 }) //返回2层页面
+        })
+      } else {
+        // 用户存在
+        console.log("2222");
+        wx.navigateBack({ delta: 2 }) //返回2层页面
+      }
+    }).catch(err => {
+      console.error(err);
+    })
+  },
+  ...
+})
+```
+
+![image-20260204123656943](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20260204123658188.png)
+
+![image-20260204123719260](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20260204123720874.png)
+
+#### authTool.js
+
+```js
+function checkAuth(callback) {
+  if (wx.getStorageSync('tel')) {
+    callback() //回调函数处理业务
+  } else {
+    if (wx.getStorageSync('token')) {
+      wx.navigateTo({ url: '/pages/telform/telform' })  //手机绑定页
+    } else {
+      wx.navigateTo({ url: '/pages/auth/auth' }) //微信授权页
+    }
+  }
+}
+
+export default checkAuth
+```
+
+#### 购物车与个人中心 auth 拦截
+
+```js
+import checkAuth from "../../utils/authTool";
+// pages/shopcar/shopcar.js
+Page({
+  onShow() {
+    checkAuth(() => {
+      console.log("进入购物车");
+    })
+  },
+ ...
+})
+```
+
+```js
+import checkAuth from "../../utils/authTool";
+// pages/shopcar/shopcar.js
+Page({
+  onShow() {
+    checkAuth(() => {
+      console.log("进入我的");
+    })
+  },
+ ...
+})
+```
+
 
 
 ## 9. 购物车模块
 
-### 加入购物车
+[购物车模块](https://github.com/janycode/wx-wechat-mall-applet-demo/commit/b0b182de2884ccae8c5f3a1dfeb47d3d95ee3786)：详情页按钮加入购物车、购物车布局、数据渲染、金额计算、左滑删除、全选与反选
 
+引入：mp-slideview
 
+```json
+{
+  "usingComponents": {
+    "mp-cells": "weui-miniprogram/cells/cells",
+    "mp-cell": "weui-miniprogram/cell/cell",
+    "mp-slideview": "weui-miniprogram/slideview/slideview"
+  },
+  "navigationBarTitleText": "购物车"
+}
+```
 
-### 购物车布局
+```xml
+<!--pages/shopcar/shopcar.wxml-->
+<mp-cells title="配送至默认地址：xxx" footer="左滑可以删除">
+  <!-- <mp-cell value="标题文字" footer="说明文字"></mp-cell>
+    <mp-cell>
+        <view>标题文字（使用slot）</view>
+        <view slot="footer">说明文字</view>
+    </mp-cell> -->
+  <mp-cell wx:for="{{cartlist}}" wx:key="id">
+  <!-- 左滑删除组件 mp-slideview -->
+    <mp-slideview buttons="{{slideButtons}}" bindbuttontap="slideButtonDeleteTap" data-item="{{item}}">
+      <view class="content">
+        <view class="cellcontent">
+          <checkbox checked="{{item.checked}}" bindtap="handleCheckedTap" data-item="{{item}}" />
+          <!-- image 的 mode 不能使用 widthFix 其他都可以，否则会影响左滑删除 -->
+          <image src="{{BASE_URL + item.good.poster}}" mode="aspectFit" />
+          <view>
+            <view>{{item.good.title}}</view>
+            <view style="color: red">￥{{item.good.price}}</view>
+          </view>
+        </view>
+        <view slot="footer" class="cellfooter">
+          <text bindtap="handleMinusTap" data-item="{{item}}">-</text>
+          <text>{{item.number}}</text>
+          <text bindtap="handleAddTap" data-item="{{item}}">+</text>
+        </view>
+      </view>
+    </mp-slideview>
+  </mp-cell>
+</mp-cells>
 
+<wxs src="./shopcar.wxs" module="calObj"></wxs>
+<view class="footer">
+  <!-- 全选组件 -->
+  <checkbox-group bindchange="handleAllChecked">
+    <checkbox checked="{{isAllChecked}}" />
+  </checkbox-group>
+  <view>全选</view>
+  <view style="position:fixed; right: 180rpx; color: red; font-size: 20px;">￥{{calObj.sum(cartlist)}}</view>
+  <button type="primary" size="mini">去结算</button>
+</view>
+```
 
+```css
+/* pages/shopcar/shopcar.wxss */
+.content {
+  display: flex;
+  height: 100rpx;
+  justify-content: space-between;
+}
+.cellcontent {
+  display: flex;
+}
+.cellcontent checkbox {
+  line-height: 100rpx;
+}
+.cellcontent image {
+  width: 100rpx;
+  height: 100rpx;
+}
+.cellfooter text{
+  width: 60rpx;
+  display: inline-block;
+  text-align: center;
+  border: 1px solid lightgray;
+}
 
-### 数据渲染
+.footer {
+  position: fixed;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  text-align: center;
+  margin-bottom: 20rpx;
+  height: 60rpx;
+  line-height: 60rpx;
+  background-color: white;
+  display: flex;
+}
+.footer button{
+  position: fixed;
+  right: 0;
+  margin-right: 20rpx;
+}
+```
 
+```js
+const { default: checkAuth } = require("../../utils/authTool");
+const { request, BASE_URL } = require("../../utils/request");
 
+// pages/shopcar/shopcar.js
+Page({
+  /**
+   * 页面的初始数据
+   */
+  data: {
+    BASE_URL: '',
+    slideButtons: [{
+      type: 'warn',
+      text: '删除',
+    }],
+    cartlist: [],
+    isAllChecked: false
+  },
 
-### 金额试算
+  /**
+   * 生命周期函数--监听页面加载
+   */
+  onLoad(options) {
+    // 获取小程序全局实例，将全局基地址赋值到页面data
+    this.setData({
+      BASE_URL: getApp().globalData.BASE_URL
+    });
+    let { nickName } = wx.getStorageSync('token')
+    let tel = wx.getStorageSync('tel')
+    console.log(nickName, tel);
+    request({ url: `/carts?_embed=good&username=${nickName}&tel=${tel}` }).then(res => {
+      console.log("cartlist=", res);
+      this.setData({
+        cartlist: res
+      })
+    }).catch(err => {
+      console.error(err);
+    })
+    // 检查是否全选，并设置全选 checked
+    this.setData({
+      isAllChecked: this.data.cartlist.every(item => item.checked === true)
+    })
+  },
 
+  // 左滑删除按钮点击事件回调（必须添加，否则点击无反应）
+  slideButtonDeleteTap(evt) {
+    console.log('左滑删除触发', evt);
+    // 此处编写删除购物车商品的逻辑（示例：提示+模拟删除）
+    wx.showModal({
+      title: '提示',
+      content: '确定删除该商品吗？',
+      success: (res) => {
+        if (res.confirm) {
+          // 调用接口删除购物车数据 + 更新页面列表
+          let id = evt.currentTarget.dataset.item.id
+          request({ url: `/carts/${id}`, method: "delete" }).then(res => {
+            console.log(res);
+            wx.showToast({
+              title: '删除成功',
+              icon: 'success',
+              duration: 1500
+            });
+          })
+          this.setData({
+            cartlist: this.data.cartlist.filter(item => item.id !== id)
+          })
+        }
+      }
+    });
+  },
 
+  handleCheckedTap(evt) {
+    let item = evt.currentTarget.dataset.item
+    console.log(item);
+    item.checked = !item.checked
+    this.handleUpdate(item)
+    // 检查是否全选，并设置全选 checked
+    this.setData({
+      isAllChecked: this.data.cartlist.every(item => item.checked === true)
+    })
+  },
 
-### 删除
+  handleUpdate(item) {
+    this.setData({
+      cartlist: this.data.cartlist.map(data => {
+        if (data.id === item.id) {
+          return item
+        }
+        return data
+      })
+    })
+    request({
+      url: `/carts/${item.id}`,
+      method: "put",
+      data: {
+        username: item.username,
+        tel: item.tel,
+        goodId: item.goodId,
+        number: item.number,
+        checked: item.checked
+      }
+    })
+  },
 
+  handleMinusTap(evt) {
+    let item = evt.currentTarget.dataset.item
+    console.log(item);
+    item.number--
+    this.handleUpdate(item)
+  },
 
+  handleAddTap(evt) {
+    let item = evt.currentTarget.dataset.item
+    console.log(item);
+    item.number++
+    this.handleUpdate(item)
+  },
+  // 全选与否逻辑处理
+  handleAllChecked(evt) {
+    console.log(evt.detail.value);
+    if (evt.detail.value.length === 0) {
+      //未全选
+      this.setData({
+        cartlist: this.data.cartlist.map(item => ({
+          ...item,
+          checked: false
+        }))
+      })
+      //请求接口批量修改为 false
+    } else {
+      //全选
+      this.setData({
+        cartlist: this.data.cartlist.map(item => ({
+          ...item,
+          checked: true
+        }))
+      })
+      //请求接口批量修改为 true
+    }
+  },
+  /**
+   * 生命周期函数--监听页面显示
+   */
+  onShow() {
+    checkAuth(() => {
+      console.log("进入购物车");
+    })
+  },
+  ...
+})
+```
 
-### 全选
+```js
+// pages/shopcar/shopcar.wxs
+function sum(list) {
+  var total = 0
+  for (var i  = 0; i < list.length; i++) {
+    if(list[i].checked) {
+      total += list[i].good.price * list[i].number
+    }
+  }
+  return total
+}
+
+module.exports = {
+  sum: sum
+}
+```
+
+![image-20260204170108366](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20260204170110395.png)
 
 
 
 ## 10. 我的模块
 
-### 布局
+### 布局+换头像
+
+[个人中心](https://github.com/janycode/wx-wechat-mall-applet-demo/commit/89fb4deb85f28679d74b7e1c01ca294758be0ab8)：布局、换头像功能
+
+更换头像：https://developers.weixin.qq.com/miniprogram/dev/api/media/video/wx.chooseMedia.html
+
+引入：
+
+```json
+{
+  "usingComponents": {
+    "mp-cells": "weui-miniprogram/cells/cells",
+    "mp-cell": "weui-miniprogram/cell/cell",
+    "mp-icon": "weui-miniprogram/icon/icon"
+  },
+  "navigationBarTitleText": "我的"
+}
+```
+
+```xml
+<!--pages/center/center.wxml-->
+<view class="userinfo">
+  <image src="https://janycode.github.io/img/avatar.png" mode="widthFix" bindtap="handleAvatarChange" />
+  <view>{{userInfo.nickName}}</view>
+</view>
+
+<view>
+  <mp-cell value="完善信息">
+    <mp-icon slot="icon" type="field" icon="me" color="#14c145" size="{{20}}"></mp-icon>
+    <mp-icon slot="icon" type="field" icon="arrow" color="#14c145" size="{{10}}" slot="footer"></mp-icon>
+  </mp-cell>
+  <mp-cell value="个性设置">
+    <mp-icon slot="icon" type="field" icon="like" color="#14c145" size="{{20}}"></mp-icon>
+    <mp-icon slot="icon" type="field" icon="arrow" color="#14c145" size="{{10}}" slot="footer"></mp-icon>
+  </mp-cell>
+</view>
+```
+
+```css
+/* pages/center/center.wxss */
+.userinfo {
+  background-color: #14c145;
+  text-align: center;
+  height: 320rpx;
+}
+.userinfo image{
+  width: 200rpx;
+  height: 200rpx;
+  line-height: 100rpx;
+  border-radius: 100rpx;
+  margin: 20rpx;
+}
+```
+
+```js
+import checkAuth from "../../utils/authTool";
+
+// pages/center/center.js
+Page({
+  data: {
+    BASE_URL: '',
+    userInfo: null
+  },
+
+  onLoad(options) {
+    // 获取小程序全局实例，将全局基地址赋值到页面data
+    this.setData({
+      BASE_URL: getApp().globalData.BASE_URL
+    });
+  },
+  //更换头像：拍摄或从手机相册中选择图片或视频
+  handleAvatarChange() {
+    wx.chooseMedia({
+      count: 1, //选择图片数量
+      mediaType: ['image','video'],
+      sourceType: ['album', 'camera'],
+      maxDuration: 30,
+      camera: 'back',
+      //success(res) {
+      success: (res) => {  //使用箭头函数 确保 this 指向为当前页面对象
+        console.log(res.tempFiles[0].tempFilePath)
+        console.log(res.tempFiles[0].size)
+        this.setData({
+          userInfo: {
+            ...this.data.userInfo,
+            avatarUrl: res.tempFiles[0].tempFilePath
+          }
+        })
+        //放在本地存储中
+        wx.setStorageSync("token", {
+          ...wx.getStorageSync("token"),
+          avatarUrl: res.tempFiles[0].tempFilePath
+        })
+      }
+    })
+  },
+  /**
+   * 生命周期函数--监听页面显示
+   */
+  onShow() {
+    checkAuth(() => {
+      console.log("进入我的");
+      this.setData({
+        userInfo: wx.getStorageSync("token")
+      })
+    })
+  },
+  ...
+})
+```
+
+![image-20260204173729986](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20260204173731302.png)
 
 
 
-### 换头像
+## 11. 微信支付(★)
+
+### 微信支付账户介绍
+
+![image-20260204173814836](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20260204173816213.png)
+
+**微信账号**：二维码收款
+
+* 主要面向线下收款，如果小程序面向线上，异地交易会导致账户异常
+
+**微信商户**：找有权限的代理商可以去申请签约
+
+* api 收款、营销、分账、官方活动
+* 钱 进微信商户号，最终结算/体现到银行卡
+
+
+
+### 整体业务流程
+
+① 签约商户
+
+1. 方式1
+   - 微信(个体户、企业)：https://pay.weixin.qq.com
+     - 成为商家 或 绑定商户号 → 小微商户(仅有身份证) → 
+   - 支付宝(个体户、企业)-支付宝生态：https://b.alipay.com
+
+② API 对接
+
+③ 回调处理
+
+④ 对账
+
+
+
+参考资料：
+
+微信支付开发文档：https://pay.weixin.qq.com/doc/v3/partner/4012069852
+
+微信小程序支付：https://pay.weixin.qq.com/doc/v3/partner/4012085810
+
+参考实现流程：https://blog.csdn.net/qq_40791475/article/details/147588905
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

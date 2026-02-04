@@ -12,6 +12,11 @@ categories:
 
 ![image-20200723170734421](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20200723170735.png)
 
+参考资料：
+
+* vue 生态开源的组件和库集合：https://github.com/vuejs/awesome-vue?tab=readme-ov-file#components--libraries
+
+
 
 ## 1. 工具库
 
