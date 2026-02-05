@@ -1,9 +1,10 @@
 ---
-title: 05-vue2组件封装
+title: 05-vue2组件封装&rem公式
 date: 2022-5-22 21:36:21
 tags:
 - Vue
 - 组件
+- rem
 categories: 
 - 04_大前端
 - 04_Vue
@@ -24,6 +25,11 @@ categories:
 
 `只需要在 index.html 加上这一句就可以实现尺寸基于量的像素适配不同的设备。`
 
+font-size 计算公式：越大的设备越大，越小的设备上越小。
+
+* 根据设计稿宽度值作为公式计算，如 375px 或 750px，等比缩放至该基准值
+* 字体大小 font-size 值为基准，如 16px 也是 rem转换插件的默认值，确保 16px与插件的基准字体大小一致，就可以插件一键转换
+
 public/index.html
 
 ```html
@@ -32,8 +38,10 @@ public/index.html
   <head>
     ...
     <script>
-      // font-size 计算公式：越大的设备越大，越小的设备上越小。如 375 是设计稿宽度，16 是基准字体大小
+      //方案1(任一)：如 375 设计稿宽度，16 是基准字体大小（rem插件基准字体大小也设置为 16px）
       document.documentElement.style.fontSize = document.documentElement.clientWidth / 375 * 16 + 'px'
+      //方案2(任一)：如 750 设计稿宽度，100 是基准字体大小（rem插件基准字体大小也设置为 100px）
+      document.documentElement.style.fontSize = document.documentElement.clientWidth / 750 * 100 + 'px'
     </script>
   </head>
   <body>
@@ -51,8 +59,8 @@ src/App.vue
   padding: 0;
 }
 .banner{
-  width: 23.4375rem;     // 量设计稿多少就写多少（Alt+Z转换）: 375px
-  height: 12.055rem;     // 量设计稿多少就写多少（Alt+Z转换）: 192.88px
+  width: 23.4375rem;  // 量设计稿多少就写多少（Alt+Z转换）: 375px
+  height: 12.055rem;  // 量设计稿多少就写多少（Alt+Z转换）: 192.88px
   background: yellow;
 }
 </style>

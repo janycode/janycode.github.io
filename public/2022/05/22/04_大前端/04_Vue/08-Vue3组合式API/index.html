@@ -28,7 +28,7 @@
 <meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20260102192908626.gif">
 <meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20251219180625.png">
 <meta property="article:published_time" content="2022-05-22T13:36:21.000Z">
-<meta property="article:modified_time" content="2026-02-04T10:11:07.344Z">
+<meta property="article:modified_time" content="2026-02-05T13:02:26.560Z">
 <meta property="article:author" content="Jerry(姜源)">
 <meta property="article:tag" content="Vue">
 <meta property="article:tag" content="vue3">
@@ -248,7 +248,7 @@
         <i class="iconfont icon-chart"></i>
         
           <!-- compatible with older versions-->
-          16k 字
+          17k 字
         
       </span>
     
@@ -260,7 +260,7 @@
         
         
           <!-- compatible with older versions-->
-          133 分钟
+          145 分钟
         
       </span>
     
@@ -369,7 +369,7 @@
 
 
 
-<h3 id="3-computed-计算属性"><a href="#3-computed-计算属性" class="headerlink" title="3. computed 计算属性"></a>3. computed 计算属性</h3><p><code>computed(() =&gt; 逻辑代码)</code> vue3中的计算属性，逻辑代码中不能加大括号。且只能<code>同步</code>。</p>
+<h3 id="3-computed-计算属性"><a href="#3-computed-计算属性" class="headerlink" title="3. computed 计算属性"></a>3. computed 计算属性</h3><p><code>computed(() =&gt; 逻辑代码)</code> vue3中的计算属性，逻辑代码中不能加大括号。且只能<code>同步</code>。且<code>不要修改计算属性变量的值</code>，会警告 readonly。</p>
 <p>导入：<em>import { computed } from “vue”</em></p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><code class="hljs vue">&lt;template&gt;<br>  &lt;div&gt;app-&#123;&#123; myname &#125;&#125;-&#123;&#123; computedName &#125;&#125;&lt;/div&gt;<br>&lt;/template&gt;<br><br>&lt;script&gt;<br>import &#123; reactive, toRefs, computed &#125; from &quot;vue&quot;<br>export default &#123;<br>  setup() &#123;<br>    const obj = reactive(&#123;<br>      myname: &quot;jerry&quot;,<br>    &#125;)<br>    const computedName = computed(<br>      () =&gt; obj.myname.substring(0, 1).toUpperCase() + obj.myname.substring(1)<br>    )<br>    return &#123;<br>      ...toRefs(obj),<br>      computedName,<br>    &#125;<br>  &#125;,<br>&#125;<br>&lt;/script&gt;<br></code></pre></td></tr></table></figure>
 
@@ -387,6 +387,7 @@
 <li>第一个参数是监听的值，当值发生变化就会触发监听器的回调函数（<code>推荐监听 ref 创建的响应式数据</code>）</li>
 <li>第二个参数是回调函数，可以执行监听时候的回调</li>
 <li>[可选]第三个参数 <code>&#123; immediate: true &#125;</code> 页面访问时会立即执行一次，且当监听的值改变时再次执行</li>
+<li>[可选]第三个参数 <code>&#123; deep: true &#125;</code> 开启深度监听，在不确定对象内什么值会被改变的情况下使用（会有一定的性能损耗）</li>
 </ul>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><code class="hljs vue">&lt;template&gt;<br>  &lt;div&gt;<br>    &lt;input type=&quot;text&quot; v-model=&quot;text&quot;&gt;<br>  &lt;/div&gt;<br>&lt;/template&gt;<br><br>&lt;script&gt;<br>import &#123; ref, watch &#125; from &quot;vue&quot;;<br>export default &#123;<br>  setup() &#123;<br>    const text = ref(&quot;&quot;)<br>    //写法1, 如果监听多个使用数组 watch([text1, text2], ...)<br>    watch(text, (val) =&gt; &#123;<br>      console.log(`1-&gt; text is $&#123;val&#125;`)<br>    &#125;)<br>    //写法2<br>    watch(text, (newVal, oldVal) =&gt; &#123;<br>        console.log(`2-&gt; oldVal is $&#123;oldVal&#125;, newVal is $&#123;newVal&#125;`)<br>      &#125;,<br>      //页面访问时会立即执行一次，且当&#x27;text&#x27;改变时再次执行<br>      &#123; immediate: true &#125;<br>    )<br>    //写法3: 用于 const text = reactive(&#123; value: &#x27;&#x27; &#125;) 创建的响应式对象，就可以监听其中包含的具体属性。否则就会监听冗余了。<br>    watch(() =&gt; text.value, (val) =&gt; &#123;<br>        console.log(`3-&gt; text is $&#123;val&#125;`)<br>      &#125;<br>    )<br>    return &#123;<br>      text<br>    &#125;<br>  &#125;,<br>&#125;<br>&lt;/script&gt;<br></code></pre></td></tr></table></figure>
 
@@ -581,11 +582,16 @@
 <ul>
 <li><p>导入 <code> defineProps</code> 函数：<em>import { defineProps } from ‘vue’;</em></p>
 </li>
-<li><p>使用 defineProps 来定义接收的 props：</p>
+<li><p>使用 defineProps 来定义接收的 props，并且可以进行<a target="_blank" rel="noopener" href="https://cn.vuejs.org/guide/components/props.html#prop-validation">校验 props</a>：</p>
 </li>
 </ul>
 <figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs js"><span class="hljs-keyword">const</span> props = <span class="hljs-title function_">defineProps</span>(&#123;<br>  <span class="hljs-attr">message</span>: <span class="hljs-title class_">String</span><br>&#125;);<br></code></pre></td></tr></table></figure>
 
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br></pre></td><td class="code"><pre><code class="hljs js"><span class="hljs-title function_">defineProps</span>(&#123;<br>  <span class="hljs-comment">// 基础类型检查</span><br>  <span class="hljs-comment">// (给出 `null` 和 `undefined` 值则会跳过任何类型检查)</span><br>  <span class="hljs-attr">propA</span>: <span class="hljs-title class_">Number</span>,<br>  <span class="hljs-comment">// 多种可能的类型</span><br>  <span class="hljs-attr">propB</span>: [<span class="hljs-title class_">String</span>, <span class="hljs-title class_">Number</span>],<br>  <span class="hljs-comment">// 必传，且为 String 类型</span><br>  <span class="hljs-attr">propC</span>: &#123;<br>    <span class="hljs-attr">type</span>: <span class="hljs-title class_">String</span>,<br>    <span class="hljs-attr">required</span>: <span class="hljs-literal">true</span><br>  &#125;,<br>  <span class="hljs-comment">// 必传但可为 null 的字符串</span><br>  <span class="hljs-attr">propD</span>: &#123;<br>    <span class="hljs-attr">type</span>: [<span class="hljs-title class_">String</span>, <span class="hljs-literal">null</span>],<br>    <span class="hljs-attr">required</span>: <span class="hljs-literal">true</span><br>  &#125;,<br>  <span class="hljs-comment">// Number 类型的默认值</span><br>  <span class="hljs-attr">propE</span>: &#123;<br>    <span class="hljs-attr">type</span>: <span class="hljs-title class_">Number</span>,<br>    <span class="hljs-attr">default</span>: <span class="hljs-number">100</span><br>  &#125;,<br>  <span class="hljs-comment">// 对象类型的默认值</span><br>  <span class="hljs-attr">propF</span>: &#123;<br>    <span class="hljs-attr">type</span>: <span class="hljs-title class_">Object</span>,<br>    <span class="hljs-comment">// 对象或数组的默认值</span><br>    <span class="hljs-comment">// 必须从一个工厂函数返回。</span><br>    <span class="hljs-comment">// 该函数接收组件所接收到的原始 prop 作为参数。</span><br>    <span class="hljs-title function_">default</span>(<span class="hljs-params">rawProps</span>) &#123;<br>      <span class="hljs-keyword">return</span> &#123; <span class="hljs-attr">message</span>: <span class="hljs-string">&#x27;hello&#x27;</span> &#125;<br>    &#125;<br>  &#125;,<br>  <span class="hljs-comment">// 自定义类型校验函数</span><br>  <span class="hljs-comment">// 在 3.4+ 中完整的 props 作为第二个参数传入</span><br>  <span class="hljs-attr">propG</span>: &#123;<br>    <span class="hljs-title function_">validator</span>(<span class="hljs-params">value, props</span>) &#123;<br>      <span class="hljs-comment">// The value must match one of these strings</span><br>      <span class="hljs-keyword">return</span> [<span class="hljs-string">&#x27;success&#x27;</span>, <span class="hljs-string">&#x27;warning&#x27;</span>, <span class="hljs-string">&#x27;danger&#x27;</span>].<span class="hljs-title function_">includes</span>(value)<br>    &#125;<br>  &#125;,<br>  <span class="hljs-comment">// 函数类型的默认值</span><br>  <span class="hljs-attr">propH</span>: &#123;<br>    <span class="hljs-attr">type</span>: <span class="hljs-title class_">Function</span>,<br>    <span class="hljs-comment">// 不像对象或数组的默认，这不是一个</span><br>    <span class="hljs-comment">// 工厂函数。这会是一个用来作为默认值的函数</span><br>    <span class="hljs-title function_">default</span>(<span class="hljs-params"></span>) &#123;<br>      <span class="hljs-keyword">return</span> <span class="hljs-string">&#x27;Default function&#x27;</span><br>    &#125;<br>  &#125;<br>&#125;)<br></code></pre></td></tr></table></figure>
+
+<blockquote>
+<p><code>defineProps()</code> 宏中的参数<strong>不可以访问 <code>&lt;script setup&gt;</code> 中定义的其他变量</strong>，因为在编译时整个表达式都会被移到外部的函数中。</p>
+</blockquote>
 <ul>
 <li>在子组件的模板中可以使用这个 props：</li>
 </ul>
@@ -608,6 +614,13 @@
 <p><strong>在父组件中：</strong></p>
 <p>在使用子组件时监听子组件发出的事件：</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs vue">&lt;template&gt;<br>  &lt;ChildComponent @custom-event=&quot;handleChildEvent&quot; /&gt;<br>&lt;/template&gt;<br>&lt;script setup&gt;<br>    import &#123; ref &#125; from &#x27;vue&#x27;;<br>    import ChildComponent from &#x27;./ChildComponent.vue&#x27;;<br>    const handleChildEvent = (data) =&gt; &#123;<br>      console.log(&#x27;child传过来的数据:&#x27;, data);<br>    &#125;;<br>&lt;/script&gt;<br></code></pre></td></tr></table></figure>
+
+
+
+<h4 id="9-7-暴露-defineExpose"><a href="#9-7-暴露-defineExpose" class="headerlink" title="9.7 暴露 defineExpose"></a>9.7 暴露 defineExpose</h4><p>暴露子组件属性或方法，参考官方文档：<a target="_blank" rel="noopener" href="https://cn.vuejs.org/api/sfc-script-setup.html#defineexpose">https://cn.vuejs.org/api/sfc-script-setup.html#defineexpose</a></p>
+<p>使用 <code>&lt;script setup&gt;</code> 的组件是<strong>默认关闭</strong>的——即通过模板引用或者 <code>$parent</code> 链获取到的组件的公开实例，<strong>不会</strong>暴露任何在 <code>&lt;script setup&gt;</code> 中声明的绑定。</p>
+<p>可以通过 <code>defineExpose</code> 编译器宏来显式指定在 <code>&lt;script setup&gt;</code> 组件中要暴露出去的属性。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs js">&lt;script setup&gt;<br><span class="hljs-keyword">import</span> &#123; ref &#125; <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;vue&#x27;</span><br><br><span class="hljs-keyword">const</span> a = <span class="hljs-number">1</span><br><span class="hljs-keyword">const</span> b = <span class="hljs-title function_">ref</span>(<span class="hljs-number">2</span>)<br><br><span class="hljs-title function_">defineExpose</span>(&#123;<br>  a,<br>  b<br>&#125;)<br>&lt;/script&gt;<br></code></pre></td></tr></table></figure>
 
 
               
@@ -708,9 +721,9 @@
                   <article class="post-prev col-6">
                     
                     
-                      <a href="/2022/05/22/04_%E5%A4%A7%E5%89%8D%E7%AB%AF/04_Vue/10-vuex%E5%85%AC%E5%85%B1%E7%8A%B6%E6%80%81%E7%AE%A1%E7%90%86/" title="10-vuex公共状态管理">
+                      <a href="/2022/05/22/04_%E5%A4%A7%E5%89%8D%E7%AB%AF/04_Vue/06-Vue3.0/" title="06-Vue3.0">
                         <i class="iconfont icon-arrowleft"></i>
-                        <span class="hidden-mobile">10-vuex公共状态管理</span>
+                        <span class="hidden-mobile">06-Vue3.0</span>
                         <span class="visible-mobile">上一篇</span>
                       </a>
                     

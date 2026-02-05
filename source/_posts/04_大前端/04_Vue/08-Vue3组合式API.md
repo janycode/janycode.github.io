@@ -193,7 +193,7 @@ console.log(myinput.value.value)
 
 ### 3. computed 计算属性
 
-`computed(() => 逻辑代码)` vue3中的计算属性，逻辑代码中不能加大括号。且只能`同步`。
+`computed(() => 逻辑代码)` vue3中的计算属性，逻辑代码中不能加大括号。且只能`同步`。且`不要修改计算属性变量的值`，会警告 readonly。
 
 导入：*import { computed } from "vue"*
 
@@ -288,6 +288,7 @@ export default {
 * 第一个参数是监听的值，当值发生变化就会触发监听器的回调函数（`推荐监听 ref 创建的响应式数据`）
 * 第二个参数是回调函数，可以执行监听时候的回调
 * [可选]第三个参数 `{ immediate: true }` 页面访问时会立即执行一次，且当监听的值改变时再次执行
+* [可选]第三个参数 `{ deep: true }` 开启深度监听，在不确定对象内什么值会被改变的情况下使用（会有一定的性能损耗）
 
 ```vue
 <template>
@@ -782,13 +783,67 @@ const vMyDirective = {                          //局部指令
 
 * 导入 ` defineProps` 函数：*import { defineProps } from 'vue';*
 
-* 使用 defineProps 来定义接收的 props：
+* 使用 defineProps 来定义接收的 props，并且可以进行[校验 props](https://cn.vuejs.org/guide/components/props.html#prop-validation)：
 
 ```js
 const props = defineProps({
   message: String
 });
 ```
+
+```js
+defineProps({
+  // 基础类型检查
+  // (给出 `null` 和 `undefined` 值则会跳过任何类型检查)
+  propA: Number,
+  // 多种可能的类型
+  propB: [String, Number],
+  // 必传，且为 String 类型
+  propC: {
+    type: String,
+    required: true
+  },
+  // 必传但可为 null 的字符串
+  propD: {
+    type: [String, null],
+    required: true
+  },
+  // Number 类型的默认值
+  propE: {
+    type: Number,
+    default: 100
+  },
+  // 对象类型的默认值
+  propF: {
+    type: Object,
+    // 对象或数组的默认值
+    // 必须从一个工厂函数返回。
+    // 该函数接收组件所接收到的原始 prop 作为参数。
+    default(rawProps) {
+      return { message: 'hello' }
+    }
+  },
+  // 自定义类型校验函数
+  // 在 3.4+ 中完整的 props 作为第二个参数传入
+  propG: {
+    validator(value, props) {
+      // The value must match one of these strings
+      return ['success', 'warning', 'danger'].includes(value)
+    }
+  },
+  // 函数类型的默认值
+  propH: {
+    type: Function,
+    // 不像对象或数组的默认，这不是一个
+    // 工厂函数。这会是一个用来作为默认值的函数
+    default() {
+      return 'Default function'
+    }
+  }
+})
+```
+
+> `defineProps()` 宏中的参数**不可以访问 `<script setup>` 中定义的其他变量**，因为在编译时整个表达式都会被移到外部的函数中。
 
 * 在子组件的模板中可以使用这个 props：
 
@@ -834,6 +889,30 @@ const someFunction = () => {
     const handleChildEvent = (data) => {
       console.log('child传过来的数据:', data);
     };
+</script>
+```
+
+
+
+#### 9.7 暴露 defineExpose
+
+暴露子组件属性或方法，参考官方文档：https://cn.vuejs.org/api/sfc-script-setup.html#defineexpose
+
+使用 `<script setup>` 的组件是**默认关闭**的——即通过模板引用或者 `$parent` 链获取到的组件的公开实例，**不会**暴露任何在 `<script setup>` 中声明的绑定。
+
+可以通过 `defineExpose` 编译器宏来显式指定在 `<script setup>` 组件中要暴露出去的属性。
+
+```js
+<script setup>
+import { ref } from 'vue'
+
+const a = 1
+const b = ref(2)
+
+defineExpose({
+  a,
+  b
+})
 </script>
 ```
 
