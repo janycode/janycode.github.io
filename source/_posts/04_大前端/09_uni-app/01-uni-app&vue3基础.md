@@ -576,61 +576,538 @@ $uni-color-primary: #007aff;
 
 ### 3.1 路由 globalStyle
 
-5.3
+[globalStyle](https://uniapp.dcloud.net.cn/collocation/pages.html#globalstyle)  用于设置应用的状态栏、导航条、标题、窗口背景色等。
+
+| 属性                           | 类型     | 默认值  | 描述                                                         |
+| :----------------------------- | :------- | :------ | :----------------------------------------------------------- |
+| `navigationBarBackgroundColor` | HexColor | #F8F8F8 | 导航栏背景颜色（同状态栏背景色）                             |
+| `navigationBarTextStyle`       | String   | black   | 导航栏标题颜色及状态栏前景颜色，仅支持 black/white           |
+| `navigationBarTitleText`       | String   |         | 导航栏标题文字内容                                           |
+| `navigationStyle`              | String   | default | 导航栏样式，仅支持 default/custom。`custom` 即取消默认的原生导航栏，需看[使用注意](https://uniapp.dcloud.net.cn/collocation/pages#customnav) |
+| `backgroundColor`              | HexColor | #ffffff | 下拉显示出来的窗口的背景色                                   |
+| `backgroundTextStyle`          | String   | dark    | 下拉 loading 的样式，仅支持 dark / light                     |
+| `enablePullDownRefresh`        | Boolean  | false   | 是否开启下拉刷新，详见[页面生命周期](https://uniapp.dcloud.net.cn/tutorial/page.html#lifecycle)。 |
+| `onReachBottomDistance`        | Number   | 50      | 页面上拉触底事件触发时距页面底部距离，单位只支持 px，详见[页面生命周期](https://uniapp.dcloud.net.cn/tutorial/page.html#lifecycle) |
+| ...                            |          |         |                                                              |
+
+```json
+"globalStyle": {
+    "navigationBarTextStyle": "white",
+    "navigationBarTitleText": "全局导航标题",
+    "navigationBarBackgroundColor": "#14c145",
+    "backgroundColor": "#F8F8F8",
+    "backgroundTextStyle": "dark",
+    "enablePullDownRefresh": true,
+    "onReachBottomDistance": 50
+  },
+```
 
 
 
-### 3.2 配置 页面路径
+### 3.2 配置 pages.json（完整）
+
+[pages 配置项列表](https://uniapp.dcloud.net.cn/collocation/pages.html#%E9%85%8D%E7%BD%AE%E9%A1%B9%E5%88%97%E8%A1%A8) 以下是包含了额所有配置项的 pages.json :
+
+* globalStyle 中的属性都适用于 pages 中的 style，且 pages 中 style 优先级更高。
+
+```json
+{
+  "pages": [ //数组，这里的 "style" 配置会覆盖全局的 "globalStyle"
+    //pages数组中第一项表示应用启动页，参考：https://uniapp.dcloud.io/collocation/pages
+    {
+      "path": "pages/index/index",  //路径，在 pages/ 目录下新建页面，默认会添加 path
+      "style": {
+        "navigationBarTitleText": "组件"
+      }
+    },
+    {
+      "path": "pages/API/index",
+      "style": {
+        "navigationBarTitleText": "接口"
+      }
+    },
+    {
+      "path": "pages/component/view/index",
+      "style": {
+        "navigationBarTitleText": "view"
+      }
+    }
+  ],
+  "condition": {
+    //模式配置，仅开发期间生效
+    "current": 0, //当前激活的模式（list 的索引项）
+    "list": [
+      {
+        "name": "test", //模式名称
+        "path": "pages/component/view/index" //启动页面，必选
+      }
+    ]
+  },
+  "globalStyle": {
+    "navigationBarTextStyle": "black",
+    "navigationBarTitleText": "演示",
+    "navigationBarBackgroundColor": "#F8F8F8",
+    "backgroundColor": "#F8F8F8",
+    "usingComponents": {
+      "collapse-tree-item": "/components/collapse-tree-item"
+    },
+    "renderingMode": "seperated", // 仅微信小程序，webrtc 无法正常时尝试强制关闭同层渲染
+    "pageOrientation": "portrait", //横屏配置，全局屏幕旋转设置(仅 APP/微信/QQ小程序)，支持 auto / portrait / landscape
+    "rpxCalcMaxDeviceWidth": 960,
+    "rpxCalcBaseDeviceWidth": 375,
+    "rpxCalcIncludeWidth": 750
+  },
+  "tabBar": {
+    "color": "#7A7E83",
+    "selectedColor": "#3cc51f",
+    "borderStyle": "black",
+    "backgroundColor": "#ffffff",
+    "height": "50px",
+    "fontSize": "10px",
+    "iconWidth": "24px",
+    "spacing": "3px",
+    "iconfontSrc": "static/iconfont.ttf", // app tabbar 字体.ttf文件路径 app 3.4.4+
+    "list": [
+      {
+        "pagePath": "pages/component/index",
+        "iconPath": "static/image/icon_component.png",
+        "selectedIconPath": "static/image/icon_component_HL.png",
+        "text": "组件",
+        "iconfont": {
+          // 优先级高于 iconPath，该属性依赖 tabbar 根节点的 iconfontSrc
+          "text": "\ue642", // 已实际字体编码为准
+          "selectedText": "\ue776",
+          "fontSize": "17px",
+          "color": "#000000",
+          "selectedColor": "#0000ff"
+        }
+      },
+      {
+        "pagePath": "pages/API/index",
+        "iconPath": "static/image/icon_API.png",
+        "selectedIconPath": "static/image/icon_API_HL.png",
+        "text": "接口"
+      }
+    ],
+    "midButton": {
+      "width": "80px",
+      "height": "50px",
+      "text": "文字",
+      "iconPath": "static/image/midButton_iconPath.png",
+      "iconWidth": "24px",
+      "backgroundImage": "static/image/midButton_backgroundImage.png"
+    }
+  },
+  "easycom": {
+    "autoscan": true, //是否自动扫描组件
+    "custom": {
+      //自定义扫描规则
+      "^uni-(.*)": "@/components/uni-$1.vue"
+    }
+  },
+  "topWindow": {
+    "path": "responsive/top-window.vue",
+    "style": {
+      "height": "44px"
+    }
+  },
+  "leftWindow": {
+    "path": "responsive/left-window.vue",
+    "style": {
+      "width": "300px"
+    }
+  },
+  "rightWindow": {
+    "path": "responsive/right-window.vue",
+    "style": {
+      "width": "300px"
+    },
+    "matchMedia": {
+      "minWidth": 768
+    }
+  }
+}
+```
 
 
 
 ### 3.3 底部选项卡
 
+[tabBar](https://uniapp.dcloud.net.cn/collocation/pages.html#tabbar) 如果应用是一个多 tab 应用，可以通过 tabBar 配置项指定一级导航栏，以及 tab 切换时显示的对应页。
 
+* 配置最少 2 个、最多 5 个 tab，tab 按数组的顺序排序
+* iconPath 图片路径，icon 大小限制为 40kb，建议尺寸为 81px * 81px
+
+```json
+  "tabBar": {
+    "color": "#696969", //底部导航文字颜色
+    "selectedColor": "#14c145", //底部导航选中文字颜色
+    "borderStyle": "white", //底部导航边框颜色
+    "backgroundColor": "white", //底部导航背景色
+    //"position": "top", //导航变成顶部 - 仅小程序支持
+    "list": [
+      {
+        "pagePath": "pages/index/index",
+        "iconPath": "/static/images/home.png",
+        "selectedIconPath": "/static/images/home_light.png",
+        "text": "首页"
+      },
+      {
+        "pagePath": "pages/classify/classify",
+        "iconPath": "/static/images/category.png",
+        "selectedIconPath": "/static/images/category_light.png",
+        "text": "分类"
+      },
+      {
+        "pagePath": "pages/order/order",
+        "iconPath": "/static/images/shopcar.png",
+        "selectedIconPath": "/static/images/shopcar_light.png",
+        "text": "订单"
+      },
+      {
+        "pagePath": "pages/user/user",
+        "iconPath": "/static/images/center.png",
+        "selectedIconPath": "/static/images/center_light.png",
+        "text": "我的"
+      }
+    ]
+  },
+```
+
+![image-20260206105619468](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20260206105621025.png)
 
 ### 3.4 配置 manifest.json
 
+[manifest.json](https://uniapp.dcloud.net.cn/collocation/manifest.html) 是应用的配置文件，用于指定应用的名称、图标、权限等。HBuilderX 创建的工程此文件在根目录，CLI 创建的工程此文件在 src 目录。
+
+* 【微信小程序配置】- 填写 AppId，勾选上传代码自动压缩
+* 【Web配置】- 配置页面标题，和其他选项按需，打包上线时做具体配置
 
 
-### 3.5 .vite.config
+
+### 3.5 .vite.config 配置插件自动导包
+
+`unplugin-auto-import`  是一款 npm 插件库，需要安装，安装后可以免去每次导入（如 ref、computed等）的步骤了。
+
+安装：~~npm i unplugin-auto-import~~ - 实测不安装，仅配置 vite.config.js 也可以自动导包。
+
+项目根目录下新建 vite 配置文件：[vite.config.js](https://uniapp.dcloud.net.cn/collocation/vite-config.html)
+
+* 仅`vue 3`项目生效。
+
+vite.config.js
+
+```js
+import { defineConfig } from "vite";
+import uni from "@dcloudio/vite-plugin-uni";
+import AutoImport from "unplugin-auto-import/vite";
+
+export default defineConfig({
+  plugins: [
+    uni(),
+    // 自动导入配置
+    AutoImport({
+      imports: [
+        // 预设
+        "vue",
+        "uni-app",
+      ],
+    }),
+  ],
+});
+```
+
+还支持其他配置，参考官方文档即可：
+
+* 自定义静态资源目录
+* 注入全局依赖
+* 配置环境变量
+* 发布时删除 console
+* 发布时动态修改 manifest.json
 
 
 
 ### 3.6 showToast 提示
 
+[showToast](https://uniapp.dcloud.net.cn/api/ui/prompt.html#showtoast)  显示消息提示框。
+
+```js
+uni.showToast({
+  title: "操作成功",
+  icon: "error", //默认 success(可省略), 常用error/loading/none等，也可以不要图标
+  //image: "../../static/images/home.png", //自定义图标显示
+  duration: 2000, //默认 1500ms（1.5s）
+  mask: true, //透明蒙层，toast 消失后才能点击操作页面
+});
+```
+
+```js
+uni.hideToast(); //关闭消息提示框
+```
+
 
 
 ### 3.7 showLoading 加载中
 
+[showLoading](https://uniapp.dcloud.net.cn/api/ui/prompt.html#showloading) 显示 loading 提示框, 需主动调用 [uni.hideLoading](https://uniapp.dcloud.net.cn/api/ui/prompt.html#hideloading) 才能关闭提示框。
 
+```js
+uni.showLoading({
+  title: "加载中",
+});
+
+setTimeout(function () {
+  uni.hideLoading();
+}, 2000);
+```
+
+![image-20260206115630709](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20260206115631762.png)
 
 ### 3.8 showModal 模态框
 
+[showModal](https://uniapp.dcloud.net.cn/api/ui/prompt.html#showmodal)  显示模态弹窗，可以只有一个确定按钮，也可以同时有确定和取消按钮。类似于一个API整合了 html 中：alert、confirm。
 
+```js
+  uni.showModal({
+    title: "删除",
+    content: "注意：删除后不可恢复！",
+    // showCancel: false,  //不显示【取消】按钮
+    confirmColor: "red", //【确定】按钮颜色
+    //editable: true, //配合 title 为：请输入xxx来校验删除
+    // placeholderText: "请输入【确认删除】",
+    success: function (res) {
+      if (res.confirm) {
+        console.log("用户点击确定");
+        //console.log("用户点击确定:", res.content); // res.content 输入的内容
+      } else if (res.cancel) {
+        console.log("用户点击取消");
+      }
+    },
+  });
+```
 
-* 
+![image-20260206115613147](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20260206115614475.png)
 
+### 3.9 showActionSheet 弹出菜单
 
+[showActionSheet](https://uniapp.dcloud.net.cn/api/ui/prompt.html#showactionsheet)  从底部向上弹出操作菜单。
+
+```js
+  let list = ["选项A", "选项B", "选项C"];
+  uni.showActionSheet({
+    title: "请选择",
+    // itemColor: "blue", //选项颜色
+    itemList: list,
+    success: function (res) {
+      console.log(
+        "选中了第" + (res.tapIndex + 1) + "个按钮: ",
+        list[res.tapIndex]
+      );
+    },
+    fail: function (res) {
+      console.log("取消", res.errMsg);
+    },
+  });
+```
+
+![image-20260206115552150](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20260206115553872.png)
 
 ### 3.10 动态设置导航条
 
+[setNavigationBarTitle](https://uniapp.dcloud.net.cn/api/ui/navigationbar.html)  动态设置当前页面的标题。
+
+```js
+uni.hideHomeButton(); //用于非底部导航页面默认左上角的Home按钮 - 隐藏
+uni.showNavigationBarLoading(); //在当前页面【显示】导航条加载动画。
+setTimeout(() => {
+  uni.setNavigationBarTitle({
+    title: "详情页动态标题",
+  });
+  uni.hideNavigationBarLoading(); //在当前页面【隐藏】导航条加载动画。
+}, 2000);
+```
+
+![image-20260206120057869](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20260206120059265.png)
+
+![image-20260206120334426](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20260206120335688.png)
+
+### 3.11 setTabBar 和 下拉刷新
+
+[setTabBar](https://uniapp.dcloud.net.cn/api/ui/tabbar.html) 用于动态设置底部菜单。 - 用的极少。
+
+setTabBarBadge - 为 tabBar 某一项的右上角添加文本。
+
+showTabBarRedDot - 显示 tabBar 某一项的右上角的红点。
+
+App.vue（需要在应用加载时就设置）
+
+```js
+<script setup>
+onLaunch: () => {
+  console.log("App Launch");
+  uni.setTabBarBadge({
+    index: 2,  //订单
+    text: "3",
+  });
+  uni.showTabBarRedDot({
+    index: 3,
+    text: "3",
+  });
+};
+</script>
+```
+
+![image-20260206121857747](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20260206121859029.png)
+
+```js
+<script setup>
+onShow(() => {
+  console.log("User hide");
+  uni.hideTabBarRedDot({  //进入我的后，隐藏红点
+    index: 3,
+  });
+});
+</script>
+```
+
+下拉刷新：
+
+```js
+uni.startPullDownRefresh();  //开启下拉刷新
+setTimeout(() => {
+  uni.stopPullDownRefresh();  //关闭下拉刷新（2s后）
+}, 2000);
+```
 
 
-### 3.11 下拉刷新
 
+### 3.12 路由跳转
 
+[页面和路由跳转](https://uniapp.dcloud.net.cn/api/router.html#navigateto)
 
-## 3.12 路由跳转
+* `uni.navigateTo` - 保留当前页面，跳转到应用内的某个页面，使用`uni.navigateBack`可以返回到原页面。
+* `uni.navigateBack` - 关闭当前页面，返回上一页面或多级页面。可通过 `getCurrentPages()` 获取当前的页面栈，决定需要返回几层。
+  * `uni.navigateBack({ delta: 2 });` 返回 2层，delta 固定参数名
+* `uni.redirectTo` - 关闭当前页面，跳转到应用内的某个页面。
+* `uni.reLaunch` - 关闭所有页面，打开到应用内的某个页面。
+* `uni.switchTab` - 跳转到 tabBar 页面，并关闭其他所有非 tabBar 页面。
+
+```js
+//在起始页面跳转到test.vue页面并传递参数
+uni.navigateTo({
+	url: 'test?id=1&name=uniapp'
+});
+```
+
+```js
+// 在test.vue页面接受参数
+export default {
+	onLoad: function (option) { //option为object类型，会序列化上个页面传递的参数
+		console.log(option.id); //打印出上个页面传递的参数。
+		console.log(option.name); //打印出上个页面传递的参数。
+	}
+}
+```
 
 
 
 ### 3.13 数据缓存 StorageSync
 
+[数据缓存](https://uniapp.dcloud.net.cn/api/storage/storage.html#setstoragesync) 默认存储在 localStorage 中。
+
+* `uni.setStorageSync(key, data)` - 将 data 存储在本地缓存中指定的 key 中，会覆盖掉原来该 key 对应的内容，这是一个同步接口。
+* `const data = uni.getStorageSync(key)` - 从本地缓存中同步获取指定 key 对应的内容。
+* `uni.removeStorageSync(key)` - 从本地缓存中同步移除指定 key。
 
 
-* 
+
+## 4. 数据请求
 
 ### 4.1 uni.request
+
+[uni.request](https://uniapp.dcloud.net.cn/api/request/request.html) 发起网络请求。
+
+data 参数数据说明：
+
+- 对于 `GET` 方法，会将数据转换为 query string。例如 `{ name: 'name', age: 18 }` 转换后的结果是 `name=name&age=18`。
+- 对于 `POST` 方法且 `header['content-type']` 为 `application/json` 的数据，会进行 JSON 序列化。
+- 对于 `POST` 方法且 `header['content-type']` 为 `application/x-www-form-urlencoded` 的数据，会将数据转换为 query string。
+
+```js
+//方式1
+uni.request({
+  url: "https://jsonplaceholder.typicode.com/posts?_limit=10",
+  success: (res) => {
+    console.log(res.data);
+  },
+});
+```
+
+```js
+//方式2【推荐】
+uni.request({
+    url: "https://jsonplaceholder.typicode.com/posts?_limit=10",
+  }).then((res) => {
+    console.log(res.data);
+  }).catch(err => {
+    console.error(err)
+  })
+```
+
+```js
+// 方式3【推荐】 <button @click="handleRequest">获取数据</button>
+const handleRequest = async () => {
+  try {
+    let res = await uni.request({
+      url: "https://jsonplaceholder.typicode.com/posts?_limit=10",
+    });
+    console.log(res.data);
+  } catch (err) {
+    console.error(err);
+  }
+};
+```
+
+#### 完整示例
+
+```js
+// 发送请求
+function network() {
+  // uni.showLoading({
+  //   title: "加载中",
+  // });
+  uni.showNavigationBarLoading();  //显示loading
+  uni.request({  //请求
+      url: "https://api.thecatapi.com/v1/images/search?limit=10",
+      data: {
+        size: 10,
+      },
+    }).then((res) => { //请求结果
+      console.log(res);
+      if (res.statusCode === 200) { //成功
+        pets.value = res.data;
+        console.log(pets.value);
+      } else {                      //失败
+        uni.showToast({
+          title: res.errMsg,
+          icon: "none",
+          duration: 2000,
+        });
+      }
+    }).catch((err) => { //请求异常
+      consolog.err(err);
+      uni.showToast({
+        title: "服务器繁忙",
+        icon: "none",
+        duration: 2000,
+      });
+    }).finally(() => { //隐藏loading
+      console.log("成功或失败都会执行");
+      // uni.hideLoading();
+      uni.hideNavigationBarLoading();
+    });
+}
+```
 
 
 
