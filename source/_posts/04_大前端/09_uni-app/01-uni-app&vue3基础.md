@@ -32,7 +32,7 @@ HBuild X 开发工具：https://hx.dcloud.net.cn/
 
 - 安装时选择快捷键方案 `IntelliJ IDEA` 方案即可。
 
-
+> HBuilderX 代码格式化配置参考：https://zhuanlan.zhihu.com/p/374891673
 
 ### 1.2 创建项目
 
