@@ -666,7 +666,32 @@ common/style/common-style.scss
 }
 ```
 
+`注意`：底部弹窗时，在小程序会有一个 padding 值，让弹窗与手机底部有间隔镂空了，需要改原生组件（如果有此情况则需要处理）
 
+位置：uni_modules/uni_popup/components/uni-popup/uni-popup.vue
+
+搜索：底部弹出样式处理
+
+```js
+    /**
+     * 底部弹出样式处理
+     */
+    bottom(type) {
+        this.popupstyle = 'bottom'
+        this.ani = ['slide-bottom']
+        this.transClass = {
+            position: 'fixed',
+            left: 0,
+            right: 0,
+            bottom: 0,
+            // paddingBottom: this.safeAreaInsets + 'px',  //注释掉此行！！！
+            backgroundColor: this.bg
+        }
+        if (type) return
+        this.showPopup = true
+        this.showTrans = true
+    },
+```
 
 
 
@@ -984,8 +1009,12 @@ const getClassList = async () => {
   let res = await apiGetClassify()
   classList.value = res.data
   // 针对数据量比较大，需要传递到跳转的页面时使用本地缓存
-  uni.setStorageSync('storageClassList', classList.value) //离开页面的时候将其清空即可
+  uni.setStorageSync('storageClassList', classList.value)
 }
+//离开页面的时候将其清空即可 - 养成好习惯，提高性能
+onUnload(()=>{
+	uni.removeStorageSync("storgClassList")
+})
 ```
 
 
@@ -1042,6 +1071,502 @@ const getClassList = async () => {
     readImgsFun()
   })
 ```
+
+
+
+### 2.17 小程序下载图片
+
+前置：
+
+1. **安全域名**配置：微信小程序后台 - 开发管理 - 服务器域名 - downloadFile 域名添加。
+2. **隐私协议**配置：微信小程序后台 - 设置 - 服务内容声明 - 用户隐私协议设置 - 按要求填写、选择所需要的权限即可保存。
+
+![image-20260208105016604](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20260208105017660.png)
+
+```js
+  //点击下载：H5与小程序的兼容条件编译
+  const clickDownload = async () => {
+    // #ifdef H5
+    uni.showModal({
+      content: '请长按保存壁纸',
+      showCancel: false
+    })
+    // #endif
+
+    // #ifndef H5
+    try {
+      // 等待提示，此时用户正在保存图片
+      uni.showLoading({
+        title: '下载中...',
+        mask: true
+      })
+      let { classid, _id: wallId } = currentInfo.value
+      let res = await apiWriteDownload({ classid, wallId })
+      if (res.errCode !== 0) throw res
+      // 获取小程序图片信息
+      uni.getImageInfo({
+        src: currentInfo.value.picurl, //图片网络地址
+        success: res => {
+          // 小程序保存图片api
+          uni.saveImageToPhotosAlbum({
+            filePath: res.path, //小程序图片临时地址 res.path
+            success: res => {
+              uni.showToast({
+                title: '保存成功，请到相册查看',
+                icon: 'none'
+              })
+            },
+            fail: err => {
+              if (err.errMsg === 'saveImageToPhotosAlbum:fail cancel') {  //未授权的错误信息判断
+                uni.showToast({
+                  title: '保存失败，请重新点击下载',
+                  icon: 'none'
+                })
+                return
+              }
+              uni.showModal({
+                title: '授权提示',
+                content: '需要授权保存相册',
+                success: res => {
+                  if (res.confirm) {  // 确认弹窗：跳转授权页面，打开保存相册权限
+                    uni.openSetting({
+                      success: setting => {
+                        console.log(setting)
+                        if (setting.authSetting['scope.writePhotosAlbum']) { //授权成功返回值 true
+                          uni.showToast({
+                            title: '获取授权成功',
+                            icon: 'none'
+                          })
+                        } else {
+                          uni.showToast({
+                            title: '获取权限失败',
+                            icon: 'none'
+                          })
+                        }
+                      }
+                    })
+                  }
+                }
+              })
+            },
+            complete: () => { // 兜底关闭掉 下载中的提示
+              uni.hideLoading()
+            }
+          })
+        }
+      })
+    } catch (err) {
+      console.log(err)
+      uni.hideLoading()
+    }
+    // #endif
+  }
+```
+
+![image-20260208105034457](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20260208105035414.png)
+
+
+
+### 2.18 分享给好友|朋友圈
+
+[onShareAppMessage](https://uniapp.dcloud.net.cn/api/plugins/share.html#onshareappmessage) 小程序中用户点击分享后，在 js 中定义 onShareAppMessage 处理函数（和 onLoad 等生命周期函数同级），设置该页面的分享信息。
+
+[onShareTimeline](https://uniapp.dcloud.net.cn/tutorial/page.html#lifecycle)  监听用户点击右上角转发到朋友圈。
+
+* `imageUrl` - 可以是**变量url** / **网络图片** / **本地图片**（本地需要使用 static/ 目录下图片，因为会被打包，否则拿不到）
+
+#### 页面无需参数-分享
+
+```js
+import {onShareAppMessage,onShareTimeline} from "@dcloudio/uni-app"
+//分享给好友
+onShareAppMessage((e)=>{
+	return {
+		title:"好看的手机壁纸",
+		path:"/pages/classify/classify"
+	}
+})
+//分享朋友圈
+onShareTimeline(()=>{
+	return {
+		title:"好看的手机壁纸",
+        imageUrl: '/static/images/logo.jpg' //可以自定义显示的小图内容
+	}
+})
+```
+
+![image-20260208104910711](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20260208104912320.png)
+
+#### 页面需要参数-分享
+
+```js
+let pageName;
+onLoad((e) => {	
+	let { id=null, name=null, type=null } = e;	
+	pageName = name	
+	//修改导航标题
+	uni.setNavigationBarTitle({ title:name })
+	//执行获取分类列表方法
+	getClassList();
+})
+//分享给好友
+onShareAppMessage((e) => {
+	return {
+		title:"精美壁纸-"+pageName,
+		path:"/pages/classlist/classlist?id="+queryParams.classid+"&name="+pageName
+	}
+})
+//分享朋友圈： query 只是参数
+onShareTimeline(() => {
+	return {
+		title:"精美壁纸-"+pageName,
+		query:"id="+queryParams.classid+"&name="+pageName
+	}
+})
+```
+
+
+
+### 2.19 文章详情 - 富文本渲染
+
+* `<rich-text>` - 官方自带的富文本组件
+* `<mp-html>` - 插件市场的富文本组件，功能更丰富，如文章内图片点击可以放大等【推荐】
+
+pages/notice/detail.vue
+
+```html
+<template>
+	<view class="noticeLayout">
+		<view class="title">
+			<view class="tag" v-if="detail.select">
+				<uni-tag inverted text="置顶" type="error" />
+			</view>
+			<view class="font">{{detail.title}}</view>			
+		</view>
+		
+		<view class="info">
+			<view class="item">{{detail.author}}</view>					
+			<view class="item">
+				<uni-dateformat :date="detail.publish_date" format="yyyy-MM-dd hh:mm:ss"></uni-dateformat>
+			</view>	
+		</view>
+		<!-- 富文本渲染 -->
+		<view class="content">		
+			<mp-html :content="detail.content" />
+			<!-- <rich-text :nodes="detail.content"></rich-text> -->
+		</view>
+		
+		<view class="count">
+			阅读 {{detail.view_count}}	
+		</view>
+	</view>
+</template>
+
+<script setup>
+import {apiNoticeDetail} from "@/api/apis.js"
+import { ref } from "vue";
+import {onLoad} from "@dcloudio/uni-app"
+
+const detail = ref({})
+let noticeId
+onLoad((e)=>{
+	noticeId = e.id
+	getNoticeDetail();
+})
+
+const getNoticeDetail = ()=>{
+	apiNoticeDetail({id:noticeId}).then(res=>{
+		detail.value = res.data
+		console.log(res);
+	})
+}
+</script>
+
+<style lang="scss" scoped>
+.noticeLayout{
+	padding:30rpx;
+    .title{
+        font-size: 40rpx;
+        color:#111;
+        line-height: 1.6em;
+        padding-bottom:30rpx;
+        display: flex;
+        .tag{
+            transform: scale(0.8);
+            transform-origin: left center;
+            flex-shrink: 0;	
+        }
+        .font{
+            padding-left:6rpx;
+        }
+    }
+    .info{
+        display: flex;
+        align-items: center;
+        color:#999;
+        font-size: 28rpx;
+        .item{
+            padding-right: 20rpx;
+        }
+    }
+    .content{
+        padding:50rpx 0;
+    }
+    .count{
+        color:#999;
+        font-size: 28rpx;
+    }
+}
+</style>
+```
+
+![image-20260208113452205](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20260208113453749.png)
+
+
+
+### 2.20 搜索页
+
+包含搜素框、最近搜索、热门搜索。
+
+* `uni-search-bar` - 官方搜索栏组件
+* `uv-empty` - 插件市场组件，该组件用于需要加载内容，但是加载的第一页数据就为空，提示一个 没有内容 的场景。
+
+搜索历史核心逻辑：
+
+```js
+//新值追加到数组(展开)、Set去重、slice截取数量
+historySearch.value = [...new Set([queryParams.value.keyword, ...historySearch.value])].slice(0, 10)
+```
+
+pages/search/search.vue
+
+```html
+<template>
+  <view class="searchLayout">
+    <view class="search">
+      <uni-search-bar @confirm="onSearch" @cancel="onClear" @clear="onClear" focus placeholder="搜索"
+        v-model="queryParams.keyword">
+      </uni-search-bar>
+    </view>
+
+    <view v-if="!classList.length || noSearch">
+      <view class="history" v-if="historySearch.length">
+        <view class="topTitle">
+          <view class="text">最近搜索</view>
+          <view class="icon" @click="removeHistory">
+            <uni-icons type="trash" size="25"></uni-icons>
+          </view>
+        </view>
+        <view class="tabs">
+          <view class="tab" v-for="tab in historySearch" :key="tab" @click="clickTab(tab)">{{tab}}</view>
+        </view>
+      </view>
+
+      <view class="recommend">
+        <view class="topTitle">
+          <view class="text">热门搜索</view>
+        </view>
+        <view class="tabs">
+          <view class="tab" v-for="tab in recommendList" :key="tab" @click="clickTab(tab)">{{tab}}</view>
+        </view>
+      </view>
+    </view>
+
+    <view class="noSearch" v-if="noSearch">
+      <uv-empty mode="search" icon="http://cdn.uviewui.com/uview/empty/search.png"></uv-empty>
+    </view>
+
+    <view v-else>
+      <view class="list">
+        <navigator :url="`/pages/preview/preview?id=${item._id}`" class="item" v-for="item in classList"
+          :key="item._id">
+          <image :src="item.smallPicurl" mode="aspectFill"></image>
+        </navigator>
+      </view>
+      <view class="loadingLayout" v-if="noData || classList.length">
+        <uni-load-more :status="noData?'noMore':'loading'" />
+      </view>
+    </view>
+
+  </view>
+</template>
+
+<script setup>
+  import { ref } from 'vue'
+  import { onLoad, onUnload, onReachBottom } from '@dcloudio/uni-app'
+  import { apiSearchData } from '@/api/apis.js'
+  //查询参数
+  const queryParams = ref({
+    pageNum: 1,
+    pageSize: 12,
+    keyword: ''
+  })
+
+  //搜索历史词
+  const historySearch = ref(uni.getStorageSync('historySearch') || [])
+  //热门搜索词
+  const recommendList = ref(['美女', '帅哥', '宠物', '卡通'])
+  //没有更多
+  const noData = ref(false)
+  //没有搜索结果
+  const noSearch = ref(false)
+  //搜索结果列表
+  const classList = ref([])
+
+  //点击搜索
+  const onSearch = () => {
+    uni.showLoading()
+    historySearch.value = [...new Set([queryParams.value.keyword, ...historySearch.value])].slice(0, 10)
+    uni.setStorageSync('historySearch', historySearch.value)
+    initParams(queryParams.value.keyword)
+    searchData()
+    console.log(queryParams.value.keyword)
+  }
+
+  //点击清除按钮
+  const onClear = () => {
+    initParams()
+  }
+
+  //点击标签进行搜索
+  const clickTab = value => {
+    initParams(value)
+    onSearch()
+  }
+
+  //点击清空搜索记录
+  const removeHistory = () => {
+    uni.showModal({
+      title: '是否清空历史搜索？',
+      success: res => {
+        if (res.confirm) {
+          uni.removeStorageSync('historySearch')
+          historySearch.value = []
+        }
+      }
+    })
+  }
+
+  const searchData = async () => {
+    try {
+      let res = await apiSearchData(queryParams.value)
+      classList.value = [...classList.value, ...res.data]
+      uni.setStorageSync('storgClassList', classList.value)
+      if (queryParams.value.pageSize > res.data.length) noData.value = true
+      if (res.data.length === 0 && classList.value.length === 0) noSearch.value = true
+      console.log(res)
+    } finally {
+      uni.hideLoading()
+    }
+  }
+
+  const initParams = (value = '') => {
+    classList.value = []
+    noData.value = false
+    noSearch.value = false
+    queryParams.value = {
+      pageNum: 1,
+      pageSize: 12,
+      keyword: value || ''
+    }
+  }
+
+  //触底加载更多
+  onReachBottom(() => {
+    if (noData.value) return
+    queryParams.value.pageNum++
+    searchData()
+  })
+
+  //关闭有页面
+  onUnload(() => {
+    uni.removeStorageSync('storgClassList', classList.value)
+  })
+</script>
+
+<style lang="scss" scoped>
+  .searchLayout {
+    .search {
+      padding: 0 10rpx;
+    }
+
+    .topTitle {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 32rpx;
+      color: #999;
+    }
+
+    .history {
+      padding: 30rpx;
+    }
+
+    .recommend {
+      padding: 30rpx;
+    }
+
+    .tabs {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      padding-top: 20rpx;
+
+      .tab {
+        background: #F4F4F4;
+        font-size: 28rpx;
+        color: #333;
+        padding: 10rpx 28rpx;
+        border-radius: 50rpx;
+        margin-right: 20rpx;
+        margin-top: 20rpx;
+      }
+    }
+
+    .list {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 5rpx;
+      padding: 20rpx 5rpx;
+
+      .item {
+        height: 440rpx;
+
+        image {
+          width: 100%;
+          height: 100%;
+          display: block;
+        }
+      }
+    }
+  }
+</style>
+```
+
+![image-20260208115019772](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20260208115020956.png)
+
+
+
+### 2.21 跳转外部小程序
+
+```html
+<swiper circular indicator-dots indicator-color="rgba(255,255,255,0.5)" indicator-active-color="#fff" autoplay>
+    <swiper-item v-for="item in bannerList" :key="item._id">
+        <!-- 跳转外部小程序 -->
+        <navigator v-if="item.target == 'miniProgram'"  :url="item.url" target="miniProgram" :app-id="item.appid" class="like">
+            <image :src="item.picurl" mode="aspectFill"></image>
+        </navigator>
+		<!-- 跳转自身小程序内部页面 -->
+        <navigator v-else :url="`/pages/classlist/classlist?${item.url}`" class="like">
+            <image :src="item.picurl" mode="aspectFill"></image>
+        </navigator>
+    </swiper-item>				
+</swiper>
+```
+
+
+
+
 
 
 

@@ -1,5 +1,5 @@
 ---
-title: 01-VMware安装和配置CentOS7开发&运维环境
+title: 01-CentOS7开发&运维环境配置
 date: 2018-3-28 23:06:42
 tags:
 - CentOS
@@ -401,6 +401,135 @@ categories:
   time rsync -avzh xxx/target/*.jar root@ip:/root/xxx/jars
   ```
 
+备份（node 启动 SSR 项目）：
+
+```
+#!/bin/sh
+PORT=3000 nohup node /root/xxx-pc-prod/9303/front/xxx-pc/server/index.mjs > output.log 2>&1 </dev/null &
+echo $! > pid 
+PID=`cat pid`
+echo pid=$PID
+```
+
+备份（pipeline 编译 SSR 项目）：
+
+```pipeline
+pipeline { 
+    agent any 
+    
+    environment {
+        REPOSITORY="http://ip地址:6060/front/xxx.git"
+        def projectPath = "/root/front-project"
+		def projectName = "xxx"
+        def ipAddress = "ip"
+        def releaseTerminal = "xxx-pc"
+        def packageEnv = "prod"
+        def nodeVersion = "20.19.0"
+    }
+    
+    stages {
+        stage('开始发布通知') {
+            steps {
+                println "rollbackFlag=" + rollbackFlag
+                script {
+                	if (rollbackFlag == "true") {
+                        wrap([$class: 'BuildUser']) {
+                        	script {
+                        		BUILD_USER = "${env.BUILD_USER}"
+                    	    }
+                        	sh '/root/.push-start-msg.sh ${releaseTerminal} ${packageEnv} front ${BUILD_USER} 回滚'
+                        }
+                	} else {
+                	     wrap([$class: 'BuildUser']) {
+                        	script {
+                        		BUILD_USER = "${env.BUILD_USER}"
+                    	    }
+                        	sh '/root/.push-start-msg.sh ${releaseTerminal} ${packageEnv} front ${BUILD_USER} 发布'
+                	    }
+                	}
+                }
+            }
+        }
+        stage('拉取代码') { 
+            steps {
+                script {
+                    if (rollbackFlag == "true") {
+                        sh 'echo 111'
+                    } else {
+                        sh 'cd ${projectPath}/${projectName} && git checkout master && git pull && ${projectPath}/pull-gitlog.sh ${releaseTerminal} ${packageEnv} front'
+                        sh 'ssh root@${ipAddress} "cd ${projectPath}/${projectName} && git checkout master && git pull"'
+                    }
+                }
+            }
+        }
+        stage('项目编译') { 
+            steps { 
+                script {
+                    if (rollbackFlag == "true") {
+                        sh 'echo 222'
+                    } else {
+                        sh 'cd ${projectPath}/${projectName} && rm ./dist -rf'
+                        if (npmiFlag == "true") {
+                            sh 'cd ${projectPath}/${projectName} && . ~/.nvm/nvm.sh && nvm use ${nodeVersion} && npm i'
+                        }
+                        sh '. ~/.nvm/nvm.sh && nvm use ${nodeVersion} && cd ${projectPath}/${projectName} && npm cache clean --force && npm run prodbuild'
+                        sh 'free -h && sync; echo 1 > /proc/sys/vm/drop_caches && free -h'
+                    }
+                }
+            }
+        }
+        stage('远程拷贝'){
+            steps {
+                script {
+                    println "rollbackFlag=" + rollbackFlag
+                    if (rollbackFlag == "true") {
+                        sh 'echo 333'
+                    } else {
+                        sh 'ssh root@${ipAddress} "rm -rf /root/wangxiao-${releaseTerminal}-${packageEnv}/front/${releaseTerminal}/.output"'
+                        sh 'time rsync -avzh --delete ${projectPath}/${projectName}/.output root@${ipAddress}:/root/wangxiao-${releaseTerminal}-${packageEnv}/front/${releaseTerminal}/'
+                        sh 'time rsync -avzh ${projectPath}/wx-domain-verify/* root@${ipAddress}:/root/wangxiao-${releaseTerminal}-${packageEnv}/front/${releasePackage}/'
+                    }
+                }
+            }
+        }
+        stage('部署页面') {
+            steps {
+                script {
+                    println "rollbackFlag=" + rollbackFlag
+                    if (rollbackFlag == "true") {
+                        sh 'ssh root@${ipAddress} "source /etc/profile && cd /root/wangxiao-${releaseTerminal}-${packageEnv} && ./run-${releaseTerminal}-rb.sh"'
+                    } else {
+                        sh 'ssh root@${ipAddress} "source /etc/profile && cd /root/wangxiao-${releaseTerminal}-${packageEnv} && ./run-${releaseTerminal}.sh"'
+                    }
+                }
+            }
+        }
+        stage('成功发布通知') {
+            steps {
+                println "rollbackFlag=" + rollbackFlag
+                script {
+                	if (rollbackFlag == "true") {
+                        wrap([$class: 'BuildUser']) {
+                        	script {
+                        		BUILD_USER = "${env.BUILD_USER}"
+                        	}
+                    	    sh '/root/.push-success-msg.sh ${releaseTerminal} ${packageEnv} front ${BUILD_USER} ${ipAddress} 回滚'
+                        }
+                	} else {
+                        wrap([$class: 'BuildUser']) {
+                        	script {
+                        		BUILD_USER = "${env.BUILD_USER}"
+                        	}
+                    	    sh '/root/.push-success-msg.sh ${releaseTerminal} ${packageEnv} front ${BUILD_USER} ${ipAddress} 发布'
+                        }
+                	}
+                }
+            }
+        }
+    }
+}
+```
+
 
 
 ## node多版本
@@ -496,7 +625,7 @@ categories:
    ```
    # Maven
    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding> 
-
+   
    # Gradle
    systemProp.file.encoding=UTF-8 
    ```
@@ -1001,9 +1130,9 @@ wget https://github.com/xuhuisheng/sonar-l10n-zh/releases/download/sonar-l10n-zh
   ```
 
   * 针对vue前端项目，前端使用 sonar-scanner 工具进行扫描，命令使用方式类似java的 mvn。
-  补充说明：当前安装的sonarqube是9.9版本，对应sonar-scanner的版本是4.8，别问怎么知道，搜一下即可
+    补充说明：当前安装的sonarqube是9.9版本，对应sonar-scanner的版本是4.8，别问怎么知道，搜一下即可
     下载地址：[sonar-scanner4.8-linux-x64.zip](https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-4.8.0.2856-linux.zip?_gl=1*m4ahcr*_gcl_au*MzExMzIzMTMyLjE3NDQxNzk4NDY.*_ga*MTM5MzI1NTIyNi4xNzQ0MTc5ODI1*_ga_9JZ0GZ5TC6*MTc0NDQyMTkwOS4yLjEuMTc0NDQyMjQ2OS42MC4wLjA.)
-  环境变量：
+    环境变量：
     
   ```bash
     # vi /etc/profile
@@ -1249,7 +1378,35 @@ php版本升级到7.3版本：https://www.oryoy.com/news/centos-xi-tong-xia-shen
 
 ![image-20250508112545232](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20250508112555.png)
 
+```
+mysql 创建新用户并给授权指定的数据库权限
+https://blog.csdn.net/wyq232417/article/details/88753365
+
+--刷新权限
+flush privileges;
+
+mysql报错 1142 - SELECT command denied to user 'root_ssm'@'localhost' for table 'user'
+https://blog.csdn.net/qq_41097820/article/details/87643357
 
 
+ios使用php的域名地址：
+https://ios.xxxx.com/
 
+php安装插件igbinary：
+https://developer.aliyun.com/article/753143
+其中第4步只需要添加 extension=igbinary.so
+
+重启php服务：
+systemctl restart php-fpm && systemctl restart httpd
+
+php配置文件：
+vi /usr/bin/php-config
+vi /etc/php.ini
+
+php扩展目录：
+/usr/lib64/php/modules
+
+nginx位置：
+vi /usr/local/nginx/conf/nginx.conf
+```
 
