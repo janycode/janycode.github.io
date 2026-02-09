@@ -15,6 +15,7 @@ categories:
 参考资料：
 
 * vue 生态开源的组件和库集合：https://github.com/vuejs/awesome-vue?tab=readme-ov-file#components--libraries
+* vue3+TS 高颜值组件库(移动端)：https://wot-ui.cn/
 
 
 
@@ -662,13 +663,23 @@ export default {
 
 
 
-### 1.5 综合
+### 1.5 BI大屏应用
+
+* datav：http://datav.jiaminghi.com/
+
+* GoView：https://mtruning.club/
+
+
+
+### 1.x 综合
 
 > 1. **通用工具首选**：Lodash（全能）、Underscore（轻量）、Ramda（函数式）；
 > 2. **日期处理主流**：date-fns（TypeScript 优先）、dayjs（轻量兼容）；
 > 3. **数据验证推荐**：Zod（前端 / TS 项目）、Joi（后端 Node.js 项目）；
 > 4. **网络请求标配**：Axios（浏览器 / Node.js 通用）；
 > 5. **历史 / 传统项目**：jQuery（DOM 操作）、Moment.js（不推荐新项目，用 dayjs/date-fns 替代）。
+
+
 
 
 

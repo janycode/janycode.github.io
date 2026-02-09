@@ -17,6 +17,7 @@ categories:
 
 * uni-app 官网：https://www.dcloud.io/
 * HBuild X 开发工具：https://hx.dcloud.net.cn/
+* uni-helper (uni-app脚手架)：https://uni-helper.js.org/
 
 > 免费测试api接口：https://jsonplaceholder.typicode.com/
 >

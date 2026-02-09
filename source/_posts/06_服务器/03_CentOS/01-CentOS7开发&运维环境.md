@@ -12,6 +12,10 @@ categories:
 
 
 
+参考资料：
+
+* 雷池-服务器防护：https://waf-ce.chaitin.cn/version
+
 ## Centos7
 
 * CentOS7在VMware上安装教程：https://blog.csdn.net/HXBest/article/details/123853738
