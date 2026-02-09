@@ -1,12 +1,12 @@
 ---
-title: 03-uni-app&vue3打包上线
+title: 03-uniapp&vue3打包上线
 date: 2022-5-22 21:36:21
 tags:
-- uni-app
+- uniapp
 - vue3
 categories: 
 - 04_大前端
-- 09_uni-app
+- 09_uniapp
 ---
 
 

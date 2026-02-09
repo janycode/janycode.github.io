@@ -1,12 +1,12 @@
 ---
-title: 02-uni-app&vue3项目搭建
+title: 02-uniapp&vue3项目搭建
 date: 2022-5-22 21:36:21
 tags:
-- uni-app
+- uniapp
 - vue3
 categories: 
 - 04_大前端
-- 09_uni-app
+- 09_uniapp
 ---
 
 

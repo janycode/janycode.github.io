@@ -1,12 +1,12 @@
 ---
-title: 01-uni-app&vue3基础
+title: 01-uniapp&vue3基础
 date: 2022-5-22 21:36:21
 tags:
-- uni-app
+- uniapp
 - vue3
 categories: 
 - 04_大前端
-- 09_uni-app
+- 09_uniapp
 ---
 
 
