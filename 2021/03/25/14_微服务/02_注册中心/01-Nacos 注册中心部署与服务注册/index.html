@@ -1,0 +1,893 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=light>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Jerry(姜源)">
+  <meta name="keywords" content="Java,Html,CSS,JavaScript,Python,C,Linux,shell编程经验分享、技术总结、心得体会">
+  
+    <meta name="description" content="参考资料：Nacos 官方文档：https:&#x2F;&#x2F;nacos.io&#x2F;zh-cn&#x2F;自建 Nacos 服务注册中心-阿里云文档：https:&#x2F;&#x2F;help.aliyun.com&#x2F;document_detail&#x2F;142100.html 1. Nacos 简介1.1 主流注册中心对比当下主流的注册中心对比： 1.2 Nacos 介绍Nacos是阿里的一个开源产品，它是针对微服务架构中的服务发现、配置管理、服务">
+<meta property="og:type" content="article">
+<meta property="og:title" content="01-Nacos 注册中心部署与服务注册">
+<meta property="og:url" content="https://janycode.github.io/2021/03/25/14_%E5%BE%AE%E6%9C%8D%E5%8A%A1/02_%E6%B3%A8%E5%86%8C%E4%B8%AD%E5%BF%83/01-Nacos%20%E6%B3%A8%E5%86%8C%E4%B8%AD%E5%BF%83%E9%83%A8%E7%BD%B2%E4%B8%8E%E6%9C%8D%E5%8A%A1%E6%B3%A8%E5%86%8C/index.html">
+<meta property="og:site_name" content="姜源の云笔记">
+<meta property="og:description" content="参考资料：Nacos 官方文档：https:&#x2F;&#x2F;nacos.io&#x2F;zh-cn&#x2F;自建 Nacos 服务注册中心-阿里云文档：https:&#x2F;&#x2F;help.aliyun.com&#x2F;document_detail&#x2F;142100.html 1. Nacos 简介1.1 主流注册中心对比当下主流的注册中心对比： 1.2 Nacos 介绍Nacos是阿里的一个开源产品，它是针对微服务架构中的服务发现、配置管理、服务">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/%E5%B0%8F%E4%B9%A6%E5%8C%A0/20213251616655269412.png">
+<meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/%E5%B0%8F%E4%B9%A6%E5%8C%A0/20213261616727344504.png">
+<meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/%E5%B0%8F%E4%B9%A6%E5%8C%A0/20213251616666792893.png">
+<meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/%E5%B0%8F%E4%B9%A6%E5%8C%A0/20213261616740821022.png">
+<meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/%E5%B0%8F%E4%B9%A6%E5%8C%A0/20213251616667013208.png">
+<meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/%E5%B0%8F%E4%B9%A6%E5%8C%A0/20213261616725611762.png">
+<meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/%E5%B0%8F%E4%B9%A6%E5%8C%A0/20213261616741765453.png">
+<meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/%E5%B0%8F%E4%B9%A6%E5%8C%A0/20213261616741797563.png">
+<meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/%E5%B0%8F%E4%B9%A6%E5%8C%A0/20213261616727417082.png">
+<meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/%E5%B0%8F%E4%B9%A6%E5%8C%A0/20213261616730814403.png">
+<meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/%E5%B0%8F%E4%B9%A6%E5%8C%A0/20213261616730877177.png">
+<meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/%E5%B0%8F%E4%B9%A6%E5%8C%A0/20213261616731251759.png">
+<meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/%E5%B0%8F%E4%B9%A6%E5%8C%A0/20213261616747109710.png">
+<meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/%E5%B0%8F%E4%B9%A6%E5%8C%A0/20213261616747318568.png">
+<meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/%E5%B0%8F%E4%B9%A6%E5%8C%A0/20213261616748142424.png">
+<meta property="article:published_time" content="2021-03-24T18:39:15.000Z">
+<meta property="article:modified_time" content="2026-02-10T09:21:30.304Z">
+<meta property="article:author" content="Jerry(姜源)">
+<meta property="article:tag" content="注册中心">
+<meta property="article:tag" content="SpringCloudAlibaba">
+<meta property="article:tag" content="Nacos">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/%E5%B0%8F%E4%B9%A6%E5%8C%A0/20213251616655269412.png">
+  
+  
+    <meta name="referrer" content="no-referrer-when-downgrade">
+  
+  
+  <title>01-Nacos 注册中心部署与服务注册 - 姜源の云笔记</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"janycode.github.io","root":"/","version":"1.9.0","typing":{"enable":true,"typeSpeed":50,"cursorChar":"|","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":false},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":"bfff735c897eb60ea49b735096b20e47","google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+
+  
+<meta name="generator" content="Hexo 6.2.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 50vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>姜源の云笔记</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tools/">
+                <i class="iconfont icon-slack-fill"></i>
+                工具
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" target="_blank" rel="noopener" href="https://yuancodes.github.io/">
+                <i class="iconfont icon-notebook"></i>
+                Docsify
+              </a>
+            </li>
+          
+        
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="01-Nacos 注册中心部署与服务注册"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-author" aria-hidden="true"></i>
+        Jerry(姜源)
+      </span>
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2021-03-25 02:39" pubdate>
+          星期四, 2021/03/25 02:39:15
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          <!-- compatible with older versions-->
+          6.6k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          <!-- compatible with older versions-->
+          56 分钟
+        
+      </span>
+    
+
+    
+    
+      
+        <span id="busuanzi_container_page_pv" style="display: none">
+          <i class="iconfont icon-eye" aria-hidden="true"></i>
+          <span id="busuanzi_value_page_pv"></span> 次
+        </span>
+        
+      
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">01-Nacos 注册中心部署与服务注册</h1>
+            
+            <div class="markdown-body">
+              
+              <p>参考资料：<br>Nacos 官方文档：<a target="_blank" rel="noopener" href="https://nacos.io/zh-cn/">https://nacos.io/zh-cn/</a><br>自建 Nacos 服务注册中心-阿里云文档：<a target="_blank" rel="noopener" href="https://help.aliyun.com/document_detail/142100.html">https://help.aliyun.com/document_detail/142100.html</a></p>
+<h3 id="1-Nacos-简介"><a href="#1-Nacos-简介" class="headerlink" title="1. Nacos 简介"></a>1. Nacos 简介</h3><h4 id="1-1-主流注册中心对比"><a href="#1-1-主流注册中心对比" class="headerlink" title="1.1 主流注册中心对比"></a>1.1 主流注册中心对比</h4><p>当下主流的注册中心对比：<br><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/%E5%B0%8F%E4%B9%A6%E5%8C%A0/20213251616655269412.png" srcset="/img/loading.gif" lazyload alt="主流的注册中心对比"></p>
+<h4 id="1-2-Nacos-介绍"><a href="#1-2-Nacos-介绍" class="headerlink" title="1.2 Nacos 介绍"></a>1.2 Nacos 介绍</h4><p>Nacos是阿里的一个开源产品，它是针对微服务架构中的服务发现、配置管理、服务治理的综合型解决方案。</p>
+<p>官方介绍是这样的:<br>Nacos致力于帮助您发现、配置和管理微服务。Nacos 提供了-组简单易用的特性集,帮助您实现动态服务发现、服务配置管理、服务及流量管理。<br>Nacos帮助您更敏捷和容易地构建、交付和管理微服务平台。Nacos 是构建以“服务”为中心的现代应用架构的服务基础设施。<br>Nacos主要提供以下四大功能:</p>
+<ol>
+<li>服务发现与服务健康检查</li>
+<li>动态配置管理</li>
+<li>动态DNS服务</li>
+<li>服务和元数据管理</li>
+</ol>
+<p>而且阿里巴巴在 2021-3-20 日 <code>Nacos 2.0</code> 正式发布了，且据说性能提升了 <code>10</code> 倍左右。</p>
+<p>Nacos 2.0 下载地址：<a target="_blank" rel="noopener" href="https://github.com/alibaba/nacos/releases/tag/2.0.0">https://github.com/alibaba/nacos/releases/tag/2.0.0</a></p>
+<p>我在 Nacos 官网页发现了阿里对 Nacos 2.0 的压测报告，性能提升真不是盖的：</p>
+<p>Nacos 2.0 配置模块压测报告：<a target="_blank" rel="noopener" href="https://nacos.io/zh-cn/docs/nacos2-config-benchmark.html">https://nacos.io/zh-cn/docs/nacos2-config-benchmark.html</a></p>
+<p>Nacos 2.0 服务发现模块压测报告：<a target="_blank" rel="noopener" href="https://nacos.io/zh-cn/docs/nacos2-naming-benchmark.html">https://nacos.io/zh-cn/docs/nacos2-naming-benchmark.html</a></p>
+<p>盲猜以后会是注册中心主流框架(Jerry(姜源) 2021-3-26 11:06:29)。</p>
+<h3 id="2-Nacos-部署启动"><a href="#2-Nacos-部署启动" class="headerlink" title="2. Nacos 部署启动"></a>2. Nacos 部署启动</h3><p>Nacos 默认端口为 <code>8848</code>。<br>部署步骤：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-comment">#下载 nacos 2.0(如果指定目录同时重命名则加 -O ./Downloads/nacos2.0.zip)</span><br>wget https://github.com/alibaba/nacos/releases/download/2.0.0/nacos-server-2.0.0.zip<br><br><span class="hljs-comment">#解压(如果没有权限则加 sudo)</span><br>unzip nacos-server-2.0.0.zip -d /usr/local/nacos2.0/<br><br><span class="hljs-comment">#启动(单机模式启动，非集群模式)，windows直接双击 startup.cmd 启动</span><br>bin/startup.sh -m standalone<br></code></pre></td></tr></table></figure>
+
+<ul>
+<li><p>如果是云服务器，则需要在安全组中开放端口 8848 的访问权限：<br><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/%E5%B0%8F%E4%B9%A6%E5%8C%A0/20213261616727344504.png" srcset="/img/loading.gif" lazyload alt="安全组开放端口配置"></p>
+</li>
+<li><p>不论是云服务器或者虚拟机，都需要关闭防火墙：</p>
+  <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-comment">#关闭防火墙</span><br>systemctl stop firewalld.service<br><span class="hljs-comment">#禁用防火墙(开机不自启)</span><br>systemctl <span class="hljs-built_in">disable</span> firewalld.service<br></code></pre></td></tr></table></figure></li>
+</ul>
+<p>打开 Nacos 管理端页面查看：<a target="_blank" rel="noopener" href="http://ip地址:8848/nacos/index.html">http://IP地址:8848/nacos/index.html</a><br>账号：nacos<br>密码：nacos<br><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/%E5%B0%8F%E4%B9%A6%E5%8C%A0/20213251616666792893.png" srcset="/img/loading.gif" lazyload alt="Nacos管理端页面"></p>
+<h3 id="3-Nacos-服务注册"><a href="#3-Nacos-服务注册" class="headerlink" title="3. Nacos 服务注册"></a>3. Nacos 服务注册</h3><p>Demo 测试：<br><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/%E5%B0%8F%E4%B9%A6%E5%8C%A0/20213261616740821022.png" srcset="/img/loading.gif" lazyload alt="Nacos 与服务的注册逻辑"></p>
+<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/%E5%B0%8F%E4%B9%A6%E5%8C%A0/20213251616667013208.png" srcset="/img/loading.gif" lazyload alt="Nacos 注册中心服务注册测试"></p>
+<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/%E5%B0%8F%E4%B9%A6%E5%8C%A0/20213261616725611762.png" srcset="/img/loading.gif" lazyload alt="Spring Cloud Alibaba 的框架支持的 SpringBoot 版本在 2.2.0~2.3.0 之间"></p>
+<h4 id="3-1-Provider-服务"><a href="#3-1-Provider-服务" class="headerlink" title="3.1 Provider 服务"></a>3.1 Provider 服务</h4><p>pom.xml</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><code class="hljs xml"><span class="hljs-meta">&lt;?xml version=<span class="hljs-string">&quot;1.0&quot;</span> encoding=<span class="hljs-string">&quot;UTF-8&quot;</span>?&gt;</span><br>	...<br>    <span class="hljs-tag">&lt;<span class="hljs-name">parent</span>&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">groupId</span>&gt;</span>org.springframework.boot<span class="hljs-tag">&lt;/<span class="hljs-name">groupId</span>&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">artifactId</span>&gt;</span>spring-boot-starter-parent<span class="hljs-tag">&lt;/<span class="hljs-name">artifactId</span>&gt;</span><br>		<span class="hljs-comment">&lt;!-- 指定 Spring Boot 版本 2.2.6 --&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">version</span>&gt;</span>2.2.6.RELEASE<span class="hljs-tag">&lt;/<span class="hljs-name">version</span>&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">relativePath</span>/&gt;</span> <span class="hljs-comment">&lt;!-- lookup parent from repository --&gt;</span><br>    <span class="hljs-tag">&lt;/<span class="hljs-name">parent</span>&gt;</span><br>	...<br>    <span class="hljs-tag">&lt;<span class="hljs-name">dependencies</span>&gt;</span><br>        <span class="hljs-comment">&lt;!-- SpringBoot Web --&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">dependency</span>&gt;</span><br>            <span class="hljs-tag">&lt;<span class="hljs-name">groupId</span>&gt;</span>org.springframework.boot<span class="hljs-tag">&lt;/<span class="hljs-name">groupId</span>&gt;</span><br>            <span class="hljs-tag">&lt;<span class="hljs-name">artifactId</span>&gt;</span>spring-boot-starter-web<span class="hljs-tag">&lt;/<span class="hljs-name">artifactId</span>&gt;</span><br>        <span class="hljs-tag">&lt;/<span class="hljs-name">dependency</span>&gt;</span><br><br>        <span class="hljs-comment">&lt;!--Spring Cloud Alibaba 的框架支持的 SpringBoot 版本在 2.2.0~2.3.0 之间 2021-3-25 10:34:55--&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">dependency</span>&gt;</span><br>            <span class="hljs-tag">&lt;<span class="hljs-name">groupId</span>&gt;</span>com.alibaba.cloud<span class="hljs-tag">&lt;/<span class="hljs-name">groupId</span>&gt;</span><br>            <span class="hljs-tag">&lt;<span class="hljs-name">artifactId</span>&gt;</span>spring-cloud-starter-alibaba-nacos-discovery<span class="hljs-tag">&lt;/<span class="hljs-name">artifactId</span>&gt;</span><br>            <span class="hljs-tag">&lt;<span class="hljs-name">version</span>&gt;</span>2.2.5.RELEASE<span class="hljs-tag">&lt;/<span class="hljs-name">version</span>&gt;</span><br>        <span class="hljs-tag">&lt;/<span class="hljs-name">dependency</span>&gt;</span><br>    <span class="hljs-tag">&lt;/<span class="hljs-name">dependencies</span>&gt;</span><br></code></pre></td></tr></table></figure>
+
+<p>ProviderApplication.java</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">package</span> com.jerry.provider;<br><br><span class="hljs-keyword">import</span> org.springframework.boot.SpringApplication;<br><span class="hljs-keyword">import</span> org.springframework.boot.autoconfigure.SpringBootApplication;<br><span class="hljs-keyword">import</span> org.springframework.cloud.client.discovery.EnableDiscoveryClient;<br><br><span class="hljs-meta">@EnableDiscoveryClient</span>  <span class="hljs-comment">//开启服务注册与发现</span><br><span class="hljs-meta">@SpringBootApplication</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">ProviderApplication</span> &#123;<br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">main</span><span class="hljs-params">(String[] args)</span> &#123;<br>        SpringApplication.run(ProviderApplication.class, args);<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>application.yml</p>
+<figure class="highlight yml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs yml"><span class="hljs-comment"># 提供者</span><br><span class="hljs-attr">server:</span><br>  <span class="hljs-attr">port:</span> <span class="hljs-number">8081</span><br><span class="hljs-attr">spring:</span><br>  <span class="hljs-attr">application:</span><br>    <span class="hljs-attr">name:</span> <span class="hljs-string">jerryProvider</span>  <span class="hljs-comment"># 服务名称</span><br>  <span class="hljs-attr">cloud:</span><br>    <span class="hljs-attr">nacos:</span><br>      <span class="hljs-attr">discovery:</span><br>        <span class="hljs-attr">server-addr:</span> <span class="hljs-number">192.168</span><span class="hljs-number">.134</span><span class="hljs-number">.128</span><span class="hljs-string">:8848</span>  <span class="hljs-comment"># Nacos 地址和端口</span><br></code></pre></td></tr></table></figure>
+
+<p>服务启动完成，会有服务注册日志信息：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs java">c.a.c.n.registry.NacosServiceRegistry    : nacos registry, DEFAULT_GROUP jerryProvider <span class="hljs-number">192.168</span><span class="hljs-number">.195</span><span class="hljs-number">.1</span>:<span class="hljs-number">8081</span> register finished<br>com.jerry.provider.ProviderApplication   : Started ProviderApplication in <span class="hljs-number">2.948</span> seconds (JVM running <span class="hljs-keyword">for</span> <span class="hljs-number">3.548</span>)<br></code></pre></td></tr></table></figure>
+
+
+<h4 id="3-2-Consumer-服务"><a href="#3-2-Consumer-服务" class="headerlink" title="3.2 Consumer 服务"></a>3.2 Consumer 服务</h4><p>pom.xml</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><code class="hljs xml"><span class="hljs-meta">&lt;?xml version=<span class="hljs-string">&quot;1.0&quot;</span> encoding=<span class="hljs-string">&quot;UTF-8&quot;</span>?&gt;</span><br>	...<br>    <span class="hljs-tag">&lt;<span class="hljs-name">parent</span>&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">groupId</span>&gt;</span>org.springframework.boot<span class="hljs-tag">&lt;/<span class="hljs-name">groupId</span>&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">artifactId</span>&gt;</span>spring-boot-starter-parent<span class="hljs-tag">&lt;/<span class="hljs-name">artifactId</span>&gt;</span><br>		<span class="hljs-comment">&lt;!-- 指定 Spring Boot 版本 2.2.6 --&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">version</span>&gt;</span>2.2.6.RELEASE<span class="hljs-tag">&lt;/<span class="hljs-name">version</span>&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">relativePath</span>/&gt;</span> <span class="hljs-comment">&lt;!-- lookup parent from repository --&gt;</span><br>    <span class="hljs-tag">&lt;/<span class="hljs-name">parent</span>&gt;</span><br>	...<br>    <span class="hljs-tag">&lt;<span class="hljs-name">dependencies</span>&gt;</span><br>        <span class="hljs-comment">&lt;!-- SpringBoot Web --&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">dependency</span>&gt;</span><br>            <span class="hljs-tag">&lt;<span class="hljs-name">groupId</span>&gt;</span>org.springframework.boot<span class="hljs-tag">&lt;/<span class="hljs-name">groupId</span>&gt;</span><br>            <span class="hljs-tag">&lt;<span class="hljs-name">artifactId</span>&gt;</span>spring-boot-starter-web<span class="hljs-tag">&lt;/<span class="hljs-name">artifactId</span>&gt;</span><br>        <span class="hljs-tag">&lt;/<span class="hljs-name">dependency</span>&gt;</span><br><br>        <span class="hljs-comment">&lt;!--Spring Cloud Alibaba 的框架支持的 SpringBoot 版本在 2.2.0~2.3.0 之间 2021-3-25 10:34:55--&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">dependency</span>&gt;</span><br>            <span class="hljs-tag">&lt;<span class="hljs-name">groupId</span>&gt;</span>com.alibaba.cloud<span class="hljs-tag">&lt;/<span class="hljs-name">groupId</span>&gt;</span><br>            <span class="hljs-tag">&lt;<span class="hljs-name">artifactId</span>&gt;</span>spring-cloud-starter-alibaba-nacos-discovery<span class="hljs-tag">&lt;/<span class="hljs-name">artifactId</span>&gt;</span><br>            <span class="hljs-tag">&lt;<span class="hljs-name">version</span>&gt;</span>2.2.5.RELEASE<span class="hljs-tag">&lt;/<span class="hljs-name">version</span>&gt;</span><br>        <span class="hljs-tag">&lt;/<span class="hljs-name">dependency</span>&gt;</span><br>    <span class="hljs-tag">&lt;/<span class="hljs-name">dependencies</span>&gt;</span><br></code></pre></td></tr></table></figure>
+
+<p>ConsumerApplication.java</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">package</span> com.jerry.consumer;<br><br><span class="hljs-keyword">import</span> org.springframework.boot.SpringApplication;<br><span class="hljs-keyword">import</span> org.springframework.boot.autoconfigure.SpringBootApplication;<br><span class="hljs-keyword">import</span> org.springframework.cloud.client.discovery.EnableDiscoveryClient;<br><br><span class="hljs-meta">@EnableDiscoveryClient</span>  <span class="hljs-comment">//开启服务注册与发现</span><br><span class="hljs-meta">@SpringBootApplication</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">ConsumerApplication</span> &#123;<br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">main</span><span class="hljs-params">(String[] args)</span> &#123;<br>        SpringApplication.run(ConsumerApplication.class, args);<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>application.yml</p>
+<figure class="highlight yml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs yml"><span class="hljs-comment"># 消费者</span><br><span class="hljs-attr">server:</span><br>  <span class="hljs-attr">port:</span> <span class="hljs-number">8082</span><br><span class="hljs-attr">spring:</span><br>  <span class="hljs-attr">application:</span><br>    <span class="hljs-attr">name:</span> <span class="hljs-string">jerryConsumer</span>  <span class="hljs-comment"># 服务名称</span><br>  <span class="hljs-attr">cloud:</span><br>    <span class="hljs-attr">nacos:</span><br>      <span class="hljs-attr">discovery:</span><br>        <span class="hljs-attr">server-addr:</span> <span class="hljs-number">192.168</span><span class="hljs-number">.134</span><span class="hljs-number">.128</span><span class="hljs-string">:8848</span>  <span class="hljs-comment"># Nacos 地址和端口</span><br></code></pre></td></tr></table></figure>
+
+<p>服务启动完成，会有服务注册日志信息：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs java">c.a.c.n.registry.NacosServiceRegistry    : nacos registry, DEFAULT_GROUP jerryConsumer <span class="hljs-number">192.168</span><span class="hljs-number">.195</span><span class="hljs-number">.1</span>:<span class="hljs-number">8082</span> register finished<br>com.jerry.consumer.ConsumerApplication   : Started ConsumerApplication in <span class="hljs-number">2.555</span> seconds (JVM running <span class="hljs-keyword">for</span> <span class="hljs-number">3.165</span>)<br></code></pre></td></tr></table></figure>
+
+
+<h4 id="3-3-Nacos-下的服务间通信"><a href="#3-3-Nacos-下的服务间通信" class="headerlink" title="3.3 Nacos 下的服务间通信"></a>3.3 Nacos 下的服务间通信</h4><p>改造 Provider 和 Consumer的启动类，使其拥有 api 能力。</p>
+<p>ProviderApplication.java</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@RestController</span><br><span class="hljs-meta">@EnableDiscoveryClient</span><br><span class="hljs-meta">@SpringBootApplication</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">ProviderApplication</span> &#123;<br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">main</span><span class="hljs-params">(String[] args)</span> &#123;<br>        SpringApplication.run(ProviderApplication.class, args);<br>    &#125;<br><br>    <span class="hljs-meta">@GetMapping(&quot;nacos/hello&quot;)</span><br>    <span class="hljs-keyword">public</span> String <span class="hljs-title function_">hello</span><span class="hljs-params">()</span> &#123;<br>        <span class="hljs-keyword">return</span> <span class="hljs-string">&quot;hello, nacos!&quot;</span>;<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>ConsumerApplication.java</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@RestController</span><br><span class="hljs-meta">@EnableDiscoveryClient</span><br><span class="hljs-meta">@SpringBootApplication</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">ConsumerApplication</span> &#123;<br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">main</span><span class="hljs-params">(String[] args)</span> &#123;<br>        SpringApplication.run(ConsumerApplication.class, args);<br>    &#125;<br><br>    <span class="hljs-meta">@Autowired</span><br>    <span class="hljs-keyword">private</span> RestTemplate restTemplate;<br><br>    <span class="hljs-meta">@Bean</span><br>    <span class="hljs-meta">@LoadBalanced</span> <span class="hljs-comment">//开启负载均衡, 让 RestTemplate 在请求时拥有客户端负载均衡的能力</span><br>    <span class="hljs-keyword">public</span> RestTemplate <span class="hljs-title function_">getRestTemplate</span><span class="hljs-params">()</span> &#123;<br>        <span class="hljs-keyword">return</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">RestTemplate</span>();<br>    &#125;<br><br>    <span class="hljs-meta">@GetMapping(&quot;/consumer&quot;)</span><br>    <span class="hljs-keyword">public</span> String <span class="hljs-title function_">test</span><span class="hljs-params">()</span> &#123;<br>        <span class="hljs-keyword">return</span> <span class="hljs-string">&quot;consumer: &quot;</span>restTemplate.getForObject(<span class="hljs-string">&quot;http://jerryProvider/nacos/hello&quot;</span>, String.class);<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/%E5%B0%8F%E4%B9%A6%E5%8C%A0/20213261616741765453.png" srcset="/img/loading.gif" lazyload alt="Provider 服务接口测试"></p>
+<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/%E5%B0%8F%E4%B9%A6%E5%8C%A0/20213261616741797563.png" srcset="/img/loading.gif" lazyload alt="Consumer服务接口调用其他服务(Provider)接口测试"></p>
+<h3 id="4-服务注册和管理"><a href="#4-服务注册和管理" class="headerlink" title="4. 服务注册和管理"></a>4. 服务注册和管理</h3><h4 id="4-1-服务注册查看"><a href="#4-1-服务注册查看" class="headerlink" title="4.1 服务注册查看"></a>4.1 服务注册查看</h4><p>进入管理页面：<a target="_blank" rel="noopener" href="http://192.168.134.128:8848/nacos/index.html">http://192.168.134.128:8848/nacos/index.html</a><br><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/%E5%B0%8F%E4%B9%A6%E5%8C%A0/20213261616727417082.png" srcset="/img/loading.gif" lazyload alt="两个服务已注册进 Nacos 注册中心"></p>
+<blockquote>
+<p>更多的微服务模块扩展也类似，不赘述。</p>
+</blockquote>
+<h4 id="4-2-服务流量权重和流量保护"><a href="#4-2-服务流量权重和流量保护" class="headerlink" title="4.2 服务流量权重和流量保护"></a>4.2 服务流量权重和流量保护</h4><p>Nacos 为用户提供了流量权重控制的能力，同时开放了服务流量的阈值保护，以帮助用户更好的保护服务服务提供者集群不被意外打垮。<br>如图，可以点击实例的编辑按钮，修改实例的权重。<br><code>如果想增加实例的流量，可以将权重调大；如果不想实例接收流量，则可以将权重设为0</code>。</p>
+<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/%E5%B0%8F%E4%B9%A6%E5%8C%A0/20213261616730814403.png" srcset="/img/loading.gif" lazyload alt="服务流量阈值配置"></p>
+<p>然后会看到触发保护阈值状态为 true 了。<br><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/%E5%B0%8F%E4%B9%A6%E5%8C%A0/20213261616730877177.png" srcset="/img/loading.gif" lazyload alt="触发保护阈值"></p>
+<h4 id="4-3-服务元数据管理"><a href="#4-3-服务元数据管理" class="headerlink" title="4.3 服务元数据管理"></a>4.3 服务元数据管理</h4><p>Nacos 提供多个维度的服务元数据的暴露，帮助用户存储自定义的信息。<br>这些信息都是以 K-V 的数据结构存储，在控制台上，会以 json 格式展示。类似的，编辑元数据可以通过相同的格式进行。<br>例如首先点击服务详情页右上角的<code>编辑服务</code>按钮，然后在元数据输入框输入：</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs json"><span class="hljs-punctuation">&#123;</span><br>    <span class="hljs-attr">&quot;version&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">1.0</span><span class="hljs-punctuation">,</span><br>    <span class="hljs-attr">&quot;env&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;prod&quot;</span><span class="hljs-punctuation">,</span><br>    <span class="hljs-attr">&quot;author&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;jiangyuan&quot;</span><br><span class="hljs-punctuation">&#125;</span><br></code></pre></td></tr></table></figure>
+
+<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/%E5%B0%8F%E4%B9%A6%E5%8C%A0/20213261616731251759.png" srcset="/img/loading.gif" lazyload alt="服务的元数据编辑"></p>
+<h4 id="4-4-服务优雅上下线"><a href="#4-4-服务优雅上下线" class="headerlink" title="4.4 服务优雅上下线"></a>4.4 服务优雅上下线</h4><p>Nacos 还提供服务实例的上下线操作，在服务详情页面，可以点击实例的“上线”或者“下线”按钮，被下线的实例，将不会包含在健康的实例列表里。</p>
+<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/%E5%B0%8F%E4%B9%A6%E5%8C%A0/20213261616747109710.png" srcset="/img/loading.gif" lazyload alt="服务优雅上下线"></p>
+<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/%E5%B0%8F%E4%B9%A6%E5%8C%A0/20213261616747318568.png" srcset="/img/loading.gif" lazyload alt="服务下线后直接请求和服务间调用情况"></p>
+<h4 id="4-5-监听者查询"><a href="#4-5-监听者查询" class="headerlink" title="4.5 监听者查询"></a>4.5 监听者查询</h4><p>Nacos提供配置订阅者即监听者查询能力，同时提供客户端当前配置的 MD5 校验值，以便帮助用户更好的检查配置变更是否推送到 Client 端(需已建好配置)。</p>
+<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/%E5%B0%8F%E4%B9%A6%E5%8C%A0/20213261616748142424.png" srcset="/img/loading.gif" lazyload alt="查询监听者 IP 和 MD5"></p>
+<h4 id="4-6-配置实例权重"><a href="#4-6-配置实例权重" class="headerlink" title="4.6 配置实例权重"></a>4.6 配置实例权重</h4><p>可以通过手动配置权重来控制流量，当一个集群内两个实例，权重越高，到达该实例的请求比例越多。</p>
+<h4 id="4-7-配置保护阈值"><a href="#4-7-配置保护阈值" class="headerlink" title="4.7 配置保护阈值"></a>4.7 配置保护阈值</h4><p>保护阈值的范围是 0~1<br>服务的健康比例 &#x3D; 服务的健康实例 &#x2F; 总实例个数</p>
+<ul>
+<li>当服务健康比例 &lt;&#x3D; 保护阈值时，无论实例健不健康都会返回给调用方；</li>
+<li>当服务健康比例 &gt; 保护阈值时，只会返回健康实例给调用方服务管理-服务列表选择一个服务点击详情可以配置。</li>
+</ul>
+
+              
+            </div>
+            <hr/>
+            <div>
+              <div>
+  <img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20241112163319.png" srcset="/img/loading.gif" lazyload>
+</div>
+<div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/14-%E5%BE%AE%E6%9C%8D%E5%8A%A1/" class="category-chain-item">14_微服务</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/14-%E5%BE%AE%E6%9C%8D%E5%8A%A1/02-%E6%B3%A8%E5%86%8C%E4%B8%AD%E5%BF%83/" class="category-chain-item">02_注册中心</a>
+  
+  
+
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/%E6%B3%A8%E5%86%8C%E4%B8%AD%E5%BF%83/">#注册中心</a>
+      
+        <a href="/tags/SpringCloudAlibaba/">#SpringCloudAlibaba</a>
+      
+        <a href="/tags/Nacos/">#Nacos</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>01-Nacos 注册中心部署与服务注册</div>
+      <div>https://janycode.github.io/2021/03/25/14_微服务/02_注册中心/01-Nacos 注册中心部署与服务注册/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Jerry(姜源)</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2021年3月25日</div>
+        </div>
+      
+      
+      <div class="license-meta-item">
+        <div>许可协议</div>
+        <div>
+          
+            
+            
+              <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+              <span class="hint--top hint--rounded" aria-label="BY - 姜源">
+                <i class="iconfont icon-by"></i>
+              </span>
+              </a>
+            
+          
+        </div>
+      </div>
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2021/04/10/15_%E5%88%86%E5%B8%83%E5%BC%8F/04_%E5%88%86%E5%B8%83%E5%BC%8F%E4%BA%8B%E5%8A%A1/01-%E9%98%BF%E9%87%8C%E7%9A%84Seata%E6%A1%86%E6%9E%B6/" title="01-阿里的Seata框架">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">01-阿里的Seata框架</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2021/03/23/09_%E8%B0%83%E8%AF%95%E6%B5%8B%E8%AF%95/02_%E5%8D%95%E5%85%83%E6%B5%8B%E8%AF%95/03-SpringBoot%E9%9A%8F%E6%9C%BA%E7%AB%AF%E5%8F%A3%E5%92%8CMock%E6%B5%8B%E8%AF%95/" title="03-SpringBoot随机端口和Mock测试">
+                        <span class="hidden-mobile">03-SpringBoot随机端口和Mock测试</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+  <article id="comments" lazyload>
+    
+  <div id="SOHUCS" sid='https://janycode.github.io/2021/03/25/14_%E5%BE%AE%E6%9C%8D%E5%8A%A1/02_%E6%B3%A8%E5%86%8C%E4%B8%AD%E5%BF%83/01-Nacos%20%E6%B3%A8%E5%86%8C%E4%B8%AD%E5%BF%83%E9%83%A8%E7%BD%B2%E4%B8%8E%E6%9C%8D%E5%8A%A1%E6%B3%A8%E5%86%8C/'></div>
+  <script type="text/javascript">
+    Fluid.utils.loadComments('#SOHUCS', function() {
+      Fluid.utils.createScript("https://changyan.sohu.com/upload/changyan.js", function() {
+        window.changyan.api.config({"appid":"cyw5OHIcO","appkey":"fea3446b3df4b3f129f34da4cbc87e51"})
+      });
+    });
+  </script>
+  <noscript>Please enable JavaScript to view the comments</noscript>
+
+
+  </article>
+
+
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://simple.blog.csdn.net" target="_blank" rel="nofollow noopener"><span>CSDN</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/janycode" target="_blank" rel="nofollow noopener"><span>GitHub</span></a> <i class="iconfont icon-love"></i> <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="busuanzi_container_site_pv" style="display: none">
+        总访问量(PV) 
+        <span id="busuanzi_value_site_pv"></span>
+         次，
+      </span>
+    
+    
+      <span id="busuanzi_container_site_uv" style="display: none">
+        总访客数(UV) 
+        <span id="busuanzi_value_site_uv"></span>
+         人
+      </span>
+    
+    
+  
+</div>
+
+  
+  
+  
+</div>
+
+<!-- live2d 动画 -->
+<script src="https://eqcn.ajz.miesnfu.com/wp-content/plugins/wp-3d-pony/live2dw/lib/L2Dwidget.min.js"></script>
+<script>
+    L2Dwidget.init({
+        "model": {
+            jsonPath: "https://unpkg.com/live2d-widget-model-haruto@1.0.5/assets/haruto.model.json",
+            "scale": 1
+        },
+        "display": {
+            "position": "right",
+            "width": 100,
+            "height": 200,
+            "hOffset": 35,
+            "vOffset": -85
+        },
+        "mobile": {
+            "show": false,
+            "scale": 0.1
+        },
+        "react": {
+            "opacityDefault": 0.75,
+            "opacityOnHover": 0.2
+        }
+    });
+</script>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <!-- Baidu Analytics -->
+    <script defer>
+      if (!Fluid.ctx.dnt) {
+        var _hmt = _hmt || [];
+        (function() {
+          var hm = document.createElement("script");
+          hm.src = "https://hm.baidu.com/hm.js?bfff735c897eb60ea49b735096b20e47";
+          var s = document.getElementsByTagName("script")[0];
+          s.parentNode.insertBefore(hm, s);
+        })();
+      }
+    </script>
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.0/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      headingSelector : CONFIG.toc.headingSelector || 'h1,h2,h3,h4,h5,h6',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      collapseDepth   : CONFIG.toc.collapseDepth || 0,
+      scrollSmooth    : true,
+      headingsOffset  : -boardTop
+    });
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+  });
+</script>
+
+
+  <script>
+  (function() {
+    var enableLang = CONFIG.code_language.enable && CONFIG.code_language.default;
+    var enableCopy = CONFIG.copy_btn;
+    if (!enableLang && !enableCopy) {
+      return;
+    }
+
+    function getBgClass(ele) {
+      return Fluid.utils.getBackgroundLightness(ele) >= 0 ? 'code-widget-light' : 'code-widget-dark';
+    }
+
+    var copyTmpl = '';
+    copyTmpl += '<div class="code-widget">';
+    copyTmpl += 'LANG';
+    copyTmpl += '</div>';
+    jQuery('.markdown-body pre').each(function() {
+      var $pre = jQuery(this);
+      if ($pre.find('code.mermaid').length > 0) {
+        return;
+      }
+      if ($pre.find('span.line').length > 0) {
+        return;
+      }
+
+      var lang = '';
+
+      if (enableLang) {
+        lang = CONFIG.code_language.default;
+        if ($pre[0].children.length > 0 && $pre[0].children[0].classList.length >= 2 && $pre.children().hasClass('hljs')) {
+          lang = $pre[0].children[0].classList[1];
+        } else if ($pre[0].getAttribute('data-language')) {
+          lang = $pre[0].getAttribute('data-language');
+        } else if ($pre.parent().hasClass('sourceCode') && $pre[0].children.length > 0 && $pre[0].children[0].classList.length >= 2) {
+          lang = $pre[0].children[0].classList[1];
+          $pre.parent().addClass('code-wrapper');
+        } else if ($pre.parent().hasClass('markdown-body') && $pre[0].classList.length === 0) {
+          $pre.wrap('<div class="code-wrapper"></div>');
+        }
+        lang = lang.toUpperCase().replace('NONE', CONFIG.code_language.default);
+      }
+      $pre.append(copyTmpl.replace('LANG', lang).replace('code-widget">',
+        getBgClass($pre[0]) + (enableCopy ? ' code-widget copy-btn" data-clipboard-snippet><i class="iconfont icon-copy"></i>' : ' code-widget">')));
+
+      if (enableCopy) {
+        Fluid.utils.createScript('https://lib.baomitu.com/clipboard.js/2.0.10/clipboard.min.js', function() {
+          var clipboard = new window.ClipboardJS('.copy-btn', {
+            target: function(trigger) {
+              var nodes = trigger.parentNode.childNodes;
+              for (var i = 0; i < nodes.length; i++) {
+                if (nodes[i].tagName === 'CODE') {
+                  return nodes[i];
+                }
+              }
+            }
+          });
+          clipboard.on('success', function(e) {
+            e.clearSelection();
+            e.trigger.innerHTML = e.trigger.innerHTML.replace('icon-copy', 'icon-success');
+            setTimeout(function() {
+              e.trigger.innerHTML = e.trigger.innerHTML.replace('icon-success', 'icon-copy');
+            }, 2000);
+          });
+        });
+      }
+    });
+  })();
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

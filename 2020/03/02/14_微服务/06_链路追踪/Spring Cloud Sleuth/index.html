@@ -1,0 +1,839 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=light>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Jerry(姜源)">
+  <meta name="keywords" content="Java,Html,CSS,JavaScript,Python,C,Linux,shell编程经验分享、技术总结、心得体会">
+  
+    <meta name="description" content="官方地址：https:&#x2F;&#x2F;spring.io&#x2F;projects&#x2F;spring-cloud-sleuth 中文文档参考：https:&#x2F;&#x2F;segmentfault.com&#x2F;a&#x2F;1190000018986743 1. Sleuth 简介Spring Cloud Sleuth为Spring Cloud实现了分布式跟踪解决方案。其实是一个工具,它在整个分布式系统中能跟踪一个用户请求的过程(包括数据采集，数">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Spring Cloud Sleuth">
+<meta property="og:url" content="https://janycode.github.io/2020/03/02/14_%E5%BE%AE%E6%9C%8D%E5%8A%A1/06_%E9%93%BE%E8%B7%AF%E8%BF%BD%E8%B8%AA/Spring%20Cloud%20Sleuth/index.html">
+<meta property="og:site_name" content="姜源の云笔记">
+<meta property="og:description" content="官方地址：https:&#x2F;&#x2F;spring.io&#x2F;projects&#x2F;spring-cloud-sleuth 中文文档参考：https:&#x2F;&#x2F;segmentfault.com&#x2F;a&#x2F;1190000018986743 1. Sleuth 简介Spring Cloud Sleuth为Spring Cloud实现了分布式跟踪解决方案。其实是一个工具,它在整个分布式系统中能跟踪一个用户请求的过程(包括数据采集，数">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20200729130826.png">
+<meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20200731145744.png">
+<meta property="article:published_time" content="2020-03-02T09:59:44.000Z">
+<meta property="article:modified_time" content="2026-02-10T09:21:30.310Z">
+<meta property="article:author" content="Jerry(姜源)">
+<meta property="article:tag" content="微服务">
+<meta property="article:tag" content="SpringCloudAlibaba">
+<meta property="article:tag" content="Sleuth">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20200729130826.png">
+  
+  
+    <meta name="referrer" content="no-referrer-when-downgrade">
+  
+  
+  <title>Spring Cloud Sleuth - 姜源の云笔记</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"janycode.github.io","root":"/","version":"1.9.0","typing":{"enable":true,"typeSpeed":50,"cursorChar":"|","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":false},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":"bfff735c897eb60ea49b735096b20e47","google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+
+  
+<meta name="generator" content="Hexo 6.2.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 50vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>姜源の云笔记</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tools/">
+                <i class="iconfont icon-slack-fill"></i>
+                工具
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" target="_blank" rel="noopener" href="https://yuancodes.github.io/">
+                <i class="iconfont icon-notebook"></i>
+                Docsify
+              </a>
+            </li>
+          
+        
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="Spring Cloud Sleuth"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-author" aria-hidden="true"></i>
+        Jerry(姜源)
+      </span>
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2020-03-02 17:59" pubdate>
+          星期一, 2020/03/02 17:59:44
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          <!-- compatible with older versions-->
+          1.8k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          <!-- compatible with older versions-->
+          16 分钟
+        
+      </span>
+    
+
+    
+    
+      
+        <span id="busuanzi_container_page_pv" style="display: none">
+          <i class="iconfont icon-eye" aria-hidden="true"></i>
+          <span id="busuanzi_value_page_pv"></span> 次
+        </span>
+        
+      
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">Spring Cloud Sleuth</h1>
+            
+            <div class="markdown-body">
+              
+              <p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20200729130826.png" srcset="/img/loading.gif" lazyload alt="image-20200729130824878"></p>
+<p>官方地址：<a target="_blank" rel="noopener" href="https://spring.io/projects/spring-cloud-sleuth">https://spring.io/projects/spring-cloud-sleuth</a></p>
+<p>中文文档参考：<a target="_blank" rel="noopener" href="https://segmentfault.com/a/1190000018986743">https://segmentfault.com/a/1190000018986743</a></p>
+<h3 id="1-Sleuth-简介"><a href="#1-Sleuth-简介" class="headerlink" title="1. Sleuth 简介"></a>1. Sleuth 简介</h3><p>Spring Cloud Sleuth为Spring Cloud实现了分布式跟踪解决方案。<br>其实是一个工具,它在整个分布式系统中能跟踪一个用户请求的过程(包括数据采集，数据传输，数据存储，数据分析，数据可视化)，捕获这些跟踪数据，就能构建微服务的整个调用链的视图，这是调试和监控微服务的关键具。  </p>
+<p>功能：<code>提供链路追踪</code>、<code>性能分析</code>、<code>数据分析/优化业务</code>、<code>可视化</code></p>
+<h4 id="1-1-术语"><a href="#1-1-术语" class="headerlink" title="1.1 术语"></a>1.1 术语</h4><p>Span：基本工作单元，发送一个远程调度任务 就会产生一个Span，Span是一个64位ID唯一标识的，Trace是用另一个64位ID唯一标识的，Span还有其他数据信息，比如摘要、时间戳事件、Span的ID、以及进度ID。<br><strong>迹线：</strong>一组spans，形成树状结构<br><strong>注释：</strong>用于及时记录事件的存在，一些核心注解用来定义一个请求的开始和结束，这些注解包括以下：</p>
+<ul>
+<li>cs：客户端已发送。客户提出了要求。此注释指示跨度的开始。</li>
+<li>sr：服务器收到数据：服务器端收到了请求并开始处理它。从此时间戳中减去 cs 时间戳可显示网络延迟。</li>
+<li>ss：服务器已发送。在请求处理完成时进行注释（当响应被发送回客户端时）。从此时间戳中减去 sr 时间戳将显示服务器端处理请求所需的时间。</li>
+<li>cr：客户端收到数据。表示跨度结束。客户端已成功收到服务器端的响应。从此时间戳中减去 cs 时间戳将显示客户端从服务器接收响应所需的整个时间。</li>
+</ul>
+<h3 id="2-Zipkin-安装"><a href="#2-Zipkin-安装" class="headerlink" title="2. Zipkin 安装"></a>2. Zipkin 安装</h3><p>Zipkin是一个分布式跟踪系统。它有助于收集解决服务体系结构中的延迟问题所需的时序数据。功能包括该数据的收集和查找。</p>
+<p>实现步骤：</p>
+<ol>
+<li><p>下载<br><a target="_blank" rel="noopener" href="https://dl.bintray.com/openzipkin/maven/io/zipkin/java/zipkin-server/">https://dl.bintray.com/openzipkin/maven/io/zipkin/java/zipkin-server/</a><br><a target="_blank" rel="noopener" href="https://search.maven.org/remote_content?g=io.zipkin&amp;a=zipkin-server&amp;v=LATEST&amp;c=exec">https://search.maven.org/remote_content?g=io.zipkin&amp;a=zipkin-server&amp;v=LATEST&amp;c=exec</a></p>
+</li>
+<li><p>启动运行</p>
+ <figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs sh"><span class="hljs-comment">#依赖 jdk 环境，win或linux均可直接运行，默认端口 9411 启动</span><br>java -jar zipkin-server-2.21.4.exec.jar<br><br><span class="hljs-comment"># 指定端口启动</span><br>java -jar zipkin-server-2.21.5-exec.jar --server.port=8099<br></code></pre></td></tr></table></figure>
+</li>
+<li><p>浏览器访问<br> <a target="_blank" rel="noopener" href="http://localhost:9411/">http://localhost:9411</a></p>
+</li>
+</ol>
+<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20200731145744.png" srcset="/img/loading.gif" lazyload alt="image-20200731145743947"></p>
+<h3 id="3-Sleuth-应用"><a href="#3-Sleuth-应用" class="headerlink" title="3. Sleuth 应用"></a>3. Sleuth 应用</h3><ol>
+<li>依赖 jar</li>
+</ol>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs xml"><span class="hljs-tag">&lt;<span class="hljs-name">dependency</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">groupId</span>&gt;</span>org.springframework.cloud<span class="hljs-tag">&lt;/<span class="hljs-name">groupId</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">artifactId</span>&gt;</span>spring-cloud-starter-sleuth<span class="hljs-tag">&lt;/<span class="hljs-name">artifactId</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">dependency</span>&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">dependency</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">groupId</span>&gt;</span>org.springframework.cloud<span class="hljs-tag">&lt;/<span class="hljs-name">groupId</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">artifactId</span>&gt;</span>spring-cloud-starter-zipkin<span class="hljs-tag">&lt;/<span class="hljs-name">artifactId</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">dependency</span>&gt;</span><br></code></pre></td></tr></table></figure>
+
+<ol start="2">
+<li>配置文件<br> <code>服务提供者</code> &amp; <code>服务消费者</code> 都可配置链路跟踪，跟踪接口响应时间。</li>
+</ol>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><code class="hljs yaml"><span class="hljs-attr">server:</span><br>  <span class="hljs-attr">port:</span> <span class="hljs-number">8081</span><br><span class="hljs-attr">spring:</span><br>  <span class="hljs-attr">application:</span><br>    <span class="hljs-attr">name:</span> <span class="hljs-string">jerryProvider</span>  <span class="hljs-comment">#服务名称</span><br>  <span class="hljs-attr">cloud:</span><br>    <span class="hljs-attr">nacos:</span><br>      <span class="hljs-attr">discovery:</span><br>        <span class="hljs-attr">server-addr:</span> <span class="hljs-number">47.94</span><span class="hljs-number">.193</span><span class="hljs-number">.104</span><span class="hljs-string">:8848</span>  <span class="hljs-comment">#注册中心地址</span><br>  <span class="hljs-attr">sleuth:</span><br>    <span class="hljs-attr">sampler:</span><br>      <span class="hljs-attr">probability:</span> <span class="hljs-number">1</span>  <span class="hljs-comment">#采样率</span><br>  <span class="hljs-attr">zipkin:</span><br>    <span class="hljs-attr">sender:</span><br>      <span class="hljs-attr">type:</span> <span class="hljs-string">web</span>  <span class="hljs-comment">#采用 http 协议进行传输</span><br>    <span class="hljs-attr">base-url:</span> <span class="hljs-string">http://localhost:9411/</span>  <span class="hljs-comment"># zipkin的控制台地址，默认 9411 端口启动</span><br></code></pre></td></tr></table></figure>
+
+
+
+<blockquote>
+<p>如果需要知道详细的调用过程，那么可以配置日志框架：</p>
+<p>1.配置日志文件</p>
+<p>使用的日志是SpringBoot 推荐的logback</p>
+<p>2.在需要的地方：方法调用的时候需要记录日志</p>
+<p>在类上：@Slf4j</p>
+<p>在对应的方法中，直接使用log.xxx(日志信息)  </p>
+</blockquote>
+
+              
+            </div>
+            <hr/>
+            <div>
+              <div>
+  <img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20241112163319.png" srcset="/img/loading.gif" lazyload>
+</div>
+<div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/14-%E5%BE%AE%E6%9C%8D%E5%8A%A1/" class="category-chain-item">14_微服务</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/14-%E5%BE%AE%E6%9C%8D%E5%8A%A1/06-%E9%93%BE%E8%B7%AF%E8%BF%BD%E8%B8%AA/" class="category-chain-item">06_链路追踪</a>
+  
+  
+
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/%E5%BE%AE%E6%9C%8D%E5%8A%A1/">#微服务</a>
+      
+        <a href="/tags/SpringCloudAlibaba/">#SpringCloudAlibaba</a>
+      
+        <a href="/tags/Sleuth/">#Sleuth</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>Spring Cloud Sleuth</div>
+      <div>https://janycode.github.io/2020/03/02/14_微服务/06_链路追踪/Spring Cloud Sleuth/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Jerry(姜源)</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2020年3月2日</div>
+        </div>
+      
+      
+      <div class="license-meta-item">
+        <div>许可协议</div>
+        <div>
+          
+            
+            
+              <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+              <span class="hint--top hint--rounded" aria-label="BY - 姜源">
+                <i class="iconfont icon-by"></i>
+              </span>
+              </a>
+            
+          
+        </div>
+      </div>
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2020/03/02/14_%E5%BE%AE%E6%9C%8D%E5%8A%A1/10_%E6%94%AF%E4%BB%98%E6%9C%8D%E5%8A%A1/01-%E6%94%AF%E4%BB%98%E5%AE%9D%E6%94%AF%E4%BB%98/" title="01-支付宝支付">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">01-支付宝支付</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2020/03/02/14_%E5%BE%AE%E6%9C%8D%E5%8A%A1/10_%E6%94%AF%E4%BB%98%E6%9C%8D%E5%8A%A1/02-%E5%BE%AE%E4%BF%A1%E6%94%AF%E4%BB%98/" title="02-微信支付">
+                        <span class="hidden-mobile">02-微信支付</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+  <article id="comments" lazyload>
+    
+  <div id="SOHUCS" sid='https://janycode.github.io/2020/03/02/14_%E5%BE%AE%E6%9C%8D%E5%8A%A1/06_%E9%93%BE%E8%B7%AF%E8%BF%BD%E8%B8%AA/Spring%20Cloud%20Sleuth/'></div>
+  <script type="text/javascript">
+    Fluid.utils.loadComments('#SOHUCS', function() {
+      Fluid.utils.createScript("https://changyan.sohu.com/upload/changyan.js", function() {
+        window.changyan.api.config({"appid":"cyw5OHIcO","appkey":"fea3446b3df4b3f129f34da4cbc87e51"})
+      });
+    });
+  </script>
+  <noscript>Please enable JavaScript to view the comments</noscript>
+
+
+  </article>
+
+
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://simple.blog.csdn.net" target="_blank" rel="nofollow noopener"><span>CSDN</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/janycode" target="_blank" rel="nofollow noopener"><span>GitHub</span></a> <i class="iconfont icon-love"></i> <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="busuanzi_container_site_pv" style="display: none">
+        总访问量(PV) 
+        <span id="busuanzi_value_site_pv"></span>
+         次，
+      </span>
+    
+    
+      <span id="busuanzi_container_site_uv" style="display: none">
+        总访客数(UV) 
+        <span id="busuanzi_value_site_uv"></span>
+         人
+      </span>
+    
+    
+  
+</div>
+
+  
+  
+  
+</div>
+
+<!-- live2d 动画 -->
+<script src="https://eqcn.ajz.miesnfu.com/wp-content/plugins/wp-3d-pony/live2dw/lib/L2Dwidget.min.js"></script>
+<script>
+    L2Dwidget.init({
+        "model": {
+            jsonPath: "https://unpkg.com/live2d-widget-model-haruto@1.0.5/assets/haruto.model.json",
+            "scale": 1
+        },
+        "display": {
+            "position": "right",
+            "width": 100,
+            "height": 200,
+            "hOffset": 35,
+            "vOffset": -85
+        },
+        "mobile": {
+            "show": false,
+            "scale": 0.1
+        },
+        "react": {
+            "opacityDefault": 0.75,
+            "opacityOnHover": 0.2
+        }
+    });
+</script>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <!-- Baidu Analytics -->
+    <script defer>
+      if (!Fluid.ctx.dnt) {
+        var _hmt = _hmt || [];
+        (function() {
+          var hm = document.createElement("script");
+          hm.src = "https://hm.baidu.com/hm.js?bfff735c897eb60ea49b735096b20e47";
+          var s = document.getElementsByTagName("script")[0];
+          s.parentNode.insertBefore(hm, s);
+        })();
+      }
+    </script>
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.0/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      headingSelector : CONFIG.toc.headingSelector || 'h1,h2,h3,h4,h5,h6',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      collapseDepth   : CONFIG.toc.collapseDepth || 0,
+      scrollSmooth    : true,
+      headingsOffset  : -boardTop
+    });
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+  });
+</script>
+
+
+  <script>
+  (function() {
+    var enableLang = CONFIG.code_language.enable && CONFIG.code_language.default;
+    var enableCopy = CONFIG.copy_btn;
+    if (!enableLang && !enableCopy) {
+      return;
+    }
+
+    function getBgClass(ele) {
+      return Fluid.utils.getBackgroundLightness(ele) >= 0 ? 'code-widget-light' : 'code-widget-dark';
+    }
+
+    var copyTmpl = '';
+    copyTmpl += '<div class="code-widget">';
+    copyTmpl += 'LANG';
+    copyTmpl += '</div>';
+    jQuery('.markdown-body pre').each(function() {
+      var $pre = jQuery(this);
+      if ($pre.find('code.mermaid').length > 0) {
+        return;
+      }
+      if ($pre.find('span.line').length > 0) {
+        return;
+      }
+
+      var lang = '';
+
+      if (enableLang) {
+        lang = CONFIG.code_language.default;
+        if ($pre[0].children.length > 0 && $pre[0].children[0].classList.length >= 2 && $pre.children().hasClass('hljs')) {
+          lang = $pre[0].children[0].classList[1];
+        } else if ($pre[0].getAttribute('data-language')) {
+          lang = $pre[0].getAttribute('data-language');
+        } else if ($pre.parent().hasClass('sourceCode') && $pre[0].children.length > 0 && $pre[0].children[0].classList.length >= 2) {
+          lang = $pre[0].children[0].classList[1];
+          $pre.parent().addClass('code-wrapper');
+        } else if ($pre.parent().hasClass('markdown-body') && $pre[0].classList.length === 0) {
+          $pre.wrap('<div class="code-wrapper"></div>');
+        }
+        lang = lang.toUpperCase().replace('NONE', CONFIG.code_language.default);
+      }
+      $pre.append(copyTmpl.replace('LANG', lang).replace('code-widget">',
+        getBgClass($pre[0]) + (enableCopy ? ' code-widget copy-btn" data-clipboard-snippet><i class="iconfont icon-copy"></i>' : ' code-widget">')));
+
+      if (enableCopy) {
+        Fluid.utils.createScript('https://lib.baomitu.com/clipboard.js/2.0.10/clipboard.min.js', function() {
+          var clipboard = new window.ClipboardJS('.copy-btn', {
+            target: function(trigger) {
+              var nodes = trigger.parentNode.childNodes;
+              for (var i = 0; i < nodes.length; i++) {
+                if (nodes[i].tagName === 'CODE') {
+                  return nodes[i];
+                }
+              }
+            }
+          });
+          clipboard.on('success', function(e) {
+            e.clearSelection();
+            e.trigger.innerHTML = e.trigger.innerHTML.replace('icon-copy', 'icon-success');
+            setTimeout(function() {
+              e.trigger.innerHTML = e.trigger.innerHTML.replace('icon-success', 'icon-copy');
+            }, 2000);
+          });
+        });
+      }
+    });
+  })();
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

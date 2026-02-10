@@ -1,0 +1,815 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=light>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Jerry(姜源)">
+  <meta name="keywords" content="Java,Html,CSS,JavaScript,Python,C,Linux,shell编程经验分享、技术总结、心得体会">
+  
+    <meta name="description" content="1. File类文件和目录路径名的抽象表示形式，主要用于获取文件的相关属性以及创建文件或目录。 123public class File    extends Object    implements Serializable, Comparable&lt;File&gt; 构造方法：没有无参构造。 12345678File(File parent, String child)从父抽象路径名和子路">
+<meta property="og:type" content="article">
+<meta property="og:title" content="04-File文件读写">
+<meta property="og:url" content="https://janycode.github.io/2016/04/28/02_%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/01_Java/01_JavaSE/06_%E6%96%87%E4%BB%B6%E5%92%8C%E6%B5%81/04-File%E7%B1%BB&FileFilter%E6%8E%A5%E5%8F%A3/index.html">
+<meta property="og:site_name" content="姜源の云笔记">
+<meta property="og:description" content="1. File类文件和目录路径名的抽象表示形式，主要用于获取文件的相关属性以及创建文件或目录。 123public class File    extends Object    implements Serializable, Comparable&lt;File&gt; 构造方法：没有无参构造。 12345678File(File parent, String child)从父抽象路径名和子路">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2016-04-28T14:03:43.000Z">
+<meta property="article:modified_time" content="2026-02-10T09:21:29.829Z">
+<meta property="article:author" content="Jerry(姜源)">
+<meta property="article:tag" content="JavaSE">
+<meta property="article:tag" content="File">
+<meta name="twitter:card" content="summary_large_image">
+  
+  
+    <meta name="referrer" content="no-referrer-when-downgrade">
+  
+  
+  <title>04-File文件读写 - 姜源の云笔记</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"janycode.github.io","root":"/","version":"1.9.0","typing":{"enable":true,"typeSpeed":50,"cursorChar":"|","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":false},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":"bfff735c897eb60ea49b735096b20e47","google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+
+  
+<meta name="generator" content="Hexo 6.2.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 50vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>姜源の云笔记</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tools/">
+                <i class="iconfont icon-slack-fill"></i>
+                工具
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" target="_blank" rel="noopener" href="https://yuancodes.github.io/">
+                <i class="iconfont icon-notebook"></i>
+                Docsify
+              </a>
+            </li>
+          
+        
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="04-File文件读写"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-author" aria-hidden="true"></i>
+        Jerry(姜源)
+      </span>
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2016-04-28 22:03" pubdate>
+          星期四, 2016/04/28 22:03:43
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          <!-- compatible with older versions-->
+          2.8k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          <!-- compatible with older versions-->
+          24 分钟
+        
+      </span>
+    
+
+    
+    
+      
+        <span id="busuanzi_container_page_pv" style="display: none">
+          <i class="iconfont icon-eye" aria-hidden="true"></i>
+          <span id="busuanzi_value_page_pv"></span> 次
+        </span>
+        
+      
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">04-File文件读写</h1>
+            
+            <div class="markdown-body">
+              
+              <h3 id="1-File类"><a href="#1-File类" class="headerlink" title="1. File类"></a>1. File类</h3><p>文件和目录路径名的抽象表示形式，主要用于<code>获取文件的相关属性以及创建文件或目录</code>。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">File</span><br>    <span class="hljs-keyword">extends</span> <span class="hljs-title class_">Object</span><br>    <span class="hljs-keyword">implements</span> <span class="hljs-title class_">Serializable</span>, Comparable&lt;File&gt;<br></code></pre></td></tr></table></figure>
+<p>构造方法：没有无参构造。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs java">File(File parent, String child)<br>从父抽象路径名和子路径名字符串创建新的 File实例。<br>File(String pathname)<br>通过将给定的路径名字符串转换为抽象路径名来创建新的 File实例。<br>File(String parent, String child)<br>从父路径名字符串和子路径名字符串创建新的 File实例。<br>File(URI uri)<br>通过将给定的 file: URI转换为抽象路径名来创建新的 File实例。<br></code></pre></td></tr></table></figure>
+<p>常用方法：参考File类 jdk1.8 API<br>部分常用方法演示：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">TestFiles</span> &#123;<br>      <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">main</span><span class="hljs-params">(String[] args)</span> <span class="hljs-keyword">throws</span> IOException,  Exception &#123;<br>            <span class="hljs-type">File</span> <span class="hljs-variable">file</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">File</span>(<span class="hljs-string">&quot;files\\test\\target.txt&quot;</span>);<br>            System.out.println(file.canExecute()); <span class="hljs-comment">// 该文件/目录可执行</span><br>            System.out.println(file.canWrite()); <span class="hljs-comment">// 该文件可写</span><br>            System.out.println(file.canRead()); <span class="hljs-comment">// 该文件可读</span><br>            System.out.println(file.createNewFile()); <span class="hljs-comment">// 受查异常：如果不存在，新建该文件</span><br>            System.out.println(file.delete()); <span class="hljs-comment">// 删除该文件(如果文件存在)</span><br>            Thread.sleep(<span class="hljs-number">2000</span>);<br>            file.deleteOnExit(); <span class="hljs-comment">// JVM终止时，执行删除文件</span><br>            System.out.println(file.exists()); <span class="hljs-comment">// 该文件存在，于createNewFile()结合使用</span><br>            <br>            System.out.println(file.getFreeSpace()/<span class="hljs-number">1024</span>/<span class="hljs-number">1024</span>/<span class="hljs-number">1024</span> +  <span class="hljs-string">&quot;GB&quot;</span>); <span class="hljs-comment">// 获取硬盘的空闲空间(计算为GB)</span><br>            System.out.println(file.getTotalSpace()/<span class="hljs-number">1024</span>/<span class="hljs-number">1024</span>/<span class="hljs-number">1024</span> +  <span class="hljs-string">&quot;GB&quot;</span>); <span class="hljs-comment">// 获取硬盘总空间(计算为GB)</span><br>            System.out.println(file.getAbsolutePath()); <span class="hljs-comment">// 获取绝对路径字符串</span><br>            System.out.println(file.getPath()); <span class="hljs-comment">// 获取相对路径字符串</span><br>            System.out.println(file.getName()); <span class="hljs-comment">// 获取文件名：文件名.后缀名</span><br>            System.out.println(file.getParent()); <span class="hljs-comment">// 获取父目录</span><br>            <br>            System.out.println(file.isDirectory()); <span class="hljs-comment">// 文件目录判断</span><br>            System.out.println(file.isFile()); <span class="hljs-comment">// 标准文件判断</span><br>            System.out.println(file.isHidden()); <span class="hljs-comment">// 隐藏文件判断</span><br>            <br>            <span class="hljs-comment">// 文件最后一次修改时间(long类型的毫秒值)</span><br>            System.out.println((System.currentTimeMillis()-file.lastModified()) /  <span class="hljs-number">1000</span> / <span class="hljs-number">60</span>); <span class="hljs-comment">// xx分钟前修改的</span><br>            System.out.println(file.length()); <span class="hljs-comment">// 文件内容的字节</span><br>            <br>            file.mkdirs(); <span class="hljs-comment">// 将file中指定的路径全部创建为目录</span><br>            System.out.println(file);<br>      &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<h3 id="2-FileFilter接口"><a href="#2-FileFilter接口" class="headerlink" title="2. FileFilter接口"></a>2. FileFilter接口</h3><p>FileFilter接口：<code>实现按条件过滤指定文件</code></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">interface</span> <span class="hljs-title class_">FileFilter</span> &#123;<br>    <span class="hljs-comment">//测试指定的抽象路径名是否应包含在某个路径列表</span><br>    <span class="hljs-type">boolean</span> <span class="hljs-title function_">accept</span><span class="hljs-params">(File pathname)</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
+<ul>
+<li>当调用File类中的 listFiles() 方法时，支持传入 FileFilter 接口的实现类对象，对获取文件进行过滤，只有满足条件的文件才可出现在listFiles()的返回值中。——接口回调。</li>
+</ul>
+<h3 id="3-统计指定类型文件"><a href="#3-统计指定类型文件" class="headerlink" title="3. 统计指定类型文件"></a>3. 统计指定类型文件</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">TestShowAllFiles</span> &#123;<br>      <span class="hljs-keyword">static</span> <span class="hljs-type">int</span> <span class="hljs-variable">fileCount</span> <span class="hljs-operator">=</span> <span class="hljs-number">0</span>;<br>      <br>      <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">main</span><span class="hljs-params">(String[] args)</span> &#123;<br>            <span class="hljs-comment">// 遍历E盘下，所有的.class结尾的文件</span><br>            <span class="hljs-type">File</span> <span class="hljs-variable">file</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">File</span>(<span class="hljs-string">&quot;E:\\&quot;</span>);<br>            showAll(file);<br>            System.out.println(<span class="hljs-string">&quot;一共有 &quot;</span> + fileCount + <span class="hljs-string">&quot; 个.class文件&quot;</span>);<br>      &#125;<br>      <br>      <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">showAll</span><span class="hljs-params">(File dir)</span> &#123;<br>            <span class="hljs-comment">// 实现FileFilter接口的匿名内部类，作为过滤参数传入</span><br>            File[] files = dir.listFiles( <span class="hljs-keyword">new</span> <span class="hljs-title class_">FileFilter</span>() &#123;<br>                  <span class="hljs-meta">@Override</span><br>                  <span class="hljs-keyword">public</span> <span class="hljs-type">boolean</span> <span class="hljs-title function_">accept</span><span class="hljs-params">(File pathname)</span> &#123;<br>                        <span class="hljs-keyword">if</span> (pathname.isDirectory()) &#123;<br>                              <span class="hljs-keyword">return</span> <span class="hljs-literal">true</span>; <span class="hljs-comment">// 文件夹保存</span><br>                        &#125;<br>                        <br>                        <span class="hljs-keyword">if</span> (pathname.isFile()) &#123;<br>                              <span class="hljs-keyword">if</span>  (pathname.getName().endsWith(<span class="hljs-string">&quot;.class&quot;</span>)) &#123;<br>                                    <span class="hljs-keyword">return</span> <span class="hljs-literal">true</span>; <span class="hljs-comment">// 文件</span><br>                              &#125;<br>                        &#125;<br>                        <span class="hljs-keyword">return</span> <span class="hljs-literal">false</span>;<br>                  &#125;<br>            &#125;);<br>            <br>            <span class="hljs-comment">// 避免遍历到结尾抛出空指针异常（因为空目录也会被保存到数组）</span><br>            <span class="hljs-keyword">if</span> (files != <span class="hljs-literal">null</span>) &#123;<br>                  <span class="hljs-keyword">for</span> (File f : files) &#123;<br>                        <span class="hljs-keyword">if</span> (f.isFile()) &#123; <span class="hljs-comment">// 符合规则的文件，则输出</span><br>                              System.out.println(f.getName());<br>                              fileCount++;<br>                        &#125; <span class="hljs-keyword">else</span> &#123; <span class="hljs-comment">// 子目录，则遍历</span><br>                              showAll(f);<br>                        &#125;<br>                  &#125;<br>            &#125;<br>      &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+              
+            </div>
+            <hr/>
+            <div>
+              <div>
+  <img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20241112163319.png" srcset="/img/loading.gif" lazyload>
+</div>
+<div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/02-%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/" class="category-chain-item">02_编程语言</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/02-%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/01-Java/" class="category-chain-item">01_Java</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/02-%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/01-Java/01-JavaSE/" class="category-chain-item">01_JavaSE</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/02-%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/01-Java/01-JavaSE/06-%E6%96%87%E4%BB%B6%E5%92%8C%E6%B5%81/" class="category-chain-item">06_文件和流</a>
+  
+  
+
+  
+
+  
+
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/JavaSE/">#JavaSE</a>
+      
+        <a href="/tags/File/">#File</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>04-File文件读写</div>
+      <div>https://janycode.github.io/2016/04/28/02_编程语言/01_Java/01_JavaSE/06_文件和流/04-File类&amp;FileFilter接口/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Jerry(姜源)</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2016年4月28日</div>
+        </div>
+      
+      
+      <div class="license-meta-item">
+        <div>许可协议</div>
+        <div>
+          
+            
+            
+              <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+              <span class="hint--top hint--rounded" aria-label="BY - 姜源">
+                <i class="iconfont icon-by"></i>
+              </span>
+              </a>
+            
+          
+        </div>
+      </div>
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2016/04/28/02_%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/01_Java/01_JavaSE/06_%E6%96%87%E4%BB%B6%E5%92%8C%E6%B5%81/01-properties%E8%AF%BB%E5%86%99/" title="01-properties读写">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">01-properties读写</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2016/04/28/02_%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/01_Java/01_JavaSE/06_%E6%96%87%E4%BB%B6%E5%92%8C%E6%B5%81/03-%E5%AD%97%E7%AC%A6%E6%B5%81%E8%AF%BB%E5%86%99/" title="03-字符流读写">
+                        <span class="hidden-mobile">03-字符流读写</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+  <article id="comments" lazyload>
+    
+  <div id="SOHUCS" sid='https://janycode.github.io/2016/04/28/02_%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/01_Java/01_JavaSE/06_%E6%96%87%E4%BB%B6%E5%92%8C%E6%B5%81/04-File%E7%B1%BB&amp;FileFilter%E6%8E%A5%E5%8F%A3/'></div>
+  <script type="text/javascript">
+    Fluid.utils.loadComments('#SOHUCS', function() {
+      Fluid.utils.createScript("https://changyan.sohu.com/upload/changyan.js", function() {
+        window.changyan.api.config({"appid":"cyw5OHIcO","appkey":"fea3446b3df4b3f129f34da4cbc87e51"})
+      });
+    });
+  </script>
+  <noscript>Please enable JavaScript to view the comments</noscript>
+
+
+  </article>
+
+
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://simple.blog.csdn.net" target="_blank" rel="nofollow noopener"><span>CSDN</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/janycode" target="_blank" rel="nofollow noopener"><span>GitHub</span></a> <i class="iconfont icon-love"></i> <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="busuanzi_container_site_pv" style="display: none">
+        总访问量(PV) 
+        <span id="busuanzi_value_site_pv"></span>
+         次，
+      </span>
+    
+    
+      <span id="busuanzi_container_site_uv" style="display: none">
+        总访客数(UV) 
+        <span id="busuanzi_value_site_uv"></span>
+         人
+      </span>
+    
+    
+  
+</div>
+
+  
+  
+  
+</div>
+
+<!-- live2d 动画 -->
+<script src="https://eqcn.ajz.miesnfu.com/wp-content/plugins/wp-3d-pony/live2dw/lib/L2Dwidget.min.js"></script>
+<script>
+    L2Dwidget.init({
+        "model": {
+            jsonPath: "https://unpkg.com/live2d-widget-model-haruto@1.0.5/assets/haruto.model.json",
+            "scale": 1
+        },
+        "display": {
+            "position": "right",
+            "width": 100,
+            "height": 200,
+            "hOffset": 35,
+            "vOffset": -85
+        },
+        "mobile": {
+            "show": false,
+            "scale": 0.1
+        },
+        "react": {
+            "opacityDefault": 0.75,
+            "opacityOnHover": 0.2
+        }
+    });
+</script>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <!-- Baidu Analytics -->
+    <script defer>
+      if (!Fluid.ctx.dnt) {
+        var _hmt = _hmt || [];
+        (function() {
+          var hm = document.createElement("script");
+          hm.src = "https://hm.baidu.com/hm.js?bfff735c897eb60ea49b735096b20e47";
+          var s = document.getElementsByTagName("script")[0];
+          s.parentNode.insertBefore(hm, s);
+        })();
+      }
+    </script>
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.0/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      headingSelector : CONFIG.toc.headingSelector || 'h1,h2,h3,h4,h5,h6',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      collapseDepth   : CONFIG.toc.collapseDepth || 0,
+      scrollSmooth    : true,
+      headingsOffset  : -boardTop
+    });
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+  });
+</script>
+
+
+  <script>
+  (function() {
+    var enableLang = CONFIG.code_language.enable && CONFIG.code_language.default;
+    var enableCopy = CONFIG.copy_btn;
+    if (!enableLang && !enableCopy) {
+      return;
+    }
+
+    function getBgClass(ele) {
+      return Fluid.utils.getBackgroundLightness(ele) >= 0 ? 'code-widget-light' : 'code-widget-dark';
+    }
+
+    var copyTmpl = '';
+    copyTmpl += '<div class="code-widget">';
+    copyTmpl += 'LANG';
+    copyTmpl += '</div>';
+    jQuery('.markdown-body pre').each(function() {
+      var $pre = jQuery(this);
+      if ($pre.find('code.mermaid').length > 0) {
+        return;
+      }
+      if ($pre.find('span.line').length > 0) {
+        return;
+      }
+
+      var lang = '';
+
+      if (enableLang) {
+        lang = CONFIG.code_language.default;
+        if ($pre[0].children.length > 0 && $pre[0].children[0].classList.length >= 2 && $pre.children().hasClass('hljs')) {
+          lang = $pre[0].children[0].classList[1];
+        } else if ($pre[0].getAttribute('data-language')) {
+          lang = $pre[0].getAttribute('data-language');
+        } else if ($pre.parent().hasClass('sourceCode') && $pre[0].children.length > 0 && $pre[0].children[0].classList.length >= 2) {
+          lang = $pre[0].children[0].classList[1];
+          $pre.parent().addClass('code-wrapper');
+        } else if ($pre.parent().hasClass('markdown-body') && $pre[0].classList.length === 0) {
+          $pre.wrap('<div class="code-wrapper"></div>');
+        }
+        lang = lang.toUpperCase().replace('NONE', CONFIG.code_language.default);
+      }
+      $pre.append(copyTmpl.replace('LANG', lang).replace('code-widget">',
+        getBgClass($pre[0]) + (enableCopy ? ' code-widget copy-btn" data-clipboard-snippet><i class="iconfont icon-copy"></i>' : ' code-widget">')));
+
+      if (enableCopy) {
+        Fluid.utils.createScript('https://lib.baomitu.com/clipboard.js/2.0.10/clipboard.min.js', function() {
+          var clipboard = new window.ClipboardJS('.copy-btn', {
+            target: function(trigger) {
+              var nodes = trigger.parentNode.childNodes;
+              for (var i = 0; i < nodes.length; i++) {
+                if (nodes[i].tagName === 'CODE') {
+                  return nodes[i];
+                }
+              }
+            }
+          });
+          clipboard.on('success', function(e) {
+            e.clearSelection();
+            e.trigger.innerHTML = e.trigger.innerHTML.replace('icon-copy', 'icon-success');
+            setTimeout(function() {
+              e.trigger.innerHTML = e.trigger.innerHTML.replace('icon-success', 'icon-copy');
+            }, 2000);
+          });
+        });
+      }
+    });
+  })();
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

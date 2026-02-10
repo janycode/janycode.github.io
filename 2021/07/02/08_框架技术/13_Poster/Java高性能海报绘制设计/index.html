@@ -1,0 +1,988 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=light>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Jerry(姜源)">
+  <meta name="keywords" content="Java,Html,CSS,JavaScript,Python,C,Linux,shell编程经验分享、技术总结、心得体会">
+  
+    <meta name="description" content="参考资料: Graphics2D绘图，基于Java绘图封装的工具 生成海报图片 https:&#x2F;&#x2F;www.cnblogs.com&#x2F;Lbox&#x2F;p&#x2F;14368349.html https:&#x2F;&#x2F;blog.csdn.net&#x2F;qq_26212181&#x2F;article&#x2F;details&#x2F;97621758 1. 海报设计规范 海报宽,高,上边距,左边距等单位为px,且必须为整数  海报宽,高 最好设计为偶数,方便pa">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Java高性能海报绘制设计">
+<meta property="og:url" content="https://janycode.github.io/2021/07/02/08_%E6%A1%86%E6%9E%B6%E6%8A%80%E6%9C%AF/13_Poster/Java%E9%AB%98%E6%80%A7%E8%83%BD%E6%B5%B7%E6%8A%A5%E7%BB%98%E5%88%B6%E8%AE%BE%E8%AE%A1/index.html">
+<meta property="og:site_name" content="姜源の云笔记">
+<meta property="og:description" content="参考资料: Graphics2D绘图，基于Java绘图封装的工具 生成海报图片 https:&#x2F;&#x2F;www.cnblogs.com&#x2F;Lbox&#x2F;p&#x2F;14368349.html https:&#x2F;&#x2F;blog.csdn.net&#x2F;qq_26212181&#x2F;article&#x2F;details&#x2F;97621758 1. 海报设计规范 海报宽,高,上边距,左边距等单位为px,且必须为整数  海报宽,高 最好设计为偶数,方便pa">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2021-07-02T02:18:02.000Z">
+<meta property="article:modified_time" content="2026-02-10T09:21:30.219Z">
+<meta property="article:author" content="Jerry(姜源)">
+<meta property="article:tag" content="海报绘制">
+<meta name="twitter:card" content="summary_large_image">
+  
+  
+    <meta name="referrer" content="no-referrer-when-downgrade">
+  
+  
+  <title>Java高性能海报绘制设计 - 姜源の云笔记</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"janycode.github.io","root":"/","version":"1.9.0","typing":{"enable":true,"typeSpeed":50,"cursorChar":"|","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":false},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":"bfff735c897eb60ea49b735096b20e47","google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+
+  
+<meta name="generator" content="Hexo 6.2.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 50vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>姜源の云笔记</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tools/">
+                <i class="iconfont icon-slack-fill"></i>
+                工具
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" target="_blank" rel="noopener" href="https://yuancodes.github.io/">
+                <i class="iconfont icon-notebook"></i>
+                Docsify
+              </a>
+            </li>
+          
+        
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="Java高性能海报绘制设计"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-author" aria-hidden="true"></i>
+        Jerry(姜源)
+      </span>
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2021-07-02 10:18" pubdate>
+          星期五, 2021/07/02 10:18:02
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          <!-- compatible with older versions-->
+          8.2k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          <!-- compatible with older versions-->
+          69 分钟
+        
+      </span>
+    
+
+    
+    
+      
+        <span id="busuanzi_container_page_pv" style="display: none">
+          <i class="iconfont icon-eye" aria-hidden="true"></i>
+          <span id="busuanzi_value_page_pv"></span> 次
+        </span>
+        
+      
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">Java高性能海报绘制设计</h1>
+            
+            <div class="markdown-body">
+              
+              <p>参考资料: Graphics2D绘图，基于Java绘图封装的工具 生成海报图片</p>
+<p><a target="_blank" rel="noopener" href="https://www.cnblogs.com/Lbox/p/14368349.html">https://www.cnblogs.com/Lbox/p/14368349.html</a></p>
+<p><a target="_blank" rel="noopener" href="https://blog.csdn.net/qq_26212181/article/details/97621758">https://blog.csdn.net/qq_26212181/article/details/97621758</a></p>
+<h3 id="1-海报设计规范"><a href="#1-海报设计规范" class="headerlink" title="1. 海报设计规范"></a>1. 海报设计规范</h3><ul>
+<li><p>海报<strong>宽,高,上边距,左边距等</strong>单位为px,且必须为整数</p>
+</li>
+<li><p>海报<strong>宽,高</strong> 最好设计为<strong>偶数</strong>,方便painter-custom-poster可视化编辑时进行缩放计算</p>
+</li>
+<li><p>相同类型的海报最好设计为统一模板，减少逻辑复杂度</p>
+</li>
+<li><p>使用统一模板时，须考虑文字长度变化，兼顾不同行数或不同元素数量时海报美观性</p>
+</li>
+<li><p>每一个元素目前设计为占用固定的位置,并为可变元素设计超限时展示方案. 避免因为某个元素内容变化破坏海报美观</p>
+</li>
+</ul>
+<h3 id="2-海报实现方案"><a href="#2-海报实现方案" class="headerlink" title="2. 海报实现方案"></a>2. 海报实现方案</h3><ol>
+<li>使用开源前端方案 painter-custom-poster 按照UI设计图画出海报模板<br>painter-custom-poster: <a target="_blank" rel="noopener" href="https://lingxiaoyi.github.io/painter-custom-poster/">https://lingxiaoyi.github.io/painter-custom-poster/</a></li>
+<li>导出json代码</li>
+<li>对json代码进行自定义处理</li>
+<li>测试模板，对json进行微调</li>
+<li>为需自定义填充内容的VIEW对象设置标签，该标签对应JAVA代码中的填充逻辑</li>
+<li>确认模板没有问题，将模板及调试json导入数据表UaPostertemplate</li>
+<li>优劣：功能比较稳定，执行效率高于freemarker模板渲染 + xhtmlrenderer转换的方案；但是扩展性不足，有复杂的调整都必须改动后端代码，对于样式的支持不太好，定位坐标计算复杂。</li>
+</ol>
+<h3 id="3-海报模板JSON定义规范"><a href="#3-海报模板JSON定义规范" class="headerlink" title="3. 海报模板JSON定义规范"></a>3. 海报模板JSON定义规范</h3><p>后端设计海报最大的问题在于调试不方便，如果没有可视化界面，需要计算每一个元素的坐标，宽高或字体的颜色大小，调试一张海报可能需要一天的时间。 所以设计过程中结合了一款前端开源海报可视化编辑项目 painter-custom-poster进行调试。</p>
+<p>painter-custom-poster可以对图片，文字，矩形元素进行可视化调整，然后导出json格式文档。</p>
+<p>我们生成海报的模板就以此json文档为基础，添加适当的自定义字段后，由JAVA解析JSON渲染生成海报图片。</p>
+<p>painter-custom-poster还可以导出调试JSON，可以在需要时再次导入此JSON恢复调试页面，方便后续再次调试。</p>
+<table>
+<thead>
+<tr>
+<th>字段</th>
+<th>说明</th>
+<th>是否支持</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>rotate</strong></td>
+<td><strong>旋转，按照顺时针旋转的度数</strong></td>
+<td>×</td>
+</tr>
+<tr>
+<td><strong>width</strong></td>
+<td><strong>view的宽度</strong></td>
+<td>√</td>
+</tr>
+<tr>
+<td><strong>height</strong></td>
+<td><strong>view的高度</strong></td>
+<td>√</td>
+</tr>
+<tr>
+<td><strong>top</strong></td>
+<td><strong>上边距</strong></td>
+<td>√</td>
+</tr>
+<tr>
+<td><strong>left</strong></td>
+<td><strong>左边距</strong></td>
+<td>√</td>
+</tr>
+<tr>
+<td><strong>background</strong></td>
+<td><strong>背景颜色示例:#f8f8f8</strong></td>
+<td>√</td>
+</tr>
+<tr>
+<td><strong>borderRadius</strong></td>
+<td><strong>边框圆角半径</strong></td>
+<td>√</td>
+</tr>
+<tr>
+<td><strong>borderWidth</strong></td>
+<td><strong>边框宽</strong></td>
+<td>√</td>
+</tr>
+<tr>
+<td><strong>borderColor</strong></td>
+<td><strong>边框颜色</strong></td>
+<td>√</td>
+</tr>
+<tr>
+<td><strong>shadow</strong></td>
+<td><strong>阴影</strong></td>
+<td>×</td>
+</tr>
+<tr>
+<td><strong>text</strong></td>
+<td><strong>字体内容</strong></td>
+<td>√</td>
+</tr>
+<tr>
+<td><strong>maxLines</strong></td>
+<td><strong>最大行数</strong></td>
+<td>√</td>
+</tr>
+<tr>
+<td><strong>lineHeight</strong></td>
+<td><strong>行高（上下两行文字baseline的距离）</strong></td>
+<td>√</td>
+</tr>
+<tr>
+<td><strong>fontSize</strong></td>
+<td><strong>字体大小</strong></td>
+<td>√</td>
+</tr>
+<tr>
+<td><strong>color</strong></td>
+<td><strong>字体颜色</strong></td>
+<td>√</td>
+</tr>
+<tr>
+<td><strong>fontWeight</strong></td>
+<td><strong>字体粗细。仅支持 normal， bold</strong></td>
+<td>√</td>
+</tr>
+<tr>
+<td><strong>textDecoration</strong></td>
+<td><strong>文本修饰，支持none</strong> <strong>underline、 overline、 linethrough</strong></td>
+<td>不支持<strong>overline</strong></td>
+</tr>
+<tr>
+<td><strong>textStyle</strong></td>
+<td><strong>fill： 填充样式</strong> <strong>stroke：镂空样式(咱不支持)</strong></td>
+<td>不支持stroke</td>
+</tr>
+<tr>
+<td><strong>fontFamily</strong></td>
+<td><strong>字体,请使用Linux支持的字体</strong></td>
+<td><strong>overline</strong></td>
+</tr>
+<tr>
+<td><strong>textAlign</strong></td>
+<td><strong>文字的对齐方式 todo</strong> <strong>分为 left， center， right</strong></td>
+<td>×</td>
+</tr>
+<tr>
+<td><strong>url</strong></td>
+<td><strong>图片路径</strong></td>
+<td>√</td>
+</tr>
+<tr>
+<td><strong>mode</strong></td>
+<td><strong>图片裁剪、缩放的模式</strong> <strong>- scaleToFill 缩放图片到固定的宽高</strong> <strong>- aspectFill 图片裁剪显示对应的宽高</strong> <strong>- auto 自动填充 宽度全显示 高度自适应居中显示</strong></td>
+<td>只支持<strong>scaleToFill</strong></td>
+</tr>
+<tr>
+<td><strong>wrapLine</strong></td>
+<td><strong>自定义字段:从此行开始,换行后X坐标起始位置重定位到wrapLeft位置,</strong></td>
+<td>√</td>
+</tr>
+<tr>
+<td><strong>wrapLeft</strong></td>
+<td><strong>自定义字段: 换行后X轴起始坐标</strong></td>
+<td>√</td>
+</tr>
+<tr>
+<td><strong>marginTop</strong></td>
+<td><strong>自定义字段:外边距:上</strong></td>
+<td>×</td>
+</tr>
+<tr>
+<td><strong>marginLeft</strong></td>
+<td><strong>自定义字段:外边距:左</strong></td>
+<td>×</td>
+</tr>
+<tr>
+<td><strong>marginBottom</strong></td>
+<td><strong>自定义字段:外边距:下</strong></td>
+<td>×</td>
+</tr>
+<tr>
+<td><strong>marginRight</strong></td>
+<td><strong>自定义字段:外边距:右</strong></td>
+<td>×</td>
+</tr>
+<tr>
+<td><strong>moneySign</strong></td>
+<td><strong>￥</strong></td>
+<td>√</td>
+</tr>
+</tbody></table>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br><span class="line">169</span><br><span class="line">170</span><br><span class="line">171</span><br></pre></td><td class="code"><pre><code class="hljs json"><span class="hljs-punctuation">&#123;</span><br>	<span class="hljs-attr">&quot;width&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;1008&quot;</span><span class="hljs-punctuation">,</span><br>	<span class="hljs-attr">&quot;height&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;1602&quot;</span><span class="hljs-punctuation">,</span><br>	<span class="hljs-attr">&quot;background&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;#000000&quot;</span><span class="hljs-punctuation">,</span><br>	<span class="hljs-attr">&quot;views&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">[</span><span class="hljs-punctuation">&#123;</span><br>		<span class="hljs-attr">&quot;type&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;image&quot;</span><span class="hljs-punctuation">,</span><br>		<span class="hljs-attr">&quot;url&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;http://test.demo.com/api/file/download?action=view&amp;path=2021/03/16/16158554792140287.png&quot;</span><span class="hljs-punctuation">,</span><br>		<span class="hljs-attr">&quot;css&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">&#123;</span><br>			<span class="hljs-attr">&quot;width&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;1008&quot;</span><span class="hljs-punctuation">,</span><br>			<span class="hljs-attr">&quot;height&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;1602&quot;</span><span class="hljs-punctuation">,</span><br>			<span class="hljs-attr">&quot;top&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;0&quot;</span><span class="hljs-punctuation">,</span><br>			<span class="hljs-attr">&quot;left&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;0&quot;</span><span class="hljs-punctuation">,</span><br>			<span class="hljs-attr">&quot;rotate&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;0&quot;</span><span class="hljs-punctuation">,</span><br>			<span class="hljs-attr">&quot;borderRadius&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;&quot;</span><span class="hljs-punctuation">,</span><br>			<span class="hljs-attr">&quot;borderWidth&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;&quot;</span><span class="hljs-punctuation">,</span><br>			<span class="hljs-attr">&quot;borderColor&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;#000000&quot;</span><span class="hljs-punctuation">,</span><br>			<span class="hljs-attr">&quot;shadow&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;&quot;</span><span class="hljs-punctuation">,</span><br>			<span class="hljs-attr">&quot;mode&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;scaleToFill&quot;</span><br>		<span class="hljs-punctuation">&#125;</span><br>	<span class="hljs-punctuation">&#125;</span><span class="hljs-punctuation">,</span> <span class="hljs-punctuation">&#123;</span><br>		<span class="hljs-attr">&quot;type&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;image&quot;</span><span class="hljs-punctuation">,</span><br>		<span class="hljs-attr">&quot;url&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;https://ufile.demo.com/api/file/download?action=view&amp;path=2020/07/03/15937749164690247.jpg&quot;</span><span class="hljs-punctuation">,</span><br>		<span class="hljs-attr">&quot;css&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">&#123;</span><br>			<span class="hljs-attr">&quot;width&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;887&quot;</span><span class="hljs-punctuation">,</span><br>			<span class="hljs-attr">&quot;height&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;490&quot;</span><span class="hljs-punctuation">,</span><br>			<span class="hljs-attr">&quot;top&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;60&quot;</span><span class="hljs-punctuation">,</span><br>			<span class="hljs-attr">&quot;left&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;60&quot;</span><span class="hljs-punctuation">,</span><br>			<span class="hljs-attr">&quot;rotate&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;0&quot;</span><span class="hljs-punctuation">,</span><br>			<span class="hljs-attr">&quot;borderRadius&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;72&quot;</span><span class="hljs-punctuation">,</span><br>			<span class="hljs-attr">&quot;borderWidth&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;&quot;</span><span class="hljs-punctuation">,</span><br>			<span class="hljs-attr">&quot;borderColor&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;#000000&quot;</span><span class="hljs-punctuation">,</span><br>			<span class="hljs-attr">&quot;shadow&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;&quot;</span><span class="hljs-punctuation">,</span><br>			<span class="hljs-attr">&quot;mode&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;scaleToFill&quot;</span><br>		<span class="hljs-punctuation">&#125;</span><span class="hljs-punctuation">,</span><br>		<span class="hljs-attr">&quot;customTag&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;posterCover&quot;</span><br>	<span class="hljs-punctuation">&#125;</span><span class="hljs-punctuation">,</span> <span class="hljs-punctuation">&#123;</span><br>		<span class="hljs-attr">&quot;type&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;image&quot;</span><span class="hljs-punctuation">,</span><br>		<span class="hljs-attr">&quot;url&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;https://test.demo.com/api/file/download?action=view&amp;path=2021/02/04/16124267185430837.jpeg&quot;</span><span class="hljs-punctuation">,</span><br>		<span class="hljs-attr">&quot;css&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">&#123;</span><br>			<span class="hljs-attr">&quot;width&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;241&quot;</span><span class="hljs-punctuation">,</span><br>			<span class="hljs-attr">&quot;height&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;241&quot;</span><span class="hljs-punctuation">,</span><br>			<span class="hljs-attr">&quot;top&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;863&quot;</span><span class="hljs-punctuation">,</span><br>			<span class="hljs-attr">&quot;left&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;87&quot;</span><span class="hljs-punctuation">,</span><br>			<span class="hljs-attr">&quot;rotate&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;0&quot;</span><span class="hljs-punctuation">,</span><br>			<span class="hljs-attr">&quot;borderRadius&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;&quot;</span><span class="hljs-punctuation">,</span><br>			<span class="hljs-attr">&quot;borderWidth&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;&quot;</span><span class="hljs-punctuation">,</span><br>			<span class="hljs-attr">&quot;borderColor&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;#000000&quot;</span><span class="hljs-punctuation">,</span><br>			<span class="hljs-attr">&quot;shadow&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;&quot;</span><span class="hljs-punctuation">,</span><br>			<span class="hljs-attr">&quot;mode&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;scaleToFill&quot;</span><br>		<span class="hljs-punctuation">&#125;</span><span class="hljs-punctuation">,</span><br>		<span class="hljs-attr">&quot;customTag&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;appletQrCode&quot;</span><br>	<span class="hljs-punctuation">&#125;</span><span class="hljs-punctuation">,</span> <span class="hljs-punctuation">&#123;</span><br>		<span class="hljs-attr">&quot;type&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;image&quot;</span><span class="hljs-punctuation">,</span><br>		<span class="hljs-attr">&quot;url&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;http://test.demo.com/api/file/download?action=view&amp;path=2021/03/06/16149979435930666.jpg&quot;</span><span class="hljs-punctuation">,</span><br>		<span class="hljs-attr">&quot;css&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">&#123;</span><br>			<span class="hljs-attr">&quot;width&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;135&quot;</span><span class="hljs-punctuation">,</span><br>			<span class="hljs-attr">&quot;height&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;135&quot;</span><span class="hljs-punctuation">,</span><br>			<span class="hljs-attr">&quot;top&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;1248&quot;</span><span class="hljs-punctuation">,</span><br>			<span class="hljs-attr">&quot;left&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;60&quot;</span><span class="hljs-punctuation">,</span><br>			<span class="hljs-attr">&quot;rotate&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;0&quot;</span><span class="hljs-punctuation">,</span><br>			<span class="hljs-attr">&quot;borderRadius&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;135&quot;</span><span class="hljs-punctuation">,</span><br>			<span class="hljs-attr">&quot;borderWidth&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;&quot;</span><span class="hljs-punctuation">,</span><br>			<span class="hljs-attr">&quot;borderColor&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;#000000&quot;</span><span class="hljs-punctuation">,</span><br>			<span class="hljs-attr">&quot;shadow&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;&quot;</span><span class="hljs-punctuation">,</span><br>			<span class="hljs-attr">&quot;mode&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;scaleToFill&quot;</span><br>		<span class="hljs-punctuation">&#125;</span><span class="hljs-punctuation">,</span><br>		<span class="hljs-attr">&quot;customTag&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;wxAvatar&quot;</span><br>	<span class="hljs-punctuation">&#125;</span><span class="hljs-punctuation">,</span> <span class="hljs-punctuation">&#123;</span><br>		<span class="hljs-attr">&quot;type&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;text&quot;</span><span class="hljs-punctuation">,</span><br>		<span class="hljs-attr">&quot;text&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;二级建造师【备考须知】，你想知道的备考攻略都在这里！二级建造师【备考须知】，你想知道的备考攻略都在这里！&quot;</span><span class="hljs-punctuation">,</span><br>		<span class="hljs-attr">&quot;css&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">&#123;</span><br>			<span class="hljs-attr">&quot;color&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;#000000&quot;</span><span class="hljs-punctuation">,</span><br>			<span class="hljs-attr">&quot;background&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;&quot;</span><span class="hljs-punctuation">,</span><br>			<span class="hljs-attr">&quot;width&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;887&quot;</span><span class="hljs-punctuation">,</span><br>			<span class="hljs-attr">&quot;height&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;222&quot;</span><span class="hljs-punctuation">,</span><br>			<span class="hljs-attr">&quot;top&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;593&quot;</span><span class="hljs-punctuation">,</span><br>			<span class="hljs-attr">&quot;left&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;60&quot;</span><span class="hljs-punctuation">,</span><br>			<span class="hljs-attr">&quot;rotate&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;0&quot;</span><span class="hljs-punctuation">,</span><br>			<span class="hljs-attr">&quot;borderRadius&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;&quot;</span><span class="hljs-punctuation">,</span><br>			<span class="hljs-attr">&quot;borderWidth&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;&quot;</span><span class="hljs-punctuation">,</span><br>			<span class="hljs-attr">&quot;borderColor&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;#000000&quot;</span><span class="hljs-punctuation">,</span><br>			<span class="hljs-attr">&quot;shadow&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;&quot;</span><span class="hljs-punctuation">,</span><br>			<span class="hljs-attr">&quot;padding&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;0&quot;</span><span class="hljs-punctuation">,</span><br>			<span class="hljs-attr">&quot;fontSize&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;48&quot;</span><span class="hljs-punctuation">,</span><br>			<span class="hljs-attr">&quot;fontWeight&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;bold&quot;</span><span class="hljs-punctuation">,</span><br>			<span class="hljs-attr">&quot;maxLines&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;3&quot;</span><span class="hljs-punctuation">,</span><br>			<span class="hljs-attr">&quot;lineHeight&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;73.26&quot;</span><span class="hljs-punctuation">,</span><br>			<span class="hljs-attr">&quot;textStyle&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;fill&quot;</span><span class="hljs-punctuation">,</span><br>			<span class="hljs-attr">&quot;textDecoration&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;none&quot;</span><span class="hljs-punctuation">,</span><br>			<span class="hljs-attr">&quot;fontFamily&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;&quot;</span><span class="hljs-punctuation">,</span><br>			<span class="hljs-attr">&quot;textAlign&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;left&quot;</span><br>		<span class="hljs-punctuation">&#125;</span><span class="hljs-punctuation">,</span><br>		<span class="hljs-attr">&quot;customTag&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;posterText&quot;</span><br>	<span class="hljs-punctuation">&#125;</span><span class="hljs-punctuation">,</span> <span class="hljs-punctuation">&#123;</span><br>		<span class="hljs-attr">&quot;type&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;text&quot;</span><span class="hljs-punctuation">,</span><br>		<span class="hljs-attr">&quot;text&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;刘老师&quot;</span><span class="hljs-punctuation">,</span><br>		<span class="hljs-attr">&quot;css&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">&#123;</span><br>			<span class="hljs-attr">&quot;color&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;#000000&quot;</span><span class="hljs-punctuation">,</span><br>			<span class="hljs-attr">&quot;background&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;&quot;</span><span class="hljs-punctuation">,</span><br>			<span class="hljs-attr">&quot;width&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;109&quot;</span><span class="hljs-punctuation">,</span><br>			<span class="hljs-attr">&quot;height&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;41&quot;</span><span class="hljs-punctuation">,</span><br>			<span class="hljs-attr">&quot;top&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;1263&quot;</span><span class="hljs-punctuation">,</span><br>			<span class="hljs-attr">&quot;left&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;226&quot;</span><span class="hljs-punctuation">,</span><br>			<span class="hljs-attr">&quot;rotate&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;0&quot;</span><span class="hljs-punctuation">,</span><br>			<span class="hljs-attr">&quot;borderRadius&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;&quot;</span><span class="hljs-punctuation">,</span><br>			<span class="hljs-attr">&quot;borderWidth&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;&quot;</span><span class="hljs-punctuation">,</span><br>			<span class="hljs-attr">&quot;borderColor&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;#000000&quot;</span><span class="hljs-punctuation">,</span><br>			<span class="hljs-attr">&quot;shadow&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;&quot;</span><span class="hljs-punctuation">,</span><br>			<span class="hljs-attr">&quot;padding&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;0&quot;</span><span class="hljs-punctuation">,</span><br>			<span class="hljs-attr">&quot;fontSize&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;36&quot;</span><span class="hljs-punctuation">,</span><br>			<span class="hljs-attr">&quot;fontWeight&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;normal&quot;</span><span class="hljs-punctuation">,</span><br>			<span class="hljs-attr">&quot;maxLines&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;1&quot;</span><span class="hljs-punctuation">,</span><br>			<span class="hljs-attr">&quot;lineHeight&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;39.96&quot;</span><span class="hljs-punctuation">,</span><br>			<span class="hljs-attr">&quot;textStyle&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;fill&quot;</span><span class="hljs-punctuation">,</span><br>			<span class="hljs-attr">&quot;textDecoration&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;none&quot;</span><span class="hljs-punctuation">,</span><br>			<span class="hljs-attr">&quot;fontFamily&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;&quot;</span><span class="hljs-punctuation">,</span><br>			<span class="hljs-attr">&quot;textAlign&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;left&quot;</span><br>		<span class="hljs-punctuation">&#125;</span><span class="hljs-punctuation">,</span><br>		<span class="hljs-attr">&quot;customTag&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;userName&quot;</span><br>	<span class="hljs-punctuation">&#125;</span><span class="hljs-punctuation">,</span> <span class="hljs-punctuation">&#123;</span><br>		<span class="hljs-attr">&quot;type&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;text&quot;</span><span class="hljs-punctuation">,</span><br>		<span class="hljs-attr">&quot;text&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;给您推荐&quot;</span><span class="hljs-punctuation">,</span><br>		<span class="hljs-attr">&quot;css&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">&#123;</span><br>			<span class="hljs-attr">&quot;color&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;#999999&quot;</span><span class="hljs-punctuation">,</span><br>			<span class="hljs-attr">&quot;background&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;&quot;</span><span class="hljs-punctuation">,</span><br>			<span class="hljs-attr">&quot;width&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;133&quot;</span><span class="hljs-punctuation">,</span><br>			<span class="hljs-attr">&quot;height&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;38&quot;</span><span class="hljs-punctuation">,</span><br>			<span class="hljs-attr">&quot;top&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;1263&quot;</span><span class="hljs-punctuation">,</span><br>			<span class="hljs-attr">&quot;left&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;364&quot;</span><span class="hljs-punctuation">,</span><br>			<span class="hljs-attr">&quot;rotate&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;0&quot;</span><span class="hljs-punctuation">,</span><br>			<span class="hljs-attr">&quot;borderRadius&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;&quot;</span><span class="hljs-punctuation">,</span><br>			<span class="hljs-attr">&quot;borderWidth&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;&quot;</span><span class="hljs-punctuation">,</span><br>			<span class="hljs-attr">&quot;borderColor&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;#000000&quot;</span><span class="hljs-punctuation">,</span><br>			<span class="hljs-attr">&quot;shadow&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;&quot;</span><span class="hljs-punctuation">,</span><br>			<span class="hljs-attr">&quot;padding&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;0&quot;</span><span class="hljs-punctuation">,</span><br>			<span class="hljs-attr">&quot;fontSize&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;33&quot;</span><span class="hljs-punctuation">,</span><br>			<span class="hljs-attr">&quot;fontWeight&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;normal&quot;</span><span class="hljs-punctuation">,</span><br>			<span class="hljs-attr">&quot;maxLines&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;1&quot;</span><span class="hljs-punctuation">,</span><br>			<span class="hljs-attr">&quot;lineHeight&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;36.63&quot;</span><span class="hljs-punctuation">,</span><br>			<span class="hljs-attr">&quot;textStyle&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;fill&quot;</span><span class="hljs-punctuation">,</span><br>			<span class="hljs-attr">&quot;textDecoration&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;none&quot;</span><span class="hljs-punctuation">,</span><br>			<span class="hljs-attr">&quot;fontFamily&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;&quot;</span><span class="hljs-punctuation">,</span><br>			<span class="hljs-attr">&quot;textAlign&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;left&quot;</span><br>		<span class="hljs-punctuation">&#125;</span><br>	<span class="hljs-punctuation">&#125;</span><span class="hljs-punctuation">,</span> <span class="hljs-punctuation">&#123;</span><br>		<span class="hljs-attr">&quot;type&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;text&quot;</span><span class="hljs-punctuation">,</span><br>		<span class="hljs-attr">&quot;text&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;精彩内容尽在小程序中，快来看一看吧&quot;</span><span class="hljs-punctuation">,</span><br>		<span class="hljs-attr">&quot;css&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">&#123;</span><br>			<span class="hljs-attr">&quot;color&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;#999999&quot;</span><span class="hljs-punctuation">,</span><br>			<span class="hljs-attr">&quot;background&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;&quot;</span><span class="hljs-punctuation">,</span><br>			<span class="hljs-attr">&quot;width&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;614&quot;</span><span class="hljs-punctuation">,</span><br>			<span class="hljs-attr">&quot;height&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;41&quot;</span><span class="hljs-punctuation">,</span><br>			<span class="hljs-attr">&quot;top&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;1339&quot;</span><span class="hljs-punctuation">,</span><br>			<span class="hljs-attr">&quot;left&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;226&quot;</span><span class="hljs-punctuation">,</span><br>			<span class="hljs-attr">&quot;rotate&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;0&quot;</span><span class="hljs-punctuation">,</span><br>			<span class="hljs-attr">&quot;borderRadius&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;&quot;</span><span class="hljs-punctuation">,</span><br>			<span class="hljs-attr">&quot;borderWidth&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;&quot;</span><span class="hljs-punctuation">,</span><br>			<span class="hljs-attr">&quot;borderColor&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;#000000&quot;</span><span class="hljs-punctuation">,</span><br>			<span class="hljs-attr">&quot;shadow&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;&quot;</span><span class="hljs-punctuation">,</span><br>			<span class="hljs-attr">&quot;padding&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;0&quot;</span><span class="hljs-punctuation">,</span><br>			<span class="hljs-attr">&quot;fontSize&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;36&quot;</span><span class="hljs-punctuation">,</span><br>			<span class="hljs-attr">&quot;fontWeight&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;normal&quot;</span><span class="hljs-punctuation">,</span><br>			<span class="hljs-attr">&quot;maxLines&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;1&quot;</span><span class="hljs-punctuation">,</span><br>			<span class="hljs-attr">&quot;lineHeight&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;39.96&quot;</span><span class="hljs-punctuation">,</span><br>			<span class="hljs-attr">&quot;textStyle&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;fill&quot;</span><span class="hljs-punctuation">,</span><br>			<span class="hljs-attr">&quot;textDecoration&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;none&quot;</span><span class="hljs-punctuation">,</span><br>			<span class="hljs-attr">&quot;fontFamily&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;&quot;</span><span class="hljs-punctuation">,</span><br>			<span class="hljs-attr">&quot;textAlign&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;left&quot;</span><br>		<span class="hljs-punctuation">&#125;</span><br>	<span class="hljs-punctuation">&#125;</span><span class="hljs-punctuation">]</span><br><span class="hljs-punctuation">&#125;</span><br></code></pre></td></tr></table></figure>
+
+
+
+<h3 id="4-扩展功能"><a href="#4-扩展功能" class="headerlink" title="4. 扩展功能"></a>4. 扩展功能</h3><ol>
+<li><p>支持流式布局，自适应生成海报长度</p>
+</li>
+<li><p>支持图片旋转</p>
+</li>
+<li><p>支持文字旋转</p>
+</li>
+<li><p>支持文字上划线</p>
+</li>
+<li><p>支持文字排列方式设置</p>
+</li>
+<li><p>支持线段绘制</p>
+</li>
+<li><p>支持多边形绘制</p>
+</li>
+</ol>
+
+              
+            </div>
+            <hr/>
+            <div>
+              <div>
+  <img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20241112163319.png" srcset="/img/loading.gif" lazyload>
+</div>
+<div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/08-%E6%A1%86%E6%9E%B6%E6%8A%80%E6%9C%AF/" class="category-chain-item">08_框架技术</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/08-%E6%A1%86%E6%9E%B6%E6%8A%80%E6%9C%AF/13-Poster/" class="category-chain-item">13_Poster</a>
+  
+  
+
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/%E6%B5%B7%E6%8A%A5%E7%BB%98%E5%88%B6/">#海报绘制</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>Java高性能海报绘制设计</div>
+      <div>https://janycode.github.io/2021/07/02/08_框架技术/13_Poster/Java高性能海报绘制设计/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Jerry(姜源)</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2021年7月2日</div>
+        </div>
+      
+      
+      <div class="license-meta-item">
+        <div>许可协议</div>
+        <div>
+          
+            
+            
+              <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+              <span class="hint--top hint--rounded" aria-label="BY - 姜源">
+                <i class="iconfont icon-by"></i>
+              </span>
+              </a>
+            
+          
+        </div>
+      </div>
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2021/07/16/12_%E9%A1%B9%E7%9B%AE%E7%AE%A1%E7%90%86/06_PMP/01-%E9%A1%B9%E7%9B%AE%E7%A0%94%E5%8F%91%E6%B5%81%E7%A8%8B/" title="01-项目研发流程">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">01-项目研发流程</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2021/06/18/05_%E6%95%B0%E6%8D%AE%E5%BA%93/03_MyBatis-Plus/03-MyBatis-Plus%20%E9%93%BE%E5%BC%8F%E7%BC%96%E7%A8%8B+%E6%89%B9%E9%87%8F%E6%93%8D%E4%BD%9C/" title="03-MyBatis-Plus 链式编程+批量操作">
+                        <span class="hidden-mobile">03-MyBatis-Plus 链式编程+批量操作</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+  <article id="comments" lazyload>
+    
+  <div id="SOHUCS" sid='https://janycode.github.io/2021/07/02/08_%E6%A1%86%E6%9E%B6%E6%8A%80%E6%9C%AF/13_Poster/Java%E9%AB%98%E6%80%A7%E8%83%BD%E6%B5%B7%E6%8A%A5%E7%BB%98%E5%88%B6%E8%AE%BE%E8%AE%A1/'></div>
+  <script type="text/javascript">
+    Fluid.utils.loadComments('#SOHUCS', function() {
+      Fluid.utils.createScript("https://changyan.sohu.com/upload/changyan.js", function() {
+        window.changyan.api.config({"appid":"cyw5OHIcO","appkey":"fea3446b3df4b3f129f34da4cbc87e51"})
+      });
+    });
+  </script>
+  <noscript>Please enable JavaScript to view the comments</noscript>
+
+
+  </article>
+
+
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://simple.blog.csdn.net" target="_blank" rel="nofollow noopener"><span>CSDN</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/janycode" target="_blank" rel="nofollow noopener"><span>GitHub</span></a> <i class="iconfont icon-love"></i> <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="busuanzi_container_site_pv" style="display: none">
+        总访问量(PV) 
+        <span id="busuanzi_value_site_pv"></span>
+         次，
+      </span>
+    
+    
+      <span id="busuanzi_container_site_uv" style="display: none">
+        总访客数(UV) 
+        <span id="busuanzi_value_site_uv"></span>
+         人
+      </span>
+    
+    
+  
+</div>
+
+  
+  
+  
+</div>
+
+<!-- live2d 动画 -->
+<script src="https://eqcn.ajz.miesnfu.com/wp-content/plugins/wp-3d-pony/live2dw/lib/L2Dwidget.min.js"></script>
+<script>
+    L2Dwidget.init({
+        "model": {
+            jsonPath: "https://unpkg.com/live2d-widget-model-haruto@1.0.5/assets/haruto.model.json",
+            "scale": 1
+        },
+        "display": {
+            "position": "right",
+            "width": 100,
+            "height": 200,
+            "hOffset": 35,
+            "vOffset": -85
+        },
+        "mobile": {
+            "show": false,
+            "scale": 0.1
+        },
+        "react": {
+            "opacityDefault": 0.75,
+            "opacityOnHover": 0.2
+        }
+    });
+</script>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <!-- Baidu Analytics -->
+    <script defer>
+      if (!Fluid.ctx.dnt) {
+        var _hmt = _hmt || [];
+        (function() {
+          var hm = document.createElement("script");
+          hm.src = "https://hm.baidu.com/hm.js?bfff735c897eb60ea49b735096b20e47";
+          var s = document.getElementsByTagName("script")[0];
+          s.parentNode.insertBefore(hm, s);
+        })();
+      }
+    </script>
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.0/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      headingSelector : CONFIG.toc.headingSelector || 'h1,h2,h3,h4,h5,h6',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      collapseDepth   : CONFIG.toc.collapseDepth || 0,
+      scrollSmooth    : true,
+      headingsOffset  : -boardTop
+    });
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+  });
+</script>
+
+
+  <script>
+  (function() {
+    var enableLang = CONFIG.code_language.enable && CONFIG.code_language.default;
+    var enableCopy = CONFIG.copy_btn;
+    if (!enableLang && !enableCopy) {
+      return;
+    }
+
+    function getBgClass(ele) {
+      return Fluid.utils.getBackgroundLightness(ele) >= 0 ? 'code-widget-light' : 'code-widget-dark';
+    }
+
+    var copyTmpl = '';
+    copyTmpl += '<div class="code-widget">';
+    copyTmpl += 'LANG';
+    copyTmpl += '</div>';
+    jQuery('.markdown-body pre').each(function() {
+      var $pre = jQuery(this);
+      if ($pre.find('code.mermaid').length > 0) {
+        return;
+      }
+      if ($pre.find('span.line').length > 0) {
+        return;
+      }
+
+      var lang = '';
+
+      if (enableLang) {
+        lang = CONFIG.code_language.default;
+        if ($pre[0].children.length > 0 && $pre[0].children[0].classList.length >= 2 && $pre.children().hasClass('hljs')) {
+          lang = $pre[0].children[0].classList[1];
+        } else if ($pre[0].getAttribute('data-language')) {
+          lang = $pre[0].getAttribute('data-language');
+        } else if ($pre.parent().hasClass('sourceCode') && $pre[0].children.length > 0 && $pre[0].children[0].classList.length >= 2) {
+          lang = $pre[0].children[0].classList[1];
+          $pre.parent().addClass('code-wrapper');
+        } else if ($pre.parent().hasClass('markdown-body') && $pre[0].classList.length === 0) {
+          $pre.wrap('<div class="code-wrapper"></div>');
+        }
+        lang = lang.toUpperCase().replace('NONE', CONFIG.code_language.default);
+      }
+      $pre.append(copyTmpl.replace('LANG', lang).replace('code-widget">',
+        getBgClass($pre[0]) + (enableCopy ? ' code-widget copy-btn" data-clipboard-snippet><i class="iconfont icon-copy"></i>' : ' code-widget">')));
+
+      if (enableCopy) {
+        Fluid.utils.createScript('https://lib.baomitu.com/clipboard.js/2.0.10/clipboard.min.js', function() {
+          var clipboard = new window.ClipboardJS('.copy-btn', {
+            target: function(trigger) {
+              var nodes = trigger.parentNode.childNodes;
+              for (var i = 0; i < nodes.length; i++) {
+                if (nodes[i].tagName === 'CODE') {
+                  return nodes[i];
+                }
+              }
+            }
+          });
+          clipboard.on('success', function(e) {
+            e.clearSelection();
+            e.trigger.innerHTML = e.trigger.innerHTML.replace('icon-copy', 'icon-success');
+            setTimeout(function() {
+              e.trigger.innerHTML = e.trigger.innerHTML.replace('icon-success', 'icon-copy');
+            }, 2000);
+          });
+        });
+      }
+    });
+  })();
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

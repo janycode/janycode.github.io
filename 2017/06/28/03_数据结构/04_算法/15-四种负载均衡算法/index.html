@@ -1,0 +1,811 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=light>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Jerry(姜源)">
+  <meta name="keywords" content="Java,Html,CSS,JavaScript,Python,C,Linux,shell编程经验分享、技术总结、心得体会">
+  
+    <meta name="description" content="什么是负载均衡负载均衡是指多台服务器以对称的方式组成一个服务器集群，每台服务器的地位相当（但不同的服务器可能性能不同），可以独立提供服务，无需其他服务器的辅助。为了保证系统的可扩展性，需要有一种算法能够将系统负载平均分配给集群中的每台服务器，这种算法称为负载均衡算法。 负责执行负载均衡算法并平均分配请求的服务器称为负载均衡器。 1. 随机算法随机算法非常简单，该算法的核心是通过随机函数随机获取一个">
+<meta property="og:type" content="article">
+<meta property="og:title" content="15-四种负载均衡算法">
+<meta property="og:url" content="https://janycode.github.io/2017/06/28/03_%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/04_%E7%AE%97%E6%B3%95/15-%E5%9B%9B%E7%A7%8D%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1%E7%AE%97%E6%B3%95/index.html">
+<meta property="og:site_name" content="姜源の云笔记">
+<meta property="og:description" content="什么是负载均衡负载均衡是指多台服务器以对称的方式组成一个服务器集群，每台服务器的地位相当（但不同的服务器可能性能不同），可以独立提供服务，无需其他服务器的辅助。为了保证系统的可扩展性，需要有一种算法能够将系统负载平均分配给集群中的每台服务器，这种算法称为负载均衡算法。 负责执行负载均衡算法并平均分配请求的服务器称为负载均衡器。 1. 随机算法随机算法非常简单，该算法的核心是通过随机函数随机获取一个">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230612222351.png">
+<meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230612222510.png">
+<meta property="article:published_time" content="2017-06-28T15:09:27.000Z">
+<meta property="article:modified_time" content="2026-02-10T09:21:30.027Z">
+<meta property="article:author" content="Jerry(姜源)">
+<meta property="article:tag" content="算法题">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230612222351.png">
+  
+  
+    <meta name="referrer" content="no-referrer-when-downgrade">
+  
+  
+  <title>15-四种负载均衡算法 - 姜源の云笔记</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"janycode.github.io","root":"/","version":"1.9.0","typing":{"enable":true,"typeSpeed":50,"cursorChar":"|","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":false},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":"bfff735c897eb60ea49b735096b20e47","google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+
+  
+<meta name="generator" content="Hexo 6.2.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 50vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>姜源の云笔记</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tools/">
+                <i class="iconfont icon-slack-fill"></i>
+                工具
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" target="_blank" rel="noopener" href="https://yuancodes.github.io/">
+                <i class="iconfont icon-notebook"></i>
+                Docsify
+              </a>
+            </li>
+          
+        
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="15-四种负载均衡算法"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-author" aria-hidden="true"></i>
+        Jerry(姜源)
+      </span>
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2017-06-28 23:09" pubdate>
+          星期三, 2017/06/28 23:09:27
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          <!-- compatible with older versions-->
+          3.6k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          <!-- compatible with older versions-->
+          31 分钟
+        
+      </span>
+    
+
+    
+    
+      
+        <span id="busuanzi_container_page_pv" style="display: none">
+          <i class="iconfont icon-eye" aria-hidden="true"></i>
+          <span id="busuanzi_value_page_pv"></span> 次
+        </span>
+        
+      
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">15-四种负载均衡算法</h1>
+            
+            <div class="markdown-body">
+              
+              <h3 id="什么是负载均衡"><a href="#什么是负载均衡" class="headerlink" title="什么是负载均衡"></a>什么是负载均衡</h3><p>负载均衡是指多台服务器以对称的方式组成一个服务器集群，每台服务器的地位相当（但不同的服务器可能性能不同），可以独立提供服务，无需其他服务器的辅助。为了保证系统的可扩展性，需要有<code>一种算法能够将系统负载平均分配给集群中的每台服务器</code>，这种算法称为<em>负载均衡算法</em>。</p>
+<p>负责执行负载均衡算法并平均分配请求的服务器称为<em>负载均衡器</em>。</p>
+<h3 id="1-随机算法"><a href="#1-随机算法" class="headerlink" title="1. 随机算法"></a>1. 随机算法</h3><p>随机算法非常简单，该算法的核心是通过随机函数随机获取一个服务器进行访问。假设现在有四台服务器，<code>192.168.1.1~ 192.168.1.4</code>, 该算法用java实现大致如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">RandomTest</span> &#123;<br><br>    <span class="hljs-keyword">private</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">final</span> List&lt;String&gt; servers = Arrays.asList(<span class="hljs-string">&quot;192.168.1.1&quot;</span>, <span class="hljs-string">&quot;192.168.1.2&quot;</span>, <span class="hljs-string">&quot;192.168.1.3&quot;</span>, <span class="hljs-string">&quot;192.168.1.4&quot;</span>);<br><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> String <span class="hljs-title function_">getServer</span><span class="hljs-params">()</span> &#123;<br>        <span class="hljs-type">Random</span> <span class="hljs-variable">random</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">Random</span>();<br>        <span class="hljs-type">int</span> <span class="hljs-variable">index</span> <span class="hljs-operator">=</span> random.nextInt(servers.size());<br>        <span class="hljs-keyword">return</span> servers.get(index);<br>    &#125;<br><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">main</span><span class="hljs-params">(String[] args)</span> &#123;<br>        <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> <span class="hljs-variable">i</span> <span class="hljs-operator">=</span> <span class="hljs-number">0</span>; i &lt; <span class="hljs-number">10</span>; i++) &#123;<br>            <span class="hljs-type">String</span> <span class="hljs-variable">server</span> <span class="hljs-operator">=</span> getServer();<br>            System.out.println(<span class="hljs-string">&quot;select server: &quot;</span>+server);<br>        &#125;<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>当样本较小时，算法可能分布不均匀，但根据概率论，样本越大，负载会越均匀，而负载均衡算法本来就是为应对高并发场景而设计的。该算法的另一个缺点是所有机器都有相同的访问概率, 如果服务器性能不同，负载将不平衡。</p>
+<h3 id="2-轮询算法"><a href="#2-轮询算法" class="headerlink" title="2. 轮询算法"></a>2. 轮询算法</h3><p><code>Round-Robin</code>轮询算法是另一种经典的负载均衡算法。请求以<code>循环的方式</code>分发到集群中的所有服务器。同理，对于上述四台服务器，假设客户端向集群发送10个请求，则请求分布将如下图所示：</p>
+<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230612222351.png" srcset="/img/loading.gif" lazyload alt="image-20230612222349447"></p>
+<p>在十个请求中，第一、第五和第九个请求将分配给<code>192.168.1.1</code>，第二、第六和第十个请求将分配给<code>192.168.1.2</code>，依此类推。可以看到<code>round-robin</code>算法可以在集群中均匀的分配请求。但是，该算法具有与随机算法相同的缺点，如果服务器性能不同，负载将不平衡，因此需要加权轮询算法。</p>
+<h3 id="3-加权轮询算法"><a href="#3-加权轮询算法" class="headerlink" title="3. 加权轮询算法"></a>3. 加权轮询算法</h3><p><code>Weighted Round-Robin</code>加权轮询算法是在<code>round-robin</code>算法的基础上根据服务器的性能分配权重。服务器能支持的请求越多，权重就越高，分配的请求也就越多。对于同样的10个请求，使用加权轮询算法的请求分布会如下图所示：</p>
+<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230612222510.png" srcset="/img/loading.gif" lazyload alt="image-20230612222509174"></p>
+<p>可以看到<code>192.168.1.4</code>权重最大，分配的请求数最多，java实现加权循环算法：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">RoundRobinTest</span> &#123;<br><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">Node</span>&#123;<br>        <span class="hljs-keyword">private</span> String ip;<br>        <span class="hljs-keyword">private</span> Integer weight;<br>        <span class="hljs-keyword">private</span> Integer currentWeight;<br><br>        <span class="hljs-keyword">public</span> <span class="hljs-title function_">Node</span><span class="hljs-params">(String ip,Integer weight)</span> &#123;<br>            <span class="hljs-built_in">this</span>.ip = ip;<br>            <span class="hljs-built_in">this</span>.weight = weight;<br>            <span class="hljs-built_in">this</span>.currentWeight = weight;<br>        &#125;<br><br>        <span class="hljs-keyword">public</span> String <span class="hljs-title function_">getIp</span><span class="hljs-params">()</span> &#123;<br>            <span class="hljs-keyword">return</span> ip;<br>        &#125;<br><br>        <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">setIp</span><span class="hljs-params">(String ip)</span> &#123;<br>            <span class="hljs-built_in">this</span>.ip = ip;<br>        &#125;<br><br>        <span class="hljs-keyword">public</span> Integer <span class="hljs-title function_">getWeight</span><span class="hljs-params">()</span> &#123;<br>            <span class="hljs-keyword">return</span> weight;<br>        &#125;<br><br>        <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">setWeight</span><span class="hljs-params">(Integer weight)</span> &#123;<br>            <span class="hljs-built_in">this</span>.weight = weight;<br>        &#125;<br><br>        <span class="hljs-keyword">public</span> Integer <span class="hljs-title function_">getCurrentWeight</span><span class="hljs-params">()</span> &#123;<br>            <span class="hljs-keyword">return</span> currentWeight;<br>        &#125;<br><br>        <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">setCurrentWeight</span><span class="hljs-params">(Integer currentWeight)</span> &#123;<br>            <span class="hljs-built_in">this</span>.currentWeight = currentWeight;<br>        &#125;<br>    &#125;<br><br>    List&lt;Node&gt; servers = Arrays.asList(<br>            <span class="hljs-keyword">new</span> <span class="hljs-title class_">Node</span>(<span class="hljs-string">&quot;192.168.1.1&quot;</span>,<span class="hljs-number">1</span>),<br>            <span class="hljs-keyword">new</span> <span class="hljs-title class_">Node</span>(<span class="hljs-string">&quot;192.168.1.2&quot;</span>,<span class="hljs-number">2</span>),<br>            <span class="hljs-keyword">new</span> <span class="hljs-title class_">Node</span>(<span class="hljs-string">&quot;192.168.1.3&quot;</span>,<span class="hljs-number">3</span>),<br>            <span class="hljs-keyword">new</span> <span class="hljs-title class_">Node</span>(<span class="hljs-string">&quot;192.168.1.4&quot;</span>,<span class="hljs-number">4</span>));<br>    <span class="hljs-keyword">private</span> Integer totalWeight;<br><br>    <span class="hljs-keyword">public</span> <span class="hljs-title function_">RoundRobinTest</span><span class="hljs-params">()</span> &#123;<br>        <span class="hljs-built_in">this</span>.totalWeight = servers.stream()<br>                .mapToInt(Node::getWeight)<br>                .reduce((a,b)-&gt;a+b).getAsInt();<br>    &#125;<br><br>    <span class="hljs-keyword">public</span> String <span class="hljs-title function_">getServer</span><span class="hljs-params">()</span> &#123;<br>        <span class="hljs-type">Node</span> <span class="hljs-variable">node</span> <span class="hljs-operator">=</span> servers.stream().max(Comparator.comparingInt(Node::getCurrentWeight)).get();<br>        node.setCurrentWeight(node.getCurrentWeight()-totalWeight);<br>        servers.forEach(server-&gt;server.setCurrentWeight(server.getCurrentWeight()+server.getWeight()));<br>        <span class="hljs-keyword">return</span> node.getIp();<br>    &#125;<br><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">main</span><span class="hljs-params">(String[] args)</span> &#123;<br>        <span class="hljs-type">RoundRobinTest</span> <span class="hljs-variable">roundRobinTest</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">RoundRobinTest</span>();<br>        <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> <span class="hljs-variable">i</span> <span class="hljs-operator">=</span> <span class="hljs-number">0</span>; i &lt; <span class="hljs-number">10</span>; i++) &#123;<br>            <span class="hljs-type">String</span> <span class="hljs-variable">server</span> <span class="hljs-operator">=</span> roundRobinTest.getServer();<br>            System.out.println(<span class="hljs-string">&quot;select server: &quot;</span>+server);<br>        &#125;<br>    &#125;<br></code></pre></td></tr></table></figure>
+
+<p>该算法的核心是的动态计算<code>currentWeight</code>。每个服务器被选中后，<code>currentWeight</code>需要减去所有服务器的权重之和，这样可以避免权重高的服务器一直被选中。权重高的服务器有更多的分配请求，请求可以平均分配给所有服务器。</p>
+<h3 id="4-哈希算法"><a href="#4-哈希算法" class="headerlink" title="4. 哈希算法"></a>4. 哈希算法</h3><p>哈希算法，顾名思义，就是利用哈希表根据 计算出请求的路由<code>hashcode%N</code>。这里hashcode代表哈希值，N代表服务器数量。该算法的优点是实现起来非常简单。具体实现如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">private</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">final</span> List&lt;String&gt; servers = Arrays.asList(<span class="hljs-string">&quot;192.168.1.1&quot;</span>, <span class="hljs-string">&quot;192.168.1.2&quot;</span>, <span class="hljs-string">&quot;192.168.1.3&quot;</span>, <span class="hljs-string">&quot;192.168.1.4&quot;</span>);<br><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> String <span class="hljs-title function_">getServer</span><span class="hljs-params">(String key)</span> &#123;<br>        <span class="hljs-type">int</span> <span class="hljs-variable">hash</span> <span class="hljs-operator">=</span> key.hashCode();<br>        <span class="hljs-type">int</span> <span class="hljs-variable">index</span> <span class="hljs-operator">=</span>  hash % servers.size();<br>        <span class="hljs-keyword">return</span> servers.get(index);<br>    &#125;<br><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">main</span><span class="hljs-params">(String[] args)</span> &#123;<br>        <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> <span class="hljs-variable">i</span> <span class="hljs-operator">=</span> <span class="hljs-number">0</span>; i &lt; <span class="hljs-number">10</span>; i++) &#123;<br>            <span class="hljs-type">String</span> <span class="hljs-variable">server</span> <span class="hljs-operator">=</span> getServer(String.valueOf(i));<br>            System.out.println(<span class="hljs-string">&quot;select server: &quot;</span>+server);<br>        &#125;<br>    &#125;<br></code></pre></td></tr></table></figure>
+
+<p>哈希算法在很多缓存分布式存储系统中很常见，比如<code>Memorycached</code>和<code>Redis</code>，但是一般不会用到上面的哈希算法，而是优化后的一致性哈希算法。</p>
+<blockquote>
+<p>其实可以发现<code>nginx</code>或者spring cloud中的<code>ribbon</code>都使用到了这样的算法思想。</p>
+</blockquote>
+
+              
+            </div>
+            <hr/>
+            <div>
+              <div>
+  <img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20241112163319.png" srcset="/img/loading.gif" lazyload>
+</div>
+<div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/03-%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/" class="category-chain-item">03_数据结构</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/03-%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/04-%E7%AE%97%E6%B3%95/" class="category-chain-item">04_算法</a>
+  
+  
+
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/%E7%AE%97%E6%B3%95%E9%A2%98/">#算法题</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>15-四种负载均衡算法</div>
+      <div>https://janycode.github.io/2017/06/28/03_数据结构/04_算法/15-四种负载均衡算法/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Jerry(姜源)</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2017年6月28日</div>
+        </div>
+      
+      
+      <div class="license-meta-item">
+        <div>许可协议</div>
+        <div>
+          
+            
+            
+              <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+              <span class="hint--top hint--rounded" aria-label="BY - 姜源">
+                <i class="iconfont icon-by"></i>
+              </span>
+              </a>
+            
+          
+        </div>
+      </div>
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2017/06/28/03_%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/04_%E7%AE%97%E6%B3%95/13-%E6%9C%80%E9%95%BF%E5%9B%9E%E6%96%87%E5%AD%90%E4%B8%B2/" title="13-最长回文子串">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">13-最长回文子串</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2017/06/28/20_%E9%9D%A2%E8%AF%95%E9%97%AE%E9%A2%98/01_%E6%8A%80%E6%9C%AF%E9%97%AE%E9%A2%98/01-JavaSE%E7%AE%80%E5%8D%95%E6%80%BB%E7%BB%93/" title="01-JavaSE简单总结">
+                        <span class="hidden-mobile">01-JavaSE简单总结</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+  <article id="comments" lazyload>
+    
+  <div id="SOHUCS" sid='https://janycode.github.io/2017/06/28/03_%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/04_%E7%AE%97%E6%B3%95/15-%E5%9B%9B%E7%A7%8D%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1%E7%AE%97%E6%B3%95/'></div>
+  <script type="text/javascript">
+    Fluid.utils.loadComments('#SOHUCS', function() {
+      Fluid.utils.createScript("https://changyan.sohu.com/upload/changyan.js", function() {
+        window.changyan.api.config({"appid":"cyw5OHIcO","appkey":"fea3446b3df4b3f129f34da4cbc87e51"})
+      });
+    });
+  </script>
+  <noscript>Please enable JavaScript to view the comments</noscript>
+
+
+  </article>
+
+
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://simple.blog.csdn.net" target="_blank" rel="nofollow noopener"><span>CSDN</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/janycode" target="_blank" rel="nofollow noopener"><span>GitHub</span></a> <i class="iconfont icon-love"></i> <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="busuanzi_container_site_pv" style="display: none">
+        总访问量(PV) 
+        <span id="busuanzi_value_site_pv"></span>
+         次，
+      </span>
+    
+    
+      <span id="busuanzi_container_site_uv" style="display: none">
+        总访客数(UV) 
+        <span id="busuanzi_value_site_uv"></span>
+         人
+      </span>
+    
+    
+  
+</div>
+
+  
+  
+  
+</div>
+
+<!-- live2d 动画 -->
+<script src="https://eqcn.ajz.miesnfu.com/wp-content/plugins/wp-3d-pony/live2dw/lib/L2Dwidget.min.js"></script>
+<script>
+    L2Dwidget.init({
+        "model": {
+            jsonPath: "https://unpkg.com/live2d-widget-model-haruto@1.0.5/assets/haruto.model.json",
+            "scale": 1
+        },
+        "display": {
+            "position": "right",
+            "width": 100,
+            "height": 200,
+            "hOffset": 35,
+            "vOffset": -85
+        },
+        "mobile": {
+            "show": false,
+            "scale": 0.1
+        },
+        "react": {
+            "opacityDefault": 0.75,
+            "opacityOnHover": 0.2
+        }
+    });
+</script>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <!-- Baidu Analytics -->
+    <script defer>
+      if (!Fluid.ctx.dnt) {
+        var _hmt = _hmt || [];
+        (function() {
+          var hm = document.createElement("script");
+          hm.src = "https://hm.baidu.com/hm.js?bfff735c897eb60ea49b735096b20e47";
+          var s = document.getElementsByTagName("script")[0];
+          s.parentNode.insertBefore(hm, s);
+        })();
+      }
+    </script>
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.0/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      headingSelector : CONFIG.toc.headingSelector || 'h1,h2,h3,h4,h5,h6',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      collapseDepth   : CONFIG.toc.collapseDepth || 0,
+      scrollSmooth    : true,
+      headingsOffset  : -boardTop
+    });
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+  });
+</script>
+
+
+  <script>
+  (function() {
+    var enableLang = CONFIG.code_language.enable && CONFIG.code_language.default;
+    var enableCopy = CONFIG.copy_btn;
+    if (!enableLang && !enableCopy) {
+      return;
+    }
+
+    function getBgClass(ele) {
+      return Fluid.utils.getBackgroundLightness(ele) >= 0 ? 'code-widget-light' : 'code-widget-dark';
+    }
+
+    var copyTmpl = '';
+    copyTmpl += '<div class="code-widget">';
+    copyTmpl += 'LANG';
+    copyTmpl += '</div>';
+    jQuery('.markdown-body pre').each(function() {
+      var $pre = jQuery(this);
+      if ($pre.find('code.mermaid').length > 0) {
+        return;
+      }
+      if ($pre.find('span.line').length > 0) {
+        return;
+      }
+
+      var lang = '';
+
+      if (enableLang) {
+        lang = CONFIG.code_language.default;
+        if ($pre[0].children.length > 0 && $pre[0].children[0].classList.length >= 2 && $pre.children().hasClass('hljs')) {
+          lang = $pre[0].children[0].classList[1];
+        } else if ($pre[0].getAttribute('data-language')) {
+          lang = $pre[0].getAttribute('data-language');
+        } else if ($pre.parent().hasClass('sourceCode') && $pre[0].children.length > 0 && $pre[0].children[0].classList.length >= 2) {
+          lang = $pre[0].children[0].classList[1];
+          $pre.parent().addClass('code-wrapper');
+        } else if ($pre.parent().hasClass('markdown-body') && $pre[0].classList.length === 0) {
+          $pre.wrap('<div class="code-wrapper"></div>');
+        }
+        lang = lang.toUpperCase().replace('NONE', CONFIG.code_language.default);
+      }
+      $pre.append(copyTmpl.replace('LANG', lang).replace('code-widget">',
+        getBgClass($pre[0]) + (enableCopy ? ' code-widget copy-btn" data-clipboard-snippet><i class="iconfont icon-copy"></i>' : ' code-widget">')));
+
+      if (enableCopy) {
+        Fluid.utils.createScript('https://lib.baomitu.com/clipboard.js/2.0.10/clipboard.min.js', function() {
+          var clipboard = new window.ClipboardJS('.copy-btn', {
+            target: function(trigger) {
+              var nodes = trigger.parentNode.childNodes;
+              for (var i = 0; i < nodes.length; i++) {
+                if (nodes[i].tagName === 'CODE') {
+                  return nodes[i];
+                }
+              }
+            }
+          });
+          clipboard.on('success', function(e) {
+            e.clearSelection();
+            e.trigger.innerHTML = e.trigger.innerHTML.replace('icon-copy', 'icon-success');
+            setTimeout(function() {
+              e.trigger.innerHTML = e.trigger.innerHTML.replace('icon-success', 'icon-copy');
+            }, 2000);
+          });
+        });
+      }
+    });
+  })();
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

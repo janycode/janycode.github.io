@@ -1,0 +1,938 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=light>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Jerry(姜源)">
+  <meta name="keywords" content="Java,Html,CSS,JavaScript,Python,C,Linux,shell编程经验分享、技术总结、心得体会">
+  
+    <meta name="description" content="1. 问题业务数据库表中的数据越来越多，常见问题：  数据的插入，查询时长较长 后续业务需求的扩展，在表中新增字段，影响较大 表中的数据并不是所有的都为有效数据，需求只查询时间区间内的  2. 评估表数据体量评估数据体量：表容量&#x2F;磁盘空间&#x2F;实例容量 2.1 表容量表容量主要从表的记录数、平均长度、增长量、读写量、总大小量进行评估。一般对于 OLTP 的表，建议单表不要超过20">
+<meta property="og:type" content="article">
+<meta property="og:title" content="02-MySQL上2000w数据大表优化方案">
+<meta property="og:url" content="https://janycode.github.io/2022/11/23/16_%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96/02_%E6%95%B0%E6%8D%AE%E5%BA%93%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96/02-MySQL%E4%B8%8A2000w%E6%95%B0%E6%8D%AE%E5%A4%A7%E8%A1%A8%E4%BC%98%E5%8C%96%E6%96%B9%E6%A1%88/index.html">
+<meta property="og:site_name" content="姜源の云笔记">
+<meta property="og:description" content="1. 问题业务数据库表中的数据越来越多，常见问题：  数据的插入，查询时长较长 后续业务需求的扩展，在表中新增字段，影响较大 表中的数据并不是所有的都为有效数据，需求只查询时间区间内的  2. 评估表数据体量评估数据体量：表容量&#x2F;磁盘空间&#x2F;实例容量 2.1 表容量表容量主要从表的记录数、平均长度、增长量、读写量、总大小量进行评估。一般对于 OLTP 的表，建议单表不要超过20">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20200812132738.png">
+<meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230223143353.png">
+<meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230223143949.png">
+<meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230223145113.png">
+<meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230223145549.png">
+<meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230223150106.png">
+<meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230223150440.png">
+<meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230223150755.png">
+<meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230223151458.png">
+<meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230223151647.png">
+<meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230223151658.png">
+<meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230223151736.png">
+<meta property="article:published_time" content="2022-11-23T05:50:33.000Z">
+<meta property="article:modified_time" content="2026-02-10T09:21:30.335Z">
+<meta property="article:author" content="Jerry(姜源)">
+<meta property="article:tag" content="MySQL">
+<meta property="article:tag" content="性能优化">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20200812132738.png">
+  
+  
+    <meta name="referrer" content="no-referrer-when-downgrade">
+  
+  
+  <title>02-MySQL上2000w数据大表优化方案 - 姜源の云笔记</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"janycode.github.io","root":"/","version":"1.9.0","typing":{"enable":true,"typeSpeed":50,"cursorChar":"|","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":false},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":"bfff735c897eb60ea49b735096b20e47","google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+
+  
+<meta name="generator" content="Hexo 6.2.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 50vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>姜源の云笔记</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tools/">
+                <i class="iconfont icon-slack-fill"></i>
+                工具
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" target="_blank" rel="noopener" href="https://yuancodes.github.io/">
+                <i class="iconfont icon-notebook"></i>
+                Docsify
+              </a>
+            </li>
+          
+        
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="02-MySQL上2000w数据大表优化方案"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-author" aria-hidden="true"></i>
+        Jerry(姜源)
+      </span>
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2022-11-23 13:50" pubdate>
+          星期三, 2022/11/23 13:50:33
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          <!-- compatible with older versions-->
+          5.5k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          <!-- compatible with older versions-->
+          46 分钟
+        
+      </span>
+    
+
+    
+    
+      
+        <span id="busuanzi_container_page_pv" style="display: none">
+          <i class="iconfont icon-eye" aria-hidden="true"></i>
+          <span id="busuanzi_value_page_pv"></span> 次
+        </span>
+        
+      
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">02-MySQL上2000w数据大表优化方案</h1>
+            
+            <div class="markdown-body">
+              
+              <p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20200812132738.png" srcset="/img/loading.gif" lazyload alt="image-20200812132737977"></p>
+<h3 id="1-问题"><a href="#1-问题" class="headerlink" title="1. 问题"></a>1. 问题</h3><p>业务数据库表中的数据越来越多，常见问题：</p>
+<ul>
+<li>数据的插入，查询时长较长</li>
+<li>后续业务需求的扩展，在表中新增字段，影响较大</li>
+<li>表中的数据并不是所有的都为有效数据，需求只查询时间区间内的</li>
+</ul>
+<h3 id="2-评估表数据体量"><a href="#2-评估表数据体量" class="headerlink" title="2. 评估表数据体量"></a>2. 评估表数据体量</h3><p>评估数据体量：<code>表容量</code>&#x2F;<code>磁盘空间</code>&#x2F;<code>实例容量</code></p>
+<h4 id="2-1-表容量"><a href="#2-1-表容量" class="headerlink" title="2.1 表容量"></a>2.1 表容量</h4><p>表容量主要从表的记录数、平均长度、增长量、读写量、总大小量进行评估。一般对于 <a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/373858002">OLTP</a> 的表，建议单表不要超过2000W行数据量，总大小15G以内。访问量：单表读写量在1600&#x2F;s以内</p>
+<p>查询行数据的方式： 我们一般查询表数据有多少数据时用到的经典sql语句如下：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs sql">#<span class="hljs-number">1</span><br><span class="hljs-keyword">select</span> <span class="hljs-built_in">count</span>(<span class="hljs-operator">*</span>) <span class="hljs-keyword">from</span> <span class="hljs-keyword">table</span><br></code></pre></td></tr></table></figure>
+
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs sql">#<span class="hljs-number">2</span><br><span class="hljs-keyword">select</span> <span class="hljs-built_in">count</span>(<span class="hljs-number">1</span>) <span class="hljs-keyword">from</span> <span class="hljs-keyword">table</span><br></code></pre></td></tr></table></figure>
+
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs sql">#<span class="hljs-number">3</span> 当数据量过大的时候，这样的查询就可能会超时，所以我们要换一种查询方式<br>use 库名<br><span class="hljs-keyword">show</span> <span class="hljs-keyword">table</span> status <span class="hljs-keyword">like</span> <span class="hljs-string">&#x27;表名&#x27;</span><br># 或<br><span class="hljs-keyword">show</span> <span class="hljs-keyword">table</span> status <span class="hljs-keyword">like</span> <span class="hljs-string">&#x27;表名&#x27;</span>\G<br></code></pre></td></tr></table></figure>
+
+<p>上述方法不仅可以查询表的数据，还可以输出表的详细信息 , 加 \G 可以格式化输出（只在命令行中使用，而非数据库客户端中使用，如navicat）。包括表名 存储引擎 版本 行数 每行的字节数等等。</p>
+<h4 id="2-2-磁盘空间"><a href="#2-2-磁盘空间" class="headerlink" title="2.2 磁盘空间"></a>2.2 磁盘空间</h4><p>查看指定数据库容量大小：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-keyword">select</span><br>    table_schema <span class="hljs-keyword">as</span> <span class="hljs-string">&#x27;数据库&#x27;</span>,<br>    table_name <span class="hljs-keyword">as</span> <span class="hljs-string">&#x27;表名&#x27;</span>,<br>    table_rows <span class="hljs-keyword">as</span> <span class="hljs-string">&#x27;记录数&#x27;</span>,<br>    <span class="hljs-keyword">truncate</span>(data_length<span class="hljs-operator">/</span><span class="hljs-number">1024</span><span class="hljs-operator">/</span><span class="hljs-number">1024</span>, <span class="hljs-number">2</span>) <span class="hljs-keyword">as</span> <span class="hljs-string">&#x27;数据容量(MB)&#x27;</span>,<br>    <span class="hljs-keyword">truncate</span>(index_length<span class="hljs-operator">/</span><span class="hljs-number">1024</span><span class="hljs-operator">/</span><span class="hljs-number">1024</span>, <span class="hljs-number">2</span>) <span class="hljs-keyword">as</span> <span class="hljs-string">&#x27;索引容量(MB)&#x27;</span><br><span class="hljs-keyword">from</span> information_schema.tables<br><span class="hljs-keyword">order</span> <span class="hljs-keyword">by</span> data_length <span class="hljs-keyword">desc</span>, index_length <span class="hljs-keyword">desc</span>;<br></code></pre></td></tr></table></figure>
+
+<p>查询单个库中所有表磁盘占用大小：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-keyword">select</span><br>    table_schema <span class="hljs-keyword">as</span> <span class="hljs-string">&#x27;数据库&#x27;</span>,<br>    table_name <span class="hljs-keyword">as</span> <span class="hljs-string">&#x27;表名&#x27;</span>,<br>    table_rows <span class="hljs-keyword">as</span> <span class="hljs-string">&#x27;记录数&#x27;</span>,<br>    <span class="hljs-keyword">truncate</span>(data_length<span class="hljs-operator">/</span><span class="hljs-number">1024</span><span class="hljs-operator">/</span><span class="hljs-number">1024</span>, <span class="hljs-number">2</span>) <span class="hljs-keyword">as</span> <span class="hljs-string">&#x27;数据容量(MB)&#x27;</span>,<br>    <span class="hljs-keyword">truncate</span>(index_length<span class="hljs-operator">/</span><span class="hljs-number">1024</span><span class="hljs-operator">/</span><span class="hljs-number">1024</span>, <span class="hljs-number">2</span>) <span class="hljs-keyword">as</span> <span class="hljs-string">&#x27;索引容量(MB)&#x27;</span><br><span class="hljs-keyword">from</span> information_schema.tables<br><span class="hljs-keyword">where</span> table_schema<span class="hljs-operator">=</span><span class="hljs-string">&#x27;mysql&#x27;</span><br><span class="hljs-keyword">order</span> <span class="hljs-keyword">by</span> data_length <span class="hljs-keyword">desc</span>, index_length <span class="hljs-keyword">desc</span>;<br></code></pre></td></tr></table></figure>
+
+<p>查询结果如下：</p>
+<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230223143353.png" srcset="/img/loading.gif" lazyload alt="image-20230223143344334"></p>
+<p>建议数据量<code>占磁盘使用率的70%以内</code>。同时，对于一些数据增长较快，可以考虑使用大的慢盘进行数据归档（归档可以参考方案三）</p>
+<h4 id="2-3-实例容量"><a href="#2-3-实例容量" class="headerlink" title="2.3 实例容量"></a>2.3 实例容量</h4><p>MySQL是基于线程的服务模型，因此在一些并发较高的场景下，单实例并不能充分利用服务器的CPU资源，吞吐量反而会卡在mysql层，可以根据业务考虑自己的实例模式。</p>
+<p>为什么单表数据量越大，业务的执行效率就越慢，根本原因是什么呢？</p>
+<p>一个表的数据量达到好几千万或者上亿时，加索引的效果没那么明显啦。性能之所以会变差，是因为维护索引的<code>B+</code>树结构层级变得更高了，查询一条数据时，需要经历的磁盘IO变多，因此查询性能变慢。</p>
+<p>InnoDB存储引擎最小储存单元是<code>页</code>，一页大小就是<code>16k</code>。</p>
+<p><code>B+树叶子存的是数据，内部节点存的是键值+指针</code>。索引组织表通过非叶子节点的二分查找法以及指针确定数据在哪个页中，进而再去数据页中找到需要的数据。</p>
+<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230223143949.png" srcset="/img/loading.gif" lazyload alt="image-20230223143948316"></p>
+<p>假设B+树的高度为<code>2</code>的话，即有一个根结点和若干个叶子结点。</p>
+<p>这棵B+树的存放总记录数 &#x3D; 根结点指针数 * 单个叶子节点记录行数。</p>
+<ul>
+<li>如果一行记录的数据大小为1k，那么单个叶子节点可以存的记录数 &#x3D;16k&#x2F;1k &#x3D;16.</li>
+<li>非叶子节点内存放多少指针呢？假设主键ID为<strong>bigint类型，长度为8字节</strong>(<strong>面试官问你int类型，一个int就是32位，4字节</strong>)，而指针大小在InnoDB源码中设置为6字节，所以就是8+6&#x3D;14字节，16k&#x2F;14B &#x3D;16*1024B&#x2F;14B &#x3D; 1170</li>
+</ul>
+<p>因此，一棵高度为2的B+树，能存放<code>1170 * 16 = 18720</code>条这样的数据记录。同理一棵高度为3的B+树，能存放<code>1170 * 1170 * 16 = 21902400</code>，也就是说，可以存放<code>两千万</code>左右的记录。B+树高度一般为1-3层，已经满足千万级别的数据存储。</p>
+<p>如果B+树想存储更多的数据，那树结构层级就会更高，查询一条数据时，需要经历的磁盘IO变多，因此查询性能变慢。</p>
+<h3 id="3-三种解决方案"><a href="#3-三种解决方案" class="headerlink" title="3. 三种解决方案"></a>3. 三种解决方案</h3><h4 id="3-1-数据表分区"><a href="#3-1-数据表分区" class="headerlink" title="3.1 数据表分区"></a>3.1 数据表分区</h4><blockquote>
+<p>Mysql数据库表分区深入详解：<a target="_blank" rel="noopener" href="https://developer.aliyun.com/article/708095">https://developer.aliyun.com/article/708095</a></p>
+</blockquote>
+<p>为什么要分区：表分区可以在区间内查询对应的数据，降低查询范围 并且索引分区 也可以进一步提高命中率，提升查询效率</p>
+<p>分区是指将一个表的数据按照条件分布到不同的文件上面，未分区前都是存放在一个文件上面的，但是它还是指向的同一张表，只是把数据分散到了不同文件而已。</p>
+<p>我们首先看一下分区有什么优缺点：</p>
+<p><strong>表分区有什么好处？</strong></p>
+<ol>
+<li>与单个磁盘或文件系统分区相比，可以存储更多的数据。</li>
+<li>对于那些已经失去保存意义的数据，通常可以通过删除与那些数据有关的分区，很容易地删除那些数据。相反地，在某些情况下，添加新数据的过程又可以通过为那些新数据专门增加一个新的分区，来很方便地实现。</li>
+<li>一些查询可以得到极大的优化，关注公众号：码猿技术专栏，回复关键词：1111 获取阿里内部Java性能调优手册！这主要是借助于满足一个给定WHERE语句的数据可以只保存在一个或多个分区内，这样在查找时就不用查找其他剩余的分区。因为分区可以在创建了分区表后进行修改，所以在第一次配置分区方案时还不曾这么做时，可以重新组织数据，来提高那些常用查询的效率。</li>
+<li>涉及到例如SUM()和COUNT()这样聚合函数的查询，可以很容易地进行并行处理。这种查询的一个简单例子如 “SELECT salesperson_id, COUNT (orders) as order_total FROM sales GROUP BY salesperson_id；”。通过“并行”，这意味着该查询可以在每个分区上同时进行，最终结果只需通过总计所有分区得到的结果。</li>
+<li>通过跨多个磁盘来分散数据查询，来获得更大的查询吞吐量。</li>
+</ol>
+<p><strong>表分区的限制因素</strong></p>
+<ol>
+<li>一个表最多只能有1024个分区。</li>
+<li>MySQL5.1中，分区表达式必须是整数，或者返回整数的表达式。在MySQL5.5中提供了非整数表达式分区的支持。</li>
+<li>如果分区字段中有主键或者唯一索引的列，那么多有主键列和唯一索引列都必须包含进来。即：分区字段要么不包含主键或者索引列，要么包含全部主键和索引列。</li>
+<li>分区表中无法使用外键约束。</li>
+<li>MySQL的分区适用于一个表的所有数据和索引，不能只对表数据分区而不对索引分区，也不能只对索引分区而不对表分区，也不能只对表的一部分数据分区。</li>
+</ol>
+<p>确认数据库表是否支持分区：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs sql">mysql<span class="hljs-operator">&gt;</span> <span class="hljs-keyword">show</span> variables <span class="hljs-keyword">like</span> <span class="hljs-string">&#x27;%partition%&#x27;</span>;<br><span class="hljs-operator">+</span><span class="hljs-comment">-------------------+-------+</span><br><span class="hljs-operator">|</span> Variable_name     <span class="hljs-operator">|</span> <span class="hljs-keyword">Value</span> <span class="hljs-operator">|</span><br><span class="hljs-operator">+</span><span class="hljs-comment">-------------------+-------+</span><br><span class="hljs-operator">|</span> have_partitioning <span class="hljs-operator">|</span> YES   <span class="hljs-operator">|</span><br><span class="hljs-operator">+</span><span class="hljs-comment">-------------------+-------+</span><br><span class="hljs-number">1</span> <span class="hljs-type">row</span> <span class="hljs-keyword">in</span> <span class="hljs-keyword">set</span> (<span class="hljs-number">0.00</span> sec)<br></code></pre></td></tr></table></figure>
+
+
+
+<h4 id="3-2-分库分表"><a href="#3-2-分库分表" class="headerlink" title="3.2 分库分表"></a>3.2 分库分表</h4><blockquote>
+<p>分库分表的应用场景、方式方法、面临问题：<a target="_blank" rel="noopener" href="https://developer.aliyun.com/article/885875">https://developer.aliyun.com/article/885875</a></p>
+<p>Mycat分布式数据库架构解决方案：<a target="_blank" rel="noopener" href="https://developer.aliyun.com/article/1125878">https://developer.aliyun.com/article/1125878</a></p>
+</blockquote>
+<p>为什么要分表：分表后，显而易见，单表数据量降低，树的高度变低，查询经历的磁盘io变少，则可以提高效率</p>
+<p>mysql 分表分为两种 水平分表和垂直分表。</p>
+<p>分库分表就是为了解决由于数据量过大而导致数据库性能降低的问题，将原来独立的数据库拆分成若干数据库组成 ，将数据大表拆分成若干数据表组成，使得单一数据库、单一数据表的数据量变小，从而达到提升数据库性能的目的。</p>
+<h5 id="水平分表"><a href="#水平分表" class="headerlink" title="水平分表"></a>水平分表</h5><p>定义：数据表行的拆分，通俗点就是把数据按照某些规则拆分成多张表或者多个库来存放。分为库内分表和分库。 比如一个表有4000万数据，查询很慢，可以分到四个表，每个表有1000万数据。</p>
+<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230223145113.png" srcset="/img/loading.gif" lazyload alt="image-20230223145112497"></p>
+<h5 id="垂直分表"><a href="#垂直分表" class="headerlink" title="垂直分表"></a>垂直分表</h5><p>定义：列的拆分，根据表之间的相关性进行拆分。常见的就是一个表把不常用的字段和常用的字段就行拆分，然后利用主键关联。或者一个数据库里面有订单表和用户表，数据量都很大，进行垂直拆分，用户库存用户表的数据，订单库存订单表的数据。</p>
+<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230223145549.png" srcset="/img/loading.gif" lazyload alt="image-20230223145548983"></p>
+<p>缺点：垂直分隔的缺点比较明显，数据不在一张表中，会增加join 或 union之类的操作。</p>
+<h5 id="分库分表方案"><a href="#分库分表方案" class="headerlink" title="分库分表方案"></a>分库分表方案</h5><h6 id="1-取模方案"><a href="#1-取模方案" class="headerlink" title="1.取模方案"></a>1.取模方案</h6><p>拆分之前，先预估一下数据量。比如用户表有4000w数据，现在要把这些数据分到4个表user1 user2 uesr3 user4。 比如id &#x3D; 17，17对4取模为1，加上 ，所以这条数据存到user2表。</p>
+<p>注意：进行水平拆分后的表要去掉auto_increment自增长。这时候的id可以用一个id 自增长临时表获得，或者使用 redis incr 的方法。</p>
+<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230223150106.png" srcset="/img/loading.gif" lazyload alt="image-20230223150105274"></p>
+<p>优点： 数据均匀的分到各个表中，出现热点问题的概率很低。</p>
+<p>缺点：以后的数据扩容迁移比较困难难，当数据量变大之后，以前分到4个表现在要分到8个表，取模的值就变了，需要重新进行数据迁移。</p>
+<h6 id="2-range-范围方案"><a href="#2-range-范围方案" class="headerlink" title="2.range 范围方案"></a>2.range 范围方案</h6><p>以范围进行拆分数据，就是在某个范围内的订单，存放到某个表中。比如id&#x3D;12存放到user1表，id&#x3D;1300万的存放到user2 表。</p>
+<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230223150440.png" srcset="/img/loading.gif" lazyload alt="image-20230223150439132"></p>
+<p>优点：有利于将来对数据的扩容</p>
+<p>缺点：如果热点数据都存在一个表中，则压力都在一个表中，其他表没有压力。</p>
+<h6 id="3-hash-取模和-range-方案结合"><a href="#3-hash-取模和-range-方案结合" class="headerlink" title="3.hash 取模和 range 方案结合"></a>3.hash 取模和 range 方案结合</h6><p>如 group 组存放id 为0~4000万的数据，然后有三个数据库 DB0 DB1 DB2，DB0里面有四个数据库，DB1 和DB2 有三个数据库。</p>
+<p>假如id为15000 然后对10取模（为啥对10 取模 因为有10个表），取0 然后 落在DB_0, 然后在根据range 范围，落在Table_0 里面。</p>
+<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230223150755.png" srcset="/img/loading.gif" lazyload alt="image-20230223150754228"></p>
+<p>总结：采用hash取模和range方案结合，既可以避免热点数据的问题，也有利于将来对数据的扩容。</p>
+<p>分区分表的区别：</p>
+<p>1、实现方式上</p>
+<ul>
+<li>mysql的分表是真正的分表，一张表分成很多表后，每一个小表都是完整的一张表，都对应三个文件，一个.MYD数据文件，.MYI索引文件，.frm表结构</li>
+<li>分区不一样，一张大表进行分区后，他还是一张表，不会变成二张表，但是他存放数据的区块变多了。</li>
+</ul>
+<p>2、提高性能上</p>
+<ul>
+<li>分表重点是存取数据时，如何提高mysql并发能力上；</li>
+<li>而分区呢，如何突破磁盘的读写能力，从而达到提高mysql性能的目的。</li>
+</ul>
+<p>3、实现的难易度上</p>
+<ul>
+<li><p>分表的方法有很多，用merge来分表，是最简单的一种方式。这种方式根分区难易度差不多，并且对程序代码来说可以做到透明的。如果是用其他分表方式就比分区麻烦了。 </p>
+</li>
+<li><p>分区实现是比较简单的，建立分区表，根建平常的表没什么区别，并且对开代码端来说是透明的</p>
+</li>
+</ul>
+<p>分区分表的联系：</p>
+<ul>
+<li><p>都能提高mysql的性高，在高并发状态下都有一个良好的表现。</p>
+</li>
+<li><p>分表和分区不矛盾，可以相互配合的，对于那些大访问量，并且表数据比较多的表，我们可以采取分表和分区结合的方式，访问量不大，但是表数据很多的表，我们可以采取分区的方式等。</p>
+</li>
+</ul>
+<p>分库分表存在的问题：</p>
+<p>1、事务问题</p>
+<p>在执行分库分表之后，由于数据存储到了不同的库上，数据库事务管理出现了困难。如果依赖数据库本身的<code>分布式事务</code>管理功能去执行事务，将付出高昂的性能代价；如果由应用程序去协助控制，形成<code>程序逻辑上的事务</code>，又会造成编程方面的负担。</p>
+<p>2、跨库跨表的join问题</p>
+<p>在执行了分库分表之后，难以避免会将原本逻辑关联性很强的数据划分到不同的表、不同的库上，这时，表的关联操作将受到限制，我们<code>无法join位于不同分库的表</code>，也无法join分表粒度不同的表，结果原本一次查询能够完成的业务，可能需要多次查询才能完成。</p>
+<p>3、额外的数据管理负担和数据运算压力</p>
+<p>额外的数据管理负担，最显而易见的就是数据的定位问题和数据的增删改查的重复执行问题，这些都可以通过应用程序解决，但必然<code>引起额外的逻辑运算</code>，例如，对于一个记录用户成绩的用户数据表userTable，业务要求查出成绩最好的100位，在进行分表之前，只需一个order by语句就可以搞定，但是在进行分表之后，将需要n个order by语句，分别查出每一个分表的前100名用户数据，然后再对这些数据进行合并计算，才能得出结果。</p>
+<h4 id="3-3-冷热数据归档"><a href="#3-3-冷热数据归档" class="headerlink" title="3.3 冷热数据归档"></a>3.3 冷热数据归档</h4><p>为什么要冷热归档：其实原因和方案二类似，都是降低单表数据量，树的高度变低，查询经历的磁盘io变少，则可以提高效率 如果大家的业务数据，有明显的冷热区分，比如：只需要展示近一周或一个月的数据。那么这种情况这一周喝一个月的数据我们称之为热数据，其余数据为冷数据。那么我们可以将冷数据归档在其他的库表中，提高我们热数据的操作效率。</p>
+<h5 id="归档的过程"><a href="#归档的过程" class="headerlink" title="归档的过程"></a>归档的过程</h5><ol>
+<li>创建归档表 创建的归档表 原则上要与原表保持一致</li>
+<li>归档表数据的初始化</li>
+</ol>
+<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230223151458.png" srcset="/img/loading.gif" lazyload alt="image-20230223151456496"></p>
+<p>1、业务增量数据处理过程</p>
+<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230223151647.png" srcset="/img/loading.gif" lazyload alt="image-20230223151646769"></p>
+<p>2、数据的获取过程</p>
+<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230223151658.png" srcset="/img/loading.gif" lazyload alt="image-20230223151657311"></p>
+<p>三种方案的选型：</p>
+<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230223151736.png" srcset="/img/loading.gif" lazyload alt="image-20230223151735006"></p>
+
+              
+            </div>
+            <hr/>
+            <div>
+              <div>
+  <img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20241112163319.png" srcset="/img/loading.gif" lazyload>
+</div>
+<div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/16-%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96/" class="category-chain-item">16_性能优化</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/16-%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96/02-%E6%95%B0%E6%8D%AE%E5%BA%93%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96/" class="category-chain-item">02_数据库性能优化</a>
+  
+  
+
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/MySQL/">#MySQL</a>
+      
+        <a href="/tags/%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96/">#性能优化</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>02-MySQL上2000w数据大表优化方案</div>
+      <div>https://janycode.github.io/2022/11/23/16_性能优化/02_数据库性能优化/02-MySQL上2000w数据大表优化方案/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Jerry(姜源)</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2022年11月23日</div>
+        </div>
+      
+      
+      <div class="license-meta-item">
+        <div>许可协议</div>
+        <div>
+          
+            
+            
+              <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+              <span class="hint--top hint--rounded" aria-label="BY - 姜源">
+                <i class="iconfont icon-by"></i>
+              </span>
+              </a>
+            
+          
+        </div>
+      </div>
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2022/12/08/02_%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/01_Java/02_Java8/07-Java8-21%E5%90%84%E7%89%88%E6%9C%AC%E6%96%B0%E7%89%B9%E6%80%A7/" title="07-Java8-21各版本新特性">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">07-Java8-21各版本新特性</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2022/11/17/16_%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96/01_Java%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96/02-45%E6%9D%A1Java%E4%BB%A3%E7%A0%81%E4%BC%98%E5%8C%96%E6%8A%80%E5%B7%A7/" title="02-45条Java代码优化技巧">
+                        <span class="hidden-mobile">02-45条Java代码优化技巧</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+  <article id="comments" lazyload>
+    
+  <div id="SOHUCS" sid='https://janycode.github.io/2022/11/23/16_%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96/02_%E6%95%B0%E6%8D%AE%E5%BA%93%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96/02-MySQL%E4%B8%8A2000w%E6%95%B0%E6%8D%AE%E5%A4%A7%E8%A1%A8%E4%BC%98%E5%8C%96%E6%96%B9%E6%A1%88/'></div>
+  <script type="text/javascript">
+    Fluid.utils.loadComments('#SOHUCS', function() {
+      Fluid.utils.createScript("https://changyan.sohu.com/upload/changyan.js", function() {
+        window.changyan.api.config({"appid":"cyw5OHIcO","appkey":"fea3446b3df4b3f129f34da4cbc87e51"})
+      });
+    });
+  </script>
+  <noscript>Please enable JavaScript to view the comments</noscript>
+
+
+  </article>
+
+
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://simple.blog.csdn.net" target="_blank" rel="nofollow noopener"><span>CSDN</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/janycode" target="_blank" rel="nofollow noopener"><span>GitHub</span></a> <i class="iconfont icon-love"></i> <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="busuanzi_container_site_pv" style="display: none">
+        总访问量(PV) 
+        <span id="busuanzi_value_site_pv"></span>
+         次，
+      </span>
+    
+    
+      <span id="busuanzi_container_site_uv" style="display: none">
+        总访客数(UV) 
+        <span id="busuanzi_value_site_uv"></span>
+         人
+      </span>
+    
+    
+  
+</div>
+
+  
+  
+  
+</div>
+
+<!-- live2d 动画 -->
+<script src="https://eqcn.ajz.miesnfu.com/wp-content/plugins/wp-3d-pony/live2dw/lib/L2Dwidget.min.js"></script>
+<script>
+    L2Dwidget.init({
+        "model": {
+            jsonPath: "https://unpkg.com/live2d-widget-model-haruto@1.0.5/assets/haruto.model.json",
+            "scale": 1
+        },
+        "display": {
+            "position": "right",
+            "width": 100,
+            "height": 200,
+            "hOffset": 35,
+            "vOffset": -85
+        },
+        "mobile": {
+            "show": false,
+            "scale": 0.1
+        },
+        "react": {
+            "opacityDefault": 0.75,
+            "opacityOnHover": 0.2
+        }
+    });
+</script>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <!-- Baidu Analytics -->
+    <script defer>
+      if (!Fluid.ctx.dnt) {
+        var _hmt = _hmt || [];
+        (function() {
+          var hm = document.createElement("script");
+          hm.src = "https://hm.baidu.com/hm.js?bfff735c897eb60ea49b735096b20e47";
+          var s = document.getElementsByTagName("script")[0];
+          s.parentNode.insertBefore(hm, s);
+        })();
+      }
+    </script>
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.0/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      headingSelector : CONFIG.toc.headingSelector || 'h1,h2,h3,h4,h5,h6',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      collapseDepth   : CONFIG.toc.collapseDepth || 0,
+      scrollSmooth    : true,
+      headingsOffset  : -boardTop
+    });
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+  });
+</script>
+
+
+  <script>
+  (function() {
+    var enableLang = CONFIG.code_language.enable && CONFIG.code_language.default;
+    var enableCopy = CONFIG.copy_btn;
+    if (!enableLang && !enableCopy) {
+      return;
+    }
+
+    function getBgClass(ele) {
+      return Fluid.utils.getBackgroundLightness(ele) >= 0 ? 'code-widget-light' : 'code-widget-dark';
+    }
+
+    var copyTmpl = '';
+    copyTmpl += '<div class="code-widget">';
+    copyTmpl += 'LANG';
+    copyTmpl += '</div>';
+    jQuery('.markdown-body pre').each(function() {
+      var $pre = jQuery(this);
+      if ($pre.find('code.mermaid').length > 0) {
+        return;
+      }
+      if ($pre.find('span.line').length > 0) {
+        return;
+      }
+
+      var lang = '';
+
+      if (enableLang) {
+        lang = CONFIG.code_language.default;
+        if ($pre[0].children.length > 0 && $pre[0].children[0].classList.length >= 2 && $pre.children().hasClass('hljs')) {
+          lang = $pre[0].children[0].classList[1];
+        } else if ($pre[0].getAttribute('data-language')) {
+          lang = $pre[0].getAttribute('data-language');
+        } else if ($pre.parent().hasClass('sourceCode') && $pre[0].children.length > 0 && $pre[0].children[0].classList.length >= 2) {
+          lang = $pre[0].children[0].classList[1];
+          $pre.parent().addClass('code-wrapper');
+        } else if ($pre.parent().hasClass('markdown-body') && $pre[0].classList.length === 0) {
+          $pre.wrap('<div class="code-wrapper"></div>');
+        }
+        lang = lang.toUpperCase().replace('NONE', CONFIG.code_language.default);
+      }
+      $pre.append(copyTmpl.replace('LANG', lang).replace('code-widget">',
+        getBgClass($pre[0]) + (enableCopy ? ' code-widget copy-btn" data-clipboard-snippet><i class="iconfont icon-copy"></i>' : ' code-widget">')));
+
+      if (enableCopy) {
+        Fluid.utils.createScript('https://lib.baomitu.com/clipboard.js/2.0.10/clipboard.min.js', function() {
+          var clipboard = new window.ClipboardJS('.copy-btn', {
+            target: function(trigger) {
+              var nodes = trigger.parentNode.childNodes;
+              for (var i = 0; i < nodes.length; i++) {
+                if (nodes[i].tagName === 'CODE') {
+                  return nodes[i];
+                }
+              }
+            }
+          });
+          clipboard.on('success', function(e) {
+            e.clearSelection();
+            e.trigger.innerHTML = e.trigger.innerHTML.replace('icon-copy', 'icon-success');
+            setTimeout(function() {
+              e.trigger.innerHTML = e.trigger.innerHTML.replace('icon-success', 'icon-copy');
+            }, 2000);
+          });
+        });
+      }
+    });
+  })();
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

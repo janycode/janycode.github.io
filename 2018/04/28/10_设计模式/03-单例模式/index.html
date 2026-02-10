@@ -1,0 +1,1110 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=light>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Jerry(姜源)">
+  <meta name="keywords" content="Java,Html,CSS,JavaScript,Python,C,Linux,shell编程经验分享、技术总结、心得体会">
+  
+    <meta name="description" content="参考资料1：http:&#x2F;&#x2F;c.biancheng.net&#x2F;design_pattern&#x2F; 参考资料2：https:&#x2F;&#x2F;refactoringguru.cn&#x2F;design-patterns&#x2F;catalog 01. 单例设计模式 作用 在java virtual machine（JVM）中只创建一个实例   分类 饿汉单例设计模式 懒汉单例设计模式 同步懒汉单例设计模式 双重锁校验单例设计模式 静态内">
+<meta property="og:type" content="article">
+<meta property="og:title" content="03-单例模式">
+<meta property="og:url" content="https://janycode.github.io/2018/04/28/10_%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/03-%E5%8D%95%E4%BE%8B%E6%A8%A1%E5%BC%8F/index.html">
+<meta property="og:site_name" content="姜源の云笔记">
+<meta property="og:description" content="参考资料1：http:&#x2F;&#x2F;c.biancheng.net&#x2F;design_pattern&#x2F; 参考资料2：https:&#x2F;&#x2F;refactoringguru.cn&#x2F;design-patterns&#x2F;catalog 01. 单例设计模式 作用 在java virtual machine（JVM）中只创建一个实例   分类 饿汉单例设计模式 懒汉单例设计模式 同步懒汉单例设计模式 双重锁校验单例设计模式 静态内">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230716000315.png">
+<meta property="og:image" content="https://qiuzhiwei.oss-cn-beijing.aliyuncs.com/typora/20200526114904.png">
+<meta property="og:image" content="https://qiuzhiwei.oss-cn-beijing.aliyuncs.com/typora/20200526115046.png">
+<meta property="og:image" content="https://qiuzhiwei.oss-cn-beijing.aliyuncs.com/typora/20200526115114.png">
+<meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20220314225911.png">
+<meta property="article:published_time" content="2018-04-28T14:18:03.000Z">
+<meta property="article:modified_time" content="2026-02-10T09:21:30.246Z">
+<meta property="article:author" content="Jerry(姜源)">
+<meta property="article:tag" content="设计模式">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230716000315.png">
+  
+  
+    <meta name="referrer" content="no-referrer-when-downgrade">
+  
+  
+  <title>03-单例模式 - 姜源の云笔记</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"janycode.github.io","root":"/","version":"1.9.0","typing":{"enable":true,"typeSpeed":50,"cursorChar":"|","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":false},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":"bfff735c897eb60ea49b735096b20e47","google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+
+  
+<meta name="generator" content="Hexo 6.2.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 50vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>姜源の云笔记</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tools/">
+                <i class="iconfont icon-slack-fill"></i>
+                工具
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" target="_blank" rel="noopener" href="https://yuancodes.github.io/">
+                <i class="iconfont icon-notebook"></i>
+                Docsify
+              </a>
+            </li>
+          
+        
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="03-单例模式"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-author" aria-hidden="true"></i>
+        Jerry(姜源)
+      </span>
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2018-04-28 22:18" pubdate>
+          星期六, 2018/04/28 22:18:03
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          <!-- compatible with older versions-->
+          10k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          <!-- compatible with older versions-->
+          85 分钟
+        
+      </span>
+    
+
+    
+    
+      
+        <span id="busuanzi_container_page_pv" style="display: none">
+          <i class="iconfont icon-eye" aria-hidden="true"></i>
+          <span id="busuanzi_value_page_pv"></span> 次
+        </span>
+        
+      
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">03-单例模式</h1>
+            
+            <div class="markdown-body">
+              
+              <p>参考资料1：<a target="_blank" rel="noopener" href="http://c.biancheng.net/design_pattern/">http://c.biancheng.net/design_pattern/</a></p>
+<p>参考资料2：<a target="_blank" rel="noopener" href="https://refactoringguru.cn/design-patterns/catalog">https://refactoringguru.cn/design-patterns/catalog</a></p>
+<h3 id="01-单例设计模式"><a href="#01-单例设计模式" class="headerlink" title="01. 单例设计模式"></a>01. 单例设计模式</h3><ul>
+<li>作用<ul>
+<li>在java virtual machine（JVM）中只创建一个实例</li>
+</ul>
+</li>
+<li>分类<ul>
+<li>饿汉单例设计模式</li>
+<li>懒汉单例设计模式</li>
+<li>同步懒汉单例设计模式</li>
+<li>双重锁校验单例设计模式</li>
+<li>静态内部类单例设计模式</li>
+<li>枚举单例设计模式 - <code>推荐</code></li>
+<li>ThreadLocal线程单例</li>
+</ul>
+</li>
+</ul>
+<h4 id="1-1-饿汉式-推荐"><a href="#1-1-饿汉式-推荐" class="headerlink" title="1.1 饿汉式-推荐"></a>1.1 饿汉式-推荐</h4><ul>
+<li><p>步骤</p>
+<ul>
+<li>私有化构造器</li>
+<li>在本类中声明一个本类对象，并使用private static修饰</li>
+<li>给本类对象提供一个get方法</li>
+</ul>
+</li>
+<li><p>代码实现</p>
+</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">TestSingleton</span> &#123;<br>	<span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">main</span><span class="hljs-params">(String[] args)</span> &#123;<br>		<span class="hljs-type">Singleton1</span> <span class="hljs-variable">s1</span> <span class="hljs-operator">=</span> Singleton1.getInstance();<br>		<span class="hljs-type">Singleton1</span> <span class="hljs-variable">s11</span> <span class="hljs-operator">=</span> Singleton1.getInstance();<br>		System.out.println(s1); <span class="hljs-comment">// Singleton1@7852e922</span><br>		System.out.println(s11); <span class="hljs-comment">// Singleton1@7852e922</span><br>	&#125;<br>&#125;<br><br><span class="hljs-keyword">class</span> <span class="hljs-title class_">Singleton1</span> &#123;<br>	<span class="hljs-comment">// 私有静态常量引用，类加载执行就1份、不可调用、不可修改（始终单例）</span><br>	<span class="hljs-keyword">private</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">final</span> <span class="hljs-type">Singleton1</span> <span class="hljs-variable">instance</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">Singleton1</span>();<br>	<span class="hljs-comment">// 私有构造，不可直接new对象</span><br>	<span class="hljs-keyword">private</span> <span class="hljs-title function_">Singleton1</span><span class="hljs-params">()</span> &#123;&#125;<br>	<span class="hljs-comment">// 静态方法，类名直接调用，返回私有静态常量引用</span><br>	<span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> Singleton1 <span class="hljs-title function_">getInstance</span><span class="hljs-params">()</span> &#123;<br>		<span class="hljs-keyword">return</span> instance;<br>	&#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<ul>
+<li><p>特点（<strong>天生线程安全</strong>（无锁）、类加载时创建（不用也会被创建，<strong>占用资源</strong>））</p>
+<ul>
+<li>效率高</li>
+<li>线程安全</li>
+<li>不支持懒加载(lazy load)</li>
+</ul>
+</li>
+</ul>
+<h4 id="1-2-懒汉式"><a href="#1-2-懒汉式" class="headerlink" title="1.2 懒汉式"></a>1.2 懒汉式</h4><ul>
+<li>步骤<ul>
+<li>私有化构造器</li>
+<li>在本类中创建一个本类引用，并使用private static修饰</li>
+<li>给本类对象提供一个get方法</li>
+</ul>
+</li>
+<li>代码实现</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">TestSingleton</span> &#123;<br>	<span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">main</span><span class="hljs-params">(String[] args)</span> &#123;		<br>		<span class="hljs-type">Singleton2</span> <span class="hljs-variable">s2</span> <span class="hljs-operator">=</span> Singleton2.getInstance();<br>		<span class="hljs-type">Singleton2</span> <span class="hljs-variable">s22</span> <span class="hljs-operator">=</span> Singleton2.getInstance();<br>		System.out.println(s2); <span class="hljs-comment">// Singleton2@4e25154f</span><br>		System.out.println(s22); <span class="hljs-comment">// Singleton2@4e25154f</span><br>	&#125;<br>&#125;<br><br><span class="hljs-keyword">class</span> <span class="hljs-title class_">Singleton2</span> &#123;<br>	<span class="hljs-comment">// 私有静态引用，类加载执行就1份、不可调用</span><br>	<span class="hljs-keyword">private</span> <span class="hljs-keyword">static</span> <span class="hljs-type">Singleton2</span> <span class="hljs-variable">instance</span> <span class="hljs-operator">=</span> <span class="hljs-literal">null</span>;<br>	<span class="hljs-comment">// 私有构造，不可直接new对象</span><br>	<span class="hljs-keyword">private</span> <span class="hljs-title function_">Singleton2</span><span class="hljs-params">()</span> &#123;&#125;<br>	<span class="hljs-comment">// 同步锁、静态方法获取类的对象(引用为空则new，不为空则返回自身，始终单例)</span><br>	<span class="hljs-keyword">public</span> <span class="hljs-keyword">synchronized</span> <span class="hljs-keyword">static</span> Singleton2 <span class="hljs-title function_">getInstance</span><span class="hljs-params">()</span> &#123;<br>		<span class="hljs-type">return</span> <span class="hljs-variable">instance</span> <span class="hljs-operator">=</span>= <span class="hljs-literal">null</span> ? instance = <span class="hljs-keyword">new</span> <span class="hljs-title class_">Singleton2</span>() : instance;<br>	&#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<ul>
+<li><p>特点（<strong>天生线程不安全</strong>（需同步锁、<strong>效率低</strong>）、使用时才创建）</p>
+<ul>
+<li>效率高</li>
+<li>线程不安全</li>
+<li>支持懒加载</li>
+</ul>
+</li>
+</ul>
+<blockquote>
+<p>饿汉和懒汉的区别: </p>
+<ul>
+<li>饿汉<ul>
+<li>效率高</li>
+<li>线程安全</li>
+<li>不支持懒加载(lazy load)</li>
+</ul>
+</li>
+<li>懒汉<ul>
+<li>效率高</li>
+<li>线程不安全</li>
+<li>支持懒加载</li>
+</ul>
+</li>
+<li>懒加载<ul>
+<li>lazy load ，当一个资源被使用时才加载，不使用时不加载。</li>
+</ul>
+</li>
+<li>区别<ul>
+<li>饿汉是以空间换时间（执行效率相对高些），懒汉是以时间换空间（执行效率相对低些）</li>
+<li>饿汉是线程安全的，懒汉是线程不安全的。(有所谓!!!)</li>
+<li>饿汉不支持懒加载，懒汉支持懒加载</li>
+</ul>
+</li>
+</ul>
+</blockquote>
+<h4 id="1-3-同步懒汉式"><a href="#1-3-同步懒汉式" class="headerlink" title="1.3 同步懒汉式"></a>1.3 同步懒汉式</h4><ul>
+<li><p>作用</p>
+<ul>
+<li>解决懒汉单例设计模式的线程不安全问题</li>
+</ul>
+</li>
+<li><p>代码实现</p>
+</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">MySingleClass03</span> &#123;<br>    <span class="hljs-keyword">private</span> <span class="hljs-title function_">MySingleClass03</span><span class="hljs-params">()</span>&#123;&#125;<br>    <span class="hljs-keyword">private</span> <span class="hljs-keyword">static</span> <span class="hljs-type">MySingleClass03</span> <span class="hljs-variable">instance</span> <span class="hljs-operator">=</span> <span class="hljs-literal">null</span>;<br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> MySingleClass03 <span class="hljs-title function_">getInstance</span><span class="hljs-params">()</span> &#123;<br>        <span class="hljs-comment">// 同步代码块中 new 单例对象</span><br>        <span class="hljs-keyword">synchronized</span> (MySingleClass03.class) &#123;<br>            <span class="hljs-keyword">if</span> (instance == <span class="hljs-literal">null</span>) &#123;<br>                instance = <span class="hljs-keyword">new</span> <span class="hljs-title class_">MySingleClass03</span>();<br>            &#125; <br>        &#125;<br>        <span class="hljs-keyword">return</span> instance;<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<ul>
+<li><p>特点（天生线程安全（无锁），使用时才创建（静态内部类））</p>
+<ul>
+<li>效率非常低</li>
+<li>线程安全</li>
+<li>支持懒加载</li>
+</ul>
+</li>
+</ul>
+<h4 id="1-4-双重锁校验式-面试常见"><a href="#1-4-双重锁校验式-面试常见" class="headerlink" title="1.4 双重锁校验式-面试常见"></a>1.4 双重锁校验式-面试常见</h4><ul>
+<li><p>作用</p>
+<ul>
+<li>解决同步懒汉单例设计模式的效率低问题</li>
+</ul>
+</li>
+<li><p>代码实现</p>
+</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">MySingleClass04</span> &#123;<br>    <span class="hljs-keyword">private</span> <span class="hljs-title function_">MySingleClass04</span><span class="hljs-params">()</span>&#123;&#125;<br>    <span class="hljs-keyword">private</span> <span class="hljs-keyword">volatile</span> <span class="hljs-keyword">static</span> <span class="hljs-type">MySingleClass04</span> <span class="hljs-variable">instance</span> <span class="hljs-operator">=</span> <span class="hljs-literal">null</span>;<br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> MySingleClass04 <span class="hljs-title function_">getInstance</span><span class="hljs-params">()</span> &#123;<br>        <span class="hljs-keyword">if</span> (<span class="hljs-literal">null</span> == instance) &#123;<br>            <span class="hljs-keyword">synchronized</span> (MySingleClass04.class) &#123;<br>                <span class="hljs-keyword">if</span> (instance == <span class="hljs-literal">null</span>) &#123;<br>                    instance = <span class="hljs-keyword">new</span> <span class="hljs-title class_">MySingleClass04</span>();<br>                &#125;<br>            &#125;<br>        &#125;<br>        <span class="hljs-keyword">return</span> instance;<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<ul>
+<li><p>特点</p>
+<ul>
+<li>效率高</li>
+<li>线程安全</li>
+<li>支持懒加载</li>
+</ul>
+</li>
+</ul>
+<h4 id="1-5-静态内部类式"><a href="#1-5-静态内部类式" class="headerlink" title="1.5 静态内部类式"></a>1.5 静态内部类式</h4><ul>
+<li>步骤<ul>
+<li>私有化构造器</li>
+<li>声明一个静态内部类<ul>
+<li>初始化单例对象，并使用private final static修饰</li>
+</ul>
+</li>
+<li>提供一个get方法</li>
+</ul>
+</li>
+<li>代码实现</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">TestSingleton</span> &#123;<br>	<span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">main</span><span class="hljs-params">(String[] args)</span> &#123;<br>		<span class="hljs-type">Singleton3</span> <span class="hljs-variable">s3</span> <span class="hljs-operator">=</span> Singleton3.getInstance();<br>		<span class="hljs-type">Singleton3</span> <span class="hljs-variable">s33</span> <span class="hljs-operator">=</span> Singleton3.getInstance();<br>		System.out.println(s3); <span class="hljs-comment">// Singleton3@70dea4e</span><br>		System.out.println(s33); <span class="hljs-comment">// Singleton3@70dea4e</span><br>	&#125;<br>&#125;<br><br><span class="hljs-comment">//这种形式兼顾饿汉式的内存浪费，也兼顾 synchronized 性能问题</span><br><span class="hljs-keyword">class</span> <span class="hljs-title class_">Singleton3</span> &#123;<br>	<span class="hljs-comment">//私有构造，不可直接new对象</span><br>	<span class="hljs-keyword">private</span> <span class="hljs-title function_">Singleton3</span><span class="hljs-params">()</span> &#123;&#125;<br>    <span class="hljs-comment">//静态方法，获取内部类中创建的外部类对象的常量引用</span><br>	<span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">final</span> Singleton3 <span class="hljs-title function_">getInstance</span><span class="hljs-params">()</span> &#123;<br>        <span class="hljs-comment">//在返回结果前一定会先加载内部类</span><br>		<span class="hljs-keyword">return</span> Holder.instancce;<br>	&#125;<br>	<span class="hljs-comment">//静态内部类，不依赖外部类，使用时才需要创建，可独立创建</span><br>	<span class="hljs-comment">//内部类中静态常量引用，一旦创建内部类，属性则不可修改（始终单例）</span><br>	<span class="hljs-keyword">private</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">Holder</span> &#123;<br>		<span class="hljs-keyword">private</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">final</span> <span class="hljs-type">Singleton3</span> <span class="hljs-variable">instancce</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">Singleton3</span>();<br>	&#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<ul>
+<li>特点<ul>
+<li>效率高</li>
+<li>线程安全</li>
+<li>支持懒加载</li>
+</ul>
+</li>
+</ul>
+<h4 id="1-6-枚举式-推荐"><a href="#1-6-枚举式-推荐" class="headerlink" title="1.6 枚举式 - 推荐"></a>1.6 枚举式 - 推荐</h4><ul>
+<li><p>枚举</p>
+<ul>
+<li>在<a target="_blank" rel="noopener" href="https://baike.baidu.com/item/%E6%95%B0%E5%AD%A6/107037">数学</a>和<a target="_blank" rel="noopener" href="https://baike.baidu.com/item/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%A7%91%E5%AD%A6/9132">计算机科学</a>理论中，一个集的<strong>枚举</strong>是列出某些有穷序列集的所有成员的程序，或者是一种特定类型对象的计数。</li>
+<li>就是一个天然的多例设计模式</li>
+</ul>
+</li>
+<li><p>枚举实现</p>
+</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">enum</span> <span class="hljs-title class_">SevenColor</span> &#123;<br>    RED, ORANGE, YELLOW, GREEN, CYAN, BLUE, PURPLE<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<ul>
+<li>枚举单例设计模式</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">enum</span> <span class="hljs-title class_">MySingleClass04</span> &#123;<br>    INSTANCE;<br>    <span class="hljs-keyword">private</span> Object data;<br><br>    <span class="hljs-keyword">public</span> Object <span class="hljs-title function_">getData</span><span class="hljs-params">()</span> &#123;<br>        <span class="hljs-keyword">return</span> data;<br>    &#125;<br><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">setData</span><span class="hljs-params">(Object data)</span> &#123;<br>        <span class="hljs-built_in">this</span>.data = data;<br>    &#125;<br><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> MySingleClass04 <span class="hljs-title function_">getInstance</span><span class="hljs-params">()</span> &#123;<br>        <span class="hljs-keyword">return</span> INSTANCE;<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230716000315.png" srcset="/img/loading.gif" lazyload alt="image-20230716000314400"></p>
+<ul>
+<li>反射攻击枚举单例设计模式</li>
+<li>反射攻击无参构造器</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-type">MySingleClass04</span> <span class="hljs-variable">instance01</span> <span class="hljs-operator">=</span> MySingleClass04.INSTANCE;<br>Constructor&lt;MySingleClass04&gt; c = MySingleClass04.class.getDeclaredConstructor();<br>c.setAccessible(<span class="hljs-literal">true</span>);<br><span class="hljs-type">MySingleClass04</span> <span class="hljs-variable">instance02</span> <span class="hljs-operator">=</span> c.newInstance();<br>System.out.println(instance01 == instance02);<br></code></pre></td></tr></table></figure>
+
+<ul>
+<li><img src="https://qiuzhiwei.oss-cn-beijing.aliyuncs.com/typora/20200526114904.png" srcset="/img/loading.gif" lazyload alt="image-20200526114847725"></li>
+<li>通过查看 Enum 类的源码发现，枚举类是没有无参构造，再通过反射攻击有参构造器</li>
+<li>反射攻击有参构造器</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-type">MySingleClass04</span> <span class="hljs-variable">instance01</span> <span class="hljs-operator">=</span> MySingleClass04.INSTANCE;<br>Constructor&lt;MySingleClass04&gt; c = MySingleClass04.class.getDeclaredConstructor(String.class, <span class="hljs-type">int</span>.class);<br>c.setAccessible(<span class="hljs-literal">true</span>);<br><span class="hljs-type">MySingleClass04</span> <span class="hljs-variable">instance02</span> <span class="hljs-operator">=</span> c.newInstance(<span class="hljs-string">&quot;hello&quot;</span>, <span class="hljs-number">110</span>);<br>System.out.println(instance01 == instance02);<br></code></pre></td></tr></table></figure>
+
+<ul>
+<li><p><img src="https://qiuzhiwei.oss-cn-beijing.aliyuncs.com/typora/20200526115046.png" srcset="/img/loading.gif" lazyload alt="image-20200526115044026"></p>
+</li>
+<li><p><img src="https://qiuzhiwei.oss-cn-beijing.aliyuncs.com/typora/20200526115114.png" srcset="/img/loading.gif" lazyload alt="image-20200526115112551"></p>
+</li>
+<li><p>结论</p>
+<ul>
+<li><code>枚举单例设计模式可以避免反射攻击</code></li>
+</ul>
+</li>
+<li><p>序列化攻击枚举单例设计模式</p>
+</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-type">MySingleClass04</span> <span class="hljs-variable">instance01</span> <span class="hljs-operator">=</span> MySingleClass04.INSTANCE;<br><br><span class="hljs-type">ObjectOutputStream</span> <span class="hljs-variable">oos</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">ObjectOutputStream</span>(<span class="hljs-keyword">new</span> <span class="hljs-title class_">FileOutputStream</span>(<span class="hljs-string">&quot;obj.obj&quot;</span>));<br>oos.writeObject(instance01);<br>oos.close();<br><span class="hljs-type">ObjectInputStream</span> <span class="hljs-variable">ois</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">ObjectInputStream</span>(<span class="hljs-keyword">new</span> <span class="hljs-title class_">FileInputStream</span>(<span class="hljs-string">&quot;obj.obj&quot;</span>));<br><span class="hljs-type">Object</span> <span class="hljs-variable">instance02</span> <span class="hljs-operator">=</span> ois.readObject();<br>ois.close();<br>System.out.println(instance01 == instance02);<br></code></pre></td></tr></table></figure>
+
+<ul>
+<li><p>以上代码的结果为true，说明枚举单例设计模式可以避免序列化攻击</p>
+</li>
+<li><p>总结</p>
+<ul>
+<li><code>枚举单例设计模式既可以避免反射攻击，也可以避免序列化攻击</code></li>
+</ul>
+</li>
+<li><p>特点</p>
+<ul>
+<li>效率高</li>
+<li>线程安全</li>
+<li>不支持懒加载</li>
+<li>避免反射攻击</li>
+<li>避免序列化攻击</li>
+</ul>
+</li>
+</ul>
+<h4 id="1-7-ThreadLocal线程单例"><a href="#1-7-ThreadLocal线程单例" class="headerlink" title="1.7 ThreadLocal线程单例"></a>1.7 ThreadLocal线程单例</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">ThreadLocalSingleton</span> &#123;<br>    <span class="hljs-keyword">private</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">final</span> ThreadLocal&lt;ThreadLocalSingleton&gt; threadLocalInstance =<br>            <span class="hljs-keyword">new</span> <span class="hljs-title class_">ThreadLocal</span>&lt;ThreadLocalSingleton&gt;() &#123;<br>                <span class="hljs-meta">@Override</span><br>                <span class="hljs-keyword">protected</span> ThreadLocalSingleton <span class="hljs-title function_">initialValue</span><span class="hljs-params">()</span> &#123;<br>                    <span class="hljs-keyword">return</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">ThreadLocalSingleton</span>();<br>                &#125;<br>            &#125;;<br><br>    <span class="hljs-keyword">private</span> <span class="hljs-title function_">ThreadLocalSingleton</span><span class="hljs-params">()</span> &#123;&#125;<br><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> ThreadLocalSingleton <span class="hljs-title function_">getInstance</span><span class="hljs-params">()</span> &#123;<br>        <span class="hljs-keyword">return</span> threadLocalInstance.get();<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">ExectorThread</span> <span class="hljs-keyword">implements</span> <span class="hljs-title class_">Runnable</span> &#123;<br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">run</span><span class="hljs-params">()</span> &#123;<br>        <span class="hljs-type">ThreadLocalSingleton</span> <span class="hljs-variable">singleton</span> <span class="hljs-operator">=</span> ThreadLocalSingleton.getInstance();<br>        System.out.println(Thread.currentThread().getName() + <span class="hljs-string">&quot;:&quot;</span> + singleton);<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">TestSingleton</span> &#123;<br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">main</span><span class="hljs-params">(String[] args)</span> &#123;<br>        <span class="hljs-comment">//主线程：在主线程 main 中无论调用多少次，获取到的实例都是同一个</span><br>        System.out.println(ThreadLocalSingleton.getInstance());<br>        System.out.println(ThreadLocalSingleton.getInstance());<br>        System.out.println(ThreadLocalSingleton.getInstance());<br>        System.out.println(ThreadLocalSingleton.getInstance());<br>        System.out.println(ThreadLocalSingleton.getInstance());<br>        <span class="hljs-comment">//子线程：都在两个子线 程中分别获取到了不同的实例。</span><br>        <span class="hljs-type">Thread</span> <span class="hljs-variable">t1</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">Thread</span>(<span class="hljs-keyword">new</span> <span class="hljs-title class_">ExectorThread</span>());<br>        <span class="hljs-type">Thread</span> <span class="hljs-variable">t2</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">Thread</span>(<span class="hljs-keyword">new</span> <span class="hljs-title class_">ExectorThread</span>());<br>        t1.start();<br>        t2.start();<br>        System.out.println(<span class="hljs-string">&quot;End&quot;</span>);<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20220314225911.png" srcset="/img/loading.gif" lazyload alt="image-20220314225910821"></p>
+<p>上面的单例模式为了达到线程安全的目的，给方法上锁，以时间换空间。ThreadLocal 将所有的对象全部放在 ThreadLocalMap 中，为每个线程都提供一个对象，实际上是以空间换时间来实现线程间隔离的。</p>
+<h3 id="02-反射攻击单例设计模式"><a href="#02-反射攻击单例设计模式" class="headerlink" title="02. 反射攻击单例设计模式"></a>02. 反射攻击单例设计模式</h3><ul>
+<li><p>所学的单例设计模式</p>
+<ul>
+<li>饿汉单例设计模式（推荐用）<ul>
+<li>效率高</li>
+<li>线程安全</li>
+<li>不支持懒加载</li>
+</ul>
+</li>
+<li>懒汉单例设计模式<ul>
+<li>效率高</li>
+<li>线程不安全</li>
+<li>支持懒加载</li>
+</ul>
+</li>
+<li>同步懒汉单例设计模式<ul>
+<li>效率非常低</li>
+<li>线程安全</li>
+<li>支持懒加载</li>
+</ul>
+</li>
+<li>双重锁单例设计模式（推荐用）<ul>
+<li>效率高</li>
+<li>线程安全</li>
+<li>支持懒加载</li>
+</ul>
+</li>
+<li>静态内部类单例设计模式（推荐用）<ul>
+<li>效率高</li>
+<li>线程安全</li>
+<li>支持懒加载</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>存在的问题</p>
+</li>
+<li><p>无法避免反射攻击</p>
+</li>
+<li><p>反射攻击单例设计模式</p>
+<ul>
+<li>饿汉单例设计模式<ul>
+<li>MySingleClass01</li>
+</ul>
+</li>
+<li>双重锁单例设计模式<ul>
+<li>MySingleClass02</li>
+</ul>
+</li>
+<li>静态内部类单例设计模式<ul>
+<li>MySingleClass03</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><code class="hljs java">        <span class="hljs-comment">//饿汉单例设计模式</span><br>        <span class="hljs-type">MySingleClass01</span> <span class="hljs-variable">instance01</span> <span class="hljs-operator">=</span> MySingleClass01.getInstance();<br><span class="hljs-comment">//        MySingleClass01 instance02 = MySingleClass01.getInstance();</span><br>        Constructor&lt;MySingleClass01&gt; c1 = MySingleClass01.class.getDeclaredConstructor();<br>        c1.setAccessible(<span class="hljs-literal">true</span>);<br>        <span class="hljs-type">MySingleClass01</span> <span class="hljs-variable">instance02</span> <span class="hljs-operator">=</span> c1.newInstance();<br><br>        System.out.println(instance01 == instance02);<br><br>        System.out.println(<span class="hljs-string">&quot;------------------------------&quot;</span>);<br>        <span class="hljs-comment">//双重锁单例设计模式</span><br>        <span class="hljs-type">MySingleClass02</span> <span class="hljs-variable">instance03</span> <span class="hljs-operator">=</span> MySingleClass02.getInstance();<br><span class="hljs-comment">////        MySingleClass02 instance04 = MySingleClass02.getInstance();</span><br>        Constructor&lt;MySingleClass02&gt; c2 = MySingleClass02.class.getDeclaredConstructor();<br>        c2.setAccessible(<span class="hljs-literal">true</span>);<br>        <span class="hljs-type">MySingleClass02</span> <span class="hljs-variable">instance04</span> <span class="hljs-operator">=</span> c2.newInstance();<br>        System.out.println(instance03 == instance04);<br><br>        System.out.println(<span class="hljs-string">&quot;------------------------------&quot;</span>);<br>        <span class="hljs-comment">//静态内部类单例设计模式</span><br>        <span class="hljs-type">MySingleClass03</span> <span class="hljs-variable">instance05</span> <span class="hljs-operator">=</span> MySingleClass03.getInstance();<br><span class="hljs-comment">//        MySingleClass03 instance06 = MySingleClass03.getInstance();</span><br><br>        Constructor&lt;MySingleClass03&gt; c3 = MySingleClass03.class.getDeclaredConstructor();<br>        c3.setAccessible(<span class="hljs-literal">true</span>);<br>        <span class="hljs-type">MySingleClass03</span> <span class="hljs-variable">instance06</span> <span class="hljs-operator">=</span> c3.newInstance();<br>        System.out.println(instance05 == instance06);<br></code></pre></td></tr></table></figure>
+
+<ul>
+<li><p>解决方案</p>
+<ul>
+<li>饿汉单例设计模式</li>
+</ul>
+</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">MySingleClass01</span> &#123;<br><br>    <span class="hljs-keyword">private</span> <span class="hljs-title function_">MySingleClass01</span><span class="hljs-params">()</span>&#123;<br>        System.out.println(<span class="hljs-string">&quot;饿汉&quot;</span>);<br>        <span class="hljs-keyword">if</span> (<span class="hljs-literal">null</span> != instance) &#123;<br>            <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">RuntimeException</span>(<span class="hljs-string">&quot;已经存在对象了!&quot;</span>);<br>        &#125;<br>    &#125;<br>    <span class="hljs-keyword">private</span> <span class="hljs-keyword">final</span> <span class="hljs-keyword">static</span> <span class="hljs-type">MySingleClass01</span> <span class="hljs-variable">instance</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">MySingleClass01</span>();<br><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> MySingleClass01 <span class="hljs-title function_">getInstance</span><span class="hljs-params">()</span> &#123;<br>        <span class="hljs-keyword">return</span> instance;<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<ul>
+<li>双重锁单例设计模式</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">MySingleClass02</span> &#123;<br><br>    <span class="hljs-keyword">private</span> <span class="hljs-title function_">MySingleClass02</span><span class="hljs-params">()</span>&#123;<br>        System.out.println(<span class="hljs-string">&quot;双重锁&quot;</span>);<br>        <span class="hljs-keyword">if</span> (<span class="hljs-literal">null</span> != instance) &#123;<br>            <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">RuntimeException</span>(<span class="hljs-string">&quot;已经存在对象了!&quot;</span>);<br>        &#125;<br>    &#125;<br><br>    <span class="hljs-keyword">private</span> <span class="hljs-keyword">static</span>  <span class="hljs-type">MySingleClass02</span> <span class="hljs-variable">instance</span> <span class="hljs-operator">=</span> <span class="hljs-literal">null</span>;<br><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> MySingleClass02 <span class="hljs-title function_">getInstance</span><span class="hljs-params">()</span> &#123;<br>        <span class="hljs-keyword">if</span> (<span class="hljs-literal">null</span> == instance) &#123;<br>            <span class="hljs-keyword">synchronized</span> (MySingleClass02.class) &#123;<br>                <span class="hljs-keyword">if</span> (<span class="hljs-literal">null</span> == instance) &#123;<br>                    instance = <span class="hljs-keyword">new</span> <span class="hljs-title class_">MySingleClass02</span>();<br>                &#125;<br>            &#125;<br>        &#125;<br>        <span class="hljs-keyword">return</span> instance;<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+<ul>
+<li>静态内部类单例设计模式</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">MySingleClass03</span> &#123;<br><br>    <span class="hljs-keyword">private</span> <span class="hljs-title function_">MySingleClass03</span><span class="hljs-params">()</span>&#123;<br>        System.out.println(<span class="hljs-string">&quot;静态内部类&quot;</span>);<br>        <span class="hljs-keyword">if</span> (<span class="hljs-literal">null</span> != MySingleClass03Holder.instance)&#123;<br>            <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">RuntimeException</span>(<span class="hljs-string">&quot;已经存在对象了!&quot;</span>);<br>        &#125;<br>    &#125;<br><br>    <span class="hljs-keyword">static</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">MySingleClass03Holder</span>&#123;<span class="hljs-comment">//静态内部类：不会随着外部类的加载而加载。只有当静态内部类被使用了，才会初始化instance。</span><br><br>        <span class="hljs-keyword">private</span> <span class="hljs-keyword">final</span> <span class="hljs-keyword">static</span> <span class="hljs-type">MySingleClass03</span> <span class="hljs-variable">instance</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">MySingleClass03</span>();<br><br>    &#125;<br><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> MySingleClass03 <span class="hljs-title function_">getInstance</span><span class="hljs-params">()</span> &#123;<br>        <span class="hljs-keyword">return</span> MySingleClass03Holder.instance;<br>    &#125;<br><br><br>&#125;<br></code></pre></td></tr></table></figure>
+
+
+
+<h3 id="03-序列化攻击单例设计模式"><a href="#03-序列化攻击单例设计模式" class="headerlink" title="03. 序列化攻击单例设计模式"></a>03. 序列化攻击单例设计模式</h3><ul>
+<li><p>代码实现</p>
+<ul>
+<li>饿汉单例设计模式</li>
+</ul>
+</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-comment">//饿汉单例设计模式</span><br><span class="hljs-type">MySingleClass01</span> <span class="hljs-variable">instance01</span> <span class="hljs-operator">=</span> MySingleClass01.getInstance();<br><span class="hljs-comment">//将instance01对象写入到了obj.obj文件中保存</span><br><span class="hljs-type">ObjectOutputStream</span> <span class="hljs-variable">oos</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">ObjectOutputStream</span>(<span class="hljs-keyword">new</span> <span class="hljs-title class_">FileOutputStream</span>(<span class="hljs-string">&quot;obj.obj&quot;</span>));<br>oos.writeObject(instance01);<br>oos.close();<br><span class="hljs-comment">//将对象从obj.obj文件中读取</span><br><span class="hljs-type">ObjectInputStream</span> <span class="hljs-variable">ois</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">ObjectInputStream</span>(<span class="hljs-keyword">new</span> <span class="hljs-title class_">FileInputStream</span>(<span class="hljs-string">&quot;obj.obj&quot;</span>));<br><span class="hljs-type">Object</span> <span class="hljs-variable">instance02</span> <span class="hljs-operator">=</span> ois.readObject();<br><br>System.out.println(instance01 == instance02);<br></code></pre></td></tr></table></figure>
+
+<ul>
+<li>双重锁单例设计模式</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-comment">//双重锁单例设计模式</span><br><span class="hljs-type">MySingleClass02</span> <span class="hljs-variable">instance01</span> <span class="hljs-operator">=</span> MySingleClass02.getInstance();<br><span class="hljs-comment">//将instance01对象写入到了obj.obj文件中保存</span><br><span class="hljs-type">ObjectOutputStream</span> <span class="hljs-variable">oos</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">ObjectOutputStream</span>(<span class="hljs-keyword">new</span> <span class="hljs-title class_">FileOutputStream</span>(<span class="hljs-string">&quot;obj.obj&quot;</span>));<br>oos.writeObject(instance01);<br>oos.close();<br><span class="hljs-comment">//将对象从obj.obj文件中读取</span><br><span class="hljs-type">ObjectInputStream</span> <span class="hljs-variable">ois</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">ObjectInputStream</span>(<span class="hljs-keyword">new</span> <span class="hljs-title class_">FileInputStream</span>(<span class="hljs-string">&quot;obj.obj&quot;</span>));<br><span class="hljs-type">Object</span> <span class="hljs-variable">instance02</span> <span class="hljs-operator">=</span> ois.readObject();<br>System.out.println(instance01 == instance02);<br></code></pre></td></tr></table></figure>
+
+<ul>
+<li>静态内部类单例设计模式</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-comment">//静态内部类单例设计模式</span><br><span class="hljs-type">MySingleClass03</span> <span class="hljs-variable">instance01</span> <span class="hljs-operator">=</span> MySingleClass03.getInstance();<br><span class="hljs-comment">//将instance01对象写入到了obj.obj文件中保存</span><br><span class="hljs-type">ObjectOutputStream</span> <span class="hljs-variable">oos</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">ObjectOutputStream</span>(<span class="hljs-keyword">new</span> <span class="hljs-title class_">FileOutputStream</span>(<span class="hljs-string">&quot;obj.obj&quot;</span>));<br>oos.writeObject(instance01);<br>oos.close();<br><span class="hljs-comment">//将对象从obj.obj文件中读取</span><br><span class="hljs-type">ObjectInputStream</span> <span class="hljs-variable">ois</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">ObjectInputStream</span>(<span class="hljs-keyword">new</span> <span class="hljs-title class_">FileInputStream</span>(<span class="hljs-string">&quot;obj.obj&quot;</span>));<br><span class="hljs-type">Object</span> <span class="hljs-variable">instance02</span> <span class="hljs-operator">=</span> ois.readObject();<br><br>System.out.println(instance01 == instance02);<br></code></pre></td></tr></table></figure>
+
+<ul>
+<li><p>存在的问题</p>
+<ul>
+<li>现有的单例设计模式无法避免序列化攻击</li>
+</ul>
+</li>
+</ul>
+
+              
+            </div>
+            <hr/>
+            <div>
+              <div>
+  <img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20241112163319.png" srcset="/img/loading.gif" lazyload>
+</div>
+<div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/10-%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" class="category-chain-item">10_设计模式</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/">#设计模式</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>03-单例模式</div>
+      <div>https://janycode.github.io/2018/04/28/10_设计模式/03-单例模式/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Jerry(姜源)</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2018年4月28日</div>
+        </div>
+      
+      
+      <div class="license-meta-item">
+        <div>许可协议</div>
+        <div>
+          
+            
+            
+              <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+              <span class="hint--top hint--rounded" aria-label="BY - 姜源">
+                <i class="iconfont icon-by"></i>
+              </span>
+              </a>
+            
+          
+        </div>
+      </div>
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2018/04/28/10_%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/01-%E7%94%9F%E4%BA%A7%E8%80%85%E4%B8%8E%E6%B6%88%E8%B4%B9%E8%80%85%E6%A8%A1%E5%BC%8F/" title="01-生产者与消费者模式">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">01-生产者与消费者模式</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2018/04/28/10_%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/04-%E8%A3%85%E9%A5%B0%E8%80%85%E6%A8%A1%E5%BC%8F/" title="04-装饰者模式">
+                        <span class="hidden-mobile">04-装饰者模式</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+  <article id="comments" lazyload>
+    
+  <div id="SOHUCS" sid='https://janycode.github.io/2018/04/28/10_%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/03-%E5%8D%95%E4%BE%8B%E6%A8%A1%E5%BC%8F/'></div>
+  <script type="text/javascript">
+    Fluid.utils.loadComments('#SOHUCS', function() {
+      Fluid.utils.createScript("https://changyan.sohu.com/upload/changyan.js", function() {
+        window.changyan.api.config({"appid":"cyw5OHIcO","appkey":"fea3446b3df4b3f129f34da4cbc87e51"})
+      });
+    });
+  </script>
+  <noscript>Please enable JavaScript to view the comments</noscript>
+
+
+  </article>
+
+
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://simple.blog.csdn.net" target="_blank" rel="nofollow noopener"><span>CSDN</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/janycode" target="_blank" rel="nofollow noopener"><span>GitHub</span></a> <i class="iconfont icon-love"></i> <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="busuanzi_container_site_pv" style="display: none">
+        总访问量(PV) 
+        <span id="busuanzi_value_site_pv"></span>
+         次，
+      </span>
+    
+    
+      <span id="busuanzi_container_site_uv" style="display: none">
+        总访客数(UV) 
+        <span id="busuanzi_value_site_uv"></span>
+         人
+      </span>
+    
+    
+  
+</div>
+
+  
+  
+  
+</div>
+
+<!-- live2d 动画 -->
+<script src="https://eqcn.ajz.miesnfu.com/wp-content/plugins/wp-3d-pony/live2dw/lib/L2Dwidget.min.js"></script>
+<script>
+    L2Dwidget.init({
+        "model": {
+            jsonPath: "https://unpkg.com/live2d-widget-model-haruto@1.0.5/assets/haruto.model.json",
+            "scale": 1
+        },
+        "display": {
+            "position": "right",
+            "width": 100,
+            "height": 200,
+            "hOffset": 35,
+            "vOffset": -85
+        },
+        "mobile": {
+            "show": false,
+            "scale": 0.1
+        },
+        "react": {
+            "opacityDefault": 0.75,
+            "opacityOnHover": 0.2
+        }
+    });
+</script>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <!-- Baidu Analytics -->
+    <script defer>
+      if (!Fluid.ctx.dnt) {
+        var _hmt = _hmt || [];
+        (function() {
+          var hm = document.createElement("script");
+          hm.src = "https://hm.baidu.com/hm.js?bfff735c897eb60ea49b735096b20e47";
+          var s = document.getElementsByTagName("script")[0];
+          s.parentNode.insertBefore(hm, s);
+        })();
+      }
+    </script>
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.0/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      headingSelector : CONFIG.toc.headingSelector || 'h1,h2,h3,h4,h5,h6',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      collapseDepth   : CONFIG.toc.collapseDepth || 0,
+      scrollSmooth    : true,
+      headingsOffset  : -boardTop
+    });
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+  });
+</script>
+
+
+  <script>
+  (function() {
+    var enableLang = CONFIG.code_language.enable && CONFIG.code_language.default;
+    var enableCopy = CONFIG.copy_btn;
+    if (!enableLang && !enableCopy) {
+      return;
+    }
+
+    function getBgClass(ele) {
+      return Fluid.utils.getBackgroundLightness(ele) >= 0 ? 'code-widget-light' : 'code-widget-dark';
+    }
+
+    var copyTmpl = '';
+    copyTmpl += '<div class="code-widget">';
+    copyTmpl += 'LANG';
+    copyTmpl += '</div>';
+    jQuery('.markdown-body pre').each(function() {
+      var $pre = jQuery(this);
+      if ($pre.find('code.mermaid').length > 0) {
+        return;
+      }
+      if ($pre.find('span.line').length > 0) {
+        return;
+      }
+
+      var lang = '';
+
+      if (enableLang) {
+        lang = CONFIG.code_language.default;
+        if ($pre[0].children.length > 0 && $pre[0].children[0].classList.length >= 2 && $pre.children().hasClass('hljs')) {
+          lang = $pre[0].children[0].classList[1];
+        } else if ($pre[0].getAttribute('data-language')) {
+          lang = $pre[0].getAttribute('data-language');
+        } else if ($pre.parent().hasClass('sourceCode') && $pre[0].children.length > 0 && $pre[0].children[0].classList.length >= 2) {
+          lang = $pre[0].children[0].classList[1];
+          $pre.parent().addClass('code-wrapper');
+        } else if ($pre.parent().hasClass('markdown-body') && $pre[0].classList.length === 0) {
+          $pre.wrap('<div class="code-wrapper"></div>');
+        }
+        lang = lang.toUpperCase().replace('NONE', CONFIG.code_language.default);
+      }
+      $pre.append(copyTmpl.replace('LANG', lang).replace('code-widget">',
+        getBgClass($pre[0]) + (enableCopy ? ' code-widget copy-btn" data-clipboard-snippet><i class="iconfont icon-copy"></i>' : ' code-widget">')));
+
+      if (enableCopy) {
+        Fluid.utils.createScript('https://lib.baomitu.com/clipboard.js/2.0.10/clipboard.min.js', function() {
+          var clipboard = new window.ClipboardJS('.copy-btn', {
+            target: function(trigger) {
+              var nodes = trigger.parentNode.childNodes;
+              for (var i = 0; i < nodes.length; i++) {
+                if (nodes[i].tagName === 'CODE') {
+                  return nodes[i];
+                }
+              }
+            }
+          });
+          clipboard.on('success', function(e) {
+            e.clearSelection();
+            e.trigger.innerHTML = e.trigger.innerHTML.replace('icon-copy', 'icon-success');
+            setTimeout(function() {
+              e.trigger.innerHTML = e.trigger.innerHTML.replace('icon-success', 'icon-copy');
+            }, 2000);
+          });
+        });
+      }
+    });
+  })();
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

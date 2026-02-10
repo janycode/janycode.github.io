@@ -1,0 +1,918 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=light>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Jerry(姜源)">
+  <meta name="keywords" content="Java,Html,CSS,JavaScript,Python,C,Linux,shell编程经验分享、技术总结、心得体会">
+  
+    <meta name="description" content="参考资料: https:&#x2F;&#x2F;developer.aliyun.com&#x2F;topic&#x2F;java20 参考资料：https:&#x2F;&#x2F;blog.csdn.net&#x2F;ming1215919&#x2F;article&#x2F;details&#x2F;114799184 线程池线程池的工作主要是控制运行的线程的数量，处理过程中将任务放入队列，然后在线程创建后启动这些任务，如果线程数量超过了最大数量，那么超出数量的线程排队等候，等其他线程执行完">
+<meta property="og:type" content="article">
+<meta property="og:title" content="08-线程池ThreadPoolExecutor">
+<meta property="og:url" content="https://janycode.github.io/2020/03/17/02_%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/01_Java/01_JavaSE/05_%E5%B9%B6%E5%8F%91%E5%92%8C%E9%94%81/08-%E7%BA%BF%E7%A8%8B%E6%B1%A0ThreadPoolExecutor/index.html">
+<meta property="og:site_name" content="姜源の云笔记">
+<meta property="og:description" content="参考资料: https:&#x2F;&#x2F;developer.aliyun.com&#x2F;topic&#x2F;java20 参考资料：https:&#x2F;&#x2F;blog.csdn.net&#x2F;ming1215919&#x2F;article&#x2F;details&#x2F;114799184 线程池线程池的工作主要是控制运行的线程的数量，处理过程中将任务放入队列，然后在线程创建后启动这些任务，如果线程数量超过了最大数量，那么超出数量的线程排队等候，等其他线程执行完">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230716213712.png">
+<meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230316140045.gif">
+<meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20200818082018.png">
+<meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20200818081924.png">
+<meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20200818081944.png">
+<meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20220320092926.png">
+<meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230716221235.png">
+<meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20220320092515.png">
+<meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20220320094552.png">
+<meta property="article:published_time" content="2020-03-17T08:32:14.000Z">
+<meta property="article:modified_time" content="2026-02-10T09:21:29.824Z">
+<meta property="article:author" content="Jerry(姜源)">
+<meta property="article:tag" content="线程池">
+<meta property="article:tag" content="JavaSE">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230716213712.png">
+  
+  
+    <meta name="referrer" content="no-referrer-when-downgrade">
+  
+  
+  <title>08-线程池ThreadPoolExecutor - 姜源の云笔记</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"janycode.github.io","root":"/","version":"1.9.0","typing":{"enable":true,"typeSpeed":50,"cursorChar":"|","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":false},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":"bfff735c897eb60ea49b735096b20e47","google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+
+  
+<meta name="generator" content="Hexo 6.2.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 50vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>姜源の云笔记</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tools/">
+                <i class="iconfont icon-slack-fill"></i>
+                工具
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" target="_blank" rel="noopener" href="https://yuancodes.github.io/">
+                <i class="iconfont icon-notebook"></i>
+                Docsify
+              </a>
+            </li>
+          
+        
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="08-线程池ThreadPoolExecutor"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-author" aria-hidden="true"></i>
+        Jerry(姜源)
+      </span>
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2020-03-17 16:32" pubdate>
+          星期二, 2020/03/17 16:32:14
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          <!-- compatible with older versions-->
+          3.4k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          <!-- compatible with older versions-->
+          29 分钟
+        
+      </span>
+    
+
+    
+    
+      
+        <span id="busuanzi_container_page_pv" style="display: none">
+          <i class="iconfont icon-eye" aria-hidden="true"></i>
+          <span id="busuanzi_value_page_pv"></span> 次
+        </span>
+        
+      
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">08-线程池ThreadPoolExecutor</h1>
+            
+            <div class="markdown-body">
+              
+              <p>参考资料: <a target="_blank" rel="noopener" href="https://developer.aliyun.com/topic/java20">https://developer.aliyun.com/topic/java20</a></p>
+<p>参考资料：<a target="_blank" rel="noopener" href="https://blog.csdn.net/ming1215919/article/details/114799184">https://blog.csdn.net/ming1215919/article/details/114799184</a></p>
+<h3 id="线程池"><a href="#线程池" class="headerlink" title="线程池"></a>线程池</h3><p>线程池的工作主要是控制运行的线程的数量，处理过程中将任务放入队列，然后在线程创建后启动这些任务，如果线程数量超过了最大数量，那么超出数量的线程排队等候，等其他线程执行完毕再从队列中取出任务来执行。</p>
+<p>在开发过程中，合理地使用线程池能够带来3个好处：</p>
+<ul>
+<li><p><strong>降低资源消耗。</strong>通过重复利用已创建的线程降低线程创建和销毁造成的消耗；</p>
+</li>
+<li><p><strong>提高响应速度。</strong>当任务到达时，任务可以不需要等到线程创建就能立即执行；</p>
+</li>
+<li><p><strong>提高线程的可管理性。</strong>线程如果无限制地创建，不仅会消耗系统资源，还会降低系统的稳定性，使用线程池可以进行统一分配、调优和监控。</p>
+</li>
+</ul>
+<p>原理：</p>
+<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230716213712.png" srcset="/img/loading.gif" lazyload alt="image-20230716213710862"></p>
+<p>整个过程就像下面这个有趣的动画：</p>
+<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230316140045.gif" srcset="/img/loading.gif" lazyload alt="d38d89315298edf89732cd931ad145b9"></p>
+<blockquote>
+<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20200818082018.png" srcset="/img/loading.gif" lazyload alt="image-20200818082017332"></p>
+<p>OOM: Out Of Memory.</p>
+</blockquote>
+<h4 id="ThreadPoolExecutor"><a href="#ThreadPoolExecutor" class="headerlink" title="ThreadPoolExecutor"></a>ThreadPoolExecutor</h4><p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20200818081924.png" srcset="/img/loading.gif" lazyload alt="image-20200818081923059"></p>
+<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20200818081944.png" srcset="/img/loading.gif" lazyload alt="image-20200818081943000"></p>
+<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20220320092926.png" srcset="/img/loading.gif" lazyload alt="image-20220320092924604"></p>
+<blockquote>
+<p>参数 6 threadFactory 和 7 handler 为可选参数，有其默认值。</p>
+</blockquote>
+<p>1）<code>corePoolSize</code>：线程池的核心线程数，定义了最小可以同时运行的线程数量。</p>
+<p>2）<code>maximumPoolSize</code>：线程池的最大线程数，队列中存放的任务达到队列容量时，当前可以同时运行的线程数量变为最大线程数。</p>
+<p>3）<code>keepAliveTime</code>：当线程池中的线程数量大于corePoolSize时，如果没有新任务提交，核心线程外的线程不会立即销毁，而是会等待，直到等待的时间超过了KeepAliveTime才会被回收销毁。</p>
+<p>4）<code>unit</code>：keepAliveTime参数的时间单位，包括DAYS、HOURS、MINUTES、MILLISECONDS等。</p>
+<p>5）<code>workQueue</code>：用于保存等待执行任务的阻塞队列。可以选择以下集个阻塞队列：</p>
+<ul>
+<li><strong>ArrayBlockingQueue</strong>：是一个基于<a href="">数组结构</a>的阻塞队列，此队列按FIFO原则对元素进行排序；</li>
+<li><strong>LinkedBlockingQueue</strong>：是一个基于<a href="">链表结构</a>的阻塞队列，此队列按FIFO排序元素，吞吐量通常高于ArrayBlockingQueue。静态工厂方法 Executors.newFixedThreadPool() 使用了这个队列；</li>
+<li><strong>SynchronousQueue</strong>：一个<a href="">不存储元素</a>的阻塞队列。每个插入操作必须等到另一个线程调用移除操作，否则插入操作一直处于阻塞状态，吞吐量常高于 LinkedBlockingQueue ，静态工厂方法Executors.newCachedThreadPool() 使用了这个队列；</li>
+<li><strong>PriorityBlockingQueue</strong>：一个具有<a href="">优先级的无限</a>阻塞队列。</li>
+</ul>
+<p>6）<code>threadFactory</code>：用于设置创建线程的工厂，可以通过工厂给每个创造出来的线程设置更有意义的名字。使用开源框架guava提供的ThreadFactoryBuilder可以快速给线程池里的线程设置有意义的名字：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-comment">//使用guava设置线程池名字</span><br><span class="hljs-keyword">new</span> <span class="hljs-title class_">ThreadFactoryBuilder</span>().setNameFormat(<span class="hljs-string">&quot;XX-task-%d&quot;</span>).build(),<br><span class="hljs-comment">//或使用的是 new ThreadFactory(), 精简为lambda表达式</span><br>r -&gt; <span class="hljs-keyword">new</span> <span class="hljs-title class_">Thread</span>(r, <span class="hljs-string">&quot;XX_Thread_&quot;</span> + r.hashCode()),<br></code></pre></td></tr></table></figure>
+
+<p>7）<code>handler</code>：拒绝策略。若当前同时运行的线程数量达到最大线程数量并且队列已经被放满，则执行拒绝策略。ThreadPoolExecutor 定义了一些饱和策略：</p>
+<ul>
+<li><strong>ThreadPoolExecutor.AbortPolicy</strong>：直接抛出RejectedExecutionException异常来<a href="">拒绝处理</a>新任务；</li>
+<li><strong>ThreadPoolExecutor.CallerRunsPolicy</strong>：只用<a href="">调用者所在的线程来运行</a>任务，会降低新任务的提交速度，影响程序的整体性能。</li>
+<li><strong>ThreadPoolExecutor.DiscardPolicy</strong>：不处理新任务，直接<a href="">丢弃</a>掉。</li>
+<li><strong>ThreadPoolExecutor.DiscardOldestPolicy</strong>：<a href="">丢弃队列中最近</a>的一个任务，执行当前任务。</li>
+</ul>
+<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230716221235.png" srcset="/img/loading.gif" lazyload alt="image-20230716221234384"></p>
+<h4 id="原理"><a href="#原理" class="headerlink" title="原理"></a>原理</h4><p>ThreadPoolExecutor执行execute()方法原理：</p>
+<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20220320092515.png" srcset="/img/loading.gif" lazyload alt="image-20220320092514228"></p>
+<h4 id="使用"><a href="#使用" class="headerlink" title="使用"></a>使用</h4><ol>
+<li>向线程池提交任务</li>
+</ol>
+<ul>
+<li><p><strong>execute()方法用于像线程池提交不需要返回值的任务</strong></p>
+<p>所以无法判断任务是否被线程池执行成功。</p>
+</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs java">executor.execute(<span class="hljs-keyword">new</span> <span class="hljs-title class_">Runnable</span>() &#123;<br>    <span class="hljs-meta">@Override</span> <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">run</span><span class="hljs-params">()</span> &#123;<br>        <span class="hljs-comment">// TODO </span><br>    &#125;<br>&#125;);<br></code></pre></td></tr></table></figure>
+
+<ul>
+<li><p><strong>submit()方法用于提交需要返回值的任务。</strong></p>
+<p>线程池会返回一个future类型的对象，通过这个future对象可以判断任务是否执行成功，并且可以通过future的get()方法获取返回值，get()方法会阻塞当前线程直到任务完成，而使用get(long timeout, TimeUnit unit)方法则会阻塞当前线程一段时间后立即返回，这时有可能任务还没有执行完。</p>
+</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs java">Future&lt;T&gt; future = executor.submit(hasReturnValueTask);<br><span class="hljs-keyword">try</span> &#123;<br>    <span class="hljs-type">T</span> <span class="hljs-variable">s</span> <span class="hljs-operator">=</span> future.get();<br>&#125; <span class="hljs-keyword">catch</span> (InterruptedExecption | ExecutortionExcception e) &#123;<br>    <span class="hljs-comment">// 处理异常</span><br>    e.printStackTrace();<br>&#125; <span class="hljs-keyword">finally</span> &#123;<br>    <span class="hljs-comment">// 关闭线程池</span><br>    executor.shutdown();<br>&#125;<br></code></pre></td></tr></table></figure>
+
+
+
+<ol start="2">
+<li>关闭线程池</li>
+</ol>
+<p>可以使用线程池的<code>shutdown</code>或 shutdownNow 方法来关闭线程池。其原理在于遍历线程池中的工作线程，然后逐个调用线程的interrupt方法来中断线程，所以无法响应中断的任务可能无法终止。</p>
+<p>二者区别在于：shutdownNow方法首先将线程池状态设置为STOP，然后尝试停止所有正在执行或暂停任务的线程，并返回等到执行任务的列表，而shutdown只是将线程池的状态设置为SHUTDOWN状态，然后中断所有没有正在执行任务的线程。</p>
+<ol start="3">
+<li>合理配置线程池</li>
+</ol>
+<p>查看当前设备的CPU核数：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs java">Runtime.getRuntime().availableProcessors();<br></code></pre></td></tr></table></figure>
+
+<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20220320094552.png" srcset="/img/loading.gif" lazyload alt="image-20220320094550957"></p>
+<ul>
+<li><p>CPU密集型任务</p>
+<p>任务需要大量的运算，而没有阻塞，CPU一直全速运行，CPU密集型任务配置尽可能的少的线程数量，来尽可能压榨CPU的运算能力。</p>
+<p>公式：<code>CPU核数 + 1</code> 个线程的线程池。</p>
+</li>
+<li><p>IO密集型任务</p>
+<p>数据库交互，文件上传下载，网络传输等。</p>
+<p>方法一：由于IO密集型任务线程并不是一直在执行任务，可以多分配一点线程数，如<code>CPU核数*2</code>。</p>
+<p>方法二：任务需要大量的IO，即大量的阻塞。在单线程上运IO密集型的任务会导致浪费大量的CPU运算能力浪费在等待。所以在IO密集型任务中使用多线程可以大大的加速程序运行，即使在单核CPU上，这种加速主要就是利用了被浪费掉的阻塞时间。</p>
+<p>公式：<code>CPU核数/(1-阻塞系数)</code>，其中阻塞系数在0.8-0.9之间(比如8核CPU：8&#x2F;(1 - 0.9)&#x3D;80个线程数)。</p>
+</li>
+</ul>
+<blockquote>
+<p>《Java并发编程实战》的作者 Brain Goetz 推荐的计算方法：</p>
+<ul>
+<li>线程数 &#x3D; <code>CPU核数 * (1 + 平均等待时间 / 平均工作时间)</code></li>
+</ul>
+</blockquote>
+<p>在I&#x2F;O密集型的逻辑处理中，当线程池的数量定义得太小时，会导致请求的频繁失败，原因如下：</p>
+<ol>
+<li><strong>阻塞IO操作</strong>：I&#x2F;O密集型的任务通常会涉及到与外部资源（如数据库、网络等）的交互，这些操作往往是阻塞的，即线程在执行这些操作时会被阻塞，等待操作完成。如果线程池中的线程数量过小，无法满足并发请求的需求，导致请求被阻塞等待可用的线程，从而导致请求的频繁失败。</li>
+<li><strong>请求堆积</strong>：当线程池中的线程数量不足以处理并发请求时，新的请求会被放入线程池的等待队列中等待执行。如果等待队列的容量有限，而请求的到达速度过快，超过了线程池的处理能力，那么请求会被拒绝或者丢弃，从而导致请求的频繁失败。</li>
+<li><strong>线程资源耗尽</strong>：线程池中的线程数量有限，如果线程池的数量定义得太小，而请求的到达速度过快，超过了线程池的处理能力，那么线程资源会很快耗尽。当所有的线程都被占用时，新的请求无法得到处理，从而导致请求的频繁失败。</li>
+</ol>
+
+              
+            </div>
+            <hr/>
+            <div>
+              <div>
+  <img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20241112163319.png" srcset="/img/loading.gif" lazyload>
+</div>
+<div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/02-%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/" class="category-chain-item">02_编程语言</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/02-%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/01-Java/" class="category-chain-item">01_Java</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/02-%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/01-Java/01-JavaSE/" class="category-chain-item">01_JavaSE</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/02-%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/01-Java/01-JavaSE/05-%E5%B9%B6%E5%8F%91%E5%92%8C%E9%94%81/" class="category-chain-item">05_并发和锁</a>
+  
+  
+
+  
+
+  
+
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/%E7%BA%BF%E7%A8%8B%E6%B1%A0/">#线程池</a>
+      
+        <a href="/tags/JavaSE/">#JavaSE</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>08-线程池ThreadPoolExecutor</div>
+      <div>https://janycode.github.io/2020/03/17/02_编程语言/01_Java/01_JavaSE/05_并发和锁/08-线程池ThreadPoolExecutor/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Jerry(姜源)</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2020年3月17日</div>
+        </div>
+      
+      
+      <div class="license-meta-item">
+        <div>许可协议</div>
+        <div>
+          
+            
+            
+              <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+              <span class="hint--top hint--rounded" aria-label="BY - 姜源">
+                <i class="iconfont icon-by"></i>
+              </span>
+              </a>
+            
+          
+        </div>
+      </div>
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2020/03/17/21_%E4%BB%A3%E7%A0%81%E7%89%87%E6%AE%B5/02_%E9%85%8D%E7%BD%AE%E7%B1%BB/03-ThreadPoolConfig/" title="03-ThreadPoolTaskConfig">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">03-ThreadPoolTaskConfig</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2020/03/07/01_%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/03_%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/03-%E6%B5%8F%E8%A7%88%E5%99%A8%E8%BE%93%E5%85%A5URL%E5%B9%B6%E5%9B%9E%E8%BD%A6%E9%83%BD%E5%8F%91%E7%94%9F%E4%BA%86%E4%BB%80%E4%B9%88/" title="03-浏览器输入URL并回车都发生了什么">
+                        <span class="hidden-mobile">03-浏览器输入URL并回车都发生了什么</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+  <article id="comments" lazyload>
+    
+  <div id="SOHUCS" sid='https://janycode.github.io/2020/03/17/02_%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/01_Java/01_JavaSE/05_%E5%B9%B6%E5%8F%91%E5%92%8C%E9%94%81/08-%E7%BA%BF%E7%A8%8B%E6%B1%A0ThreadPoolExecutor/'></div>
+  <script type="text/javascript">
+    Fluid.utils.loadComments('#SOHUCS', function() {
+      Fluid.utils.createScript("https://changyan.sohu.com/upload/changyan.js", function() {
+        window.changyan.api.config({"appid":"cyw5OHIcO","appkey":"fea3446b3df4b3f129f34da4cbc87e51"})
+      });
+    });
+  </script>
+  <noscript>Please enable JavaScript to view the comments</noscript>
+
+
+  </article>
+
+
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://simple.blog.csdn.net" target="_blank" rel="nofollow noopener"><span>CSDN</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/janycode" target="_blank" rel="nofollow noopener"><span>GitHub</span></a> <i class="iconfont icon-love"></i> <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="busuanzi_container_site_pv" style="display: none">
+        总访问量(PV) 
+        <span id="busuanzi_value_site_pv"></span>
+         次，
+      </span>
+    
+    
+      <span id="busuanzi_container_site_uv" style="display: none">
+        总访客数(UV) 
+        <span id="busuanzi_value_site_uv"></span>
+         人
+      </span>
+    
+    
+  
+</div>
+
+  
+  
+  
+</div>
+
+<!-- live2d 动画 -->
+<script src="https://eqcn.ajz.miesnfu.com/wp-content/plugins/wp-3d-pony/live2dw/lib/L2Dwidget.min.js"></script>
+<script>
+    L2Dwidget.init({
+        "model": {
+            jsonPath: "https://unpkg.com/live2d-widget-model-haruto@1.0.5/assets/haruto.model.json",
+            "scale": 1
+        },
+        "display": {
+            "position": "right",
+            "width": 100,
+            "height": 200,
+            "hOffset": 35,
+            "vOffset": -85
+        },
+        "mobile": {
+            "show": false,
+            "scale": 0.1
+        },
+        "react": {
+            "opacityDefault": 0.75,
+            "opacityOnHover": 0.2
+        }
+    });
+</script>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <!-- Baidu Analytics -->
+    <script defer>
+      if (!Fluid.ctx.dnt) {
+        var _hmt = _hmt || [];
+        (function() {
+          var hm = document.createElement("script");
+          hm.src = "https://hm.baidu.com/hm.js?bfff735c897eb60ea49b735096b20e47";
+          var s = document.getElementsByTagName("script")[0];
+          s.parentNode.insertBefore(hm, s);
+        })();
+      }
+    </script>
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.0/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      headingSelector : CONFIG.toc.headingSelector || 'h1,h2,h3,h4,h5,h6',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      collapseDepth   : CONFIG.toc.collapseDepth || 0,
+      scrollSmooth    : true,
+      headingsOffset  : -boardTop
+    });
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+  });
+</script>
+
+
+  <script>
+  (function() {
+    var enableLang = CONFIG.code_language.enable && CONFIG.code_language.default;
+    var enableCopy = CONFIG.copy_btn;
+    if (!enableLang && !enableCopy) {
+      return;
+    }
+
+    function getBgClass(ele) {
+      return Fluid.utils.getBackgroundLightness(ele) >= 0 ? 'code-widget-light' : 'code-widget-dark';
+    }
+
+    var copyTmpl = '';
+    copyTmpl += '<div class="code-widget">';
+    copyTmpl += 'LANG';
+    copyTmpl += '</div>';
+    jQuery('.markdown-body pre').each(function() {
+      var $pre = jQuery(this);
+      if ($pre.find('code.mermaid').length > 0) {
+        return;
+      }
+      if ($pre.find('span.line').length > 0) {
+        return;
+      }
+
+      var lang = '';
+
+      if (enableLang) {
+        lang = CONFIG.code_language.default;
+        if ($pre[0].children.length > 0 && $pre[0].children[0].classList.length >= 2 && $pre.children().hasClass('hljs')) {
+          lang = $pre[0].children[0].classList[1];
+        } else if ($pre[0].getAttribute('data-language')) {
+          lang = $pre[0].getAttribute('data-language');
+        } else if ($pre.parent().hasClass('sourceCode') && $pre[0].children.length > 0 && $pre[0].children[0].classList.length >= 2) {
+          lang = $pre[0].children[0].classList[1];
+          $pre.parent().addClass('code-wrapper');
+        } else if ($pre.parent().hasClass('markdown-body') && $pre[0].classList.length === 0) {
+          $pre.wrap('<div class="code-wrapper"></div>');
+        }
+        lang = lang.toUpperCase().replace('NONE', CONFIG.code_language.default);
+      }
+      $pre.append(copyTmpl.replace('LANG', lang).replace('code-widget">',
+        getBgClass($pre[0]) + (enableCopy ? ' code-widget copy-btn" data-clipboard-snippet><i class="iconfont icon-copy"></i>' : ' code-widget">')));
+
+      if (enableCopy) {
+        Fluid.utils.createScript('https://lib.baomitu.com/clipboard.js/2.0.10/clipboard.min.js', function() {
+          var clipboard = new window.ClipboardJS('.copy-btn', {
+            target: function(trigger) {
+              var nodes = trigger.parentNode.childNodes;
+              for (var i = 0; i < nodes.length; i++) {
+                if (nodes[i].tagName === 'CODE') {
+                  return nodes[i];
+                }
+              }
+            }
+          });
+          clipboard.on('success', function(e) {
+            e.clearSelection();
+            e.trigger.innerHTML = e.trigger.innerHTML.replace('icon-copy', 'icon-success');
+            setTimeout(function() {
+              e.trigger.innerHTML = e.trigger.innerHTML.replace('icon-success', 'icon-copy');
+            }, 2000);
+          });
+        });
+      }
+    });
+  })();
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

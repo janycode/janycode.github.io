@@ -1,0 +1,841 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=light>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Jerry(姜源)">
+  <meta name="keywords" content="Java,Html,CSS,JavaScript,Python,C,Linux,shell编程经验分享、技术总结、心得体会">
+  
+    <meta name="description" content="在开发系统订单模块时，发现每个实体类都包含create_time、update_by等重复字段（或者开发SAAS平台时通过表字段维护租户id信息时）。手动维护这些字段不仅效率低下，还容易出错。 这是一套经过生产验证的自动化方案，涵盖MyBatis-Plus、AOP、JWT等六种核心策略，彻底解决公共字段维护的烦恼。 一、痛点分析：公共字段维护的困境典型问题场景123456789101112131">
+<meta property="og:type" content="article">
+<meta property="og:title" content="04-公共字段自动填充的逻辑设计">
+<meta property="og:url" content="https://janycode.github.io/2025/06/01/17_%E9%A1%B9%E7%9B%AE%E8%AE%BE%E8%AE%A1/03_%E5%9C%BA%E6%99%AF%E8%AE%BE%E8%AE%A1/04-%E5%85%AC%E5%85%B1%E5%AD%97%E6%AE%B5%E8%87%AA%E5%8A%A8%E5%A1%AB%E5%85%85%E7%9A%84%E9%80%BB%E8%BE%91%E8%AE%BE%E8%AE%A1/index.html">
+<meta property="og:site_name" content="姜源の云笔记">
+<meta property="og:description" content="在开发系统订单模块时，发现每个实体类都包含create_time、update_by等重复字段（或者开发SAAS平台时通过表字段维护租户id信息时）。手动维护这些字段不仅效率低下，还容易出错。 这是一套经过生产验证的自动化方案，涵盖MyBatis-Plus、AOP、JWT等六种核心策略，彻底解决公共字段维护的烦恼。 一、痛点分析：公共字段维护的困境典型问题场景123456789101112131">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20250527141843.png">
+<meta property="article:published_time" content="2025-06-01T14:55:54.000Z">
+<meta property="article:modified_time" content="2026-02-10T09:21:30.346Z">
+<meta property="article:author" content="Jerry(姜源)">
+<meta property="article:tag" content="公共字段">
+<meta property="article:tag" content="逻辑设计">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20250527141843.png">
+  
+  
+    <meta name="referrer" content="no-referrer-when-downgrade">
+  
+  
+  <title>04-公共字段自动填充的逻辑设计 - 姜源の云笔记</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"janycode.github.io","root":"/","version":"1.9.0","typing":{"enable":true,"typeSpeed":50,"cursorChar":"|","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":false},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":"bfff735c897eb60ea49b735096b20e47","google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+
+  
+<meta name="generator" content="Hexo 6.2.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 50vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>姜源の云笔记</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tools/">
+                <i class="iconfont icon-slack-fill"></i>
+                工具
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" target="_blank" rel="noopener" href="https://yuancodes.github.io/">
+                <i class="iconfont icon-notebook"></i>
+                Docsify
+              </a>
+            </li>
+          
+        
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="04-公共字段自动填充的逻辑设计"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-author" aria-hidden="true"></i>
+        Jerry(姜源)
+      </span>
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2025-06-01 22:55" pubdate>
+          星期日, 2025/06/01 22:55:54
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          <!-- compatible with older versions-->
+          6.5k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          <!-- compatible with older versions-->
+          55 分钟
+        
+      </span>
+    
+
+    
+    
+      
+        <span id="busuanzi_container_page_pv" style="display: none">
+          <i class="iconfont icon-eye" aria-hidden="true"></i>
+          <span id="busuanzi_value_page_pv"></span> 次
+        </span>
+        
+      
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">04-公共字段自动填充的逻辑设计</h1>
+            
+            <div class="markdown-body">
+              
+              <p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20250527141843.png" srcset="/img/loading.gif" lazyload alt="image-20250527141834683"></p>
+<p>在开发系统订单模块时，发现每个实体类都包含create_time、update_by等重复字段（或者开发SAAS平台时通过表字段维护租户id信息时）。手动维护这些字段不仅效率低下，还容易出错。</p>
+<p>这是一套经过生产验证的自动化方案，涵盖MyBatis-Plus、AOP、JWT等六种核心策略，彻底解决公共字段维护的烦恼。</p>
+<h2 id="一、痛点分析：公共字段维护的困境"><a href="#一、痛点分析：公共字段维护的困境" class="headerlink" title="一、痛点分析：公共字段维护的困境"></a>一、痛点分析：公共字段维护的困境</h2><h3 id="典型问题场景"><a href="#典型问题场景" class="headerlink" title="典型问题场景"></a>典型问题场景</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-comment">// 订单创建逻辑</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">createOrder</span><span class="hljs-params">(OrderDTO dto)</span>&#123;<br>    <span class="hljs-type">Order</span> <span class="hljs-variable">order</span> <span class="hljs-operator">=</span> convertToEntity(dto);<br>    <br>    <span class="hljs-comment">// 手动设置公共字段</span><br>    order.setCreateTime(LocalDateTime.now());<br>    order.setUpdateTime(LocalDateTime.now());<br>    order.setCreateUser(getCurrentUser());<br>    order.setUpdateUser(getCurrentUser());<br>    <br>    orderMapper.insert(order);<br>&#125;<br><br><span class="hljs-comment">// 订单更新逻辑 </span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">updateOrder</span><span class="hljs-params">(OrderDTO dto)</span>&#123;<br>    <span class="hljs-type">Order</span> <span class="hljs-variable">order</span> <span class="hljs-operator">=</span> convertToEntity(dto);<br>    <br>    <span class="hljs-comment">// 重复设置逻辑</span><br>    order.setUpdateTime(LocalDateTime.now());<br>    order.setUpdateUser(getCurrentUser());<br>    <br>    orderMapper.updateById(order);<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>痛点总结：</p>
+<ul>
+<li>代码重复率高（每个Service方法都要设置）</li>
+<li>维护成本高（字段变更需修改多处）</li>
+<li>容易遗漏（特别是更新操作）</li>
+</ul>
+<h2 id="二、基础方案：MyBatis-Plus自动填充"><a href="#二、基础方案：MyBatis-Plus自动填充" class="headerlink" title="二、基础方案：MyBatis-Plus自动填充"></a>二、基础方案：MyBatis-Plus自动填充</h2><h3 id="2-1-配置元对象处理器"><a href="#2-1-配置元对象处理器" class="headerlink" title="2.1 配置元对象处理器"></a>2.1 配置元对象处理器</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@Slf4j</span><br><span class="hljs-meta">@Component</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">AutoFillHandlerimplementsMetaObjectHandler</span>&#123;<br>    <br>    <span class="hljs-comment">// 插入时自动填充</span><br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">insertFill</span><span class="hljs-params">(MetaObject metaObject)</span>&#123;<br>        <span class="hljs-built_in">this</span>.strictInsertFill(metaObject, <span class="hljs-string">&quot;createTime&quot;</span>, LocalDateTime.class, LocalDateTime.now());<br>        <span class="hljs-built_in">this</span>.strictInsertFill(metaObject, <span class="hljs-string">&quot;createUser&quot;</span>, String.class, getCurrentUser());<br>        <span class="hljs-built_in">this</span>.strictUpdateFill(metaObject, <span class="hljs-string">&quot;updateTime&quot;</span>, LocalDateTime.class, LocalDateTime.now());<br>        <span class="hljs-built_in">this</span>.strictUpdateFill(metaObject, <span class="hljs-string">&quot;updateUser&quot;</span>, String.class, getCurrentUser());<br>    &#125;<br><br>    <span class="hljs-comment">// 更新时自动填充</span><br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">updateFill</span><span class="hljs-params">(MetaObject metaObject)</span>&#123;<br>        <span class="hljs-built_in">this</span>.strictUpdateFill(metaObject, <span class="hljs-string">&quot;updateTime&quot;</span>, LocalDateTime.class, LocalDateTime.now());<br>        <span class="hljs-built_in">this</span>.strictUpdateFill(metaObject, <span class="hljs-string">&quot;updateUser&quot;</span>, String.class, getCurrentUser());<br>    &#125;<br>    <br>    <span class="hljs-comment">// 获取当前用户（从安全上下文）</span><br>    <span class="hljs-keyword">private</span> String <span class="hljs-title function_">getCurrentUser</span><span class="hljs-params">()</span>&#123;<br>        <span class="hljs-keyword">return</span> Optional.ofNullable(SecurityContextHolder.getContext())<br>                      .map(SecurityContext::getAuthentication)<br>                      .map(Authentication::getName)<br>                      .orElse(<span class="hljs-string">&quot;system&quot;</span>);<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<h3 id="2-2-实体类注解配置"><a href="#2-2-实体类注解配置" class="headerlink" title="2.2 实体类注解配置"></a>2.2 实体类注解配置</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@Data</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">BaseEntity</span>&#123;<br>    <span class="hljs-meta">@TableField(fill = FieldFill.INSERT)</span><br>    <span class="hljs-keyword">private</span> LocalDateTime createTime;<br>    <br>    <span class="hljs-meta">@TableField(fill = FieldFill.INSERT_UPDATE)</span><br>    <span class="hljs-keyword">private</span> LocalDateTime updateTime;<br>    <br>    <span class="hljs-meta">@TableField(fill = FieldFill.INSERT)</span><br>    <span class="hljs-keyword">private</span> String createUser;<br>    <br>    <span class="hljs-meta">@TableField(fill = FieldFill.INSERT_UPDATE)</span><br>    <span class="hljs-keyword">private</span> String updateUser;<br>&#125;<br><br><span class="hljs-comment">// 订单实体继承基类</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">Order</span> <span class="hljs-keyword">extends</span> <span class="hljs-title class_">BaseEntity</span> &#123;<br>    <span class="hljs-comment">// 业务字段...</span><br>&#125;<br></code></pre></td></tr></table></figure>
+
+<h2 id="三、进阶方案：AOP统一处理"><a href="#三、进阶方案：AOP统一处理" class="headerlink" title="三、进阶方案：AOP统一处理"></a>三、进阶方案：AOP统一处理</h2><h3 id="3-1-自定义注解"><a href="#3-1-自定义注解" class="headerlink" title="3.1 自定义注解"></a>3.1 自定义注解</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@Retention(RetentionPolicy.RUNTIME)</span><br><span class="hljs-meta">@Target(ElementType.METHOD)</span><br><span class="hljs-keyword">public</span> <span class="hljs-meta">@interface</span> AutoFill &#123;<br>    OperationType <span class="hljs-title function_">value</span><span class="hljs-params">()</span>;<br>&#125;<br><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">enum</span> <span class="hljs-title class_">OperationType</span> &#123;<br>    INSERT,<br>    UPDATE<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<h3 id="3-2-切面实现"><a href="#3-2-切面实现" class="headerlink" title="3.2 切面实现"></a>3.2 切面实现</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@Aspect</span><br><span class="hljs-meta">@Component</span><br><span class="hljs-meta">@Slf4j</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">AutoFillAspect</span>&#123;<br>    <br>    <span class="hljs-meta">@Autowired</span><br>    <span class="hljs-keyword">private</span> ObjectMapper objectMapper;<br><br>    <span class="hljs-meta">@Around(&quot;@annotation(autoFill)&quot;)</span><br>    <span class="hljs-keyword">public</span> Object <span class="hljs-title function_">around</span><span class="hljs-params">(ProceedingJoinPoint pjp, AutoFill autoFill)</span><span class="hljs-keyword">throws</span> Throwable &#123;<br>        Object[] args = pjp.getArgs();<br>        <span class="hljs-keyword">for</span> (Object arg : args) &#123;<br>            <span class="hljs-keyword">if</span> (arg <span class="hljs-keyword">instanceof</span> BaseEntity) &#123;<br>                fillFields((BaseEntity) arg, autoFill.value());<br>            &#125;<br>        &#125;<br>        <span class="hljs-keyword">return</span> pjp.proceed(args);<br>    &#125;<br><br>    <span class="hljs-keyword">private</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">fillFields</span><span class="hljs-params">(BaseEntity entity, OperationType type)</span>&#123;<br>        <span class="hljs-type">String</span> <span class="hljs-variable">currentUser</span> <span class="hljs-operator">=</span> getCurrentUser();<br>        <span class="hljs-type">LocalDateTime</span> <span class="hljs-variable">now</span> <span class="hljs-operator">=</span> LocalDateTime.now();<br>        <br>        <span class="hljs-keyword">if</span> (type == OperationType.INSERT) &#123;<br>            entity.setCreateTime(now);<br>            entity.setCreateUser(currentUser);<br>        &#125;<br>        entity.setUpdateTime(now);<br>        entity.setUpdateUser(currentUser);<br>    &#125;<br>    <br>    <span class="hljs-comment">// 获取当前用户（支持多线程环境）</span><br>    <span class="hljs-keyword">private</span> String <span class="hljs-title function_">getCurrentUser</span><span class="hljs-params">()</span>&#123;<br>        <span class="hljs-keyword">return</span> Optional.ofNullable(RequestContextHolder.getRequestAttributes())<br>                      .map(attrs -&gt; (ServletRequestAttributes) attrs)<br>                      .map(ServletRequestAttributes::getRequest)<br>                      .map(req -&gt; req.getHeader(<span class="hljs-string">&quot;X-User-Id&quot;</span>))<br>                      .orElse(<span class="hljs-string">&quot;system&quot;</span>);<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<h2 id="四、生产环境最佳实践"><a href="#四、生产环境最佳实践" class="headerlink" title="四、生产环境最佳实践"></a>四、生产环境最佳实践</h2><h3 id="4-1-多数据源适配"><a href="#4-1-多数据源适配" class="headerlink" title="4.1 多数据源适配"></a>4.1 多数据源适配</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@Configuration</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">DataSourceConfig</span>&#123;<br>    <br>    <span class="hljs-meta">@Bean</span><br>    <span class="hljs-meta">@ConfigurationProperties(&quot;spring.datasource.master&quot;)</span><br>    <span class="hljs-keyword">public</span> DataSource <span class="hljs-title function_">masterDataSource</span><span class="hljs-params">()</span>&#123;<br>        <span class="hljs-keyword">return</span> DataSourceBuilder.create().build();<br>    &#125;<br>    <br>    <span class="hljs-meta">@Bean</span><br>    <span class="hljs-keyword">public</span> MetaObjectHandler <span class="hljs-title function_">metaObjectHandler</span><span class="hljs-params">()</span>&#123;<br>        returnnew <span class="hljs-title function_">MultiDataSourceAutoFillHandler</span><span class="hljs-params">()</span>;<br>    &#125;<br>&#125;<br><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">MultiDataSourceAutoFillHandlerextendsMetaObjectHandler</span>&#123;<br>    <span class="hljs-comment">// 根据当前数据源动态处理</span><br>&#125;<br></code></pre></td></tr></table></figure>
+
+<h3 id="4-2-分布式ID生成"><a href="#4-2-分布式ID生成" class="headerlink" title="4.2 分布式ID生成"></a>4.2 分布式ID生成</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">SnowflakeIdGenerator</span>&#123;<br>    <span class="hljs-comment">// 实现分布式ID生成</span><br>&#125;<br><br><span class="hljs-comment">// 在自动填充中集成</span><br><span class="hljs-meta">@Override</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">insertFill</span><span class="hljs-params">(MetaObject metaObject)</span>&#123;<br>    <span class="hljs-built_in">this</span>.strictInsertFill(metaObject, <span class="hljs-string">&quot;id&quot;</span>, String.class, <br>        idGenerator.nextId());<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<h2 id="五、避坑指南：五大常见问题"><a href="#五、避坑指南：五大常见问题" class="headerlink" title="五、避坑指南：五大常见问题"></a>五、避坑指南：五大常见问题</h2><h3 id="5-1-空指针异常防护"><a href="#5-1-空指针异常防护" class="headerlink" title="5.1 空指针异常防护"></a>5.1 空指针异常防护</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-comment">// 使用Optional处理可能为空的情况</span><br><span class="hljs-keyword">private</span> String <span class="hljs-title function_">safeGetUser</span><span class="hljs-params">()</span>&#123;<br>    <span class="hljs-keyword">return</span> Optional.ofNullable(SecurityContextHolder.getContext())<br>                 .map(SecurityContext::getAuthentication)<br>                 .map(Authentication::getPrincipal)<br>                 .map(principal -&gt; &#123;<br>                     <span class="hljs-keyword">if</span> (principal <span class="hljs-keyword">instanceof</span> UserDetails) &#123;<br>                         <span class="hljs-keyword">return</span> ((UserDetails) principal).getUsername();<br>                     &#125;<br>                     <span class="hljs-keyword">return</span> principal.toString();<br>                 &#125;)<br>                 .orElse(<span class="hljs-string">&quot;system&quot;</span>);<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<h3 id="5-2-字段覆盖问题"><a href="#5-2-字段覆盖问题" class="headerlink" title="5.2 字段覆盖问题"></a>5.2 字段覆盖问题</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-comment">// 在实体类中使用@TableField策略</span><br><span class="hljs-meta">@TableField(fill = FieldFill.INSERT, updateStrategy = FieldStrategy.NEVER)</span><br><span class="hljs-keyword">private</span> String createUser;<br></code></pre></td></tr></table></figure>
+
+<h2 id="六、性能优化方案"><a href="#六、性能优化方案" class="headerlink" title="六、性能优化方案"></a>六、性能优化方案</h2><h3 id="6-1-缓存当前用户信息"><a href="#6-1-缓存当前用户信息" class="headerlink" title="6.1 缓存当前用户信息"></a>6.1 缓存当前用户信息</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">UserContextHolder</span>&#123;<br>    privatestaticfinal ThreadLocal&lt;String&gt; userHolder = <span class="hljs-keyword">new</span> <span class="hljs-title class_">ThreadLocal</span>&lt;&gt;();<br>    <br>    publicstaticvoidsetUser(String user)&#123;<br>        userHolder.set(user);<br>    &#125;<br>    <br>    publicstatic String <span class="hljs-title function_">getUser</span><span class="hljs-params">()</span>&#123;<br>        <span class="hljs-keyword">return</span> userHolder.get();<br>    &#125;<br>    <br>    publicstaticvoidclear()&#123;<br>        userHolder.remove();<br>    &#125;<br>&#125;<br><br><span class="hljs-comment">// 在拦截器中设置</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">UserInterceptorimplementsHandlerInterceptor</span>&#123;<br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-type">boolean</span> <span class="hljs-title function_">preHandle</span><span class="hljs-params">(HttpServletRequest request, </span><br><span class="hljs-params">                            HttpServletResponse response, </span><br><span class="hljs-params">                            Object handler)</span>&#123;<br>        UserContextHolder.setUser(request.getHeader(<span class="hljs-string">&quot;X-User-Id&quot;</span>));<br>        returntrue;<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<h3 id="6-2-批量操作优化"><a href="#6-2-批量操作优化" class="headerlink" title="6.2 批量操作优化"></a>6.2 批量操作优化</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@Transactional</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">batchInsert</span><span class="hljs-params">(List&lt;Order&gt; orders)</span>&#123;<br>    <span class="hljs-comment">// 提前获取公共字段值</span><br>    <span class="hljs-type">String</span> <span class="hljs-variable">user</span> <span class="hljs-operator">=</span> getCurrentUser();<br>    <span class="hljs-type">LocalDateTime</span> <span class="hljs-variable">now</span> <span class="hljs-operator">=</span> LocalDateTime.now();<br>    <br>    orders.forEach(order -&gt; &#123;<br>        order.setCreateTime(now);<br>        order.setCreateUser(user);<br>        order.setUpdateTime(now);<br>        order.setUpdateUser(user);<br>    &#125;);<br>    <br>    orderMapper.batchInsert(orders);<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<h2 id="七、监控与审计"><a href="#七、监控与审计" class="headerlink" title="七、监控与审计"></a>七、监控与审计</h2><h3 id="7-1-审计日志集成"><a href="#7-1-审计日志集成" class="headerlink" title="7.1 审计日志集成"></a>7.1 审计日志集成</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@EntityListeners(AuditingEntityListener.class)</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">BaseEntity</span>&#123;<br>    <span class="hljs-meta">@CreatedBy</span><br>    <span class="hljs-keyword">private</span> String createUser;<br>    <br>    <span class="hljs-meta">@LastModifiedBy</span><br>    <span class="hljs-keyword">private</span> String updateUser;<br>    <br>    <span class="hljs-meta">@CreatedDate</span><br>    <span class="hljs-keyword">private</span> LocalDateTime createTime;<br>    <br>    <span class="hljs-meta">@LastModifiedDate</span><br>    <span class="hljs-keyword">private</span> LocalDateTime updateTime;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<h3 id="7-2-操作日志追踪"><a href="#7-2-操作日志追踪" class="headerlink" title="7.2 操作日志追踪"></a>7.2 操作日志追踪</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@Aspect</span><br><span class="hljs-meta">@Component</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">OperationLogAspect</span>&#123;<br>    <br>    <span class="hljs-meta">@AfterReturning(&quot;@annotation(autoFill)&quot;)</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">logOperation</span><span class="hljs-params">(AutoFill autoFill)</span>&#123;<br>        <span class="hljs-type">LogEntry</span> <span class="hljs-variable">log</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">LogEntry</span>();<br>        log.setOperator(getCurrentUser());<br>        log.setOperationType(autoFill.value().name());<br>        logService.save(log);<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p><strong>结语：</strong> 通过本文的六种方案组合使用，我们在生产环境中实现了：</p>
+<ul>
+<li>公共字段维护代码量减少90%</li>
+<li>相关Bug率下降75%</li>
+<li>新功能开发效率提升40%</li>
+</ul>
+<p><strong>最佳实践清单：</strong></p>
+<ul>
+<li>基础字段使用MyBatis-Plus自动填充</li>
+<li>复杂场景结合AOP处理</li>
+<li>分布式环境集成唯一ID生成</li>
+<li>重要操作添加审计日志</li>
+<li>定期检查字段填充策略</li>
+</ul>
+<p><strong>未来展望：</strong> 随着Spring Data JPA的演进，未来可以探索与Reactive编程的结合，实现全链路的非阻塞式自动填充。</p>
+
+              
+            </div>
+            <hr/>
+            <div>
+              <div>
+  <img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20241112163319.png" srcset="/img/loading.gif" lazyload>
+</div>
+<div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/17-%E9%A1%B9%E7%9B%AE%E8%AE%BE%E8%AE%A1/" class="category-chain-item">17_项目设计</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/17-%E9%A1%B9%E7%9B%AE%E8%AE%BE%E8%AE%A1/03-%E5%9C%BA%E6%99%AF%E8%AE%BE%E8%AE%A1/" class="category-chain-item">03_场景设计</a>
+  
+  
+
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/%E5%85%AC%E5%85%B1%E5%AD%97%E6%AE%B5/">#公共字段</a>
+      
+        <a href="/tags/%E9%80%BB%E8%BE%91%E8%AE%BE%E8%AE%A1/">#逻辑设计</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>04-公共字段自动填充的逻辑设计</div>
+      <div>https://janycode.github.io/2025/06/01/17_项目设计/03_场景设计/04-公共字段自动填充的逻辑设计/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Jerry(姜源)</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2025年6月1日</div>
+        </div>
+      
+      
+      <div class="license-meta-item">
+        <div>许可协议</div>
+        <div>
+          
+            
+            
+              <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+              <span class="hint--top hint--rounded" aria-label="BY - 姜源">
+                <i class="iconfont icon-by"></i>
+              </span>
+              </a>
+            
+          
+        </div>
+      </div>
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2025/07/05/13_%E7%AC%AC%E4%B8%89%E6%96%B9/03_OpenAI/11-%E3%80%90AI%E6%99%BA%E8%83%BD%E4%BD%93%E3%80%91Coze%20%E6%90%AD%E5%BB%BA%E4%B8%AA%E4%BA%BA%E6%97%85%E6%B8%B8%E8%A7%84%E5%88%92%E5%8A%A9%E6%89%8B%E5%AE%9E%E6%88%98%E8%AF%A6%E8%A7%A3/" title="11-【AI智能体】Coze 搭建个人旅游规划助手实战详解">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">11-【AI智能体】Coze 搭建个人旅游规划助手实战详解</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2025/05/02/06_%E6%9C%8D%E5%8A%A1%E5%99%A8/00_Server/06-Linux%E6%9C%8D%E5%8A%A1%E5%99%A8%E5%BA%94%E6%80%A5%E6%8E%92%E6%9F%A5%E5%AE%9E%E6%88%98%E6%8C%87%E5%8D%97/" title="06-Linux服务器应急排查实战指南">
+                        <span class="hidden-mobile">06-Linux服务器应急排查实战指南</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+  <article id="comments" lazyload>
+    
+  <div id="SOHUCS" sid='https://janycode.github.io/2025/06/01/17_%E9%A1%B9%E7%9B%AE%E8%AE%BE%E8%AE%A1/03_%E5%9C%BA%E6%99%AF%E8%AE%BE%E8%AE%A1/04-%E5%85%AC%E5%85%B1%E5%AD%97%E6%AE%B5%E8%87%AA%E5%8A%A8%E5%A1%AB%E5%85%85%E7%9A%84%E9%80%BB%E8%BE%91%E8%AE%BE%E8%AE%A1/'></div>
+  <script type="text/javascript">
+    Fluid.utils.loadComments('#SOHUCS', function() {
+      Fluid.utils.createScript("https://changyan.sohu.com/upload/changyan.js", function() {
+        window.changyan.api.config({"appid":"cyw5OHIcO","appkey":"fea3446b3df4b3f129f34da4cbc87e51"})
+      });
+    });
+  </script>
+  <noscript>Please enable JavaScript to view the comments</noscript>
+
+
+  </article>
+
+
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://simple.blog.csdn.net" target="_blank" rel="nofollow noopener"><span>CSDN</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/janycode" target="_blank" rel="nofollow noopener"><span>GitHub</span></a> <i class="iconfont icon-love"></i> <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="busuanzi_container_site_pv" style="display: none">
+        总访问量(PV) 
+        <span id="busuanzi_value_site_pv"></span>
+         次，
+      </span>
+    
+    
+      <span id="busuanzi_container_site_uv" style="display: none">
+        总访客数(UV) 
+        <span id="busuanzi_value_site_uv"></span>
+         人
+      </span>
+    
+    
+  
+</div>
+
+  
+  
+  
+</div>
+
+<!-- live2d 动画 -->
+<script src="https://eqcn.ajz.miesnfu.com/wp-content/plugins/wp-3d-pony/live2dw/lib/L2Dwidget.min.js"></script>
+<script>
+    L2Dwidget.init({
+        "model": {
+            jsonPath: "https://unpkg.com/live2d-widget-model-haruto@1.0.5/assets/haruto.model.json",
+            "scale": 1
+        },
+        "display": {
+            "position": "right",
+            "width": 100,
+            "height": 200,
+            "hOffset": 35,
+            "vOffset": -85
+        },
+        "mobile": {
+            "show": false,
+            "scale": 0.1
+        },
+        "react": {
+            "opacityDefault": 0.75,
+            "opacityOnHover": 0.2
+        }
+    });
+</script>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <!-- Baidu Analytics -->
+    <script defer>
+      if (!Fluid.ctx.dnt) {
+        var _hmt = _hmt || [];
+        (function() {
+          var hm = document.createElement("script");
+          hm.src = "https://hm.baidu.com/hm.js?bfff735c897eb60ea49b735096b20e47";
+          var s = document.getElementsByTagName("script")[0];
+          s.parentNode.insertBefore(hm, s);
+        })();
+      }
+    </script>
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.0/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      headingSelector : CONFIG.toc.headingSelector || 'h1,h2,h3,h4,h5,h6',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      collapseDepth   : CONFIG.toc.collapseDepth || 0,
+      scrollSmooth    : true,
+      headingsOffset  : -boardTop
+    });
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+  });
+</script>
+
+
+  <script>
+  (function() {
+    var enableLang = CONFIG.code_language.enable && CONFIG.code_language.default;
+    var enableCopy = CONFIG.copy_btn;
+    if (!enableLang && !enableCopy) {
+      return;
+    }
+
+    function getBgClass(ele) {
+      return Fluid.utils.getBackgroundLightness(ele) >= 0 ? 'code-widget-light' : 'code-widget-dark';
+    }
+
+    var copyTmpl = '';
+    copyTmpl += '<div class="code-widget">';
+    copyTmpl += 'LANG';
+    copyTmpl += '</div>';
+    jQuery('.markdown-body pre').each(function() {
+      var $pre = jQuery(this);
+      if ($pre.find('code.mermaid').length > 0) {
+        return;
+      }
+      if ($pre.find('span.line').length > 0) {
+        return;
+      }
+
+      var lang = '';
+
+      if (enableLang) {
+        lang = CONFIG.code_language.default;
+        if ($pre[0].children.length > 0 && $pre[0].children[0].classList.length >= 2 && $pre.children().hasClass('hljs')) {
+          lang = $pre[0].children[0].classList[1];
+        } else if ($pre[0].getAttribute('data-language')) {
+          lang = $pre[0].getAttribute('data-language');
+        } else if ($pre.parent().hasClass('sourceCode') && $pre[0].children.length > 0 && $pre[0].children[0].classList.length >= 2) {
+          lang = $pre[0].children[0].classList[1];
+          $pre.parent().addClass('code-wrapper');
+        } else if ($pre.parent().hasClass('markdown-body') && $pre[0].classList.length === 0) {
+          $pre.wrap('<div class="code-wrapper"></div>');
+        }
+        lang = lang.toUpperCase().replace('NONE', CONFIG.code_language.default);
+      }
+      $pre.append(copyTmpl.replace('LANG', lang).replace('code-widget">',
+        getBgClass($pre[0]) + (enableCopy ? ' code-widget copy-btn" data-clipboard-snippet><i class="iconfont icon-copy"></i>' : ' code-widget">')));
+
+      if (enableCopy) {
+        Fluid.utils.createScript('https://lib.baomitu.com/clipboard.js/2.0.10/clipboard.min.js', function() {
+          var clipboard = new window.ClipboardJS('.copy-btn', {
+            target: function(trigger) {
+              var nodes = trigger.parentNode.childNodes;
+              for (var i = 0; i < nodes.length; i++) {
+                if (nodes[i].tagName === 'CODE') {
+                  return nodes[i];
+                }
+              }
+            }
+          });
+          clipboard.on('success', function(e) {
+            e.clearSelection();
+            e.trigger.innerHTML = e.trigger.innerHTML.replace('icon-copy', 'icon-success');
+            setTimeout(function() {
+              e.trigger.innerHTML = e.trigger.innerHTML.replace('icon-success', 'icon-copy');
+            }, 2000);
+          });
+        });
+      }
+    });
+  })();
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

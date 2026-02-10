@@ -1,0 +1,1077 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=light>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Jerry(姜源)">
+  <meta name="keywords" content="Java,Html,CSS,JavaScript,Python,C,Linux,shell编程经验分享、技术总结、心得体会">
+  
+    <meta name="description" content="1、在 java 中守护线程和本地线程区别？java 中的线程分为两种：守护线程（Daemon）和用户线程（User）。 任何线程都可以设置为守护线程和用户线程，通过方法Thread.setDaemon(boolean)；true 则把该线程设置为守护线程，反之则为用户线程。Thread.setDaemon()必须在 Thread.start()之前调用，否则运行时会抛出异常。 两者的区别： 唯一">
+<meta property="og:type" content="article">
+<meta property="og:title" content="03-Thread并发问题">
+<meta property="og:url" content="https://janycode.github.io/2017/05/02/20_%E9%9D%A2%E8%AF%95%E9%97%AE%E9%A2%98/01_%E6%8A%80%E6%9C%AF%E9%97%AE%E9%A2%98/03-Thread%E5%B9%B6%E5%8F%91%E9%97%AE%E9%A2%98/index.html">
+<meta property="og:site_name" content="姜源の云笔记">
+<meta property="og:description" content="1、在 java 中守护线程和本地线程区别？java 中的线程分为两种：守护线程（Daemon）和用户线程（User）。 任何线程都可以设置为守护线程和用户线程，通过方法Thread.setDaemon(boolean)；true 则把该线程设置为守护线程，反之则为用户线程。Thread.setDaemon()必须在 Thread.start()之前调用，否则运行时会抛出异常。 两者的区别： 唯一">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2017-05-02T11:19:40.000Z">
+<meta property="article:modified_time" content="2026-02-10T09:21:30.362Z">
+<meta property="article:author" content="Jerry(姜源)">
+<meta property="article:tag" content="面试题">
+<meta name="twitter:card" content="summary_large_image">
+  
+  
+    <meta name="referrer" content="no-referrer-when-downgrade">
+  
+  
+  <title>03-Thread并发问题 - 姜源の云笔记</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"janycode.github.io","root":"/","version":"1.9.0","typing":{"enable":true,"typeSpeed":50,"cursorChar":"|","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":false},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":"bfff735c897eb60ea49b735096b20e47","google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+
+  
+<meta name="generator" content="Hexo 6.2.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 50vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>姜源の云笔记</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tools/">
+                <i class="iconfont icon-slack-fill"></i>
+                工具
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" target="_blank" rel="noopener" href="https://yuancodes.github.io/">
+                <i class="iconfont icon-notebook"></i>
+                Docsify
+              </a>
+            </li>
+          
+        
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="03-Thread并发问题"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-author" aria-hidden="true"></i>
+        Jerry(姜源)
+      </span>
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2017-05-02 19:19" pubdate>
+          星期二, 2017/05/02 19:19:40
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          <!-- compatible with older versions-->
+          23k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          <!-- compatible with older versions-->
+          192 分钟
+        
+      </span>
+    
+
+    
+    
+      
+        <span id="busuanzi_container_page_pv" style="display: none">
+          <i class="iconfont icon-eye" aria-hidden="true"></i>
+          <span id="busuanzi_value_page_pv"></span> 次
+        </span>
+        
+      
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">03-Thread并发问题</h1>
+            
+            <div class="markdown-body">
+              
+              <h3 id="1、在-java-中守护线程和本地线程区别？"><a href="#1、在-java-中守护线程和本地线程区别？" class="headerlink" title="1、在 java 中守护线程和本地线程区别？"></a>1、在 java 中守护线程和本地线程区别？</h3><p>java 中的线程分为两种：<code>守护线程</code>（Daemon）和<code>用户线程</code>（User）。</p>
+<p>任何线程都可以设置为守护线程和用户线程，通过方法<code>Thread.setDaemon(boolean)</code>；true 则把该线程设置为守护线程，反之则为用户线程。Thread.setDaemon()必须在 <code>Thread.start()之前调用，否则运行时会抛出异常</code>。</p>
+<p>两者的区别：</p>
+<p>唯一的区别是判断虚拟机(JVM)何时离开，Daemon 是为其他线程提供服务，如果全部的 User Thread 已经撤离，Daemon 没有可服务的线程，JVM 撤离。也可以理解为守护线程是 JVM 自动创建的线程（但不一定），用户线程是程序创建的线程；比如 JVM 的垃圾回收线程是一个守护线程，当所有线程已经撤离，不再产生垃圾，守护线程自然就没事可干了，当垃圾回收线程是 Java 虚拟机上仅剩的线程时，Java 虚拟机会自动离开。</p>
+<p>扩展：<code>Thread Dump 打印出来的线程信息，含有 daemon 字样的线程即为守护进程</code>，可能会有：<strong>服务守护进程、编译守护进程、windows 下的监听 Ctrl+break的守护进程、Finalizer 守护进程、引用处理守护进程、GC 守护进程</strong>。</p>
+<h3 id="2、线程与进程的区别？"><a href="#2、线程与进程的区别？" class="headerlink" title="2、线程与进程的区别？"></a>2、线程与进程的区别？</h3><p>进程是操作系统<code>分配资源的最小单元</code>，线程是操作系统<code>调度的最小单元</code>。</p>
+<p>一个程序至少有一个进程，一个进程至少有一个线程(main线程)。</p>
+<h3 id="3、什么是多线程中的上下文切换？"><a href="#3、什么是多线程中的上下文切换？" class="headerlink" title="3、什么是多线程中的上下文切换？"></a>3、什么是多线程中的上下文切换？</h3><p>多线程会共同使用一组计算机上的 CPU，而线程数大于给程序分配的 CPU 数量时，为了让各个线程都有执行的机会，就需要<code>轮转使用 CPU</code>。</p>
+<p><code>不同的线程切换使用 CPU发生的切换数据等就是上下文切换</code>。</p>
+<h3 id="4、死锁与活锁的区别，死锁与饥饿的区别？"><a href="#4、死锁与活锁的区别，死锁与饥饿的区别？" class="headerlink" title="4、死锁与活锁的区别，死锁与饥饿的区别？"></a>4、死锁与活锁的区别，死锁与饥饿的区别？</h3><p><code>死锁</code>：是指两个或两个以上的进程（或线程）在执行过程中，因争夺资源而造成的一种互相等待的现象，若无外力作用，它们都将无法推进下去。</p>
+<p>产生死锁的必要条件：</p>
+<p>1、互斥条件：所谓互斥就是进程在某一时间内独占资源。</p>
+<p>2、请求与保持条件：一个进程因请求资源而阻塞时，对已获得的资源保持不放。</p>
+<p>3、不剥夺条件: 进程已获得资源，在末使用完之前，不能强行剥夺。</p>
+<p>4、循环等待条件: 若干进程之间形成一种头尾相接的循环等待资源关系。</p>
+<p><code>活锁</code>：任务或者执行者没有被阻塞，由于某些条件没有满足，导致一直重复尝试，失败，尝试，失败。</p>
+<p>活锁和死锁的区别在于，处于活锁的实体是在不断的改变状态，所谓的“活”， 而处于死锁的实体表现为等待；<code>活锁有可能自行解开，死锁则不能</code>。</p>
+<p>饥饿：一个或者多个线程因为种种原因无法获得所需要的资源，导致一直无法执行的状态。</p>
+<p>Java 中导致饥饿的原因：</p>
+<p>1、高优先级线程吞噬所有的低优先级线程的 CPU 时间。</p>
+<p>2、线程被永久堵塞在一个等待进入同步块的状态，因为其他线程总是能在它之前持续地对该同步块进行访问。</p>
+<p>3、线程在等待一个本身也处于永久等待完成的对象(比如调用这个对象的 wait 方法)，因为其他线程总是被持续地获得唤醒。</p>
+<h3 id="5、Java-中用到的线程调度算法是什么？"><a href="#5、Java-中用到的线程调度算法是什么？" class="headerlink" title="5、Java 中用到的线程调度算法是什么？"></a>5、Java 中用到的线程调度算法是什么？</h3><p>采用<code>时间片轮转</code>的方式。可以设置线程的优先级，会映射到下层的系统上面的优先级上，如非特别需要，尽量不要用，防止线程饥饿。</p>
+<h3 id="6、什么是线程组，为什么在-Java-中不推荐使用？"><a href="#6、什么是线程组，为什么在-Java-中不推荐使用？" class="headerlink" title="6、什么是线程组，为什么在 Java 中不推荐使用？"></a>6、什么是线程组，为什么在 Java 中不推荐使用？</h3><p><code>ThreadGroup </code>类，可以把线程归属到某一个线程组中，线程组中可以有线程对象，也可以有线程组，组中还可以有线程，这样的组织结构有点类似于树的形式。</p>
+<p>为什么不推荐使用？因为使用有很多的安全隐患吧，没有具体追究，如果需要使用，推荐使用<code>线程池</code>。</p>
+<h3 id="7、为什么使用-Executor-框架？"><a href="#7、为什么使用-Executor-框架？" class="headerlink" title="7、为什么使用 Executor 框架？"></a>7、为什么使用 Executor 框架？</h3><p>每次执行任务创建线程 new Thread()比较消耗性能，创建一个线程是比较耗时、耗资源的。</p>
+<p>调用 new Thread()创建的线程缺乏管理，被称为野线程，而且可以无限制的创建，线程之间的相互竞争会导致过多占用系统资源而导致系统瘫痪，还有线程之间的频繁交替也会消耗很多系统资源。</p>
+<p>接使用 new Thread() 启动的线程不利于扩展，比如定时执行、定期执行、定时定期执行、线程中断等都不便实现。</p>
+<h3 id="8、在-Java-中-Executor-和-Executors-的区别？"><a href="#8、在-Java-中-Executor-和-Executors-的区别？" class="headerlink" title="8、在 Java 中 Executor 和 Executors 的区别？"></a>8、在 Java 中 Executor 和 Executors 的区别？</h3><p><code>Executors 工具类</code>的不同方法按照我们的需求创建了不同的线程池，来满足业务的需求。</p>
+<p><code>Executor 接口对象</code>能执行我们的线程任务。</p>
+<p><code>ExecutorService 接口</code>继承了 Executor 接口并进行了扩展，提供了更多的方法我们能获得任务执行的状态并且可以获取任务的返回值。</p>
+<p> <code>ThreadPoolExecutor </code> 可以创建自定义线程池。</p>
+<p><code>Future </code>表示异步计算的结果，他提供了检查计算是否完成的方法，以等待计算的完成，并可以使用 <code>get()</code>方法获取计算的结果。</p>
+<h3 id="9、如何在-Windows-和-Linux-上查找哪个线程使用的-CPU-时间最长？"><a href="#9、如何在-Windows-和-Linux-上查找哪个线程使用的-CPU-时间最长？" class="headerlink" title="9、如何在 Windows 和 Linux 上查找哪个线程使用的 CPU 时间最长？"></a>9、如何在 Windows 和 Linux 上查找哪个线程使用的 CPU 时间最长？</h3><p><code>Windows</code>：</p>
+<ol>
+<li><p>找到java进程对应的pid。</p>
+<p>找pid的方法是:打开任务管理器，找到详细信息中的java.exe 找到其PID</p>
+</li>
+<li><p>然后把java进程导出快照。直接运行命令。</p>
+<p>win&gt; jstack -l 3468&gt; c:&#x2F;3468.stack</p>
+<p>这里是指定把java所有的信息导出到e盘的3468.stack的文件里。</p>
+</li>
+<li><p>在windows下只能查看进程的cpu占用率，要查看线程的cpu占用率要借助其他的工具，我这里用的是微软提供的 Process Explorer v15.3</p>
+<p>下载地址<a target="_blank" rel="noopener" href="http://technet.microsoft.com/en-us/sysinternals/bb896653.aspx">http://technet.microsoft.com/en-us/sysinternals/bb896653.aspx</a></p>
+<p>百度网盘：<a target="_blank" rel="noopener" href="https://pan.baidu.com/s/1hQkdsiv5jJCP6trcqZHc6A">https://pan.baidu.com/s/1hQkdsiv5jJCP6trcqZHc6A</a> 百度提取码: 2z5h</p>
+<p>下载完后解压运行</p>
+<p> 右键点击需要查看的进程，点击右键菜单里的 properties</p>
+</li>
+<li><p>然后选择 Threads 选项卡，找到占用cpu的线程的tid，比如我这里是 12464的线程</p>
+</li>
+<li><p>把pid转换成16进制，我这里直接用系统自带的计算器转换，置于为什么要转换，是因为先前用jstack导出的信息里面线程对应的tid是16进制的。</p>
+</li>
+<li><p>最后得到的线程pid的16进制的值为 306b，在 e盘的3468.stack文件中查找 306b</p>
+</li>
+<li><p>在代码里面找到，进行针对修改。</p>
+</li>
+</ol>
+<p><code>Linux</code>:</p>
+<ol>
+<li><p>找出cpu耗用厉害的进程pid<br> 终端执行top命令，然后按下shift+p 查找出cpu利用最厉害的pid号：</p>
+</li>
+<li><p>根据上面第一步拿到的pid号，执行命令 top -H -p pid 。然后按下shift+p，查找出cpu利用率最厉害的线程号</p>
+</li>
+<li><p>将获取到的线程号转换成16进制，计算器</p>
+</li>
+<li><p>使用jstack工具将进程信息打印输出<br> $ jstack pid号 &gt; &#x2F;tmp&#x2F;t.dat</p>
+<p> $ jstack 31365 &gt; &#x2F;tmp&#x2F;t.dat</p>
+</li>
+<li><p>编辑&#x2F;tmp&#x2F;t.dat文件，查找线程号对应的信息<br> 这个就是java进程中耗用CPU频繁和严重的线程信息，可以将该信息提供给开发人员，他们会根据线程信息分析出是属于哪一块的业务内容。到这里就可以交给开发人员了，相信这样的话，处理问题的时间可以大大减少。</p>
+</li>
+</ol>
+<h3 id="10、什么是原子操作？在-Java-Concurrency-API-中有哪些原子类-atomic-classes-？"><a href="#10、什么是原子操作？在-Java-Concurrency-API-中有哪些原子类-atomic-classes-？" class="headerlink" title="10、什么是原子操作？在 Java Concurrency API 中有哪些原子类(atomic classes)？"></a>10、什么是原子操作？在 Java Concurrency API 中有哪些原子类(atomic classes)？</h3><p>原子操作（atomic operation）意为”<code>不可被中断的一个或一系列操作</code>” 。</p>
+<p>处理器使用基于对缓存加锁或总线加锁的方式来实现多处理器之间的原子操作。在 Java 中可以通过<code>锁和循环 CAS 的方式</code>来实现原子操作。 CAS 操作——Compare &amp; Swap，现在几乎所有的 CPU 指令都支持 CAS的原子操作。</p>
+<p>原子操作是指一个不受其他操作影响的操作任务单元。原子操作是在多线程环境下避免数据不一致必须的手段。</p>
+<p><code>int++并不是一个原子操作，所以当一个线程读取它的值并加 1 时，另外一个线程有可能会读到之前的值，这就会引发错误</code>。</p>
+<p>为了解决这个问题，必须保证增加操作是原子的，在 JDK1.5 之前我们可以使用同步技术来做到这一点。到 JDK1.5，java.util.concurrent.atomic 包提供了 int 和long 类型的原子包装类，它们可以自动的保证对于他们的操作是原子的并且不需要使用同步。</p>
+<p><code>java.util.concurrent</code> 这个包里面提供了一组原子类。其基本的特性就是在多线程环境下，当有多个线程同时执行这些类的实例包含的方法时，具有排他性，即当某个线程进入方法，执行其中的指令时，不会被其他线程打断，而别的线程就像自旋锁一样，一直等到该方法执行完成，才由 JVM 从等待队列中选择一个另一个线程进入，这只是一种逻辑上的理解。</p>
+<p><code>原子类</code>：AtomicBoolean，AtomicInteger，AtomicLong，AtomicReference</p>
+<p><code>原子数组</code>：AtomicIntegerArray，AtomicLongArray，AtomicReferenceArray</p>
+<p><code>原子属性更新器</code>：AtomicLongFieldUpdater，AtomicIntegerFieldUpdater，AtomicReferenceFieldUpdater</p>
+<p><code>解决 ABA 问题的原子类</code>：AtomicMarkableReference（通过引入一个 boolean来反映中间有没有变过），AtomicStampedReference（通过引入一个 int 来累加来反映中间有没有变过）</p>
+<h3 id="11、Java-Concurrency-API-中的-Lock-接口-Lock-interface-是什么？对比同步它有什么优势？"><a href="#11、Java-Concurrency-API-中的-Lock-接口-Lock-interface-是什么？对比同步它有什么优势？" class="headerlink" title="11、Java Concurrency API 中的 Lock 接口(Lock interface)是什么？对比同步它有什么优势？"></a>11、Java Concurrency API 中的 Lock 接口(Lock interface)是什么？对比同步它有什么优势？</h3><p><code>Lock </code>接口比同步方法和同步块提供了更具扩展性的锁操作。</p>
+<p>他们允许更灵活的结构，可以具有完全不同的性质，并且可以支持多个相关类的条件对象。</p>
+<p>它的优势有：</p>
+<p>可以使锁更公平</p>
+<p>可以使线程在等待锁的时候响应中断</p>
+<p>可以让线程尝试获取锁，并在无法获取锁的时候立即返回或者等待一段时间</p>
+<p>可以在不同的范围，以不同的顺序获取和释放锁</p>
+<p>整体上来说 <code>Lock 是 synchronized 的扩展版</code>，Lock 提供了<code>无条件的、可轮询的(tryLock 方法)、定时的(tryLock 带参方法)、可中断的(lockInterruptibly)、可多条件队列的(newCondition 方法)锁操作</code>。</p>
+<p>另外 <code>Lock 的实现类基本都支持非公平锁(默认)和公平锁，synchronized 只支持非公平锁，当然，在大部分情况下，非公平锁是高效的选择</code>。</p>
+<h3 id="12、什么是-Executors-框架？"><a href="#12、什么是-Executors-框架？" class="headerlink" title="12、什么是 Executors 框架？"></a>12、什么是 Executors 框架？</h3><p>Executor 框架是一个根据一组执行策略调用，调度，执行和控制的异步任务的框架。</p>
+<p><code>无限制的创建线程会引起应用程序内存溢出</code>。所以创建一个线程池是个更好的的解决方案，因为可以限制线程的数量并且可以<code>回收再利用</code>这些线程。利用Executors 框架可以非常方便的创建一个线程池。</p>
+<h3 id="13、什么是阻塞队列？阻塞队列的实现原理是什么？如何使用阻塞队列来实现生产者-消费者模型？"><a href="#13、什么是阻塞队列？阻塞队列的实现原理是什么？如何使用阻塞队列来实现生产者-消费者模型？" class="headerlink" title="13、什么是阻塞队列？阻塞队列的实现原理是什么？如何使用阻塞队列来实现生产者-消费者模型？"></a>13、什么是阻塞队列？阻塞队列的实现原理是什么？如何使用阻塞队列来实现生产者-消费者模型？</h3><p>阻塞队列（BlockingQueue）是一个支持两个附加操作的队列。</p>
+<p>这两个附加的操作是：<code>在队列为空时，获取元素的线程会等待队列变为非空。当队列满时，存储元素的线程会等待队列可用</code>。</p>
+<p>阻塞队列常用于生产者和消费者的场景，生产者是往队列里添加元素的线程，消费者是从队列里拿元素的线程。阻塞队列就是生产者存放元素的容器，而消费者也只从容器里拿元素。</p>
+<p><code>JDK7 提供了 7 个阻塞队列</code>。分别是：</p>
+<p>ArrayBlockingQueue ：一个由数组结构组成的有界阻塞队列。</p>
+<p>LinkedBlockingQueue ：一个由链表结构组成的有界阻塞队列。</p>
+<p>PriorityBlockingQueue ：一个支持优先级排序的无界阻塞队列。</p>
+<p>DelayQueue：一个使用优先级队列实现的无界阻塞队列。</p>
+<p>SynchronousQueue：一个不存储元素的阻塞队列。</p>
+<p>LinkedTransferQueue：一个由链表结构组成的无界阻塞队列。</p>
+<p>LinkedBlockingDeque：一个由链表结构组成的双向阻塞队列。</p>
+<p>Java 5 之前实现同步存取时，可以使用普通的一个集合，然后在使用线程的协作和线程同步可以实现生产者，消费者模式，主要的技术就是用好，wait ,notify,notifyAll,sychronized 这些关键字。而在 java 5 之后，可以使用阻塞队列来实现，此方式大大简少了代码量，使得多线程编程更加容易，安全方面也有保障。</p>
+<p>BlockingQueue 接口是 Queue 的子接口，它的主要用途并不是作为容器，而是作为线程同步的的工具，因此他具有一个很明显的特性，当生产者线程试图向BlockingQueue 放入元素时，如果队列已满，则线程被阻塞，当消费者线程试图从中取出一个元素时，如果队列为空，则该线程会被阻塞，正是因为它所具有这个特性，所以在程序中多个线程交替向 BlockingQueue 中放入元素，取出元素，它可以很好的控制线程之间的通信。</p>
+<p>阻塞队列使用最经典的场景就是 socket 客户端数据的读取和解析，读取数据的线程不断将数据放入队列，然后解析线程不断从队列取数据解析。</p>
+<h3 id="14、什么是-Callable-和-Future"><a href="#14、什么是-Callable-和-Future" class="headerlink" title="14、什么是 Callable 和 Future?"></a>14、什么是 Callable 和 Future?</h3><p><code>Callable 接口类似于 Runnable</code>，从名字就可以看出来了，但是 Runnable 不会返回结果，并且无法抛出返回结果的异常，而 Callable 功能更强大一些，被线程执行后，可以返回值，这个返回值可以被 Future 拿到，也就是说，Future 可以拿到异步执行任务的返回值。</p>
+<p>可以认为是带有回调的 Runnable。</p>
+<p><code>Future 接口表示异步任务</code>，是还没有完成的任务给出的未来结果。</p>
+<p>所以说<code>Callable用于产生结果，Future 用于获取结果</code>。</p>
+<h3 id="15、什么是-FutureTask-使用-ExecutorService-启动任务。"><a href="#15、什么是-FutureTask-使用-ExecutorService-启动任务。" class="headerlink" title="15、什么是 FutureTask?使用 ExecutorService 启动任务。"></a>15、什么是 FutureTask?使用 ExecutorService 启动任务。</h3><p>在 Java 并发程序中 <code>FutureTask 表示一个可以取消的异步运算</code>。它有启动和取消运算、查询运算是否完成和取回运算结果等方法。只有当运算完成的时候结果才能取回，如果运算尚未完成 get 方法将会阻塞。一个 FutureTask 对象可以对调用了 Callable 和 Runnable 的对象进行包装，由于 FutureTask 也是调用了 Runnable接口所以它可以提交给 Executor 来执行。</p>
+<h3 id="16、什么是并发容器的实现？"><a href="#16、什么是并发容器的实现？" class="headerlink" title="16、什么是并发容器的实现？"></a>16、什么是并发容器的实现？</h3><p>何为同步容器：可以简单地理解为<code>通过 synchronized 来实现同步的容器</code>，如果有多个线程调用同步容器的方法，它们将会串行执行。比如 Vector，Hashtable，以及 Collections.synchronizedSet，synchronizedList 等方法返回的容器。可以通过查看 Vector，Hashtable 等这些同步容器的实现代码，可以看到这些容器实现线程安全的方式就是将它们的状态封装起来，并在需要同步的方法上加上关键字 synchronized。</p>
+<p>并发容器使用了与同步容器完全不同的加锁策略来提供更高的并发性和伸缩性，例如在 ConcurrentHashMap 中采用了一种粒度更细的加锁机制，可以称为分段锁，在这种锁机制下，允许任意数量的读线程并发地访问 map，并且执行读操作的线程和写操作的线程也可以并发的访问 map，同时允许一定数量的写操作线程并发地修改 map，所以它可以在并发环境下实现更高的吞吐量。</p>
+<h3 id="17、多线程同步和互斥有几种实现方法，都是什么？"><a href="#17、多线程同步和互斥有几种实现方法，都是什么？" class="headerlink" title="17、多线程同步和互斥有几种实现方法，都是什么？"></a>17、多线程同步和互斥有几种实现方法，都是什么？</h3><p>线程同步是指线程之间所具有的一种制约关系，一个线程的执行依赖另一个线程的消息，当它没有得到另一个线程的消息时应等待，直到消息到达时才被唤醒。线程互斥是指对于共享的进程系统资源，在各单个线程访问时的排它性。当有若干个线程都要使用某一共享资源时，任何时刻最多只允许一个线程去使用，其它要使用该资源的线程必须等待，直到占用资源者释放该资源。线程互斥可以看成是一种特殊的线程同步。</p>
+<p>线程间的同步方法大体可分为两类：<code>用户模式和内核模式</code>。顾名思义，内核模式就是指利用系统内核对象的单一性来进行同步，使用时需要切换内核态与用户态，而用户模式就是不需要切换到内核态，只在用户态完成操作。</p>
+<p>用户模式下的方法有：<code>原子操作（例如一个单一的全局变量），临界区</code>。</p>
+<p>内核模式下的方法有：<code>事件，信号量，互斥量</code>。</p>
+<h3 id="18、什么是竞争条件？你怎样发现和解决竞争？"><a href="#18、什么是竞争条件？你怎样发现和解决竞争？" class="headerlink" title="18、什么是竞争条件？你怎样发现和解决竞争？"></a>18、什么是竞争条件？你怎样发现和解决竞争？</h3><p>当多个进程都企图对共享数据进行某种处理，而最后的结果又取决于进程运行的顺序时，则我们认为这发生了竞争条件（race condition）。</p>
+<h3 id="19、你将如何使用-thread-dump？你将如何分析-Thread-dump？"><a href="#19、你将如何使用-thread-dump？你将如何分析-Thread-dump？" class="headerlink" title="19、你将如何使用 thread dump？你将如何分析 Thread dump？"></a>19、你将如何使用 thread dump？你将如何分析 Thread dump？</h3><p>新建状态（New）</p>
+<p>用 new 语句创建的线程处于新建状态，此时它和其他 Java 对象一样，仅仅在堆区中被分配了内存。</p>
+<p>就绪状态（Runnable）</p>
+<p>当一个线程对象创建后，其他线程调用它的 start()方法，该线程就进入就绪状态，Java 虚拟机会为它创建方法调用栈和程序计数器。处于这个状态的线程位于可运行池中，等待获得 CPU 的使用权。</p>
+<p>运行状态（Running）</p>
+<p>处于这个状态的线程占用 CPU，执行程序代码。只有处于就绪状态的线程才有机会转到运行状态。</p>
+<p>阻塞状态（Blocked）</p>
+<p>阻塞状态是指线程因为某些原因放弃 CPU，暂时停止运行。当线程处于阻塞状态时，Java 虚拟机不会给线程分配 CPU。直到线程重新进入就绪状态，它才有机会转到运行状态。</p>
+<p>阻塞状态可分为以下 3 种：</p>
+<p>位于对象等待池中的阻塞状态（Blocked in object’s wait pool）：</p>
+<p>当线程处于运行状态时，如果执行了某个对象的 wait()方法，Java 虚拟机就会把线程放到这个对象的等待池中，这涉及到“线程通信”的内容。</p>
+<p>位于对象锁池中的阻塞状态（Blocked in object’s lock pool）：</p>
+<p>当线程处于运行状态时，试图获得某个对象的同步锁时，如果该对象的同步锁已经被其他线程占用，Java 虚拟机就会把这个线程放到这个对象的锁池中，这涉及到“线程同步”的内容。</p>
+<p>其他阻塞状态（Otherwise Blocked）：</p>
+<p>当前线程执行了 sleep()方法，或者调用了其他线程的 join()方法，或者发出了 I&#x2F;O请求时，就会进入这个状态。</p>
+<p>死亡状态（Dead）</p>
+<p>当线程退出 run()方法时，就进入死亡状态，该线程结束生命周期。</p>
+<h3 id="20、为什么我们调用-start-方法时会执行-run-方法，为什么我们不能直接调用-run-方法？"><a href="#20、为什么我们调用-start-方法时会执行-run-方法，为什么我们不能直接调用-run-方法？" class="headerlink" title="20、为什么我们调用 start()方法时会执行 run()方法，为什么我们不能直接调用 run()方法？"></a>20、为什么我们调用 start()方法时会执行 run()方法，为什么我们不能直接调用 run()方法？</h3><p>当你调用 start()方法时你将创建新的线程，并且执行在 run()方法里的代码。</p>
+<p>但是如果你直接调用 run()方法，它不会创建新的线程也不会执行调用线程的代码，只会把<code> run 方法当作普通方法去执行</code>。</p>
+<h3 id="21、Java-中你怎样唤醒一个阻塞的线程？"><a href="#21、Java-中你怎样唤醒一个阻塞的线程？" class="headerlink" title="21、Java 中你怎样唤醒一个阻塞的线程？"></a>21、Java 中你怎样唤醒一个阻塞的线程？</h3><p>在 Java 发展史上曾经使用 suspend()、resume()方法对于线程进行阻塞唤醒，但随之出现很多问题，比较典型的还是死锁问题。</p>
+<p>解决方案可以使用以对象为目标的阻塞，即利用 <code>Object 类的 wait()和 notify()方法实现线程阻塞</code>。</p>
+<p>首 先 ，wait、notify 方法是针对对象的，调用任意对象的 wait()方法都将导致线程阻塞，阻塞的同时也将释放该对象的锁，相应地，调用任意对象的 notify()方法则将随机解除该对象阻塞的线程，但它需要重新获取改对象的锁，直到获取成功才能往下执行；其次，wait、notify 方法必须在 synchronized 块或方法中被调用，并且要保证同步块或方法的锁对象与调用 wait、notify 方法的对象是同一个，如此一来在调用 wait 之前当前线程就已经成功获取某对象的锁，执行 wait 阻塞后当前线程就将之前获取的对象锁释放。</p>
+<h3 id="22、在-Java-中-CycliBarriar-和-CountdownLatch-有什么区别？"><a href="#22、在-Java-中-CycliBarriar-和-CountdownLatch-有什么区别？" class="headerlink" title="22、在 Java 中 CycliBarriar 和 CountdownLatch 有什么区别？"></a>22、在 Java 中 CycliBarriar 和 CountdownLatch 有什么区别？</h3><p><code>CyclicBarrier 可以重复使用，而 CountdownLatch 不能重复使用</code>。</p>
+<p>Java 的 concurrent 包里面的 CountDownLatch 其实可以把它看作一个计数器，只不过这个计数器的操作是原子操作，同时只能有一个线程去操作这个计数器，也就是同时只能有一个线程去减这个计数器里面的值。你可以向 CountDownLatch 对象设置一个初始的数字作为计数值，任何调用这个对象上的 await()方法都会阻塞，直到这个计数器的计数值被其他的线程减为 0 为止。</p>
+<p>所以在当前计数到达零之前，await 方法会一直受阻塞。之后，会释放所有等待的线程，await 的所有后续调用都将立即返回。这种现象只出现一次——计数无法被重置。如果需要重置计数，请考虑使用 CyclicBarrier。CountDownLatch 的一个非常典型的应用场景是：有一个任务想要往下执行，但必须要等到其他的任务执行完毕后才可以继续往下执行。假如我们这个想要继续往下执行的任务调用一个 CountDownLatch 对象的 await()方法，其他的任务执行完自己的任务后调用同一个 CountDownLatch 对象上的 countDown()方法，这个调用 await()方法的任务将一直阻塞等待，直到这个 CountDownLatch 对象的计数值减到 0 为止。</p>
+<p>CyclicBarrier 一个同步辅助类，它允许一组线程互相等待，直到到达某个公共屏障点 (common barrier point)。在涉及一组固定大小的线程的程序中，这些线程必须不时地互相等待，此时 CyclicBarrier 很有用。因为该 barrier 在释放等待线程后可以重用，所以称它为循环 的 barrier。</p>
+<h3 id="23、什么是不可变对象，它对写并发应用有什么帮助？"><a href="#23、什么是不可变对象，它对写并发应用有什么帮助？" class="headerlink" title="23、什么是不可变对象，它对写并发应用有什么帮助？"></a>23、什么是不可变对象，它对写并发应用有什么帮助？</h3><p>不可变对象(Immutable Objects)即<code>对象一旦被创建它的状态（对象的数据，也即对象属性值）就不能改变</code>，反之即为可变对象(Mutable Objects)。</p>
+<p>不可变对象的类即为不可变类(Immutable Class)。Java 平台类库中包含许多不可变类，如 <code>String、基本类型的包装类、BigInteger 和 BigDecimal </code>等。</p>
+<p>不可变对象<code>天生是线程安全</code>的。它们的常量（域）是在构造函数中创建的。既然它们的状态无法修改，这些常量永远不会变。</p>
+<p>不可变对象永远是线程安全的。只有满足如下状态，一个对象才是不可变的；它的状态不能在创建后再被修改；</p>
+<p>所有域都是 final 类型；并且，它被正确创建（创建期间没有发生 this 引用的逸出）。</p>
+<h3 id="24、什么是多线程中的上下文切换？"><a href="#24、什么是多线程中的上下文切换？" class="headerlink" title="24、什么是多线程中的上下文切换？"></a>24、什么是多线程中的上下文切换？</h3><p>在上下文切换过程中，CPU 会停止处理当前运行的程序，并保存当前程序运行的具体位置以便之后继续运行。从这个角度来看，上下文切换有点像我们同时阅读几本书，在来回切换书本的同时我们需要记住每本书当前读到的页码。在程序中，上下文切换过程中的“页码”信息是保存在进程控制块（PCB）中的。PCB 还经常被称作“切换桢”（switchframe）。“页码”信息会一直保存到 CPU 的内存中，直到他们被再次使用。</p>
+<p>上下文切换是<code>存储和恢复 CPU 状态的过程，它使得线程执行能够从中断点恢复执行</code>。上下文切换是多任务操作系统和多线程环境的基本特征。</p>
+<h3 id="25、Java-中用到的线程调度算法是什么？"><a href="#25、Java-中用到的线程调度算法是什么？" class="headerlink" title="25、Java 中用到的线程调度算法是什么？"></a>25、Java 中用到的线程调度算法是什么？</h3><p>计算机通常只有一个 CPU,在任意时刻只能执行一条机器指令,每个线程只有获得CPU 的使用权才能执行指令.所谓多线程的并发运行,其实是指从宏观上看,各个线程轮流获得 CPU 的使用权,分别执行各自的任务.在运行池中,会有多个处于就绪状态的线程在等待 CPU,JAVA 虚拟机的一项任务就是负责线程的调度,线程调度是指按照特定机制为多个线程分配 CPU 的使用权.</p>
+<p>有两种调度模型：<code>分时调度模型和抢占式调度模型</code>。</p>
+<p>分时调度模型是指让所有的线程轮流获得 cpu 的使用权,并且平均分配每个线程占用的 CPU 的时间片这个也比较好理解。</p>
+<p>Java虚拟机采用<code>抢占式调度模型</code>，是指优先让可运行池中优先级高的线程占用CPU，如果可运行池中的线程优先级相同，那么就随机选择一个线程，使其占用CPU。处于运行状态的线程会一直运行，直至它不得不放弃 CPU。</p>
+<h3 id="26、什么是线程组，为什么在-Java-中不推荐使用？"><a href="#26、什么是线程组，为什么在-Java-中不推荐使用？" class="headerlink" title="26、什么是线程组，为什么在 Java 中不推荐使用？"></a>26、什么是线程组，为什么在 Java 中不推荐使用？</h3><p>线程组和线程池是两个不同的概念，他们的作用完全不同，前者是为了方便线程的管理，后者是为了<code>管理线程的生命周期，复用线程，减少创建销毁线程的开销</code>。</p>
+<h3 id="27、为什么使用-Executor-框架比使用应用创建和管理线程好？"><a href="#27、为什么使用-Executor-框架比使用应用创建和管理线程好？" class="headerlink" title="27、为什么使用 Executor 框架比使用应用创建和管理线程好？"></a>27、为什么使用 Executor 框架比使用应用创建和管理线程好？</h3><p>为什么要使用 Executor 线程池框架</p>
+<p>1、每次执行任务创建线程 new Thread()比较消耗性能，创建一个线程是比较耗时、耗资源的。</p>
+<p>2、调用 new Thread()创建的线程缺乏管理，被称为野线程，而且可以无限制的创建，线程之间的相互竞争会导致过多占用系统资源而导致系统瘫痪，还有线程之间的频繁交替也会消耗很多系统资源。</p>
+<p>3、直接使用 new Thread() 启动的线程不利于扩展，比如定时执行、定期执行、定时定期执行、线程中断等都不便实现。</p>
+<p>使用 Executor 线程池框架的优点</p>
+<p>1、能复用已存在并空闲的线程从而减少线程对象的创建从而减少了消亡线程的开销。</p>
+<p>2、可有效控制最大并发线程数，提高系统资源使用率，同时避免过多资源竞争。</p>
+<p>3、框架中已经有定时、定期、单线程、并发数控制等功能。</p>
+<p>综上所述使用线程池框架 Executor 能更好的管理线程、提供系统资源使用率。</p>
+<h3 id="28、java-中有几种方法可以实现一个线程？"><a href="#28、java-中有几种方法可以实现一个线程？" class="headerlink" title="28、java 中有几种方法可以实现一个线程？"></a>28、java 中有几种方法可以实现一个线程？</h3><ol>
+<li><p>继承 Thread 类</p>
+</li>
+<li><p>实现 Runnable 接口</p>
+</li>
+<li><p>实现 Callable 接口，需要实现的是 call() 方法</p>
+</li>
+</ol>
+<h3 id="29、如何停止一个正在运行的线程？"><a href="#29、如何停止一个正在运行的线程？" class="headerlink" title="29、如何停止一个正在运行的线程？"></a>29、如何停止一个正在运行的线程？</h3><p><code>使用共享变量的方式</code></p>
+<p>在这种方式中，之所以引入共享变量，是因为该变量可以被多个执行相同任务的线程用来作为是否中断的信号，通知中断线程的执行。</p>
+<p><code>使用 interrupt 方法终止线程</code></p>
+<p>如果一个线程由于等待某些事件的发生而被阻塞，又该怎样停止该线程呢？这种情况经常会发生，比如当一个线程由于需要等候键盘输入而被阻塞，或者调用Thread.join()方法，或者 Thread.sleep()方法，在网络中调用ServerSocket.accept()方法，或者调用了 DatagramSocket.receive()方法时，都有可能导致线程阻塞，使线程处于处于不可运行状态时，即使主程序中将该线程的共享变量设置为 true，但该线程此时根本无法检查循环标志，当然也就无法立即中断。这里我们给出的建议是，不要使用 stop()方法，而是使用 Thread 提供的interrupt()方法，因为该方法虽然不会中断一个正在运行的线程，但是它可以使一个被阻塞的线程抛出一个中断异常，从而使线程提前结束阻塞状态，退出堵塞代码。</p>
+<h3 id="30、notify-和-notifyAll-有什么区别？"><a href="#30、notify-和-notifyAll-有什么区别？" class="headerlink" title="30、notify()和 notifyAll()有什么区别？"></a>30、notify()和 notifyAll()有什么区别？</h3><p>当一个线程进入 wait 之后，就必须等其他线程 notify&#x2F;notifyall,使用 notifyall,可以唤醒所有处于 wait 状态的线程，使其重新进入锁的争夺队列中，而 <code>notify 只能唤醒一个</code>。</p>
+<p>如果没把握，建议 notifyAll，防止 notigy 因为信号丢失而造成程序异常。</p>
+<h3 id="31、什么是-Daemon-线程？它有什么意义？"><a href="#31、什么是-Daemon-线程？它有什么意义？" class="headerlink" title="31、什么是 Daemon 线程？它有什么意义？"></a>31、什么是 Daemon 线程？它有什么意义？</h3><p>所谓后台(daemon)线程，是指在程序运行的时候在后台提供一种<code>通用服务的线程</code>，并且这个线程并不属于程序中不可或缺的部分。因此，当所有的非后台线程结束时，程序也就终止了，同时会杀死进程中的所有后台线程。反过来说，只要有任何非后台线程还在运行，程序就不会终止。必须在<code>线程启动之前调用 setDaemon() 方法，才能把它设置为后台线程</code>。注意：后台进程在不执行 finally子句的情况下就会终止其 run()方法。</p>
+<p>比如：<code>JVM 的垃圾回收线程就是 Daemon 线程，Finalizer 也是守护线程</code>。</p>
+<h3 id="32、java-如何实现多线程之间的通讯和协作？"><a href="#32、java-如何实现多线程之间的通讯和协作？" class="headerlink" title="32、java 如何实现多线程之间的通讯和协作？"></a>32、java 如何实现多线程之间的通讯和协作？</h3><p><code>中断</code> 和 <code>共享变量</code></p>
+<h3 id="33、什么是可重入锁（ReentrantLock）？"><a href="#33、什么是可重入锁（ReentrantLock）？" class="headerlink" title="33、什么是可重入锁（ReentrantLock）？"></a>33、什么是可重入锁（ReentrantLock）？</h3><p>举例来说明锁的可重入性</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">UnReentrant</span>&#123;<br>	<span class="hljs-type">Lock</span> <span class="hljs-variable">lock</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">Lock</span>();<br>	<span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">outer</span><span class="hljs-params">()</span>&#123;<br>		lock.lock();<br>		inner();<br>		lock.unlock();<br>	&#125;<br>	<span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">inner</span><span class="hljs-params">()</span>&#123;<br>		lock.lock();<br>		<span class="hljs-comment">//do something</span><br>		lock.unlock();<br>	&#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+
+<p>outer 中调用了 inner，outer 先锁住了 lock，这样 inner 就不能再获取 lock。其实调用 outer 的线程已经获取了 lock 锁，但是不能在 inner 中重复利用已经获取的锁资源，这种锁即称之为 不可重入可重入就意味着：<code>线程可以进入任何一个它已经拥有的锁所同步着的代码块</code>。</p>
+<p><code>synchronized、ReentrantLock 都是可重入的锁</code>，可重入锁相对来说简化了并发编程的开发。</p>
+<h3 id="34、当一个线程进入某个对象的一个-synchronized-的实例方法后，其它线程是否可进入此对象的其它方法？"><a href="#34、当一个线程进入某个对象的一个-synchronized-的实例方法后，其它线程是否可进入此对象的其它方法？" class="headerlink" title="34、当一个线程进入某个对象的一个 synchronized 的实例方法后，其它线程是否可进入此对象的其它方法？"></a>34、当一个线程进入某个对象的一个 synchronized 的实例方法后，其它线程是否可进入此对象的其它方法？</h3><p>如果其他方法没有 synchronized 的话，其他线程是可以进入的。</p>
+<p>所以要<code>开放一个线程安全的对象时，得保证每个方法都是线程安全</code>的。</p>
+<h3 id="35、乐观锁和悲观锁的理解及如何实现，有哪些实现方式？"><a href="#35、乐观锁和悲观锁的理解及如何实现，有哪些实现方式？" class="headerlink" title="35、乐观锁和悲观锁的理解及如何实现，有哪些实现方式？"></a>35、乐观锁和悲观锁的理解及如何实现，有哪些实现方式？</h3><p><code>悲观锁</code>：总是假设最坏的情况，每次去拿数据的时候都认为别人会修改，所以<code>每次在拿数据的时候都会上锁</code>，这样别人想拿这个数据就会阻塞直到它拿到锁。传统的关系型数据库里边就用到了很多这种锁机制，比如<code>行锁，表锁</code>等，<code>读锁，写锁</code>等，都是在做操作之前先上锁。再比如 Java 里面的同步原语 <code>synchronized </code>关键字的实现也是悲观锁。</p>
+<p><code>乐观锁</code>：顾名思义，就是很乐观，每次去拿数据的时候都认为别人不会修改，所以不会上锁，但是<code>在更新的时候会判断一下在此期间别人有没有去更新这个数据</code>，可以<code>使用版本号等机制</code>。乐观锁适用于<code>多读</code>的应用类型，这样可以提高吞吐量，像数据库提供的类似于 write_condition 机制，其实都是提供的乐观锁。在 Java中<code> java.util.concurrent.atomic 包下面的原子变量类就是使用了乐观锁的一种实现方式 CAS 实现的</code>。</p>
+<p>乐观锁的实现方式：</p>
+<p>1、使用版本标识来确定读到的数据与提交时的数据是否一致。提交后修改版本标识，不一致时可以采取丢弃和再次尝试的策略。</p>
+<p>2、java 中的 Compare and Swap 即 CAS ，当多个线程尝试使用 CAS 同时更新同一个变量时，只有其中一个线程能更新变量的值，而其它线程都失败，失败的线程并不会被挂起，而是被告知这次竞争中失败，并可以再次尝试。 CAS 操作中包含三个操作数 —— 需要读写的内存位置（V）、进行比较的预期原值（A）和拟写入的新值(B)。如果内存位置 V 的值与预期原值 A 相匹配，那么处理器会自动将该位置值更新为新值 B。否则处理器不做任何操作。</p>
+<p>CAS 缺点：</p>
+<p>1、<code>ABA 问题</code>：</p>
+<p>比如说一个线程 one 从内存位置 V 中取出 A，这时候另一个线程 two 也从内存中取出 A，并且 two 进行了一些操作变成了 B，然后 two 又将 V 位置的数据变成 A，这时候线程 one 进行 CAS 操作发现内存中仍然是 A，然后 one 操作成功。尽管线程 one 的 CAS 操作成功，但可能存在潜藏的问题。<code>从 Java1.5 开始 JDK 的 atomic包里提供了一个类 AtomicStampedReference 来解决 ABA 问题</code>。</p>
+<p>2、<code>循环时间长开销大</code>：</p>
+<p>对于资源竞争严重（线程冲突严重）的情况，CAS 自旋的概率会比较大，从而浪费更多的 CPU 资源，效率低于 synchronized。</p>
+<p>3、<code>只能保证一个共享变量的原子操作</code>：</p>
+<p>当对一个共享变量执行操作时，我们可以使用循环 CAS 的方式来保证原子操作，但是对多个共享变量操作时，循环 CAS 就无法保证操作的原子性，这个时候就可以用锁。</p>
+<h3 id="36、SynchronizedMap-和-ConcurrentHashMap-有什么区别？"><a href="#36、SynchronizedMap-和-ConcurrentHashMap-有什么区别？" class="headerlink" title="36、SynchronizedMap 和 ConcurrentHashMap 有什么区别？"></a>36、SynchronizedMap 和 ConcurrentHashMap 有什么区别？</h3><p>SynchronizedMap 一次<code>锁住整张表</code>来保证线程安全，所以每次只能有一个线程来访为 map。</p>
+<p>ConcurrentHashMap 使用<code>分段锁</code>来<code>保证在多线程下的性能</code>。</p>
+<p>ConcurrentHashMap 中则是一次锁住一个桶。ConcurrentHashMap 默认将hash 表分为<code> 16 个桶</code>，诸如 get,put,remove 等常用操作只锁当前需要用到的桶。</p>
+<p>这样，原来只能一个线程进入，现在却能同时有 16 个写线程执行，并发性能的提升是显而易见的。</p>
+<p>另外 ConcurrentHashMap 使用了一种不同的迭代方式。在这种迭代方式中，当iterator 被创建后集合再发生改变就不再是抛出</p>
+<p>ConcurrentModificationException，取而代之的是在改变时 new 新的数据从而不影响原有的数据 ，iterator 完成后再将头指针替换为新的数据 ，这样 iterator线程可以使用原来老的数据，而写线程也可以并发的完成改变。</p>
+<h3 id="37、CopyOnWriteArrayList-可以用于什么应用场景？"><a href="#37、CopyOnWriteArrayList-可以用于什么应用场景？" class="headerlink" title="37、CopyOnWriteArrayList 可以用于什么应用场景？"></a>37、CopyOnWriteArrayList 可以用于什么应用场景？</h3><p>CopyOnWriteArrayList(免锁容器)的好处之一是当多个迭代器同时遍历和修改这个列表时，不会抛出 ConcurrentModificationException。在CopyOnWriteArrayList 中，写入将导致创建整个底层数组的副本，而源数组将保留在原地，使得复制的数组在被修改时，读取操作可以安全地执行。</p>
+<p>1、由于写操作的时候，需要拷贝数组，会消耗内存，如果原数组的内容比较多的情况下，可能导致 young gc 或者 full gc；</p>
+<p>2、<code>不能用于实时读的场景</code>，像拷贝数组、新增元素都需要时间，所以调用一个 set操作后，读取到数据可能还是旧的,虽然 CopyOnWriteArrayList 能做到最终一致性,但是还是没法满足实时性要求；</p>
+<p>CopyOnWriteArrayList 透露的思想</p>
+<p>1、读写分离，读和写分开</p>
+<p>2、最终一致性</p>
+<p>3、使用另外开辟空间的思路，来解决并发冲突</p>
+<h3 id="38、什么叫线程安全？servlet-是线程安全吗"><a href="#38、什么叫线程安全？servlet-是线程安全吗" class="headerlink" title="38、什么叫线程安全？servlet 是线程安全吗?"></a>38、什么叫线程安全？servlet 是线程安全吗?</h3><p>线程安全是编程中的术语，指某个函数、函数库在多线程环境中被调用时，能够<code>正确地处理多个线程之间的共享变量</code>，使程序功能正确完成。</p>
+<p>Servlet 不是线程安全的，<code>servlet 是单实例多线程的</code>，当多个线程同时访问同一个方法，是不能保证共享变量的线程安全性的。</p>
+<p><code>Struts2 的 action 是多实例多线程的，是线程安全的</code>，每个请求过来都会 new 一个新的 action 分配给这个请求，请求完成后销毁。</p>
+<p><code>SpringMVC 的 Controller 是线程安全的吗？不是的，和 Servlet 类似的处理流程</code>。</p>
+<p>Struts2 好处是不用考虑线程安全问题；Servlet 和 SpringMVC 需要考虑线程安全问题，但是性能可以提升不用处理太多的 gc，可以使用 ThreadLocal 来处理多线程的问题。</p>
+<h3 id="39、volatile-有什么用？能否用一句话说明下-volatile-的应用场景？"><a href="#39、volatile-有什么用？能否用一句话说明下-volatile-的应用场景？" class="headerlink" title="39、volatile 有什么用？能否用一句话说明下 volatile 的应用场景？"></a>39、volatile 有什么用？能否用一句话说明下 volatile 的应用场景？</h3><p>volatile 保证<code>内存可见性</code>和<code>禁止指令重排</code>。</p>
+<p>volatile 用于<code>多线程环境下的单次操作</code>(单次读或者单次写)。</p>
+<h3 id="40、为什么代码会重排序？"><a href="#40、为什么代码会重排序？" class="headerlink" title="40、为什么代码会重排序？"></a>40、为什么代码会重排序？</h3><p>在执行程序时，为了提供性能，处理器和编译器常常会对指令进行重排序，但是不能随意重排序，不是你想怎么排序就怎么排序，它需要满足以下两个条件：</p>
+<p><code>在单线程环境下不能改变程序运行的结果</code>；</p>
+<p><code>存在数据依赖关系的不允许重排序</code></p>
+<p>需要注意的是：重排序不会影响单线程环境的执行结果，但是<code>会破坏多线程的执行语义</code>。</p>
+<h3 id="41、在-java-中-wait-和-sleep-方法的不同？"><a href="#41、在-java-中-wait-和-sleep-方法的不同？" class="headerlink" title="41、在 java 中 wait 和 sleep 方法的不同？"></a>41、在 java 中 wait 和 sleep 方法的不同？</h3><p>最大的不同是在等待时<code> wait 会释放锁</code>，而 <code>sleep 一直持有锁</code>。</p>
+<p>Wait 通常被用于线程间交互，sleep 通常被用于暂停执行。</p>
+<h3 id="42、用-Java-实现阻塞队列"><a href="#42、用-Java-实现阻塞队列" class="headerlink" title="42、用 Java 实现阻塞队列"></a>42、用 Java 实现阻塞队列</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">import</span> java.util.LinkedList;<br><span class="hljs-keyword">import</span> java.util.concurrent.atomic.AtomicInteger;<br><br><span class="hljs-comment">/**</span><br><span class="hljs-comment"> * 使用wait和notify实现Queue</span><br><span class="hljs-comment"> * BlockingQueue: 顾名思义，首先它是一个队列，并且支持阻塞机制，阻塞的放入和阻塞的得到数据，</span><br><span class="hljs-comment"> * 我们要实现LinkedBlockingQueue下面下面两个简单的方法put和take</span><br><span class="hljs-comment"> * put(anObject):把把对象加到BlockingQueue里面，如果BlockQueue没有空间，则调用此方法的线程被阻断</span><br><span class="hljs-comment"> * 直到BlockingQueue里面没有空间在继续。</span><br><span class="hljs-comment"> *take():取走blockingQueue里面该在首位的对象，若blockingQueue为空，阻塞进入等待状态，直到BlockingQueue有新的数据被加入</span><br><span class="hljs-comment"> * </span><br><span class="hljs-comment"> * wait 和notify 结合synchronized使用</span><br><span class="hljs-comment"> * </span><br><span class="hljs-comment"> *  */</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">MyQueue</span> &#123;<br><br>    <span class="hljs-comment">//1.需要装元素的集合</span><br>    <span class="hljs-keyword">private</span> <span class="hljs-keyword">final</span> LinkedList&lt;Object&gt; list = <span class="hljs-keyword">new</span> <span class="hljs-title class_">LinkedList</span>&lt;Object&gt;();<br><br>    <span class="hljs-comment">/**</span><br><span class="hljs-comment">     * 2.需要一个计数器，统计加入list几个的个数</span><br><span class="hljs-comment">     *AtomicInteger，一个提供原子操作的Integer的类。在Java语言中</span><br><span class="hljs-comment">     *，++i和i++操作并不是线程安全的，在使用的时候，不可避免的会用到</span><br><span class="hljs-comment">     *synchronized关键字。而AtomicInteger则通过一种线程安全的加减操作接口。</span><br><span class="hljs-comment">     * */</span><br>    <span class="hljs-keyword">private</span> <span class="hljs-type">AtomicInteger</span> <span class="hljs-variable">count</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">AtomicInteger</span>(<span class="hljs-number">0</span>);<br><br>    <span class="hljs-comment">//指定上限上限和下限</span><br>    <span class="hljs-keyword">private</span> <span class="hljs-keyword">final</span> <span class="hljs-type">int</span> <span class="hljs-variable">minSize</span> <span class="hljs-operator">=</span> <span class="hljs-number">0</span>;<br>    <span class="hljs-keyword">private</span> <span class="hljs-keyword">final</span> <span class="hljs-type">int</span> maxSize;<br>    <span class="hljs-comment">//构造方法，构造容器最大长度</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-title function_">MyQueue</span><span class="hljs-params">(<span class="hljs-type">int</span> size)</span> &#123;<br>        <span class="hljs-built_in">this</span>.maxSize = size;<br>    &#125;<br>    <span class="hljs-keyword">public</span> <span class="hljs-title function_">MyQueue</span><span class="hljs-params">()</span> &#123;<br>        <span class="hljs-comment">//最大长度默认为10</span><br>        <span class="hljs-built_in">this</span>(<span class="hljs-number">10</span>);<br>    &#125;<br><br>    <span class="hljs-comment">/**</span><br><span class="hljs-comment">     * 初始化一个对象用于加锁</span><br><span class="hljs-comment">     * */</span><br>    <span class="hljs-keyword">private</span> <span class="hljs-keyword">final</span> <span class="hljs-type">Object</span> <span class="hljs-variable">lock</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">Object</span>();<br><br><br>    <span class="hljs-comment">//返回长度</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-type">int</span> <span class="hljs-title function_">size</span><span class="hljs-params">()</span> &#123;<br>        <span class="hljs-keyword">return</span> count.get();<br>    &#125;<br><br><br>    <span class="hljs-comment">/**</span><br><span class="hljs-comment">     * 添加一个对象，如果队列满了，则阻塞</span><br><span class="hljs-comment">     * */</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">put</span><span class="hljs-params">(Object obj)</span> &#123;<br>        <span class="hljs-keyword">synchronized</span> (lock) &#123;<br>            <span class="hljs-comment">//如果容器大小刚好等于最大长度，则阻塞</span><br>            <span class="hljs-keyword">while</span>(size() == maxSize) &#123;<br>                <span class="hljs-keyword">try</span> &#123;<br>                    lock.wait();<span class="hljs-comment">//阻塞</span><br>                &#125; <span class="hljs-keyword">catch</span> (InterruptedException e) &#123;<br>                    <span class="hljs-comment">// TODO Auto-generated catch block</span><br>                    e.printStackTrace();<br>                &#125;<br>            &#125;<br>            list.add(obj);<br>            count.incrementAndGet();<span class="hljs-comment">//相当于i++</span><br>            System.out.println(<span class="hljs-string">&quot;新加入的元素为：&quot;</span>+obj);<br>            lock.notify();<span class="hljs-comment">//通知另外一个线程去取元素</span><br>        &#125;<br>    &#125;<br>    <span class="hljs-comment">/**</span><br><span class="hljs-comment">     * 取出一个元素，如果队列为空，则阻塞</span><br><span class="hljs-comment">     * */</span><br>    <span class="hljs-keyword">public</span> Object <span class="hljs-title function_">take</span><span class="hljs-params">()</span> &#123;<br>        <span class="hljs-keyword">synchronized</span> (lock) &#123;<br>        <span class="hljs-comment">//如果容器的大小刚好等于队列最小长度，则阻塞</span><br>            <span class="hljs-keyword">while</span>(minSize == size()) &#123;<br>                <span class="hljs-keyword">try</span> &#123;<br>                lock.wait();<br>                &#125; <span class="hljs-keyword">catch</span> (InterruptedException e) &#123;<br>                <span class="hljs-comment">// TODO Auto-generated catch block</span><br>                e.printStackTrace();<br>                &#125;<br>            &#125;<br>            <span class="hljs-comment">//取出第一个元素</span><br>            <span class="hljs-type">Object</span> <span class="hljs-variable">obj</span> <span class="hljs-operator">=</span> list.removeFirst();<br>            <span class="hljs-comment">//计数器递减</span><br>            count.decrementAndGet();<br>            lock.notify();<span class="hljs-comment">//通知另外一个线程进行添加元素</span><br>            <span class="hljs-keyword">return</span> obj;<span class="hljs-comment">//返回结果</span><br><br>        &#125;<br>    &#125;<br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">main</span><span class="hljs-params">(String[] args)</span> &#123;<br>        <span class="hljs-keyword">final</span> <span class="hljs-type">MyQueue</span> <span class="hljs-variable">m</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">MyQueue</span>(<span class="hljs-number">5</span>);<br><br>        <span class="hljs-type">Thread</span> <span class="hljs-variable">t1</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">Thread</span>(<span class="hljs-keyword">new</span> <span class="hljs-title class_">Runnable</span>() &#123;<br><br>            <span class="hljs-meta">@Override</span><br>            <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">run</span><span class="hljs-params">()</span> &#123;<br>                m.put(<span class="hljs-string">&quot;a&quot;</span>);<br>                m.put(<span class="hljs-string">&quot;b&quot;</span>);<br>                m.put(<span class="hljs-string">&quot;c&quot;</span>);<br>                m.put(<span class="hljs-string">&quot;d&quot;</span>);<br>                m.put(<span class="hljs-string">&quot;e&quot;</span>);<br>                m.put(<span class="hljs-string">&quot;f&quot;</span>);<br><br>            &#125;<br>        &#125;);<br>        t1.start();<br><br>        <span class="hljs-keyword">try</span> &#123;<br>            Thread.sleep(<span class="hljs-number">1000</span>);<br>            System.out.println(<span class="hljs-string">&quot;当前容器的大小：&quot;</span>+m.size());<br>        &#125; <span class="hljs-keyword">catch</span> (InterruptedException e) &#123;<br>            <span class="hljs-comment">// TODO Auto-generated catch block</span><br>            e.printStackTrace();<br>        &#125;<br>        <span class="hljs-type">Thread</span> <span class="hljs-variable">t2</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">Thread</span>(<span class="hljs-keyword">new</span> <span class="hljs-title class_">Runnable</span>() &#123;<br><br>                    <span class="hljs-meta">@Override</span><br>                    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">run</span><span class="hljs-params">()</span> &#123;<br>                        <span class="hljs-type">Object</span> <span class="hljs-variable">o</span> <span class="hljs-operator">=</span> m.take();<br>                        System.out.println(<span class="hljs-string">&quot;取出的元素为：&quot;</span>+o);<br>                    &#125;<br>                &#125;);<br>        t2.start();<br>        <span class="hljs-keyword">try</span> &#123;<br>            Thread.sleep(<span class="hljs-number">10</span>);<br>            System.out.println(m.size());<br>        &#125; <span class="hljs-keyword">catch</span> (InterruptedException e) &#123;<br>            <span class="hljs-comment">// TODO Auto-generated catch block</span><br>            e.printStackTrace();<br>        &#125;<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+
+
+<h3 id="43、一个线程运行时发生异常会怎样？"><a href="#43、一个线程运行时发生异常会怎样？" class="headerlink" title="43、一个线程运行时发生异常会怎样？"></a>43、一个线程运行时发生异常会怎样？</h3><p>如果<code>异常没有被捕获该线程将会停止执行</code>。Thread.UncaughtExceptionHandler 是用于处理未捕获异常造成线程突然中断情况的一个内嵌接口。当一个未捕获异常将造成线程中断的时候 JVM 会使用 Thread.getUncaughtExceptionHandler()来查询线程的 UncaughtExceptionHandler 并将线程和异常作为参数传递给handler 的 uncaughtException()方法进行处理。</p>
+<h3 id="44、如何在两个线程间共享数据？"><a href="#44、如何在两个线程间共享数据？" class="headerlink" title="44、如何在两个线程间共享数据？"></a>44、如何在两个线程间共享数据？</h3><p>在两个线程间<code>共享变量</code>即可实现共享。</p>
+<p>一般来说，共享变量<code>要求变量本身是线程安全</code>的，然后在线程内使用的时候，如果有对共享变量的复合操作，那么也得保证复合操作的线程安全性。</p>
+<h3 id="45、Java-中-notify-和-notifyAll-有什么区别？"><a href="#45、Java-中-notify-和-notifyAll-有什么区别？" class="headerlink" title="45、Java 中 notify 和 notifyAll 有什么区别？"></a>45、Java 中 notify 和 notifyAll 有什么区别？</h3><p>notify() 方法不能唤醒某个具体的线程，所以只有一个线程在等待的时候它才有用武之地。</p>
+<p>而 notifyAll()唤醒所有线程并允许他们争夺锁确保了至少有一个线程能继续运行。</p>
+<h3 id="46、为什么-wait-notify-和-notifyAll-这些方法不在-thread类里面？"><a href="#46、为什么-wait-notify-和-notifyAll-这些方法不在-thread类里面？" class="headerlink" title="46、为什么 wait, notify 和 notifyAll 这些方法不在 thread类里面？"></a>46、为什么 wait, notify 和 notifyAll 这些方法不在 thread类里面？</h3><p>一个很明显的原因是<code> JAVA 提供的锁是对象级的而不是线程级的，每个对象都有锁，通过线程获得</code>。由于 wait，notify 和 notifyAll 都是锁级别的操作，所以把他们定义在 Object 类中因为锁属于对象。</p>
+<h3 id="47、什么是-ThreadLocal-变量？"><a href="#47、什么是-ThreadLocal-变量？" class="headerlink" title="47、什么是 ThreadLocal 变量？"></a>47、什么是 ThreadLocal 变量？</h3><p>ThreadLocal 是 Java 里一种特殊的变量。<code>每个线程都有一个 ThreadLocal 就是每个线程都拥有了自己独立的一个变量，竞争条件被彻底消除了</code>。它是<code>为创建代价高昂的对象获取线程安全的好方法</code>，比如你可以用 ThreadLocal 让SimpleDateFormat 变成线程安全的，因为那个类创建代价高昂且每次调用都需要创建不同的实例所以不值得在局部范围使用它。</p>
+<p>如果为每个线程提供一个自己独有的变量拷贝，将大大提高效率。首先，通过复用减少了代价高昂的对象的创建个数。其次，你在没有使用高代价的同步或者不变性的情况下获得了线程安全。</p>
+<h3 id="48、Java-中-interrupted-和-isInterrupted-方法的区别？"><a href="#48、Java-中-interrupted-和-isInterrupted-方法的区别？" class="headerlink" title="48、Java 中 interrupted 和 isInterrupted 方法的区别？"></a>48、Java 中 interrupted 和 isInterrupted 方法的区别？</h3><p>interrupt</p>
+<p><code>interrupt 方法用于中断线程</code>。调用该方法的线程的状态为将被置为”中断”状态。</p>
+<p>注意：线程中断仅仅是置线程的中断状态位，不会停止线程。需要用户自己去监视线程的状态为并做处理。支持线程中断的方法（也就是线程中断后会抛出interruptedException 的方法）就是在监视线程的中断状态，一旦线程的中断状态被置为“中断状态”，就会抛出中断异常。</p>
+<p>interrupted</p>
+<p><code>查询当前线程的中断状态，并且清除原状态</code>。如果一个线程被中断了，第一次调用 interrupted 则返回 true，第二次和后面的就返回 false 了。</p>
+<p>isInterrupted</p>
+<p>仅仅是<code>查询当前线程的中断状态</code></p>
+<h3 id="49、为什么-wait-和-notify-方法要在同步块中调用？"><a href="#49、为什么-wait-和-notify-方法要在同步块中调用？" class="headerlink" title="49、为什么 wait 和 notify 方法要在同步块中调用？"></a>49、为什么 wait 和 notify 方法要在同步块中调用？</h3><p>Java API 强制要求这样做，如果你不这么做，你的代码会抛出IllegalMonitorStateException 异常。还有一个原因是为了<code>避免 wait 和 notify之间产生竞态条件</code>。</p>
+<h3 id="50、为什么你应该在循环中检查等待条件"><a href="#50、为什么你应该在循环中检查等待条件" class="headerlink" title="50、为什么你应该在循环中检查等待条件?"></a>50、为什么你应该在循环中检查等待条件?</h3><p>处于等待状态的线程可能会收到错误警报和伪唤醒，<code>如果不在循环中检查等待条件，程序就会在没有满足结束条件的情况下退出</code>。</p>
+<h3 id="51、Java-中的同步集合与并发集合有什么区别？"><a href="#51、Java-中的同步集合与并发集合有什么区别？" class="headerlink" title="51、Java 中的同步集合与并发集合有什么区别？"></a>51、Java 中的同步集合与并发集合有什么区别？</h3><p>同步集合与并发集合都为多线程和并发提供了合适的线程安全的集合，不过<code>并发集合的可扩展性更高</code>。</p>
+<p>在 Java1.5 之前程序员们只有同步集合来用且在多线程并发的时候会导致争用，阻碍了系统的扩展性。Java5 介绍了并发集合像ConcurrentHashMap，不仅提供线程安全还用锁分离和内部分区等现代技术提高了可扩展性。</p>
+<h3 id="52、什么是线程池？-为什么要使用它？"><a href="#52、什么是线程池？-为什么要使用它？" class="headerlink" title="52、什么是线程池？ 为什么要使用它？"></a>52、什么是线程池？ 为什么要使用它？</h3><p>创建线程要花费昂贵的资源和时间，如果任务来了才创建线程那么响应时间会变长，而且一个进程能创建的线程数有限。为了避免这些问题，在程序启动的时候就创建若干线程来响应处理，它们被称为线程池，里面的线程叫工作线程。从JDK1.5 开始，Java API 提供了 <code>Executor </code>框架让你可以创建不同的线程池。<code>线程资源复用</code></p>
+<h3 id="53、怎么检测一个线程是否拥有锁？"><a href="#53、怎么检测一个线程是否拥有锁？" class="headerlink" title="53、怎么检测一个线程是否拥有锁？"></a>53、怎么检测一个线程是否拥有锁？</h3><p>在 java.lang.Thread 中有一个方法叫 <code>holdsLock()</code>，它返回 <code>true </code>如果当且仅当当前线程拥有某个具体对象的锁。</p>
+<h3 id="54、你如何在-Java-中获取线程堆栈？"><a href="#54、你如何在-Java-中获取线程堆栈？" class="headerlink" title="54、你如何在 Java 中获取线程堆栈？"></a>54、你如何在 Java 中获取线程堆栈？</h3><p>Java虚拟机提供了线程转储（thread dump）的后门，通过这个后门可以把线程堆栈打印出来。通常我们将堆栈信息重定向到一个文件中，便于我们分析，由于信息量太大，很可能超出控制台缓冲区的最大行数限制造成信息丢失。这里介绍一个jdk自带的打印线程堆栈的工具，jstack用于打印出给定的Java进程ID或core file或远程调试服务的Java堆栈信息。<br>示例: $ <code>jstack –l 23561 &gt;&gt; xxx.dump </code><br>命令: $ <code>jstack [option] pid &gt;&gt; 文件</code>  </p>
+<p>&gt;&gt; 表示输出到文件尾部，实际运行中，往往一次dump的信息，还不足以确认问题，建议产生三次dump信息，如果每次dump都指向同一个问题，我们才确定问题的典型性。</p>
+<h3 id="55、JVM-中哪个参数是用来控制线程的栈堆栈小的"><a href="#55、JVM-中哪个参数是用来控制线程的栈堆栈小的" class="headerlink" title="55、JVM 中哪个参数是用来控制线程的栈堆栈小的?"></a>55、JVM 中哪个参数是用来控制线程的栈堆栈小的?</h3><p><code>-Xss</code> 每个线程的栈大小</p>
+<h3 id="56、Thread-类中的-yield-方法有什么作用？"><a href="#56、Thread-类中的-yield-方法有什么作用？" class="headerlink" title="56、Thread 类中的 yield 方法有什么作用？"></a>56、Thread 类中的 yield 方法有什么作用？</h3><p>使当前线程<code>从执行状态（运行状态）变为可执行态（就绪状态）</code>。</p>
+<p>当前线程到了就绪状态，那么接下来哪个线程会从就绪状态变成执行状态呢？可能是当前线程，也可能是其他线程，看系统的分配了。</p>
+<h3 id="57、Java-中-ConcurrentHashMap-的并发度是什么？"><a href="#57、Java-中-ConcurrentHashMap-的并发度是什么？" class="headerlink" title="57、Java 中 ConcurrentHashMap 的并发度是什么？"></a>57、Java 中 ConcurrentHashMap 的并发度是什么？</h3><p>ConcurrentHashMap 把实际 map 划分成若干部分来实现它的可扩展性和线程安全。这种划分是使用并发度获得的，它是 ConcurrentHashMap 类构造函数的一个可选参数，<code>默认值为 16，这样在多线程情况下就能避免争用</code>。</p>
+<p><code>在 JDK8 后，它摒弃了 Segment（锁段）的概念，而是启用了一种全新的方式实现,利用 CAS 算法。</code>同时加入了更多的辅助变量来提高并发度，具体内容还是查看源码吧。</p>
+<h3 id="58、Java-中-Semaphore-是什么？"><a href="#58、Java-中-Semaphore-是什么？" class="headerlink" title="58、Java 中 Semaphore 是什么？"></a>58、Java 中 Semaphore 是什么？</h3><p>Java 中的 Semaphore 是一种新的同步类，它是一个<code>计数信号</code>。从概念上讲，<code>信号量维护了一个许可集合</code>。如有必要，在许可可用前会阻塞每一个acquire()，然后再获取该许可。每个 release()添加一个许可，从而可能释放一个正在阻塞的获取者。但是，不使用实际的许可对象，Semaphore 只对可用许可的号码进行计数，并采取相应的行动。<code>信号量常常用于多线程的代码中，比如数据库连接池</code>。</p>
+<h3 id="59、Java-线程池中-submit-和-execute-方法有什么区别？"><a href="#59、Java-线程池中-submit-和-execute-方法有什么区别？" class="headerlink" title="59、Java 线程池中 submit() 和 execute()方法有什么区别？"></a>59、Java 线程池中 submit() 和 execute()方法有什么区别？</h3><p>两个方法<code>都可以向线程池提交任务</code>:</p>
+<p>execute()方法的返回类型是 <code>void</code>，它定义在Executor 接口中。</p>
+<p> submit()方法可以返回<code>持有计算结果的 Future 对象</code>，它定义在ExecutorService 接口中，它扩展了 Executor 接口，其它线程池类像ThreadPoolExecutor 和 ScheduledThreadPoolExecutor 都有这些方法。</p>
+<h3 id="60、什么是阻塞式方法？"><a href="#60、什么是阻塞式方法？" class="headerlink" title="60、什么是阻塞式方法？"></a>60、什么是阻塞式方法？</h3><p>阻塞式方法是指<code>程序会一直等待该方法完成期间不做其他事情</code>，ServerSocket 的 <code>accept()</code> 方法就是一直等待客户端连接。这里的阻塞是指调用结果返回之前，当前线程会被挂起，直到得到结果之后才会返回。此外，还有异步和非阻塞式方法在任务完成前就返回。</p>
+<h3 id="61、Java-中的-ReadWriteLock-是什么？"><a href="#61、Java-中的-ReadWriteLock-是什么？" class="headerlink" title="61、Java 中的 ReadWriteLock 是什么？"></a>61、Java 中的 ReadWriteLock 是什么？</h3><p>读写锁是用来<code>提升并发程序性能的锁分离技术</code>的成果。</p>
+<h3 id="62、volatile-变量和-atomic-变量有什么不同？"><a href="#62、volatile-变量和-atomic-变量有什么不同？" class="headerlink" title="62、volatile 变量和 atomic 变量有什么不同？"></a>62、volatile 变量和 atomic 变量有什么不同？</h3><p>Volatile 变量可以确保先行关系，即<code>写操作会发生在后续的读操作之前, 但它并不能保证原子性</code>。例如用 volatile 修饰 count 变量那么 count++ 操作就不是原子性的。</p>
+<p>而 AtomicInteger 类提供的 atomic 方法<code>可以让这种操作具有原子性如 getAndIncrement() 方法会原子性的进行增量操作把当前值加一</code>，其它数据类型和引用变量也可以进行相似操作。</p>
+<h3 id="63、可以直接调用-Thread-类的-run-方法么？"><a href="#63、可以直接调用-Thread-类的-run-方法么？" class="headerlink" title="63、可以直接调用 Thread 类的 run ()方法么？"></a>63、可以直接调用 Thread 类的 run ()方法么？</h3><p>当然可以。但是如果我们调用了 Thread 的 run()方法，它的行为就会和普通的方法一样，会在当前线程中执行。为了在新的线程中执行我们的代码，必须使用Thread.start()方法。</p>
+<h3 id="64、如何让正在运行的线程暂停一段时间？"><a href="#64、如何让正在运行的线程暂停一段时间？" class="headerlink" title="64、如何让正在运行的线程暂停一段时间？"></a>64、如何让正在运行的线程暂停一段时间？</h3><p>我们可以使用 Thread 类的 <code>Sleep()</code>方法让线程暂停一段时间。需要注意的是，这并不会让线程终止，一旦从休眠中唤醒线程，线程的状态将会被改变为 Runnable，并且根据线程调度，它将得到执行。</p>
+<h3 id="65、你对线程优先级的理解是什么？"><a href="#65、你对线程优先级的理解是什么？" class="headerlink" title="65、你对线程优先级的理解是什么？"></a>65、你对线程优先级的理解是什么？</h3><p><code>每一个线程都是有优先级的</code>，一般来说，高优先级的线程在运行时会具有优先权，但这依赖于线程调度的实现，这个实现是和操作系统相关的(OS dependent)。我们可以定义线程的优先级，但是这并不能保证高优先级的线程会在低优先级的线程前执行。线程优先级是一个 int 变量(从<code> 1-10</code>)，1 代表最低优先级，10 代表最高优先级。</p>
+<p>java 的线程优先级调度会委托给操作系统去处理，所以与具体的操作系统优先级有关，<code>如非特别需要，一般无需设置线程优先级</code>。</p>
+<h3 id="66、什么是线程调度器-Thread-Scheduler-和时间分片-Time-Slicing-？"><a href="#66、什么是线程调度器-Thread-Scheduler-和时间分片-Time-Slicing-？" class="headerlink" title="66、什么是线程调度器(Thread Scheduler)和时间分片(Time Slicing )？"></a>66、什么是线程调度器(Thread Scheduler)和时间分片(Time Slicing )？</h3><p>线程调度器是一个操作系统服务，它负责为 Runnable 状态的线程分配 CPU 时间。一旦我们<code>创建一个线程并启动它，它的执行便依赖于线程调度器的实现</code>。同上一个问题，线程调度并不受到 Java 虚拟机控制，所以由应用程序来控制它是更好的选择（也就是说不要让你的程序依赖于线程的优先级）。</p>
+<p>时间分片是指<code>将可用的 CPU 时间分配给可用的 Runnable 线程的过程</code>。分配 CPU时间可以基于线程优先级或者线程等待的时间。</p>
+<h3 id="67、你如何确保-main-方法所在的线程是-Java-程序最后结束的线程？"><a href="#67、你如何确保-main-方法所在的线程是-Java-程序最后结束的线程？" class="headerlink" title="67、你如何确保 main()方法所在的线程是 Java 程序最后结束的线程？"></a>67、你如何确保 main()方法所在的线程是 Java 程序最后结束的线程？</h3><p>我们可以使用 Thread 类的 <code>join()</code>方法来确保所有程序创建的线程在 main()方法退出前结束。</p>
+<h3 id="68、线程之间是如何通信的？"><a href="#68、线程之间是如何通信的？" class="headerlink" title="68、线程之间是如何通信的？"></a>68、线程之间是如何通信的？</h3><p>当线程间是可以共享资源时，线程间通信是协调它们的重要的手段。Object 类中<code>wait()\notify()\notifyAll()</code>方法可以用于线程间通信关于资源的锁的状态。</p>
+<h3 id="69、为什么线程通信的方法-wait-notify-和-notifyAll-被定义在-Object-类里？"><a href="#69、为什么线程通信的方法-wait-notify-和-notifyAll-被定义在-Object-类里？" class="headerlink" title="69、为什么线程通信的方法 wait(), notify()和 notifyAll()被定义在 Object 类里？"></a>69、为什么线程通信的方法 wait(), notify()和 notifyAll()被定义在 Object 类里？</h3><p>Java 的每个对象中都有一个锁(monitor，也可以成为监视器) 并且 wait()，notify()等方法用于等待<code>对象的锁</code>或者通知其他线程对象的监视器可用。在 Java 的线程中并没有可供任何对象使用的锁和同步器。这就是为什么这些方法是 Object 类的一部分，这样 Java 的每一个类都有用于线程间通信的基本方法。</p>
+<h3 id="70、为什么-wait-notify-和-notifyAll-必须在同步方法或者同步块中被调用？"><a href="#70、为什么-wait-notify-和-notifyAll-必须在同步方法或者同步块中被调用？" class="headerlink" title="70、为什么 wait(), notify()和 notifyAll ()必须在同步方法或者同步块中被调用？"></a>70、为什么 wait(), notify()和 notifyAll ()必须在同步方法或者同步块中被调用？</h3><p>当一个线程需要调用对象的 wait()方法的时候，这个<code>线程必须拥有该对象的锁</code>，接着它就会释放这个对象锁并进入等待状态直到其他线程调用这个对象上的 notify()方法。同样的，当一个线程需要调用对象的 notify()方法时，它会<code>释放这个对象的锁</code>，以便其他在等待的线程就可以得到这个对象锁。由于所有的这些方法都需要线程持有对象的锁，这样就只能通过同步来实现，所以他们只能在同步方法或者同步块中被调用。</p>
+<h3 id="71、为什么-Thread-类的-sleep-和-yield-方法是静态的？"><a href="#71、为什么-Thread-类的-sleep-和-yield-方法是静态的？" class="headerlink" title="71、为什么 Thread 类的 sleep()和 yield ()方法是静态的？"></a>71、为什么 Thread 类的 sleep()和 yield ()方法是静态的？</h3><p>Thread 类的 sleep()和 yield()方法将在当前正在执行的线程上运行。所以在其他处于等待状态的线程上调用这些方法是没有意义的。这就是为什么这些方法是静态的。它们<code>可以在当前正在执行的线程中工作，并避免程序员错误的认为可以在其他非运行线程调用这些方法</code>。</p>
+<h3 id="72、如何确保线程安全？"><a href="#72、如何确保线程安全？" class="headerlink" title="72、如何确保线程安全？"></a>72、如何确保线程安全？</h3><p>在 Java 中可以有很多方法来保证线程安全——<code>同步</code>，使用<code>原子类(atomic concurrent classes)</code>，实现<code>并发锁</code>，使用 <code>volatile</code> 关键字，使用<code>不变类和线程安全类</code>。</p>
+<h3 id="73、同步方法和同步块，哪个是更好的选择？"><a href="#73、同步方法和同步块，哪个是更好的选择？" class="headerlink" title="73、同步方法和同步块，哪个是更好的选择？"></a>73、同步方法和同步块，哪个是更好的选择？</h3><p><code>同步块</code>是更好的选择，因为它<code>不会锁住整个对象</code>（当然你也可以让它锁住整个对象）。</p>
+<p>同步方法会锁住整个对象，哪怕这个类中有多个不相关联的同步块，这通常会导致他们停止执行并需要等待获得这个对象上的锁。</p>
+<p>同步块更要符合开放调用的原则，只在需要锁住的代码块锁住相应的对象，这样从侧面来说<code>也可以避免死锁</code>。</p>
+<h3 id="74、如何创建守护线程？"><a href="#74、如何创建守护线程？" class="headerlink" title="74、如何创建守护线程？"></a>74、如何创建守护线程？</h3><p>使用 Thread 类的 setDaemon(true) 方法可以将线程设置为守护线程，需要注意的是，需要在调用 start()方法前调用这个方法，否则会抛出IllegalThreadStateException 异常。</p>
+<h3 id="75、什么是-Java-Timer-类？如何创建一个有特定时间间隔的任务？"><a href="#75、什么是-Java-Timer-类？如何创建一个有特定时间间隔的任务？" class="headerlink" title="75、什么是 Java Timer 类？如何创建一个有特定时间间隔的任务？"></a>75、什么是 Java Timer 类？如何创建一个有特定时间间隔的任务？</h3><p><code>java.util.Timer 是一个工具类</code>，可以用于安排一个线程在未来的某个特定时间执行。Timer 类可以用安排一次性任务或者周期任务。</p>
+<p><code>java.util.TimerTask</code> 是一个实现了 Runnable 接口的<code>抽象类</code>，我们需要<code>去继承这个类来创建我们自己的定时任务并使用 Timer 去安排它的执行</code>。</p>
+<h3 id="76、高并发-，处理时间短，选用哪种线程池。并发低，处理时间长，选用哪种线程池。高并发，处理时间长，如何处理？"><a href="#76、高并发-，处理时间短，选用哪种线程池。并发低，处理时间长，选用哪种线程池。高并发，处理时间长，如何处理？" class="headerlink" title="76、高并发 ，处理时间短，选用哪种线程池。并发低，处理时间长，选用哪种线程池。高并发，处理时间长，如何处理？"></a>76、高并发 ，处理时间短，选用哪种线程池。并发低，处理时间长，选用哪种线程池。高并发，处理时间长，如何处理？</h3><ol>
+<li>高并发,任务处理短的适合使用 java.util.concurrent.Executors.<code>newCachedThreadPool</code>, 它的线程数最大值可按照实际情况无限增加，而队列使用了 SynchronousQueue 无缓存,在多核机器下同步的开销较小， 可以参考下 java doc 描述。</li>
+<li>低并发，任务处理时间长。应该具体看各自的业务场景使用设置 <code>ThreadPoolExecutor</code> 参数。 有些任务例如视频转码等, 可能吃 CPU 计算,或者吃 IO 线程数适当调整少些, 工作线程多了实际上也是慢。而有些不吃CPU的任务执行慢，线程也可按照实际场景适当增大。</li>
+<li>高并发，处理时间长，就不是单机一个线程池能解决的问题，应该需要引入<code>分布式计算</code>。任务的分而治之，类似大数据处理的一些<code>Map-reduce, 网络的均衡负载，集群</code>等系统架构的设计。</li>
+</ol>
+
+              
+            </div>
+            <hr/>
+            <div>
+              <div>
+  <img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20241112163319.png" srcset="/img/loading.gif" lazyload>
+</div>
+<div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/20-%E9%9D%A2%E8%AF%95%E9%97%AE%E9%A2%98/" class="category-chain-item">20_面试问题</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/20-%E9%9D%A2%E8%AF%95%E9%97%AE%E9%A2%98/01-%E6%8A%80%E6%9C%AF%E9%97%AE%E9%A2%98/" class="category-chain-item">01_技术问题</a>
+  
+  
+
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/%E9%9D%A2%E8%AF%95%E9%A2%98/">#面试题</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>03-Thread并发问题</div>
+      <div>https://janycode.github.io/2017/05/02/20_面试问题/01_技术问题/03-Thread并发问题/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Jerry(姜源)</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2017年5月2日</div>
+        </div>
+      
+      
+      <div class="license-meta-item">
+        <div>许可协议</div>
+        <div>
+          
+            
+            
+              <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+              <span class="hint--top hint--rounded" aria-label="BY - 姜源">
+                <i class="iconfont icon-by"></i>
+              </span>
+              </a>
+            
+          
+        </div>
+      </div>
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2017/05/02/20_%E9%9D%A2%E8%AF%95%E9%97%AE%E9%A2%98/01_%E6%8A%80%E6%9C%AF%E9%97%AE%E9%A2%98/10-Spring%E6%A1%86%E6%9E%B6/" title="10-Spring框架">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">10-Spring框架</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2017/04/28/04_%E5%A4%A7%E5%89%8D%E7%AB%AF/00_PhotoShop/01-PS%E5%9F%BA%E7%A1%80%E6%93%8D%E4%BD%9C/" title="01-PS基础操作">
+                        <span class="hidden-mobile">01-PS基础操作</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+  <article id="comments" lazyload>
+    
+  <div id="SOHUCS" sid='https://janycode.github.io/2017/05/02/20_%E9%9D%A2%E8%AF%95%E9%97%AE%E9%A2%98/01_%E6%8A%80%E6%9C%AF%E9%97%AE%E9%A2%98/03-Thread%E5%B9%B6%E5%8F%91%E9%97%AE%E9%A2%98/'></div>
+  <script type="text/javascript">
+    Fluid.utils.loadComments('#SOHUCS', function() {
+      Fluid.utils.createScript("https://changyan.sohu.com/upload/changyan.js", function() {
+        window.changyan.api.config({"appid":"cyw5OHIcO","appkey":"fea3446b3df4b3f129f34da4cbc87e51"})
+      });
+    });
+  </script>
+  <noscript>Please enable JavaScript to view the comments</noscript>
+
+
+  </article>
+
+
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://simple.blog.csdn.net" target="_blank" rel="nofollow noopener"><span>CSDN</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/janycode" target="_blank" rel="nofollow noopener"><span>GitHub</span></a> <i class="iconfont icon-love"></i> <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="busuanzi_container_site_pv" style="display: none">
+        总访问量(PV) 
+        <span id="busuanzi_value_site_pv"></span>
+         次，
+      </span>
+    
+    
+      <span id="busuanzi_container_site_uv" style="display: none">
+        总访客数(UV) 
+        <span id="busuanzi_value_site_uv"></span>
+         人
+      </span>
+    
+    
+  
+</div>
+
+  
+  
+  
+</div>
+
+<!-- live2d 动画 -->
+<script src="https://eqcn.ajz.miesnfu.com/wp-content/plugins/wp-3d-pony/live2dw/lib/L2Dwidget.min.js"></script>
+<script>
+    L2Dwidget.init({
+        "model": {
+            jsonPath: "https://unpkg.com/live2d-widget-model-haruto@1.0.5/assets/haruto.model.json",
+            "scale": 1
+        },
+        "display": {
+            "position": "right",
+            "width": 100,
+            "height": 200,
+            "hOffset": 35,
+            "vOffset": -85
+        },
+        "mobile": {
+            "show": false,
+            "scale": 0.1
+        },
+        "react": {
+            "opacityDefault": 0.75,
+            "opacityOnHover": 0.2
+        }
+    });
+</script>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <!-- Baidu Analytics -->
+    <script defer>
+      if (!Fluid.ctx.dnt) {
+        var _hmt = _hmt || [];
+        (function() {
+          var hm = document.createElement("script");
+          hm.src = "https://hm.baidu.com/hm.js?bfff735c897eb60ea49b735096b20e47";
+          var s = document.getElementsByTagName("script")[0];
+          s.parentNode.insertBefore(hm, s);
+        })();
+      }
+    </script>
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.0/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      headingSelector : CONFIG.toc.headingSelector || 'h1,h2,h3,h4,h5,h6',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      collapseDepth   : CONFIG.toc.collapseDepth || 0,
+      scrollSmooth    : true,
+      headingsOffset  : -boardTop
+    });
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+  });
+</script>
+
+
+  <script>
+  (function() {
+    var enableLang = CONFIG.code_language.enable && CONFIG.code_language.default;
+    var enableCopy = CONFIG.copy_btn;
+    if (!enableLang && !enableCopy) {
+      return;
+    }
+
+    function getBgClass(ele) {
+      return Fluid.utils.getBackgroundLightness(ele) >= 0 ? 'code-widget-light' : 'code-widget-dark';
+    }
+
+    var copyTmpl = '';
+    copyTmpl += '<div class="code-widget">';
+    copyTmpl += 'LANG';
+    copyTmpl += '</div>';
+    jQuery('.markdown-body pre').each(function() {
+      var $pre = jQuery(this);
+      if ($pre.find('code.mermaid').length > 0) {
+        return;
+      }
+      if ($pre.find('span.line').length > 0) {
+        return;
+      }
+
+      var lang = '';
+
+      if (enableLang) {
+        lang = CONFIG.code_language.default;
+        if ($pre[0].children.length > 0 && $pre[0].children[0].classList.length >= 2 && $pre.children().hasClass('hljs')) {
+          lang = $pre[0].children[0].classList[1];
+        } else if ($pre[0].getAttribute('data-language')) {
+          lang = $pre[0].getAttribute('data-language');
+        } else if ($pre.parent().hasClass('sourceCode') && $pre[0].children.length > 0 && $pre[0].children[0].classList.length >= 2) {
+          lang = $pre[0].children[0].classList[1];
+          $pre.parent().addClass('code-wrapper');
+        } else if ($pre.parent().hasClass('markdown-body') && $pre[0].classList.length === 0) {
+          $pre.wrap('<div class="code-wrapper"></div>');
+        }
+        lang = lang.toUpperCase().replace('NONE', CONFIG.code_language.default);
+      }
+      $pre.append(copyTmpl.replace('LANG', lang).replace('code-widget">',
+        getBgClass($pre[0]) + (enableCopy ? ' code-widget copy-btn" data-clipboard-snippet><i class="iconfont icon-copy"></i>' : ' code-widget">')));
+
+      if (enableCopy) {
+        Fluid.utils.createScript('https://lib.baomitu.com/clipboard.js/2.0.10/clipboard.min.js', function() {
+          var clipboard = new window.ClipboardJS('.copy-btn', {
+            target: function(trigger) {
+              var nodes = trigger.parentNode.childNodes;
+              for (var i = 0; i < nodes.length; i++) {
+                if (nodes[i].tagName === 'CODE') {
+                  return nodes[i];
+                }
+              }
+            }
+          });
+          clipboard.on('success', function(e) {
+            e.clearSelection();
+            e.trigger.innerHTML = e.trigger.innerHTML.replace('icon-copy', 'icon-success');
+            setTimeout(function() {
+              e.trigger.innerHTML = e.trigger.innerHTML.replace('icon-success', 'icon-copy');
+            }, 2000);
+          });
+        });
+      }
+    });
+  })();
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

@@ -1,0 +1,924 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=light>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Jerry(姜源)">
+  <meta name="keywords" content="Java,Html,CSS,JavaScript,Python,C,Linux,shell编程经验分享、技术总结、心得体会">
+  
+    <meta name="description" content="参考资料： 《Trouble Shooting Guide for JavaSE 6 with HotSpot VM》: http:&#x2F;&#x2F;www.oracle.com&#x2F;technetwork&#x2F;java&#x2F;javase&#x2F;tsg-vm-149989.pdf  VisualVM: http:&#x2F;&#x2F;docs.oracle.com&#x2F;javase&#x2F;7&#x2F;docs&#x2F;technotes&#x2F;guides&#x2F;visualvm&#x2F;">
+<meta property="og:type" content="article">
+<meta property="og:title" content="05-jstack,jmap,jstat">
+<meta property="og:url" content="https://janycode.github.io/2020/06/11/07_%E8%99%9A%E6%8B%9F%E6%9C%BA/05-jstack,jmap,jstat/index.html">
+<meta property="og:site_name" content="姜源の云笔记">
+<meta property="og:description" content="参考资料： 《Trouble Shooting Guide for JavaSE 6 with HotSpot VM》: http:&#x2F;&#x2F;www.oracle.com&#x2F;technetwork&#x2F;java&#x2F;javase&#x2F;tsg-vm-149989.pdf  VisualVM: http:&#x2F;&#x2F;docs.oracle.com&#x2F;javase&#x2F;7&#x2F;docs&#x2F;technotes&#x2F;guides&#x2F;visualvm&#x2F;">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20220206000914.png">
+<meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20220206001150.png">
+<meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20220206001327.png">
+<meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20250324094633.png">
+<meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20220206001434.png">
+<meta property="article:published_time" content="2020-06-11T04:17:17.000Z">
+<meta property="article:modified_time" content="2026-02-10T09:21:30.161Z">
+<meta property="article:author" content="Jerry(姜源)">
+<meta property="article:tag" content="JVM">
+<meta property="article:tag" content="jstack">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20220206000914.png">
+  
+  
+    <meta name="referrer" content="no-referrer-when-downgrade">
+  
+  
+  <title>05-jstack,jmap,jstat - 姜源の云笔记</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"janycode.github.io","root":"/","version":"1.9.0","typing":{"enable":true,"typeSpeed":50,"cursorChar":"|","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":false},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":"bfff735c897eb60ea49b735096b20e47","google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+
+  
+<meta name="generator" content="Hexo 6.2.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 50vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>姜源の云笔记</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tools/">
+                <i class="iconfont icon-slack-fill"></i>
+                工具
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" target="_blank" rel="noopener" href="https://yuancodes.github.io/">
+                <i class="iconfont icon-notebook"></i>
+                Docsify
+              </a>
+            </li>
+          
+        
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="05-jstack,jmap,jstat"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-author" aria-hidden="true"></i>
+        Jerry(姜源)
+      </span>
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2020-06-11 12:17" pubdate>
+          星期四, 2020/06/11 12:17:17
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          <!-- compatible with older versions-->
+          17k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          <!-- compatible with older versions-->
+          140 分钟
+        
+      </span>
+    
+
+    
+    
+      
+        <span id="busuanzi_container_page_pv" style="display: none">
+          <i class="iconfont icon-eye" aria-hidden="true"></i>
+          <span id="busuanzi_value_page_pv"></span> 次
+        </span>
+        
+      
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">05-jstack,jmap,jstat</h1>
+            
+            <div class="markdown-body">
+              
+              <p>参考资料：</p>
+<p>《Trouble Shooting Guide for JavaSE 6 with HotSpot VM》: <a target="_blank" rel="noopener" href="http://www.oracle.com/technetwork/java/javase/tsg-vm-149989.pdf">http://www.oracle.com/technetwork/java/javase/tsg-vm-149989.pdf</a> </p>
+<p>VisualVM: <a target="_blank" rel="noopener" href="http://docs.oracle.com/javase/7/docs/technotes/guides/visualvm/">http://docs.oracle.com/javase/7/docs/technotes/guides/visualvm/</a></p>
+<p>jConsole: <a target="_blank" rel="noopener" href="http://docs.oracle.com/javase/1.5.0/docs/guide/management/jconsole.html">http://docs.oracle.com/javase/1.5.0/docs/guide/management/jconsole.html</a></p>
+<p>Monitoring and Managing JavaSE 6 Applications: <a target="_blank" rel="noopener" href="http://www.oracle.com/technetwork/articles/javase/monitoring-141801.html">http://www.oracle.com/technetwork/articles/javase/monitoring-141801.html</a></p>
+<blockquote>
+<p>先 <code>jps -ml</code></p>
+<p>再 <code>sudo -u hive /usr/java/latest/bin/jstack 19661(此为进程号) &gt; /tmp/jstack.txt</code></p>
+</blockquote>
+<h3 id="1-jps"><a href="#1-jps" class="headerlink" title="1. jps"></a>1. jps</h3><p>(Java Virtual Machine Process Status Tool)</p>
+<p>jps主要用来输出JVM中运行的进程状态信息。语法格式如下：</p>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs css">jps <span class="hljs-selector-attr">[options]</span> <span class="hljs-selector-attr">[hostid]</span><br><br>如果不指定hostid就默认为当前主机或服务器。<br>命令行参数选项说明如下：<br>-<span class="hljs-selector-tag">q</span> 不输出类名、Jar名和传入<span class="hljs-selector-tag">main</span>方法的参数<br>-m 输出传入<span class="hljs-selector-tag">main</span>方法的参数<br>-l 输出<span class="hljs-selector-tag">main</span>类或Jar的全限名<br>-v 输出传入JVM的参数<br></code></pre></td></tr></table></figure>
+
+
+<p>比如下面：</p>
+<figure class="highlight gradle"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs gradle">root@ubuntu:/# jps -m -l<br><span class="hljs-number">2458</span> org.artifactory.standalone.main.Main <span class="hljs-regexp">/usr/</span>local<span class="hljs-regexp">/artifactory-2.2.5/</span>etc/jetty.xml<br><span class="hljs-number">29920</span> com.sun.tools.hat.Main -port <span class="hljs-number">9998</span> <span class="hljs-regexp">/tmp/</span><span class="hljs-keyword">dump</span>.dat<br><span class="hljs-number">3149</span> org.apache.catalina.startup.Bootstrap start<br><span class="hljs-number">30972</span> sun.tools.jps.Jps -m -l<br><span class="hljs-number">8247</span> org.apache.catalina.startup.Bootstrap start<br><span class="hljs-number">25687</span> com.sun.tools.hat.Main -port <span class="hljs-number">9999</span> <span class="hljs-keyword">dump</span>.dat<br><span class="hljs-number">21711</span> mrf-center.jar<br></code></pre></td></tr></table></figure>
+
+
+
+<h3 id="2-jstack"><a href="#2-jstack" class="headerlink" title="2. jstack"></a>2. jstack</h3><p><code>jstack -F pid 检查是否有死锁</code></p>
+<p>jstack主要用来查看某个Java进程内的线程堆栈信息。语法格式如下：</p>
+<figure class="highlight mipsasm"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs mipsasm"><span class="hljs-keyword">jstack </span>[option] pid<br><span class="hljs-keyword">jstack </span>[option] executable core<br><span class="hljs-keyword">jstack </span>[option] [server-id@]remote-hostname-<span class="hljs-keyword">or-ip</span><br><span class="hljs-keyword"></span><br>命令行参数选项说明如下：<br>-l long listings，会打印出额外的锁信息，在发生死锁时可以用<span class="hljs-keyword">jstack </span>-l pid来观察锁持有情况<br>-m mixed mode，不仅会输出<span class="hljs-keyword">Java堆栈信息，还会输出C/C++堆栈信息（比如Native方法）</span><br></code></pre></td></tr></table></figure>
+
+
+<p>jstack可以定位到线程堆栈，根据堆栈信息我们可以定位到具体代码，所以它在JVM性能调优中使用得非常多。下面我们来一个实例找出某个Java进程中最耗费CPU的Java线程并定位堆栈信息，用到的命令有ps、top、printf、jstack、grep。</p>
+<p>第一步先找出Java进程ID，我部署在服务器上的Java应用名称为mrf-center：</p>
+<figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs apache"><span class="hljs-attribute">root</span>@ubuntu:/# ps -ef | grep mrf-center | grep -v grep<br><span class="hljs-attribute">root</span>     <span class="hljs-number">21711</span>     <span class="hljs-number">1</span>  <span class="hljs-number">1</span> <span class="hljs-number">14</span>:<span class="hljs-number">47</span> pts/<span class="hljs-number">3</span>    <span class="hljs-number">00</span>:<span class="hljs-number">02</span>:<span class="hljs-number">10</span> java -jar mrf-center.jar<br></code></pre></td></tr></table></figure>
+
+<p>得到进程ID为21711，第二步找出该进程内最耗费CPU的线程，可以使用ps -Lfp pid或者ps -mp pid -o THREAD, tid, time或者top -Hp pid，我这里用第三个，输出如下：</p>
+<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20220206000914.png" srcset="/img/loading.gif" lazyload alt="image-20220206000913264"></p>
+<p>TIME列就是各个Java线程耗费的CPU时间，CPU时间最长的是线程ID为21742的线程，用</p>
+<figure class="highlight perl"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs perl"><span class="hljs-keyword">printf</span> <span class="hljs-string">&quot;%x\n&quot;</span> <span class="hljs-number">21742</span><br></code></pre></td></tr></table></figure>
+
+<p>得到21742的十六进制值为54ee，下面会用到。    </p>
+<p>OK，下一步终于轮到jstack上场了，它用来输出进程21711的堆栈信息，然后根据线程ID的十六进制值grep，如下：</p>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs routeros">root@ubuntu:/# jstack 21711 | grep 54ee<br><span class="hljs-string">&quot;PollIntervalRetrySchedulerThread&quot;</span> <span class="hljs-attribute">prio</span>=10 <span class="hljs-attribute">tid</span>=0x00007f950043e000 <span class="hljs-attribute">nid</span>=0x54ee <span class="hljs-keyword">in</span> Object.wait() [0x00007f94c6eda000]<br></code></pre></td></tr></table></figure>
+
+<p>可以看到CPU消耗在PollIntervalRetrySchedulerThread这个类的Object.wait()，我找了下我的代码，定位到下面的代码：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-comment">// Idle wait  </span><br>getLog().info(<span class="hljs-string">&quot;Thread [&quot;</span> + getName() + <span class="hljs-string">&quot;] is idle waiting...&quot;</span>);  <br>schedulerThreadState = PollTaskSchedulerThreadState.IdleWaiting;  <br><span class="hljs-type">long</span> <span class="hljs-variable">now</span> <span class="hljs-operator">=</span> System.currentTimeMillis();  <br><span class="hljs-type">long</span> <span class="hljs-variable">waitTime</span> <span class="hljs-operator">=</span> now + getIdleWaitTime();  <br><span class="hljs-type">long</span> <span class="hljs-variable">timeUntilContinue</span> <span class="hljs-operator">=</span> waitTime - now;  <br><span class="hljs-keyword">synchronized</span>(sigLock) &#123;  <br>    <span class="hljs-keyword">try</span> &#123;  <br>        <span class="hljs-keyword">if</span>(!halted.get()) &#123;  <br>            sigLock.wait(timeUntilContinue);  <br>        &#125;  <br>    &#125;   <br>    <span class="hljs-keyword">catch</span> (InterruptedException ignore) &#123;  <br>    &#125;  <br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>它是轮询任务的空闲等待代码，上面的sigLock.wait(timeUntilContinue)就对应了前面的Object.wait()。</p>
+<p>jstack信息分析：</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br></pre></td><td class="code"><pre><code class="hljs stylus">Full thread dump Java <span class="hljs-built_in">HotSpot</span>(TM) <span class="hljs-number">64</span>-Bit Server VM (<span class="hljs-number">24.71</span>-b01 mixed mode):  <br>  <br><span class="hljs-string">&quot;Attach Listener&quot;</span> daemon prio=<span class="hljs-number">10</span> tid=<span class="hljs-number">0</span>x00007f75a4001000 nid=<span class="hljs-number">0</span>x947 waiting on condition <span class="hljs-selector-attr">[0x0000000000000000]</span>  <br>   java<span class="hljs-selector-class">.lang</span><span class="hljs-selector-class">.Thread</span><span class="hljs-selector-class">.State</span>: RUNNABLE  <br>  <br><span class="hljs-string">&quot;LeaseRenewer:hive@nameservice1&quot;</span> daemon prio=<span class="hljs-number">10</span> tid=<span class="hljs-number">0</span>x00007f7364f5a000 nid=<span class="hljs-number">0</span>x537 waiting on condition <span class="hljs-selector-attr">[0x00007f713407f000]</span>  <br>   java<span class="hljs-selector-class">.lang</span><span class="hljs-selector-class">.Thread</span><span class="hljs-selector-class">.State</span>: TIMED_WAITING (sleeping)  <br>    at java<span class="hljs-selector-class">.lang</span><span class="hljs-selector-class">.Thread</span><span class="hljs-selector-class">.sleep</span>(Native Method)  <br>    at org<span class="hljs-selector-class">.apache</span><span class="hljs-selector-class">.hadoop</span><span class="hljs-selector-class">.hdfs</span><span class="hljs-selector-class">.LeaseRenewer</span><span class="hljs-selector-class">.run</span>(LeaseRenewer<span class="hljs-selector-class">.java</span>:<span class="hljs-number">438</span>)  <br>    at org<span class="hljs-selector-class">.apache</span><span class="hljs-selector-class">.hadoop</span><span class="hljs-selector-class">.hdfs</span><span class="hljs-selector-class">.LeaseRenewer</span>.access$<span class="hljs-number">700</span>(LeaseRenewer<span class="hljs-selector-class">.java</span>:<span class="hljs-number">71</span>)  <br>    at org<span class="hljs-selector-class">.apache</span><span class="hljs-selector-class">.hadoop</span><span class="hljs-selector-class">.hdfs</span>.LeaseRenewer$<span class="hljs-number">1</span><span class="hljs-selector-class">.run</span>(LeaseRenewer<span class="hljs-selector-class">.java</span>:<span class="hljs-number">298</span>)  <br>    at java<span class="hljs-selector-class">.lang</span><span class="hljs-selector-class">.Thread</span><span class="hljs-selector-class">.run</span>(Thread<span class="hljs-selector-class">.java</span>:<span class="hljs-number">745</span>)  <br>  <br><span class="hljs-string">&quot;HiveServer2-Handler-Pool: Thread-883126&quot;</span> prio=<span class="hljs-number">10</span> tid=<span class="hljs-number">0</span>x00007f73bc016000 nid=<span class="hljs-number">0</span>x4e5 waiting on condition <span class="hljs-selector-attr">[0x00007f7137bba000]</span>  <br>   java<span class="hljs-selector-class">.lang</span><span class="hljs-selector-class">.Thread</span><span class="hljs-selector-class">.State</span>: TIMED_WAITING (parking)  <br>    at sun<span class="hljs-selector-class">.misc</span><span class="hljs-selector-class">.Unsafe</span><span class="hljs-selector-class">.park</span>(Native Method)  <br>    - parking to wait <span class="hljs-keyword">for</span>  &lt;<span class="hljs-number">0</span>x00000006585a35d8&gt; (<span class="hljs-selector-tag">a</span> java<span class="hljs-selector-class">.util</span><span class="hljs-selector-class">.concurrent</span>.SynchronousQueue<span class="hljs-variable">$TransferStack</span>)  <br>    at java<span class="hljs-selector-class">.util</span><span class="hljs-selector-class">.concurrent</span><span class="hljs-selector-class">.locks</span><span class="hljs-selector-class">.LockSupport</span><span class="hljs-selector-class">.parkNanos</span>(LockSupport<span class="hljs-selector-class">.java</span>:<span class="hljs-number">226</span>)  <br>    at java<span class="hljs-selector-class">.util</span><span class="hljs-selector-class">.concurrent</span>.SynchronousQueue<span class="hljs-variable">$TransferStack</span><span class="hljs-selector-class">.awaitFulfill</span>(SynchronousQueue<span class="hljs-selector-class">.java</span>:<span class="hljs-number">460</span>)  <br>    at java<span class="hljs-selector-class">.util</span><span class="hljs-selector-class">.concurrent</span>.SynchronousQueue<span class="hljs-variable">$TransferStack</span><span class="hljs-selector-class">.transfer</span>(SynchronousQueue<span class="hljs-selector-class">.java</span>:<span class="hljs-number">359</span>)  <br>    at java<span class="hljs-selector-class">.util</span><span class="hljs-selector-class">.concurrent</span><span class="hljs-selector-class">.SynchronousQueue</span><span class="hljs-selector-class">.poll</span>(SynchronousQueue<span class="hljs-selector-class">.java</span>:<span class="hljs-number">942</span>)  <br>    at java<span class="hljs-selector-class">.util</span><span class="hljs-selector-class">.concurrent</span><span class="hljs-selector-class">.ThreadPoolExecutor</span><span class="hljs-selector-class">.getTask</span>(ThreadPoolExecutor<span class="hljs-selector-class">.java</span>:<span class="hljs-number">1068</span>)  <br>    at java<span class="hljs-selector-class">.util</span><span class="hljs-selector-class">.concurrent</span><span class="hljs-selector-class">.ThreadPoolExecutor</span><span class="hljs-selector-class">.runWorker</span>(ThreadPoolExecutor<span class="hljs-selector-class">.java</span>:<span class="hljs-number">1130</span>)  <br>    at java<span class="hljs-selector-class">.util</span><span class="hljs-selector-class">.concurrent</span>.ThreadPoolExecutor<span class="hljs-variable">$Worker</span><span class="hljs-selector-class">.run</span>(ThreadPoolExecutor<span class="hljs-selector-class">.java</span>:<span class="hljs-number">615</span>)  <br>    at java<span class="hljs-selector-class">.lang</span><span class="hljs-selector-class">.Thread</span><span class="hljs-selector-class">.run</span>(Thread<span class="hljs-selector-class">.java</span>:<span class="hljs-number">745</span>)  <br>  <br><span class="hljs-string">&quot;IPC Parameter Sending Thread #729&quot;</span> daemon prio=<span class="hljs-number">10</span> tid=<span class="hljs-number">0</span>x00007f7364f59000 nid=<span class="hljs-number">0</span>x73cc waiting on condition <span class="hljs-selector-attr">[0x00007f712c302000]</span>  <br>   java<span class="hljs-selector-class">.lang</span><span class="hljs-selector-class">.Thread</span><span class="hljs-selector-class">.State</span>: TIMED_WAITING (parking)  <br>    at sun<span class="hljs-selector-class">.misc</span><span class="hljs-selector-class">.Unsafe</span><span class="hljs-selector-class">.park</span>(Native Method)  <br>    - parking to wait <span class="hljs-keyword">for</span>  &lt;<span class="hljs-number">0</span>x0000000656680e10&gt; (<span class="hljs-selector-tag">a</span> java<span class="hljs-selector-class">.util</span><span class="hljs-selector-class">.concurrent</span>.SynchronousQueue<span class="hljs-variable">$TransferStack</span>)  <br>    at java<span class="hljs-selector-class">.util</span><span class="hljs-selector-class">.concurrent</span><span class="hljs-selector-class">.locks</span><span class="hljs-selector-class">.LockSupport</span><span class="hljs-selector-class">.parkNanos</span>(LockSupport<span class="hljs-selector-class">.java</span>:<span class="hljs-number">226</span>)  <br>    at java<span class="hljs-selector-class">.util</span><span class="hljs-selector-class">.concurrent</span>.SynchronousQueue<span class="hljs-variable">$TransferStack</span><span class="hljs-selector-class">.awaitFulfill</span>(SynchronousQueue<span class="hljs-selector-class">.java</span>:<span class="hljs-number">460</span>)  <br>    at java<span class="hljs-selector-class">.util</span><span class="hljs-selector-class">.concurrent</span>.SynchronousQueue<span class="hljs-variable">$TransferStack</span><span class="hljs-selector-class">.transfer</span>(SynchronousQueue<span class="hljs-selector-class">.java</span>:<span class="hljs-number">359</span>)  <br>    at java<span class="hljs-selector-class">.util</span><span class="hljs-selector-class">.concurrent</span><span class="hljs-selector-class">.SynchronousQueue</span><span class="hljs-selector-class">.poll</span>(SynchronousQueue<span class="hljs-selector-class">.java</span>:<span class="hljs-number">942</span>)  <br>    at java<span class="hljs-selector-class">.util</span><span class="hljs-selector-class">.concurrent</span><span class="hljs-selector-class">.ThreadPoolExecutor</span><span class="hljs-selector-class">.getTask</span>(ThreadPoolExecutor<span class="hljs-selector-class">.java</span>:<span class="hljs-number">1068</span>)  <br>    at java<span class="hljs-selector-class">.util</span><span class="hljs-selector-class">.concurrent</span><span class="hljs-selector-class">.ThreadPoolExecutor</span><span class="hljs-selector-class">.runWorker</span>(ThreadPoolExecutor<span class="hljs-selector-class">.java</span>:<span class="hljs-number">1130</span>)  <br>    at java<span class="hljs-selector-class">.util</span><span class="hljs-selector-class">.concurrent</span>.ThreadPoolExecutor<span class="hljs-variable">$Worker</span><span class="hljs-selector-class">.run</span>(ThreadPoolExecutor<span class="hljs-selector-class">.java</span>:<span class="hljs-number">615</span>)  <br>    at java<span class="hljs-selector-class">.lang</span><span class="hljs-selector-class">.Thread</span><span class="hljs-selector-class">.run</span>(Thread<span class="hljs-selector-class">.java</span>:<span class="hljs-number">745</span>)  <br>  <br><span class="hljs-string">&quot;HiveServer2-Handler-Pool: Thread-882656&quot;</span> prio=<span class="hljs-number">10</span> tid=<span class="hljs-number">0</span>x00007f73bc013000 nid=<span class="hljs-number">0</span>x497a waiting on condition <span class="hljs-selector-attr">[0x00007f712cc0b000]</span>  <br>   java<span class="hljs-selector-class">.lang</span><span class="hljs-selector-class">.Thread</span><span class="hljs-selector-class">.State</span>: TIMED_WAITING (parking)  <br>    at sun<span class="hljs-selector-class">.misc</span><span class="hljs-selector-class">.Unsafe</span><span class="hljs-selector-class">.park</span>(Native Method)  <br>    - parking to wait <span class="hljs-keyword">for</span>  &lt;<span class="hljs-number">0</span>x00000006585a35d8&gt; (<span class="hljs-selector-tag">a</span> java<span class="hljs-selector-class">.util</span><span class="hljs-selector-class">.concurrent</span>.SynchronousQueue<span class="hljs-variable">$TransferStack</span>)  <br>    at java<span class="hljs-selector-class">.util</span><span class="hljs-selector-class">.concurrent</span><span class="hljs-selector-class">.locks</span><span class="hljs-selector-class">.LockSupport</span><span class="hljs-selector-class">.parkNanos</span>(LockSupport<span class="hljs-selector-class">.java</span>:<span class="hljs-number">226</span>)  <br>    at java<span class="hljs-selector-class">.util</span><span class="hljs-selector-class">.concurrent</span>.SynchronousQueue<span class="hljs-variable">$TransferStack</span><span class="hljs-selector-class">.awaitFulfill</span>(SynchronousQueue<span class="hljs-selector-class">.java</span>:<span class="hljs-number">460</span>)  <br>    at java<span class="hljs-selector-class">.util</span><span class="hljs-selector-class">.concurrent</span>.SynchronousQueue<span class="hljs-variable">$TransferStack</span><span class="hljs-selector-class">.transfer</span>(SynchronousQueue<span class="hljs-selector-class">.java</span>:<span class="hljs-number">359</span>)  <br>    at java<span class="hljs-selector-class">.util</span><span class="hljs-selector-class">.concurrent</span><span class="hljs-selector-class">.SynchronousQueue</span><span class="hljs-selector-class">.poll</span>(SynchronousQueue<span class="hljs-selector-class">.java</span>:<span class="hljs-number">942</span>)  <br>    at java<span class="hljs-selector-class">.util</span><span class="hljs-selector-class">.concurrent</span><span class="hljs-selector-class">.ThreadPoolExecutor</span><span class="hljs-selector-class">.getTask</span>(ThreadPoolExecutor<span class="hljs-selector-class">.java</span>:<span class="hljs-number">1068</span>)  <br>    at java<span class="hljs-selector-class">.util</span><span class="hljs-selector-class">.concurrent</span><span class="hljs-selector-class">.ThreadPoolExecutor</span><span class="hljs-selector-class">.runWorker</span>(ThreadPoolExecutor<span class="hljs-selector-class">.java</span>:<span class="hljs-number">1130</span>)  <br>    at java<span class="hljs-selector-class">.util</span><span class="hljs-selector-class">.concurrent</span>.ThreadPoolExecutor<span class="hljs-variable">$Worker</span><span class="hljs-selector-class">.run</span>(ThreadPoolExecutor<span class="hljs-selector-class">.java</span>:<span class="hljs-number">615</span>)  <br>    at java<span class="hljs-selector-class">.lang</span><span class="hljs-selector-class">.Thread</span><span class="hljs-selector-class">.run</span>(Thread<span class="hljs-selector-class">.java</span>:<span class="hljs-number">745</span>)  <br>  <br><span class="hljs-string">&quot;qtp931145444-882653&quot;</span> daemon prio=<span class="hljs-number">10</span> tid=<span class="hljs-number">0</span>x00007f747401c000 nid=<span class="hljs-number">0</span>x3376 waiting on condition <span class="hljs-selector-attr">[0x00007f7137dbc000]</span>  <br>   java<span class="hljs-selector-class">.lang</span><span class="hljs-selector-class">.Thread</span><span class="hljs-selector-class">.State</span>: TIMED_WAITING (parking)  <br>    at sun<span class="hljs-selector-class">.misc</span><span class="hljs-selector-class">.Unsafe</span><span class="hljs-selector-class">.park</span>(Native Method)  <br>    - parking to wait <span class="hljs-keyword">for</span>  &lt;<span class="hljs-number">0</span>x0000000657459540&gt; (<span class="hljs-selector-tag">a</span> java<span class="hljs-selector-class">.util</span><span class="hljs-selector-class">.concurrent</span><span class="hljs-selector-class">.locks</span>.AbstractQueuedSynchronizer<span class="hljs-variable">$ConditionObject</span>)  <br>    at java<span class="hljs-selector-class">.util</span><span class="hljs-selector-class">.concurrent</span><span class="hljs-selector-class">.locks</span><span class="hljs-selector-class">.LockSupport</span><span class="hljs-selector-class">.parkNanos</span>(LockSupport<span class="hljs-selector-class">.java</span>:<span class="hljs-number">226</span>)  <br>    at java<span class="hljs-selector-class">.util</span><span class="hljs-selector-class">.concurrent</span><span class="hljs-selector-class">.locks</span>.AbstractQueuedSynchronizer<span class="hljs-variable">$ConditionObject</span><span class="hljs-selector-class">.awaitNanos</span>(AbstractQueuedSynchronizer<span class="hljs-selector-class">.java</span>:<span class="hljs-number">2082</span>)  <br>    at org<span class="hljs-selector-class">.eclipse</span><span class="hljs-selector-class">.jetty</span><span class="hljs-selector-class">.util</span><span class="hljs-selector-class">.BlockingArrayQueue</span><span class="hljs-selector-class">.poll</span>(BlockingArrayQueue<span class="hljs-selector-class">.java</span>:<span class="hljs-number">342</span>)  <br>    at org<span class="hljs-selector-class">.eclipse</span><span class="hljs-selector-class">.jetty</span><span class="hljs-selector-class">.util</span><span class="hljs-selector-class">.thread</span><span class="hljs-selector-class">.QueuedThreadPool</span><span class="hljs-selector-class">.idleJobPoll</span>(QueuedThreadPool<span class="hljs-selector-class">.java</span>:<span class="hljs-number">526</span>)  <br>    at org<span class="hljs-selector-class">.eclipse</span><span class="hljs-selector-class">.jetty</span><span class="hljs-selector-class">.util</span><span class="hljs-selector-class">.thread</span><span class="hljs-selector-class">.QueuedThreadPool</span>.access$<span class="hljs-number">600</span>(QueuedThreadPool<span class="hljs-selector-class">.java</span>:<span class="hljs-number">44</span>)  <br>    at org<span class="hljs-selector-class">.eclipse</span><span class="hljs-selector-class">.jetty</span><span class="hljs-selector-class">.util</span><span class="hljs-selector-class">.thread</span>.QueuedThreadPool$<span class="hljs-number">3</span><span class="hljs-selector-class">.run</span>(QueuedThreadPool<span class="hljs-selector-class">.java</span>:<span class="hljs-number">572</span>)  <br>    at java<span class="hljs-selector-class">.lang</span><span class="hljs-selector-class">.Thread</span><span class="hljs-selector-class">.run</span>(Thread<span class="hljs-selector-class">.java</span>:<span class="hljs-number">745</span>)  <br>  <br><span class="hljs-string">&quot;qtp931145444-882456&quot;</span> daemon prio=<span class="hljs-number">10</span> tid=<span class="hljs-number">0</span>x00007f7470001000 nid=<span class="hljs-number">0</span>x9600 waiting on condition <span class="hljs-selector-attr">[0x00007f7133776000]</span>  <br>   java<span class="hljs-selector-class">.lang</span><span class="hljs-selector-class">.Thread</span><span class="hljs-selector-class">.State</span>: TIMED_WAITING (parking)  <br>    at sun<span class="hljs-selector-class">.misc</span><span class="hljs-selector-class">.Unsafe</span><span class="hljs-selector-class">.park</span>(Native Method)  <br>    - parking to wait <span class="hljs-keyword">for</span>  &lt;<span class="hljs-number">0</span>x0000000657459540&gt; (<span class="hljs-selector-tag">a</span> java<span class="hljs-selector-class">.util</span><span class="hljs-selector-class">.concurrent</span><span class="hljs-selector-class">.locks</span>.AbstractQueuedSynchronizer<span class="hljs-variable">$ConditionObject</span>)  <br>    at java<span class="hljs-selector-class">.util</span><span class="hljs-selector-class">.concurrent</span><span class="hljs-selector-class">.locks</span><span class="hljs-selector-class">.LockSupport</span><span class="hljs-selector-class">.parkNanos</span>(LockSupport<span class="hljs-selector-class">.java</span>:<span class="hljs-number">226</span>)  <br>    at java<span class="hljs-selector-class">.util</span><span class="hljs-selector-class">.concurrent</span><span class="hljs-selector-class">.locks</span>.AbstractQueuedSynchronizer<span class="hljs-variable">$ConditionObject</span><span class="hljs-selector-class">.awaitNanos</span>(AbstractQueuedSynchronizer<span class="hljs-selector-class">.java</span>:<span class="hljs-number">2082</span>)  <br>    at org<span class="hljs-selector-class">.eclipse</span><span class="hljs-selector-class">.jetty</span><span class="hljs-selector-class">.util</span><span class="hljs-selector-class">.BlockingArrayQueue</span><span class="hljs-selector-class">.poll</span>(BlockingArrayQueue<span class="hljs-selector-class">.java</span>:<span class="hljs-number">342</span>)  <br>    at org<span class="hljs-selector-class">.eclipse</span><span class="hljs-selector-class">.jetty</span><span class="hljs-selector-class">.util</span><span class="hljs-selector-class">.thread</span><span class="hljs-selector-class">.QueuedThreadPool</span><span class="hljs-selector-class">.idleJobPoll</span>(QueuedThreadPool<span class="hljs-selector-class">.java</span>:<span class="hljs-number">526</span>)  <br>    at org<span class="hljs-selector-class">.eclipse</span><span class="hljs-selector-class">.jetty</span><span class="hljs-selector-class">.util</span><span class="hljs-selector-class">.thread</span><span class="hljs-selector-class">.QueuedThreadPool</span>.access$<span class="hljs-number">600</span>(QueuedThreadPool<span class="hljs-selector-class">.java</span>:<span class="hljs-number">44</span>)  <br>    at org<span class="hljs-selector-class">.eclipse</span><span class="hljs-selector-class">.jetty</span><span class="hljs-selector-class">.util</span><span class="hljs-selector-class">.thread</span>.QueuedThreadPool$<span class="hljs-number">3</span><span class="hljs-selector-class">.run</span>(QueuedThreadPool<span class="hljs-selector-class">.java</span>:<span class="hljs-number">572</span>)  <br>    at java<span class="hljs-selector-class">.lang</span><span class="hljs-selector-class">.Thread</span><span class="hljs-selector-class">.run</span>(Thread<span class="hljs-selector-class">.java</span>:<span class="hljs-number">745</span>)  <br>  <br><span class="hljs-string">&quot;qtp931145444-882454&quot;</span> daemon prio=<span class="hljs-number">10</span> tid=<span class="hljs-number">0</span>x00007f7454005800 nid=<span class="hljs-number">0</span>x8ca1 waiting on condition <span class="hljs-selector-attr">[0x00007f713508f000]</span>  <br>   java<span class="hljs-selector-class">.lang</span><span class="hljs-selector-class">.Thread</span><span class="hljs-selector-class">.State</span>: TIMED_WAITING (parking)  <br>    at sun<span class="hljs-selector-class">.misc</span><span class="hljs-selector-class">.Unsafe</span><span class="hljs-selector-class">.park</span>(Native Method)  <br>    - parking to wait <span class="hljs-keyword">for</span>  &lt;<span class="hljs-number">0</span>x0000000657459540&gt; (<span class="hljs-selector-tag">a</span> java<span class="hljs-selector-class">.util</span><span class="hljs-selector-class">.concurrent</span><span class="hljs-selector-class">.locks</span>.AbstractQueuedSynchronizer<span class="hljs-variable">$ConditionObject</span>)  <br>    at java<span class="hljs-selector-class">.util</span><span class="hljs-selector-class">.concurrent</span><span class="hljs-selector-class">.locks</span><span class="hljs-selector-class">.LockSupport</span><span class="hljs-selector-class">.parkNanos</span>(LockSupport<span class="hljs-selector-class">.java</span>:<span class="hljs-number">226</span>)  <br>    at java<span class="hljs-selector-class">.util</span><span class="hljs-selector-class">.concurrent</span><span class="hljs-selector-class">.locks</span>.AbstractQueuedSynchronizer<span class="hljs-variable">$ConditionObject</span><span class="hljs-selector-class">.awaitNanos</span>(AbstractQueuedSynchronizer<span class="hljs-selector-class">.java</span>:<span class="hljs-number">2082</span>)  <br>    at org<span class="hljs-selector-class">.eclipse</span><span class="hljs-selector-class">.jetty</span><span class="hljs-selector-class">.util</span><span class="hljs-selector-class">.BlockingArrayQueue</span><span class="hljs-selector-class">.poll</span>(BlockingArrayQueue<span class="hljs-selector-class">.java</span>:<span class="hljs-number">342</span>)  <br>    at org<span class="hljs-selector-class">.eclipse</span><span class="hljs-selector-class">.jetty</span><span class="hljs-selector-class">.util</span><span class="hljs-selector-class">.thread</span><span class="hljs-selector-class">.QueuedThreadPool</span><span class="hljs-selector-class">.idleJobPoll</span>(QueuedThreadPool<span class="hljs-selector-class">.java</span>:<span class="hljs-number">526</span>)  <br>    at org<span class="hljs-selector-class">.eclipse</span><span class="hljs-selector-class">.jetty</span><span class="hljs-selector-class">.util</span><span class="hljs-selector-class">.thread</span><span class="hljs-selector-class">.QueuedThreadPool</span>.access$<span class="hljs-number">600</span>(QueuedThreadPool<span class="hljs-selector-class">.java</span>:<span class="hljs-number">44</span>)  <br>    at org<span class="hljs-selector-class">.eclipse</span><span class="hljs-selector-class">.jetty</span><span class="hljs-selector-class">.util</span><span class="hljs-selector-class">.thread</span>.QueuedThreadPool$<span class="hljs-number">3</span><span class="hljs-selector-class">.run</span>(QueuedThreadPool<span class="hljs-selector-class">.java</span>:<span class="hljs-number">572</span>)  <br>    at java<span class="hljs-selector-class">.lang</span><span class="hljs-selector-class">.Thread</span><span class="hljs-selector-class">.run</span>(Thread<span class="hljs-selector-class">.java</span>:<span class="hljs-number">745</span>)  <br>  <br><span class="hljs-string">&quot;qtp931145444-881328&quot;</span> daemon prio=<span class="hljs-number">10</span> tid=<span class="hljs-number">0</span>x00007f746c001800 nid=<span class="hljs-number">0</span>x184c waiting on condition <span class="hljs-selector-attr">[0x00007f713306f000]</span>  <br>   java<span class="hljs-selector-class">.lang</span><span class="hljs-selector-class">.Thread</span><span class="hljs-selector-class">.State</span>: TIMED_WAITING (parking)  <br>    at sun<span class="hljs-selector-class">.misc</span><span class="hljs-selector-class">.Unsafe</span><span class="hljs-selector-class">.park</span>(Native Method)  <br>    - parking to wait <span class="hljs-keyword">for</span>  &lt;<span class="hljs-number">0</span>x0000000657459540&gt; (<span class="hljs-selector-tag">a</span> java<span class="hljs-selector-class">.util</span><span class="hljs-selector-class">.concurrent</span><span class="hljs-selector-class">.locks</span>.AbstractQueuedSynchronizer<span class="hljs-variable">$ConditionObject</span>)  <br>    at java<span class="hljs-selector-class">.util</span><span class="hljs-selector-class">.concurrent</span><span class="hljs-selector-class">.locks</span><span class="hljs-selector-class">.LockSupport</span><span class="hljs-selector-class">.parkNanos</span>(LockSupport<span class="hljs-selector-class">.java</span>:<span class="hljs-number">226</span>)  <br>    at java<span class="hljs-selector-class">.util</span><span class="hljs-selector-class">.concurrent</span><span class="hljs-selector-class">.locks</span>.AbstractQueuedSynchronizer<span class="hljs-variable">$ConditionObject</span><span class="hljs-selector-class">.awaitNanos</span>(AbstractQueuedSynchronizer<span class="hljs-selector-class">.java</span>:<span class="hljs-number">2082</span>)  <br>    at org<span class="hljs-selector-class">.eclipse</span><span class="hljs-selector-class">.jetty</span><span class="hljs-selector-class">.util</span><span class="hljs-selector-class">.BlockingArrayQueue</span><span class="hljs-selector-class">.poll</span>(BlockingArrayQueue<span class="hljs-selector-class">.java</span>:<span class="hljs-number">342</span>)  <br>    at org<span class="hljs-selector-class">.eclipse</span><span class="hljs-selector-class">.jetty</span><span class="hljs-selector-class">.util</span><span class="hljs-selector-class">.thread</span><span class="hljs-selector-class">.QueuedThreadPool</span><span class="hljs-selector-class">.idleJobPoll</span>(QueuedThreadPool<span class="hljs-selector-class">.java</span>:<span class="hljs-number">526</span>)  <br>    at org<span class="hljs-selector-class">.eclipse</span><span class="hljs-selector-class">.jetty</span><span class="hljs-selector-class">.util</span><span class="hljs-selector-class">.thread</span><span class="hljs-selector-class">.QueuedThreadPool</span>.access$<span class="hljs-number">600</span>(QueuedThreadPool<span class="hljs-selector-class">.java</span>:<span class="hljs-number">44</span>)  <br>    at org<span class="hljs-selector-class">.eclipse</span><span class="hljs-selector-class">.jetty</span><span class="hljs-selector-class">.util</span><span class="hljs-selector-class">.thread</span>.QueuedThreadPool$<span class="hljs-number">3</span><span class="hljs-selector-class">.run</span>(QueuedThreadPool<span class="hljs-selector-class">.java</span>:<span class="hljs-number">572</span>)  <br>    at java<span class="hljs-selector-class">.lang</span><span class="hljs-selector-class">.Thread</span><span class="hljs-selector-class">.run</span>(Thread<span class="hljs-selector-class">.java</span>:<span class="hljs-number">745</span>)  <br>  <br><span class="hljs-string">&quot;pool-68894-thread-1&quot;</span> prio=<span class="hljs-number">10</span> tid=<span class="hljs-number">0</span>x00007f73649a1800 nid=<span class="hljs-number">0</span>x6d7 waiting on condition <span class="hljs-selector-attr">[0x00007f7130544000]</span>  <br>   java<span class="hljs-selector-class">.lang</span><span class="hljs-selector-class">.Thread</span><span class="hljs-selector-class">.State</span>: TIMED_WAITING (parking)  <br>    at sun<span class="hljs-selector-class">.misc</span><span class="hljs-selector-class">.Unsafe</span><span class="hljs-selector-class">.park</span>(Native Method)  <br>    - parking to wait <span class="hljs-keyword">for</span>  &lt;<span class="hljs-number">0</span>x00000006c5af6798&gt; (<span class="hljs-selector-tag">a</span> java<span class="hljs-selector-class">.util</span><span class="hljs-selector-class">.concurrent</span><span class="hljs-selector-class">.locks</span>.AbstractQueuedSynchronizer<span class="hljs-variable">$ConditionObject</span>)  <br>    at java<span class="hljs-selector-class">.util</span><span class="hljs-selector-class">.concurrent</span><span class="hljs-selector-class">.locks</span><span class="hljs-selector-class">.LockSupport</span><span class="hljs-selector-class">.parkNanos</span>(LockSupport<span class="hljs-selector-class">.java</span>:<span class="hljs-number">226</span>)  <br>    at java<span class="hljs-selector-class">.util</span><span class="hljs-selector-class">.concurrent</span><span class="hljs-selector-class">.locks</span>.AbstractQueuedSynchronizer<span class="hljs-variable">$ConditionObject</span><span class="hljs-selector-class">.awaitNanos</span>(AbstractQueuedSynchronizer<span class="hljs-selector-class">.java</span>:<span class="hljs-number">2082</span>)  <br>    at java<span class="hljs-selector-class">.util</span><span class="hljs-selector-class">.concurrent</span>.ScheduledThreadPoolExecutor<span class="hljs-variable">$DelayedWorkQueue</span><span class="hljs-selector-class">.take</span>(ScheduledThreadPoolExecutor<span class="hljs-selector-class">.java</span>:<span class="hljs-number">1090</span>)  <br>    at java<span class="hljs-selector-class">.util</span><span class="hljs-selector-class">.concurrent</span>.ScheduledThreadPoolExecutor<span class="hljs-variable">$DelayedWorkQueue</span><span class="hljs-selector-class">.take</span>(ScheduledThreadPoolExecutor<span class="hljs-selector-class">.java</span>:<span class="hljs-number">807</span>)  <br>    at java<span class="hljs-selector-class">.util</span><span class="hljs-selector-class">.concurrent</span><span class="hljs-selector-class">.ThreadPoolExecutor</span><span class="hljs-selector-class">.getTask</span>(ThreadPoolExecutor<span class="hljs-selector-class">.java</span>:<span class="hljs-number">1068</span>)  <br>    at java<span class="hljs-selector-class">.util</span><span class="hljs-selector-class">.concurrent</span><span class="hljs-selector-class">.ThreadPoolExecutor</span><span class="hljs-selector-class">.runWorker</span>(ThreadPoolExecutor<span class="hljs-selector-class">.java</span>:<span class="hljs-number">1130</span>)  <br>    at java<span class="hljs-selector-class">.util</span><span class="hljs-selector-class">.concurrent</span>.ThreadPoolExecutor<span class="hljs-variable">$Worker</span><span class="hljs-selector-class">.run</span>(ThreadPoolExecutor<span class="hljs-selector-class">.java</span>:<span class="hljs-number">615</span>)  <br>    at java<span class="hljs-selector-class">.lang</span><span class="hljs-selector-class">.Thread</span><span class="hljs-selector-class">.run</span>(Thread<span class="hljs-selector-class">.java</span>:<span class="hljs-number">745</span>)<br></code></pre></td></tr></table></figure>
+
+<p>各状态说明：</p>
+<p><strong>New</strong>: 当线程对象创建时存在的状态，此时线程不可能执行；</p>
+<p><strong>Runnable</strong>：当调用thread.start()后，线程变成为Runnable状态。只要得到CPU，就可以执行；</p>
+<p><strong>Running</strong>：线程正在执行；</p>
+<p><strong>Waiting</strong>：执行thread.join()或在锁对象调用obj.wait()等情况就会进该状态，表明线程正处于等待某个资源或条件发生来唤醒自己；</p>
+<p><strong>Timed_Waiting</strong>：执行Thread.sleep(long)、thread.join(long)或obj.wait(long)等就会进该状态，与Waiting的区别在于Timed_Waiting的等待有时间限制；</p>
+<p><strong>Blocked</strong>：如果进入同步方法或同步代码块，没有获取到锁，则会进入该状态；</p>
+<p><strong>Dead</strong>：线程执行完毕，或者抛出了未捕获的异常之后，会进入dead状态，表示该线程结束</p>
+<p>其次，对于jstack日志，我们要着重关注如下关键信息</p>
+<p><strong>Deadlock</strong>：表示有死锁</p>
+<p><strong>Waiting on condition</strong>：等待某个资源或条件发生来唤醒自己。具体需要结合jstacktrace来分析，比如线程正在sleep，网络读写繁忙而等待</p>
+<p><strong>Blocked</strong>：阻塞</p>
+<p><strong>Waiting on monitor entry</strong>：在等待获取锁</p>
+<p>**in Object.wait()**：获取锁后又执行obj.wait()放弃锁</p>
+<p>对于Waiting on monitor entry 和 in Object.wait()的详细描述：Monitor是 Java中用以实现线程之间的互斥与协作的主要手段，它可以看成是对象或者 Class的锁。每一个对象都有，也仅有一个 monitor。从下图中可以看出，每个 Monitor在某个时刻，只能被一个线程拥有，该线程就是 “Active Thread”，而其它线程都是 “Waiting Thread”，分别在两个队列 “ Entry Set”和 “Wait Set”里面等候。在 “Entry Set”中等待的线程状态是 “Waiting for monitor entry”，而在 “Wait Set”中等待的线程状态是 “in Object.wait()”</p>
+<blockquote>
+<p>总结：</p>
+<p>对于jstack日志，我们要着重关注如下关键信息</p>
+<p>Deadlock：表示有死锁</p>
+<p>Waiting on condition：等待某个资源或条件发生来唤醒自己。具体需要结合jstacktrace来分析，比如线程正在sleep，网络读写繁忙而等待</p>
+<p>Blocked：阻塞</p>
+<p>Waiting on monitor entry：在等待获取锁</p>
+<p>如果说系统慢，那么要特别关注Blocked,Waiting on condition</p>
+<p>如果说系统的cpu耗的高，那么肯定是线程执行有死循环，那么此时要关注下Runable状态。</p>
+</blockquote>
+<h3 id="3-jmap"><a href="#3-jmap" class="headerlink" title="3. jmap"></a>3. jmap</h3><p>（Memory Map）和jhat（Java Heap Analysis Tool）<br>    jmap用来查看堆内存使用状况，一般结合jhat使用。</p>
+<p>jmap语法格式如下：</p>
+<figure class="highlight mipsasm"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs mipsasm"><span class="hljs-keyword">jmap </span>[option] pid<br><span class="hljs-keyword">jmap </span>[option] executable core<br><span class="hljs-keyword">jmap </span>[option] [server-id@]remote-hostname-<span class="hljs-keyword">or-ip</span><br><span class="hljs-keyword"></span><br>如果运行在<span class="hljs-number">64</span>位<span class="hljs-keyword">JVM上，可能需要指定-J-d64命令选项参数。</span><br><span class="hljs-keyword"></span><span class="hljs-keyword">jmap </span>-permstat pid<br></code></pre></td></tr></table></figure>
+
+<p>打印进程的类加载器和类加载器加载的持久代对象信息，输出：类加载器名称、对象是否存活（不可靠）、对象地址、父类加载器、已加载的类大小等信息，如下图：</p>
+<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20220206001150.png" srcset="/img/loading.gif" lazyload alt="image-20220206001149161"></p>
+<p>   使用jmap -heap pid查看进程堆内存使用情况，包括使用的GC算法、堆配置参数和各代中堆内存使用情况。比如下面的例子：</p>
+<figure class="highlight tap"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br></pre></td><td class="code"><pre><code class="hljs tap">root@ubuntu:/<span class="hljs-comment"># jmap -heap 21711</span><br>Attaching to process ID 21711, please wait...<br>Debugger attached successfully.<br>Server compiler detected.<br>JVM version is 20.10-b01<br> <br>using thread-local object allocation.<br>Parallel GC with<span class="hljs-number"> 4 </span>thread(s)<br> <br>Heap Configuration:<br>   MinHeapFreeRatio = 40<br>   MaxHeapFreeRatio = 70<br>   MaxHeapSize      =<span class="hljs-number"> 2067791872 </span>(1972.0MB)<br>   NewSize          =<span class="hljs-number"> 1310720 </span>(1.25MB)<br>   MaxNewSize       =<span class="hljs-number"> 17592186044415 </span>MB<br>   OldSize          =<span class="hljs-number"> 5439488 </span>(5.1875MB)<br>   NewRatio         = 2<br>   SurvivorRatio    = 8<br>   PermSize         =<span class="hljs-number"> 21757952 </span>(20.75MB)<br>   MaxPermSize      =<span class="hljs-number"> 85983232 </span>(82.0MB)<br> <br>Heap Usage:<br>PS Young Generation<br>Eden Space:<br>   capacity =<span class="hljs-number"> 6422528 </span>(6.125MB)<br>   used     =<span class="hljs-number"> 5445552 </span>(5.1932830810546875MB)<br>   free     =<span class="hljs-number"> 976976 </span>(0.9317169189453125MB)<br>   84.78829520089286% used<br>From Space:<br>   capacity =<span class="hljs-number"> 131072 </span>(0.125MB)<br>   used     =<span class="hljs-number"> 98304 </span>(0.09375MB)<br>   free     =<span class="hljs-number"> 32768 </span>(0.03125MB)<br>   75.0% used<br>To Space:<br>   capacity =<span class="hljs-number"> 131072 </span>(0.125MB)<br>   used     =<span class="hljs-number"> 0 </span>(0.0MB)<br>   free     =<span class="hljs-number"> 131072 </span>(0.125MB)<br>   0.0% used<br>PS Old Generation<br>   capacity =<span class="hljs-number"> 35258368 </span>(33.625MB)<br>   used     =<span class="hljs-number"> 4119544 </span>(3.9287033081054688MB)<br>   free     =<span class="hljs-number"> 31138824 </span>(29.69629669189453MB)<br>   11.683876009235595% used<br>PS Perm Generation<br>   capacity =<span class="hljs-number"> 52428800 </span>(50.0MB)<br>   used     =<span class="hljs-number"> 26075168 </span>(24.867218017578125MB)<br>   free     =<span class="hljs-number"> 26353632 </span>(25.132781982421875MB)<br>   49.73443603515625% used<br>   ....<br></code></pre></td></tr></table></figure>
+
+<p>使用jmap -histo[:live] pid查看堆内存中的对象数目、大小统计直方图，如果带上live则只统计活对象，如下：</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><code class="hljs yaml"><span class="hljs-string">root@ubuntu:/#</span> <span class="hljs-string">jmap</span> <span class="hljs-string">-histo:live</span> <span class="hljs-number">21711</span> <span class="hljs-string">|</span> <span class="hljs-string">more</span><br> <br> <span class="hljs-string">num</span>     <span class="hljs-comment">#instances         #bytes  class name</span><br><span class="hljs-string">----------------------------------------------</span><br>   <span class="hljs-attr">1:</span>         <span class="hljs-number">38445</span>        <span class="hljs-number">5597736</span>  <span class="hljs-string">&lt;constMethodKlass&gt;</span><br>   <span class="hljs-attr">2:</span>         <span class="hljs-number">38445</span>        <span class="hljs-number">5237288</span>  <span class="hljs-string">&lt;methodKlass&gt;</span><br>   <span class="hljs-attr">3:</span>          <span class="hljs-number">3500        </span><span class="hljs-number">3749504</span>  <span class="hljs-string">&lt;constantPoolKlass&gt;</span><br>   <span class="hljs-attr">4:</span>         <span class="hljs-number">60858</span>        <span class="hljs-number">3242600</span>  <span class="hljs-string">&lt;symbolKlass&gt;</span><br>   <span class="hljs-attr">5:</span>          <span class="hljs-number">3500        </span><span class="hljs-number">2715264</span>  <span class="hljs-string">&lt;instanceKlassKlass&gt;</span><br>   <span class="hljs-attr">6:</span>          <span class="hljs-number">2796        </span><span class="hljs-number">2131424</span>  <span class="hljs-string">&lt;constantPoolCacheKlass&gt;</span><br>   <span class="hljs-attr">7:</span>          <span class="hljs-number">5543        </span><span class="hljs-number">1317400</span>  [<span class="hljs-string">I</span><br>   <span class="hljs-attr">8:</span>         <span class="hljs-number">13714</span>        <span class="hljs-number">1010768</span>  [<span class="hljs-string">C</span><br>   <span class="hljs-attr">9:</span>          <span class="hljs-number">4752        </span><span class="hljs-number">1003344</span>  [<span class="hljs-string">B</span><br>  <span class="hljs-attr">10:</span>          <span class="hljs-number">1225         </span><span class="hljs-number">639656</span>  <span class="hljs-string">&lt;methodDataKlass&gt;</span><br>  <span class="hljs-attr">11:</span>         <span class="hljs-number">14194</span>         <span class="hljs-number">454208</span>  <span class="hljs-string">java.lang.String</span><br>  <span class="hljs-attr">12:</span>          <span class="hljs-number">3809         </span><span class="hljs-number">396136</span>  <span class="hljs-string">java.lang.Class</span><br>  <span class="hljs-attr">13:</span>          <span class="hljs-number">4979         </span><span class="hljs-number">311952</span>  [<span class="hljs-string">S</span><br>  <span class="hljs-attr">14:</span>          <span class="hljs-number">5598         </span><span class="hljs-number">287064</span>  [[<span class="hljs-string">I</span><br>  <span class="hljs-attr">15:</span>          <span class="hljs-number">3028         </span><span class="hljs-number">266464</span>  <span class="hljs-string">java.lang.reflect.Method</span><br>  <span class="hljs-attr">16:</span>           <span class="hljs-number">280</span>         <span class="hljs-number">163520</span>  <span class="hljs-string">&lt;objArrayKlassKlass&gt;</span><br>  <span class="hljs-attr">17:</span>          <span class="hljs-number">4355         </span><span class="hljs-number">139360</span>  <span class="hljs-string">java.util.HashMap$Entry</span><br>  <span class="hljs-attr">18:</span>          <span class="hljs-number">1869         </span><span class="hljs-number">138568</span>  [<span class="hljs-string">Ljava.util.HashMap$Entry;</span><br>  <span class="hljs-attr">19:</span>          <span class="hljs-number">2443          </span><span class="hljs-number">97720</span>  <span class="hljs-string">java.util.LinkedHashMap$Entry</span><br>  <span class="hljs-attr">20:</span>          <span class="hljs-number">2072          </span><span class="hljs-number">82880</span>  <span class="hljs-string">java.lang.ref.SoftReference</span><br>  <span class="hljs-attr">21:</span>          <span class="hljs-number">1807          </span><span class="hljs-number">71528</span>  [<span class="hljs-string">Ljava.lang.Object;</span><br>  <span class="hljs-attr">22:</span>          <span class="hljs-number">2206          </span><span class="hljs-number">70592</span>  <span class="hljs-string">java.lang.ref.WeakReference</span><br>  <span class="hljs-attr">23:</span>           <span class="hljs-number">934</span>          <span class="hljs-number">52304</span>  <span class="hljs-string">java.util.LinkedHashMap</span><br>  <span class="hljs-attr">24:</span>           <span class="hljs-number">871</span>          <span class="hljs-number">48776</span>  <span class="hljs-string">java.beans.MethodDescriptor</span><br>  <span class="hljs-attr">25:</span>          <span class="hljs-number">1442          </span><span class="hljs-number">46144</span>  <span class="hljs-string">java.util.concurrent.ConcurrentHashMap$HashEntry</span><br>  <span class="hljs-attr">26:</span>           <span class="hljs-number">804</span>          <span class="hljs-number">38592</span>  <span class="hljs-string">java.util.HashMap</span><br>  <span class="hljs-attr">27:</span>           <span class="hljs-number">948</span>          <span class="hljs-number">37920</span>  <span class="hljs-string">java.util.concurrent.ConcurrentHashMap$Segment</span><br>  <span class="hljs-attr">28:</span>          <span class="hljs-number">1621          </span><span class="hljs-number">35696</span>  [<span class="hljs-string">Ljava.lang.Class;</span><br>  <span class="hljs-attr">29:</span>          <span class="hljs-number">1313          </span><span class="hljs-number">34880</span>  [<span class="hljs-string">Ljava.lang.String;</span><br>  <span class="hljs-attr">30:</span>          <span class="hljs-number">1396          </span><span class="hljs-number">33504</span>  <span class="hljs-string">java.util.LinkedList$Entry</span><br>  <span class="hljs-attr">31:</span>           <span class="hljs-number">462</span>          <span class="hljs-number">33264</span>  <span class="hljs-string">java.lang.reflect.Field</span><br>  <span class="hljs-attr">32:</span>          <span class="hljs-number">1024          </span><span class="hljs-number">32768</span>  <span class="hljs-string">java.util.Hashtable$Entry</span><br>  <span class="hljs-attr">33:</span>           <span class="hljs-number">948</span>          <span class="hljs-number">31440</span>  [<span class="hljs-string">Ljava.util.concurrent.ConcurrentHashMap$HashEntry;</span><br></code></pre></td></tr></table></figure>
+
+
+
+<p>class name是对象类型，说明如下：</p>
+<figure class="highlight arduino"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs arduino">B  <span class="hljs-type">byte</span><br>C  <span class="hljs-type">char</span><br>D  <span class="hljs-type">double</span><br>F  <span class="hljs-type">float</span><br>I  <span class="hljs-type">int</span><br>J  <span class="hljs-type">long</span><br>Z  <span class="hljs-type">boolean</span><br>[  数组，如[I表示<span class="hljs-type">int</span>[]<br>[L+类名 其他对象<br></code></pre></td></tr></table></figure>
+
+
+
+<p>还有一个很常用的情况是：用jmap把进程内存使用情况dump到文件中，再用jhat分析查看。jmap进行dump命令格式如下：</p>
+<figure class="highlight fortran"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs fortran">jmap -dump:<span class="hljs-keyword">format</span>=b,<span class="hljs-keyword">file</span>=dumpFileName<br></code></pre></td></tr></table></figure>
+
+<p>我一样地对上面进程ID为21711进行Dump：</p>
+<figure class="highlight gradle"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs gradle">root@ubuntu:<span class="hljs-regexp">/# jmap -dump:format=b,file=/</span>tmp/<span class="hljs-keyword">dump</span>.dat <span class="hljs-number">21711</span>     <br>Dumping heap to <span class="hljs-regexp">/tmp/</span><span class="hljs-keyword">dump</span>.dat ...<br>Heap <span class="hljs-keyword">dump</span> <span class="hljs-keyword">file</span> created<br></code></pre></td></tr></table></figure>
+
+
+<p>   dump出来的文件可以用MAT、VisualVM等工具查看，这里用jhat查看：</p>
+<figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs apache"><span class="hljs-attribute">root</span>@ubuntu:/# jhat -port <span class="hljs-number">9998</span> /tmp/dump.dat<br><span class="hljs-attribute">Reading</span> from /tmp/dump.dat...<br><span class="hljs-attribute">Dump</span> file created Tue Jan <span class="hljs-number">28</span> <span class="hljs-number">17</span>:<span class="hljs-number">46</span>:<span class="hljs-number">14</span> CST <span class="hljs-number">2014</span><br><span class="hljs-attribute">Snapshot</span> read, resolving...<br><span class="hljs-attribute">Resolving</span> <span class="hljs-number">132207</span> objects...<br><span class="hljs-attribute">Chasing</span> references, expect <span class="hljs-number">26</span> dots..........................<br><span class="hljs-attribute">Eliminating</span> duplicate references..........................<br><span class="hljs-attribute">Snapshot</span> resolved.<br><span class="hljs-attribute">Started</span> HTTP server <span class="hljs-literal">on</span> port <span class="hljs-number">9998</span><br><span class="hljs-attribute">Server</span> is ready.<br></code></pre></td></tr></table></figure>
+
+
+
+<p> 然后就可以在浏览器中输入主机地址:9998查看了：</p>
+<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20220206001327.png" srcset="/img/loading.gif" lazyload alt="image-20220206001326784"></p>
+<p>上面红线框出来的部分大家可以自己去摸索下，最后一项支持OQL（对象查询语言）。</p>
+<h4 id="3-1-发现程序异常导出dump"><a href="#3-1-发现程序异常导出dump" class="headerlink" title="3.1 发现程序异常导出dump"></a>3.1 发现程序异常导出dump</h4><ol>
+<li>JVM启动时增加两个参数:</li>
+</ol>
+<figure class="highlight makefile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs makefile"><span class="hljs-comment">#出现 OOME 时生成堆 dump: </span><br><span class="hljs-section">-XX:+HeapDumpOnOutOfMemoryError</span><br><span class="hljs-comment">#生成堆文件地址：</span><br><span class="hljs-section">-XX:HeapDumpPath=/opt/jvmlogs/</span><br></code></pre></td></tr></table></figure>
+
+<ol start="2">
+<li>发现程序异常前通过执行指令，直接生成当前JVM的dmp文件，1234是指JVM的进程号</li>
+</ol>
+<figure class="highlight perl"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs perl">jmap -<span class="hljs-keyword">dump</span>:<span class="hljs-keyword">format</span>=b,file=<span class="hljs-regexp">/var/l</span>ogs/heap.hprof <span class="hljs-number">1234</span><br></code></pre></td></tr></table></figure>
+
+<p>获得heap.hprof以后，就可以分析你的java线程里面对象占用堆内存的情况了。</p>
+<p>推荐使用Eclipse插件Memory Analyzer Tool 或者 MAT 工具 来打开heap.hprof文件。</p>
+<p><strong>2. 查看整个JVM内存状态</strong></p>
+<p>　　jmap -heap [pid]<br><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20250324094633.png" srcset="/img/loading.gif" lazyload alt="img"></p>
+<p><strong>3. 查看JVM堆中对象详细占用情况</strong><br>　　jmap -histo [pid]</p>
+<p><strong>4. 导出整个JVM 中内存信息，可以利用其它工具打开dump文件分析，例如jdk自带的visualvm工具</strong></p>
+<p>　　jmap -dump:file&#x3D;文件名.dump [pid]</p>
+<p>　　jmap -dump:format&#x3D;b,file&#x3D;文件名 [pid]</p>
+<p>　　format&#x3D;b指定为二进制格式文件</p>
+<h3 id="4-jstat"><a href="#4-jstat" class="headerlink" title="4. jstat"></a>4. jstat</h3><p>（JVM统计监测工具）<br>    语法格式如下：</p>
+<figure class="highlight inform7"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs inform7">jstat <span class="hljs-comment">[ generalOption | outputOptions vmid <span class="hljs-comment">[interval<span class="hljs-comment">[s|ms]</span> <span class="hljs-comment">[count]</span>]</span> ]</span><br></code></pre></td></tr></table></figure>
+
+
+
+<p>vmid是虚拟机ID，在Linux&#x2F;Unix系统上一般就是进程ID。interval是采样时间间隔。count是采样数目。比如下面输出的是GC信息，采样时间间隔为250ms，采样数为4：</p>
+<figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs apache"><span class="hljs-attribute">root</span>@ubuntu:/# jstat -gc <span class="hljs-number">21711</span> <span class="hljs-number">250</span> <span class="hljs-number">4</span><br> <span class="hljs-attribute">S0C</span>    S1C    S0U    S1U      EC       EU        OC         OU       PC     PU    YGC     YGCT    FGC    FGCT     GCT   <br><span class="hljs-attribute">192</span>.<span class="hljs-number">0</span>  <span class="hljs-number">192</span>.<span class="hljs-number">0</span>   <span class="hljs-number">64</span>.<span class="hljs-number">0</span>   <span class="hljs-number">0</span>.<span class="hljs-number">0</span>    <span class="hljs-number">6144</span>.<span class="hljs-number">0</span>   <span class="hljs-number">1854</span>.<span class="hljs-number">9</span>   <span class="hljs-number">32000</span>.<span class="hljs-number">0</span>     <span class="hljs-number">4111</span>.<span class="hljs-number">6</span>   <span class="hljs-number">55296</span>.<span class="hljs-number">0</span> <span class="hljs-number">25472</span>.<span class="hljs-number">7</span>    <span class="hljs-number">702</span>    <span class="hljs-number">0</span>.<span class="hljs-number">431</span>   <span class="hljs-number">3</span>      <span class="hljs-number">0</span>.<span class="hljs-number">218</span>    <span class="hljs-number">0</span>.<span class="hljs-number">649</span><br><span class="hljs-attribute">192</span>.<span class="hljs-number">0</span>  <span class="hljs-number">192</span>.<span class="hljs-number">0</span>   <span class="hljs-number">64</span>.<span class="hljs-number">0</span>   <span class="hljs-number">0</span>.<span class="hljs-number">0</span>    <span class="hljs-number">6144</span>.<span class="hljs-number">0</span>   <span class="hljs-number">1972</span>.<span class="hljs-number">2</span>   <span class="hljs-number">32000</span>.<span class="hljs-number">0</span>     <span class="hljs-number">4111</span>.<span class="hljs-number">6</span>   <span class="hljs-number">55296</span>.<span class="hljs-number">0</span> <span class="hljs-number">25472</span>.<span class="hljs-number">7</span>    <span class="hljs-number">702</span>    <span class="hljs-number">0</span>.<span class="hljs-number">431</span>   <span class="hljs-number">3</span>      <span class="hljs-number">0</span>.<span class="hljs-number">218</span>    <span class="hljs-number">0</span>.<span class="hljs-number">649</span><br><span class="hljs-attribute">192</span>.<span class="hljs-number">0</span>  <span class="hljs-number">192</span>.<span class="hljs-number">0</span>   <span class="hljs-number">64</span>.<span class="hljs-number">0</span>   <span class="hljs-number">0</span>.<span class="hljs-number">0</span>    <span class="hljs-number">6144</span>.<span class="hljs-number">0</span>   <span class="hljs-number">1972</span>.<span class="hljs-number">2</span>   <span class="hljs-number">32000</span>.<span class="hljs-number">0</span>     <span class="hljs-number">4111</span>.<span class="hljs-number">6</span>   <span class="hljs-number">55296</span>.<span class="hljs-number">0</span> <span class="hljs-number">25472</span>.<span class="hljs-number">7</span>    <span class="hljs-number">702</span>    <span class="hljs-number">0</span>.<span class="hljs-number">431</span>   <span class="hljs-number">3</span>      <span class="hljs-number">0</span>.<span class="hljs-number">218</span>    <span class="hljs-number">0</span>.<span class="hljs-number">649</span><br><span class="hljs-attribute">192</span>.<span class="hljs-number">0</span>  <span class="hljs-number">192</span>.<span class="hljs-number">0</span>   <span class="hljs-number">64</span>.<span class="hljs-number">0</span>   <span class="hljs-number">0</span>.<span class="hljs-number">0</span>    <span class="hljs-number">6144</span>.<span class="hljs-number">0</span>   <span class="hljs-number">2109</span>.<span class="hljs-number">7</span>   <span class="hljs-number">32000</span>.<span class="hljs-number">0</span>     <span class="hljs-number">4111</span>.<span class="hljs-number">6</span>   <span class="hljs-number">55296</span>.<span class="hljs-number">0</span> <span class="hljs-number">25472</span>.<span class="hljs-number">7</span>    <span class="hljs-number">702</span>    <span class="hljs-number">0</span>.<span class="hljs-number">431</span>   <span class="hljs-number">3</span>      <span class="hljs-number">0</span>.<span class="hljs-number">218</span>    <span class="hljs-number">0</span>.<span class="hljs-number">649</span><br></code></pre></td></tr></table></figure>
+
+<p>要明白上面各列的意义，先看JVM堆内存布局：</p>
+<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20220206001434.png" srcset="/img/loading.gif" lazyload alt="image-20220206001433198"></p>
+<p>可以看出：</p>
+<p>堆内存 &#x3D; 年轻代 + 年老代 + 永久代<br>年轻代 &#x3D; Eden区 + 两个Survivor区（From和To）</p>
+<p>现在来解释各列含义：</p>
+<p>S0C、S1C、S0U、S1U：Survivor 0&#x2F;1区容量（Capacity）和使用量（Used）<br>EC、EU：Eden区容量和使用量<br>OC、OU：年老代容量和使用量<br>PC、PU：永久代容量和使用量<br>YGC、YGT：年轻代GC次数和GC耗时<br>FGC、FGCT：Full GC次数和Full GC耗时<br>GCT：GC总耗时</p>
+
+              
+            </div>
+            <hr/>
+            <div>
+              <div>
+  <img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20241112163319.png" srcset="/img/loading.gif" lazyload>
+</div>
+<div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/07-%E8%99%9A%E6%8B%9F%E6%9C%BA/" class="category-chain-item">07_虚拟机</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/JVM/">#JVM</a>
+      
+        <a href="/tags/jstack/">#jstack</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>05-jstack,jmap,jstat</div>
+      <div>https://janycode.github.io/2020/06/11/07_虚拟机/05-jstack,jmap,jstat/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Jerry(姜源)</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2020年6月11日</div>
+        </div>
+      
+      
+      <div class="license-meta-item">
+        <div>许可协议</div>
+        <div>
+          
+            
+            
+              <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+              <span class="hint--top hint--rounded" aria-label="BY - 姜源">
+                <i class="iconfont icon-by"></i>
+              </span>
+              </a>
+            
+          
+        </div>
+      </div>
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2020/06/13/19_%E6%8A%80%E6%9C%AF%E9%80%89%E5%9E%8B/08-%E5%AE%9A%E6%97%B6%E4%BB%BB%E5%8A%A1%E8%B0%83%E5%BA%A6%E9%80%89%E5%9E%8B/" title="08-定时任务调度选型">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">08-定时任务调度选型</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2020/05/30/15_%E5%88%86%E5%B8%83%E5%BC%8F/07_%E5%88%86%E5%B8%83%E5%BC%8F%E6%97%A5%E5%BF%97/02-Logstash%E8%AF%A6%E8%A7%A3/" title="02 Logstash详解">
+                        <span class="hidden-mobile">02 Logstash详解</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+  <article id="comments" lazyload>
+    
+  <div id="SOHUCS" sid='https://janycode.github.io/2020/06/11/07_%E8%99%9A%E6%8B%9F%E6%9C%BA/05-jstack,jmap,jstat/'></div>
+  <script type="text/javascript">
+    Fluid.utils.loadComments('#SOHUCS', function() {
+      Fluid.utils.createScript("https://changyan.sohu.com/upload/changyan.js", function() {
+        window.changyan.api.config({"appid":"cyw5OHIcO","appkey":"fea3446b3df4b3f129f34da4cbc87e51"})
+      });
+    });
+  </script>
+  <noscript>Please enable JavaScript to view the comments</noscript>
+
+
+  </article>
+
+
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://simple.blog.csdn.net" target="_blank" rel="nofollow noopener"><span>CSDN</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/janycode" target="_blank" rel="nofollow noopener"><span>GitHub</span></a> <i class="iconfont icon-love"></i> <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="busuanzi_container_site_pv" style="display: none">
+        总访问量(PV) 
+        <span id="busuanzi_value_site_pv"></span>
+         次，
+      </span>
+    
+    
+      <span id="busuanzi_container_site_uv" style="display: none">
+        总访客数(UV) 
+        <span id="busuanzi_value_site_uv"></span>
+         人
+      </span>
+    
+    
+  
+</div>
+
+  
+  
+  
+</div>
+
+<!-- live2d 动画 -->
+<script src="https://eqcn.ajz.miesnfu.com/wp-content/plugins/wp-3d-pony/live2dw/lib/L2Dwidget.min.js"></script>
+<script>
+    L2Dwidget.init({
+        "model": {
+            jsonPath: "https://unpkg.com/live2d-widget-model-haruto@1.0.5/assets/haruto.model.json",
+            "scale": 1
+        },
+        "display": {
+            "position": "right",
+            "width": 100,
+            "height": 200,
+            "hOffset": 35,
+            "vOffset": -85
+        },
+        "mobile": {
+            "show": false,
+            "scale": 0.1
+        },
+        "react": {
+            "opacityDefault": 0.75,
+            "opacityOnHover": 0.2
+        }
+    });
+</script>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <!-- Baidu Analytics -->
+    <script defer>
+      if (!Fluid.ctx.dnt) {
+        var _hmt = _hmt || [];
+        (function() {
+          var hm = document.createElement("script");
+          hm.src = "https://hm.baidu.com/hm.js?bfff735c897eb60ea49b735096b20e47";
+          var s = document.getElementsByTagName("script")[0];
+          s.parentNode.insertBefore(hm, s);
+        })();
+      }
+    </script>
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.0/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      headingSelector : CONFIG.toc.headingSelector || 'h1,h2,h3,h4,h5,h6',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      collapseDepth   : CONFIG.toc.collapseDepth || 0,
+      scrollSmooth    : true,
+      headingsOffset  : -boardTop
+    });
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+  });
+</script>
+
+
+  <script>
+  (function() {
+    var enableLang = CONFIG.code_language.enable && CONFIG.code_language.default;
+    var enableCopy = CONFIG.copy_btn;
+    if (!enableLang && !enableCopy) {
+      return;
+    }
+
+    function getBgClass(ele) {
+      return Fluid.utils.getBackgroundLightness(ele) >= 0 ? 'code-widget-light' : 'code-widget-dark';
+    }
+
+    var copyTmpl = '';
+    copyTmpl += '<div class="code-widget">';
+    copyTmpl += 'LANG';
+    copyTmpl += '</div>';
+    jQuery('.markdown-body pre').each(function() {
+      var $pre = jQuery(this);
+      if ($pre.find('code.mermaid').length > 0) {
+        return;
+      }
+      if ($pre.find('span.line').length > 0) {
+        return;
+      }
+
+      var lang = '';
+
+      if (enableLang) {
+        lang = CONFIG.code_language.default;
+        if ($pre[0].children.length > 0 && $pre[0].children[0].classList.length >= 2 && $pre.children().hasClass('hljs')) {
+          lang = $pre[0].children[0].classList[1];
+        } else if ($pre[0].getAttribute('data-language')) {
+          lang = $pre[0].getAttribute('data-language');
+        } else if ($pre.parent().hasClass('sourceCode') && $pre[0].children.length > 0 && $pre[0].children[0].classList.length >= 2) {
+          lang = $pre[0].children[0].classList[1];
+          $pre.parent().addClass('code-wrapper');
+        } else if ($pre.parent().hasClass('markdown-body') && $pre[0].classList.length === 0) {
+          $pre.wrap('<div class="code-wrapper"></div>');
+        }
+        lang = lang.toUpperCase().replace('NONE', CONFIG.code_language.default);
+      }
+      $pre.append(copyTmpl.replace('LANG', lang).replace('code-widget">',
+        getBgClass($pre[0]) + (enableCopy ? ' code-widget copy-btn" data-clipboard-snippet><i class="iconfont icon-copy"></i>' : ' code-widget">')));
+
+      if (enableCopy) {
+        Fluid.utils.createScript('https://lib.baomitu.com/clipboard.js/2.0.10/clipboard.min.js', function() {
+          var clipboard = new window.ClipboardJS('.copy-btn', {
+            target: function(trigger) {
+              var nodes = trigger.parentNode.childNodes;
+              for (var i = 0; i < nodes.length; i++) {
+                if (nodes[i].tagName === 'CODE') {
+                  return nodes[i];
+                }
+              }
+            }
+          });
+          clipboard.on('success', function(e) {
+            e.clearSelection();
+            e.trigger.innerHTML = e.trigger.innerHTML.replace('icon-copy', 'icon-success');
+            setTimeout(function() {
+              e.trigger.innerHTML = e.trigger.innerHTML.replace('icon-success', 'icon-copy');
+            }, 2000);
+          });
+        });
+      }
+    });
+  })();
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

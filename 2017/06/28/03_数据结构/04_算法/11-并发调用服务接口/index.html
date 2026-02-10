@@ -1,0 +1,821 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=light>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Jerry(姜源)">
+  <meta name="keywords" content="Java,Html,CSS,JavaScript,Python,C,Linux,shell编程经验分享、技术总结、心得体会">
+  
+    <meta name="description" content="并发调用控制耗时并发调用100个服务接口，控制总体超时时间 60 秒，并打印耗时： 1234567891011121314151617181920212223242526272829303132333435363738394041424344454647484950import java.util.concurrent.*;public class MultiThreadedServiceCall">
+<meta property="og:type" content="article">
+<meta property="og:title" content="11-并发调用服务接口">
+<meta property="og:url" content="https://janycode.github.io/2017/06/28/03_%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/04_%E7%AE%97%E6%B3%95/11-%E5%B9%B6%E5%8F%91%E8%B0%83%E7%94%A8%E6%9C%8D%E5%8A%A1%E6%8E%A5%E5%8F%A3/index.html">
+<meta property="og:site_name" content="姜源の云笔记">
+<meta property="og:description" content="并发调用控制耗时并发调用100个服务接口，控制总体超时时间 60 秒，并打印耗时： 1234567891011121314151617181920212223242526272829303132333435363738394041424344454647484950import java.util.concurrent.*;public class MultiThreadedServiceCall">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2017-06-28T15:09:27.000Z">
+<meta property="article:modified_time" content="2026-02-10T09:21:30.024Z">
+<meta property="article:author" content="Jerry(姜源)">
+<meta property="article:tag" content="算法题">
+<meta name="twitter:card" content="summary_large_image">
+  
+  
+    <meta name="referrer" content="no-referrer-when-downgrade">
+  
+  
+  <title>11-并发调用服务接口 - 姜源の云笔记</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"janycode.github.io","root":"/","version":"1.9.0","typing":{"enable":true,"typeSpeed":50,"cursorChar":"|","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":false},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":"bfff735c897eb60ea49b735096b20e47","google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+
+  
+<meta name="generator" content="Hexo 6.2.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 50vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>姜源の云笔记</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tools/">
+                <i class="iconfont icon-slack-fill"></i>
+                工具
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" target="_blank" rel="noopener" href="https://yuancodes.github.io/">
+                <i class="iconfont icon-notebook"></i>
+                Docsify
+              </a>
+            </li>
+          
+        
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="11-并发调用服务接口"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-author" aria-hidden="true"></i>
+        Jerry(姜源)
+      </span>
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2017-06-28 23:09" pubdate>
+          星期三, 2017/06/28 23:09:27
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          <!-- compatible with older versions-->
+          6.1k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          <!-- compatible with older versions-->
+          51 分钟
+        
+      </span>
+    
+
+    
+    
+      
+        <span id="busuanzi_container_page_pv" style="display: none">
+          <i class="iconfont icon-eye" aria-hidden="true"></i>
+          <span id="busuanzi_value_page_pv"></span> 次
+        </span>
+        
+      
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">11-并发调用服务接口</h1>
+            
+            <div class="markdown-body">
+              
+              <h3 id="并发调用控制耗时"><a href="#并发调用控制耗时" class="headerlink" title="并发调用控制耗时"></a>并发调用控制耗时</h3><p>并发调用100个服务接口，控制总体超时时间 60 秒，并打印耗时：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">import</span> java.util.concurrent.*;<br><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">MultiThreadedServiceCall</span> &#123;<br>    <br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">main</span><span class="hljs-params">(String[] args)</span> <span class="hljs-keyword">throws</span> Exception &#123;<br>        <span class="hljs-comment">//固定数量线程池：仅用于验证，实际场景推荐用自定义参数的线程池</span><br>        <span class="hljs-type">ExecutorService</span> <span class="hljs-variable">executorService</span> <span class="hljs-operator">=</span> Executors.newFixedThreadPool(<span class="hljs-number">100</span>);<br>        CompletionService&lt;String&gt; completionService = <span class="hljs-keyword">new</span> <span class="hljs-title class_">ExecutorCompletionService</span>&lt;&gt;(executorService);<br>        <br>        <span class="hljs-comment">//提交 100 个任务以同时执行</span><br>        <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> <span class="hljs-variable">i</span> <span class="hljs-operator">=</span> <span class="hljs-number">0</span>; i &lt; <span class="hljs-number">100</span>; i++) &#123;<br>            completionService.submit(<span class="hljs-keyword">new</span> <span class="hljs-title class_">Callable</span>&lt;String&gt;() &#123;<br>                <span class="hljs-meta">@Override</span><br>                <span class="hljs-keyword">public</span> String <span class="hljs-title function_">call</span><span class="hljs-params">()</span> <span class="hljs-keyword">throws</span> Exception &#123;<br>                    <span class="hljs-comment">//模拟在 100 到 900 毫秒之间随机花费时间的服务调用</span><br>                    Thread.sleep((<span class="hljs-type">long</span>) (Math.random() * <span class="hljs-number">900</span> + <span class="hljs-number">100</span>));<br>                    <span class="hljs-keyword">return</span> <span class="hljs-string">&quot;Service call success! ThreadName:&quot;</span> + Thread.currentThread().getName();<br>                &#125;<br>            &#125;);<br>        &#125;<br>        <br>        <span class="hljs-type">long</span> <span class="hljs-variable">start</span> <span class="hljs-operator">=</span> System.currentTimeMillis();<br>        <span class="hljs-comment">//将所有服务调用的总超时设置为 60 秒</span><br>        <span class="hljs-type">long</span> <span class="hljs-variable">timeoutInMilliseconds</span> <span class="hljs-operator">=</span> <span class="hljs-number">60000</span>;<br>        <span class="hljs-type">int</span> <span class="hljs-variable">completedTasks</span> <span class="hljs-operator">=</span> <span class="hljs-number">0</span>;<br>        <span class="hljs-type">boolean</span> <span class="hljs-variable">allTasksCompletedSuccessfully</span> <span class="hljs-operator">=</span> <span class="hljs-literal">true</span>;<br>        <span class="hljs-keyword">while</span> (completedTasks &lt; <span class="hljs-number">100</span> &amp;&amp; allTasksCompletedSuccessfully) &#123;<br>            Future&lt;String&gt; future = completionService.poll(timeoutInMilliseconds - (System.currentTimeMillis() - start), TimeUnit.MILLISECONDS);<br>            <br>            <span class="hljs-keyword">if</span> (future != <span class="hljs-literal">null</span>) &#123;<br>                <span class="hljs-keyword">try</span> &#123;<br>                    <span class="hljs-type">String</span> <span class="hljs-variable">result</span> <span class="hljs-operator">=</span> future.get();<br>                    <span class="hljs-comment">//这里的 result 用于其他逻辑</span><br>                    System.out.println(<span class="hljs-string">&quot;拿到线程中服务调用结果：result = &quot;</span> + result);<br>                    completedTasks++;<br>                &#125; <span class="hljs-keyword">catch</span> (InterruptedException | ExecutionException e) &#123;<br>                    allTasksCompletedSuccessfully = <span class="hljs-literal">false</span>;<br>                    e.printStackTrace();<br>                &#125;<br>            &#125; <span class="hljs-keyword">else</span> &#123;<br>                allTasksCompletedSuccessfully = <span class="hljs-literal">false</span>;<br>                System.out.println(<span class="hljs-string">&quot;在完成所有服务调用之前总超时 &quot;</span> + timeoutInMilliseconds + <span class="hljs-string">&quot; 毫秒！&quot;</span>);<br>            &#125;<br>        &#125;<br>        <span class="hljs-type">long</span> <span class="hljs-variable">end</span> <span class="hljs-operator">=</span> System.currentTimeMillis() - start;<br>        System.out.println(<span class="hljs-string">&quot;总耗时： &quot;</span> + (end / <span class="hljs-number">1000</span>) + <span class="hljs-string">&quot;s&quot;</span>);<br>        executorService.shutdown();<br>    &#125;<br>&#125;<br><br></code></pre></td></tr></table></figure>
+
+<p>具体实现过程如下：</p>
+<ol>
+<li>创建一个具有 100 个线程的线程池。</li>
+<li>创建一个已完成服务的 CompletionService，它会在每个服务执行完毕时给出 Future 对象。</li>
+<li>使用 for 循环将 100 个服务提交到 CompletionService 中以并行执行。</li>
+<li>记录开始时间并设置整体超时时间为 60 秒（即 60000 毫秒）。</li>
+<li>在 while 循环中检查完成的任务数是否小于 100，同时检查所有任务是否都已成功完成。</li>
+<li>使用 <code>completionService.poll()</code> 方法从 CompletionService 中取出已经完成的 Future 对象。这个方法<code>会等待 timeoutInMilliseconds - (当前时间 - 开始时间) 的时间来等待结果</code>。如果超时，则返回 null。</li>
+<li>如果返回了 Future 对象，则表示该服务已经执行完毕。使用 future.get() 方法获取服务结果，并进行相应操作。累加已完成任务的数量。</li>
+<li>如果返回 null，则表示任一服务超时，跳出 while 循环并输出信息。</li>
+<li>关闭线程池。</li>
+</ol>
+<h3 id="并发调用容错重试"><a href="#并发调用容错重试" class="headerlink" title="并发调用容错重试"></a>并发调用容错重试</h3><p>系统需要调用 100 个外部系统接口获取返回值（假定接口只返回 true 或 false，且相互间没有任何关联关系），并合并 100 个接口的返回值计算得到风控处理结果。</p>
+<p>要求：</p>
+<ol>
+<li>结果合并计算需要等到所有 100 个接口值都获取以后才能进行； </li>
+<li>整个处理过程需要尽可能快，保证整体时间在 200ms 以内，超出这个时间则终止所有处理并整体返回 false； </li>
+<li>需要考虑外部系统单个接口调用失败情况，具备一定重试容错能力； </li>
+<li>手动定义处理线程池，包括参数配置以及这样做的原因。</li>
+</ol>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">import</span> java.util.ArrayList;<br><span class="hljs-keyword">import</span> java.util.Arrays;<br><span class="hljs-keyword">import</span> java.util.Collections;<br><span class="hljs-keyword">import</span> java.util.List;<br><span class="hljs-keyword">import</span> java.util.concurrent.*;<br><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">ConcurrentCallProcessor</span> &#123;<br><br>    <span class="hljs-comment">//最大超时时间，单位：毫秒</span><br>    <span class="hljs-keyword">private</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">final</span> <span class="hljs-type">int</span> <span class="hljs-variable">TIMEOUT</span> <span class="hljs-operator">=</span> <span class="hljs-number">200</span>;<br>    <span class="hljs-comment">//重试次数</span><br>    <span class="hljs-keyword">private</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">final</span> <span class="hljs-type">int</span> <span class="hljs-variable">RETRY_COUNT</span> <span class="hljs-operator">=</span> <span class="hljs-number">2</span>;<br>    <span class="hljs-comment">//线程池</span><br>    <span class="hljs-keyword">private</span> <span class="hljs-keyword">final</span> ExecutorService executorService;<br><br>    <span class="hljs-keyword">public</span> <span class="hljs-title function_">ConcurrentCallProcessor</span><span class="hljs-params">()</span> &#123;<br>        <span class="hljs-type">int</span> <span class="hljs-variable">corePoolSize</span> <span class="hljs-operator">=</span> Runtime.getRuntime().availableProcessors() * <span class="hljs-number">2</span>; <span class="hljs-comment">//16</span><br>        <span class="hljs-type">int</span> <span class="hljs-variable">maximumPoolSize</span> <span class="hljs-operator">=</span> corePoolSize * <span class="hljs-number">4</span>;                            <span class="hljs-comment">//64</span><br>        <span class="hljs-type">long</span> <span class="hljs-variable">keepAliveTime</span> <span class="hljs-operator">=</span> <span class="hljs-number">60L</span>;<br>        BlockingQueue&lt;Runnable&gt; workQueue = <span class="hljs-keyword">new</span> <span class="hljs-title class_">ArrayBlockingQueue</span>&lt;&gt;(maximumPoolSize);<br>        executorService = <span class="hljs-keyword">new</span> <span class="hljs-title class_">ThreadPoolExecutor</span>(<br>                corePoolSize,                          <span class="hljs-comment">//核心线程数 × 2: CPU密集型</span><br>                maximumPoolSize,                      <span class="hljs-comment">//最大线程数=核心线程数的2倍：队列满就用最大线程执行</span><br>                keepAliveTime,                          <span class="hljs-comment">//线程空闲等待时间 60s</span><br>                TimeUnit.SECONDS,                      <span class="hljs-comment">//单位：秒</span><br>                workQueue,                            <span class="hljs-comment">//等待队列：64容量，100&gt;64所以会以最大线程数执行</span><br>                Executors.defaultThreadFactory(),     <span class="hljs-comment">//默认线程工厂</span><br>                <span class="hljs-keyword">new</span> <span class="hljs-title class_">ThreadPoolExecutor</span>.AbortPolicy()  <span class="hljs-comment">//核心线程满,等待队列满,最大线程满,则不执行抛出异常</span><br>        );<br>    &#125;<br><br>    <span class="hljs-keyword">public</span> <span class="hljs-type">boolean</span> <span class="hljs-title function_">process</span><span class="hljs-params">()</span> &#123;<br>        <span class="hljs-comment">//100个异步调用任务</span><br>        List&lt;Future&lt;Boolean&gt;&gt; futures = <span class="hljs-keyword">new</span> <span class="hljs-title class_">ArrayList</span>&lt;&gt;(<span class="hljs-number">100</span>);<br>        <span class="hljs-comment">//100个任务的返回值</span><br>        <span class="hljs-comment">//数组：√ 因为数组创建的时候会直接开辟内存</span><br>        <span class="hljs-comment">//Boolean[] results = new Boolean[100];</span><br>        <span class="hljs-comment">//List: √ 但必须要进行初始化长度和值，否则不能直接 set(index, xxx) 因为在 add() 的时候才会开辟内存进而写入值</span><br>        List&lt;Boolean&gt; results = <span class="hljs-keyword">new</span> <span class="hljs-title class_">ArrayList</span>&lt;&gt;(Collections.nCopies(<span class="hljs-number">100</span>, <span class="hljs-literal">false</span>));<br><br>        <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> <span class="hljs-variable">i</span> <span class="hljs-operator">=</span> <span class="hljs-number">0</span>; i &lt; <span class="hljs-number">100</span>; i++) &#123;<br>            <span class="hljs-keyword">final</span> <span class="hljs-type">int</span> <span class="hljs-variable">index</span> <span class="hljs-operator">=</span> i;<br>            Future&lt;Boolean&gt; future = executorService.submit(() -&gt; &#123;<br>                <span class="hljs-type">boolean</span> <span class="hljs-variable">result</span> <span class="hljs-operator">=</span> <span class="hljs-literal">false</span>;<br>                <span class="hljs-comment">//重试指定次数，如果重试还不成功，则记录日志</span><br>                <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> <span class="hljs-variable">j</span> <span class="hljs-operator">=</span> <span class="hljs-number">1</span>; j &lt;= RETRY_COUNT; j++) &#123;<br>                    result = callExternalSystem();<br>                    <span class="hljs-keyword">if</span> (result) &#123;<br>                        <span class="hljs-keyword">break</span>;<br>                    &#125;<br>                    <span class="hljs-keyword">if</span> (j == <span class="hljs-number">2</span>) &#123;<br>                        System.out.println(<span class="hljs-string">&quot;index=&quot;</span> + index + <span class="hljs-string">&quot; 重试&quot;</span> + RETRY_COUNT + <span class="hljs-string">&quot;次还不成功!&quot;</span>);<br>                    &#125;<br>                &#125;<br>                <span class="hljs-comment">//results[index] = result;  //对应数组</span><br>                results.set(index, result); <span class="hljs-comment">//对应初始化过容量和值的List</span><br>                <span class="hljs-comment">//results.add(result);      //×(错误用法) List&lt;&gt; results 在未初始化时，并发会丢失数据，因为内存开辟速度没有线程执行速度快</span><br>                <span class="hljs-keyword">return</span> result;<br>            &#125;);<br>            futures.add(future);<br>        &#125;<br>        System.out.println(<span class="hljs-string">&quot;results.size() = &quot;</span> + results.size());<br>        <span class="hljs-comment">//results.forEach(System.out::println);</span><br><br>        <span class="hljs-keyword">try</span> &#123;<br>            <span class="hljs-type">boolean</span> <span class="hljs-variable">allDone</span> <span class="hljs-operator">=</span> <span class="hljs-literal">true</span>;<br>            <span class="hljs-keyword">for</span> (Future&lt;Boolean&gt; future : futures) &#123;<br>                <span class="hljs-comment">//等待结果返回，最大超时时间为 TIMEOUT</span><br>                future.get(TIMEOUT, TimeUnit.MILLISECONDS);<br>                <span class="hljs-comment">//如果有接口调用超时，则设置 allDone 为 false</span><br>                <span class="hljs-keyword">if</span> (!future.isDone()) &#123;<br>                    allDone = <span class="hljs-literal">false</span>;<br>                &#125;<br>            &#125;<br>            <span class="hljs-comment">//如果所有接口都已经返回结果，则合并计算最终结果；否则终止所有处理并返回 false</span><br>            <span class="hljs-keyword">if</span> (allDone) &#123;<br>                <span class="hljs-type">boolean</span> <span class="hljs-variable">finalResult</span> <span class="hljs-operator">=</span> <span class="hljs-literal">true</span>;<br>                <span class="hljs-keyword">for</span> (<span class="hljs-type">boolean</span> result : results) &#123;<br>                    finalResult &amp;= result;<br>                &#125;<br>                <span class="hljs-keyword">return</span> finalResult;<br>            &#125; <span class="hljs-keyword">else</span> &#123;<br>                <span class="hljs-keyword">for</span> (Future&lt;Boolean&gt; future : futures) &#123;<br>                    <span class="hljs-keyword">if</span> (!future.isDone()) &#123;<br>                        future.cancel(<span class="hljs-literal">true</span>);<br>                    &#125;<br>                &#125;<br>                <span class="hljs-keyword">return</span> <span class="hljs-literal">false</span>;<br>            &#125;<br>        &#125; <span class="hljs-keyword">catch</span> (Exception ex) &#123;<br>            <span class="hljs-comment">//处理异常情况，如超时、线程中断等</span><br>            System.err.println(<span class="hljs-string">&quot;errMsg = &quot;</span> + ex.getMessage());<br>            <span class="hljs-keyword">return</span> <span class="hljs-literal">false</span>;<br>        &#125; <span class="hljs-keyword">finally</span> &#123;<br>            <span class="hljs-keyword">if</span> (executorService != <span class="hljs-literal">null</span>) &#123;<br>                executorService.shutdown();<br>            &#125;<br>        &#125;<br>    &#125;<br><br>    <span class="hljs-keyword">private</span> <span class="hljs-type">boolean</span> <span class="hljs-title function_">callExternalSystem</span><span class="hljs-params">()</span> &#123;<br>        <span class="hljs-comment">//调用外部系统接口获取结果，返回 true 或 false</span><br>        <span class="hljs-keyword">return</span> Math.random() &gt; <span class="hljs-number">0.1</span>;<br>    &#125;<br><br>    <span class="hljs-comment">//测试验证</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">main</span><span class="hljs-params">(String[] args)</span> &#123;<br>        <span class="hljs-type">ConcurrentCallProcessor</span> <span class="hljs-variable">processor</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">ConcurrentCallProcessor</span>();<br><br>        <span class="hljs-type">long</span> <span class="hljs-variable">startTime</span> <span class="hljs-operator">=</span> System.currentTimeMillis();<br>        <span class="hljs-type">boolean</span> <span class="hljs-variable">result</span> <span class="hljs-operator">=</span> processor.process();<br>        <span class="hljs-type">long</span> <span class="hljs-variable">endTime</span> <span class="hljs-operator">=</span> System.currentTimeMillis();<br><br>        System.out.println(<span class="hljs-string">&quot;result: &quot;</span> + result);<br>        System.out.println(<span class="hljs-string">&quot;总消耗时间: &quot;</span> + (endTime - startTime) + <span class="hljs-string">&quot;ms&quot;</span>);<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>该类包括一个 <code>process</code> 方法和一个 <code>shutdown</code> 方法。在 <code>process</code> 方法中，首先创建一个长度为 100 的 Future 数组和一个长度为 100 的结果数组，分别存储每个接口调用的 Future 和结果。然后使用线程池异步调用外部系统接口，并将结果保存到对应位置上。最后等待所有接口都返回结果，合并计算得到最终结果。</p>
+<p>如果所有接口都返回结果，则将 <code>allDone</code> 标记为 <code>true</code>，遍历结果数组，使用按位与（&amp;）计算得到最终结果。否则，将 <code>allDone</code> 标记为 <code>false</code>，终止所有处理并返回 false。</p>
+<p>如果出现异常情况，如超时或线程中断等，也直接返回 false。</p>
+<p>为了提高性能，我们使用了线程池来异步执行外部系统接口的调用，并设置了超时时间来避免等待时间过长。线程池的参数根据 CPU 核心数动态配置，以提高线程利用率和系统性能。</p>
+<p>在 finally 的 <code>shutdown</code> 方法中，我们关闭线程池，释放资源。</p>
+<p>需要注意：</p>
+<ol>
+<li>在使用完毕后一定要记得关闭线程池，否则会导致内存泄露等问题。</li>
+<li>在实际应用场景中，根据具体需求进行调整和优化。</li>
+</ol>
+
+              
+            </div>
+            <hr/>
+            <div>
+              <div>
+  <img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20241112163319.png" srcset="/img/loading.gif" lazyload>
+</div>
+<div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/03-%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/" class="category-chain-item">03_数据结构</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/03-%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/04-%E7%AE%97%E6%B3%95/" class="category-chain-item">04_算法</a>
+  
+  
+
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/%E7%AE%97%E6%B3%95%E9%A2%98/">#算法题</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>11-并发调用服务接口</div>
+      <div>https://janycode.github.io/2017/06/28/03_数据结构/04_算法/11-并发调用服务接口/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Jerry(姜源)</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2017年6月28日</div>
+        </div>
+      
+      
+      <div class="license-meta-item">
+        <div>许可协议</div>
+        <div>
+          
+            
+            
+              <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+              <span class="hint--top hint--rounded" aria-label="BY - 姜源">
+                <i class="iconfont icon-by"></i>
+              </span>
+              </a>
+            
+          
+        </div>
+      </div>
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2017/06/28/03_%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/04_%E7%AE%97%E6%B3%95/12-%E5%8F%8D%E8%BD%AC%E9%93%BE%E8%A1%A8%E7%AE%97%E6%B3%95/" title="12-反转链表算法">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">12-反转链表算法</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2017/06/28/03_%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/04_%E7%AE%97%E6%B3%95/14-%E5%BD%92%E5%B9%B6%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95/" title="14-归并排序算法">
+                        <span class="hidden-mobile">14-归并排序算法</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+  <article id="comments" lazyload>
+    
+  <div id="SOHUCS" sid='https://janycode.github.io/2017/06/28/03_%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/04_%E7%AE%97%E6%B3%95/11-%E5%B9%B6%E5%8F%91%E8%B0%83%E7%94%A8%E6%9C%8D%E5%8A%A1%E6%8E%A5%E5%8F%A3/'></div>
+  <script type="text/javascript">
+    Fluid.utils.loadComments('#SOHUCS', function() {
+      Fluid.utils.createScript("https://changyan.sohu.com/upload/changyan.js", function() {
+        window.changyan.api.config({"appid":"cyw5OHIcO","appkey":"fea3446b3df4b3f129f34da4cbc87e51"})
+      });
+    });
+  </script>
+  <noscript>Please enable JavaScript to view the comments</noscript>
+
+
+  </article>
+
+
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://simple.blog.csdn.net" target="_blank" rel="nofollow noopener"><span>CSDN</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/janycode" target="_blank" rel="nofollow noopener"><span>GitHub</span></a> <i class="iconfont icon-love"></i> <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="busuanzi_container_site_pv" style="display: none">
+        总访问量(PV) 
+        <span id="busuanzi_value_site_pv"></span>
+         次，
+      </span>
+    
+    
+      <span id="busuanzi_container_site_uv" style="display: none">
+        总访客数(UV) 
+        <span id="busuanzi_value_site_uv"></span>
+         人
+      </span>
+    
+    
+  
+</div>
+
+  
+  
+  
+</div>
+
+<!-- live2d 动画 -->
+<script src="https://eqcn.ajz.miesnfu.com/wp-content/plugins/wp-3d-pony/live2dw/lib/L2Dwidget.min.js"></script>
+<script>
+    L2Dwidget.init({
+        "model": {
+            jsonPath: "https://unpkg.com/live2d-widget-model-haruto@1.0.5/assets/haruto.model.json",
+            "scale": 1
+        },
+        "display": {
+            "position": "right",
+            "width": 100,
+            "height": 200,
+            "hOffset": 35,
+            "vOffset": -85
+        },
+        "mobile": {
+            "show": false,
+            "scale": 0.1
+        },
+        "react": {
+            "opacityDefault": 0.75,
+            "opacityOnHover": 0.2
+        }
+    });
+</script>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <!-- Baidu Analytics -->
+    <script defer>
+      if (!Fluid.ctx.dnt) {
+        var _hmt = _hmt || [];
+        (function() {
+          var hm = document.createElement("script");
+          hm.src = "https://hm.baidu.com/hm.js?bfff735c897eb60ea49b735096b20e47";
+          var s = document.getElementsByTagName("script")[0];
+          s.parentNode.insertBefore(hm, s);
+        })();
+      }
+    </script>
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.0/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      headingSelector : CONFIG.toc.headingSelector || 'h1,h2,h3,h4,h5,h6',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      collapseDepth   : CONFIG.toc.collapseDepth || 0,
+      scrollSmooth    : true,
+      headingsOffset  : -boardTop
+    });
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+  });
+</script>
+
+
+  <script>
+  (function() {
+    var enableLang = CONFIG.code_language.enable && CONFIG.code_language.default;
+    var enableCopy = CONFIG.copy_btn;
+    if (!enableLang && !enableCopy) {
+      return;
+    }
+
+    function getBgClass(ele) {
+      return Fluid.utils.getBackgroundLightness(ele) >= 0 ? 'code-widget-light' : 'code-widget-dark';
+    }
+
+    var copyTmpl = '';
+    copyTmpl += '<div class="code-widget">';
+    copyTmpl += 'LANG';
+    copyTmpl += '</div>';
+    jQuery('.markdown-body pre').each(function() {
+      var $pre = jQuery(this);
+      if ($pre.find('code.mermaid').length > 0) {
+        return;
+      }
+      if ($pre.find('span.line').length > 0) {
+        return;
+      }
+
+      var lang = '';
+
+      if (enableLang) {
+        lang = CONFIG.code_language.default;
+        if ($pre[0].children.length > 0 && $pre[0].children[0].classList.length >= 2 && $pre.children().hasClass('hljs')) {
+          lang = $pre[0].children[0].classList[1];
+        } else if ($pre[0].getAttribute('data-language')) {
+          lang = $pre[0].getAttribute('data-language');
+        } else if ($pre.parent().hasClass('sourceCode') && $pre[0].children.length > 0 && $pre[0].children[0].classList.length >= 2) {
+          lang = $pre[0].children[0].classList[1];
+          $pre.parent().addClass('code-wrapper');
+        } else if ($pre.parent().hasClass('markdown-body') && $pre[0].classList.length === 0) {
+          $pre.wrap('<div class="code-wrapper"></div>');
+        }
+        lang = lang.toUpperCase().replace('NONE', CONFIG.code_language.default);
+      }
+      $pre.append(copyTmpl.replace('LANG', lang).replace('code-widget">',
+        getBgClass($pre[0]) + (enableCopy ? ' code-widget copy-btn" data-clipboard-snippet><i class="iconfont icon-copy"></i>' : ' code-widget">')));
+
+      if (enableCopy) {
+        Fluid.utils.createScript('https://lib.baomitu.com/clipboard.js/2.0.10/clipboard.min.js', function() {
+          var clipboard = new window.ClipboardJS('.copy-btn', {
+            target: function(trigger) {
+              var nodes = trigger.parentNode.childNodes;
+              for (var i = 0; i < nodes.length; i++) {
+                if (nodes[i].tagName === 'CODE') {
+                  return nodes[i];
+                }
+              }
+            }
+          });
+          clipboard.on('success', function(e) {
+            e.clearSelection();
+            e.trigger.innerHTML = e.trigger.innerHTML.replace('icon-copy', 'icon-success');
+            setTimeout(function() {
+              e.trigger.innerHTML = e.trigger.innerHTML.replace('icon-success', 'icon-copy');
+            }, 2000);
+          });
+        });
+      }
+    });
+  })();
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

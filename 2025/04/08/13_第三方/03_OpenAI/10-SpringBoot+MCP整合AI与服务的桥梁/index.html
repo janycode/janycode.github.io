@@ -1,0 +1,850 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=light>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Jerry(姜源)">
+  <meta name="keywords" content="Java,Html,CSS,JavaScript,Python,C,Linux,shell编程经验分享、技术总结、心得体会">
+  
+    <meta name="description" content="引言随着人工智能的飞速发展，大语言模型(LLM)正在革命性地重塑用户与软件的交互范式。 想象一下这样的场景：用户无需钻研复杂的API文档或者在繁琐的表单间来回切换，只需通过自然语言直接与系统对话——“帮我查找所有2023年出版的图书”、“创建一个新用户叫张三，邮箱是zhangsan@example.com”。 这种直观、流畅的交互方式不仅能显著降低新用户的学习曲线，更能大幅削减B端系统的培训成本和">
+<meta property="og:type" content="article">
+<meta property="og:title" content="10-SpringBoot+MCP整合AI与服务的桥梁">
+<meta property="og:url" content="https://janycode.github.io/2025/04/08/13_%E7%AC%AC%E4%B8%89%E6%96%B9/03_OpenAI/10-SpringBoot+MCP%E6%95%B4%E5%90%88AI%E4%B8%8E%E6%9C%8D%E5%8A%A1%E7%9A%84%E6%A1%A5%E6%A2%81/index.html">
+<meta property="og:site_name" content="姜源の云笔记">
+<meta property="og:description" content="引言随着人工智能的飞速发展，大语言模型(LLM)正在革命性地重塑用户与软件的交互范式。 想象一下这样的场景：用户无需钻研复杂的API文档或者在繁琐的表单间来回切换，只需通过自然语言直接与系统对话——“帮我查找所有2023年出版的图书”、“创建一个新用户叫张三，邮箱是zhangsan@example.com”。 这种直观、流畅的交互方式不仅能显著降低新用户的学习曲线，更能大幅削减B端系统的培训成本和">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20250206172444.png">
+<meta property="article:published_time" content="2025-04-08T11:40:49.000Z">
+<meta property="article:modified_time" content="2026-02-10T09:21:30.293Z">
+<meta property="article:author" content="Jerry(姜源)">
+<meta property="article:tag" content="第三方">
+<meta property="article:tag" content="OpenAI">
+<meta property="article:tag" content="MCP">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20250206172444.png">
+  
+  
+    <meta name="referrer" content="no-referrer-when-downgrade">
+  
+  
+  <title>10-SpringBoot+MCP整合AI与服务的桥梁 - 姜源の云笔记</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"janycode.github.io","root":"/","version":"1.9.0","typing":{"enable":true,"typeSpeed":50,"cursorChar":"|","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":false},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":"bfff735c897eb60ea49b735096b20e47","google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+
+  
+<meta name="generator" content="Hexo 6.2.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 50vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>姜源の云笔记</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tools/">
+                <i class="iconfont icon-slack-fill"></i>
+                工具
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" target="_blank" rel="noopener" href="https://yuancodes.github.io/">
+                <i class="iconfont icon-notebook"></i>
+                Docsify
+              </a>
+            </li>
+          
+        
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="10-SpringBoot+MCP整合AI与服务的桥梁"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-author" aria-hidden="true"></i>
+        Jerry(姜源)
+      </span>
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2025-04-08 19:40" pubdate>
+          星期二, 2025/04/08 19:40:49
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          <!-- compatible with older versions-->
+          12k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          <!-- compatible with older versions-->
+          104 分钟
+        
+      </span>
+    
+
+    
+    
+      
+        <span id="busuanzi_container_page_pv" style="display: none">
+          <i class="iconfont icon-eye" aria-hidden="true"></i>
+          <span id="busuanzi_value_page_pv"></span> 次
+        </span>
+        
+      
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">10-SpringBoot+MCP整合AI与服务的桥梁</h1>
+            
+            <div class="markdown-body">
+              
+              <h3 id="引言"><a href="#引言" class="headerlink" title="引言"></a>引言</h3><p>随着人工智能的飞速发展，大语言模型(LLM)正在革命性地重塑用户与软件的交互范式。</p>
+<p>想象一下这样的场景：用户无需钻研复杂的API文档或者在繁琐的表单间来回切换，只需通过自然语言直接与系统对话——“<code>帮我查找所有2023年出版的图书</code>”、“<code>创建一个新用户叫张三，邮箱是zhangsan@example.com</code>”。</p>
+<p>这种直观、流畅的交互方式不仅能显著降低新用户的学习曲线，更能大幅削减B端系统的培训成本和实施周期，让企业应用变得更为简单和高效。</p>
+<p>这正是<code>Model Context Protocol (MCP)</code> 协议在应用层面所带来的价值体现。</p>
+<h3 id="认识MCP"><a href="#认识MCP" class="headerlink" title="认识MCP"></a>认识MCP</h3><p>我这里不粘贴官方的定义，用大白话给大家解释下：<code>MCP就像是AI世界的&quot;万能适配器&quot;</code>。想象你有很多不同类型的服务和数据库，每个都有自己独特的”说话方式”。AI需要和这些服务交流时就很麻烦，因为要学习每个服务的”语言”。</p>
+<p>MCP解决了这个问题 - 它就像一个统一的翻译官，让AI只需学一种”语言”就能和所有服务交流。这样开发者不用为每个服务单独开发连接方式，AI也能更容易获取它需要的信息。</p>
+<p>如果你是一个后端同学，那么应该接触或听说过gRPC。gRPC通过标准化的通信方式可以实现不同语言开发的服务之间进行通信，那么MCP专门为AI模型设计的”翻译官和接口管理器”，让AI能以统一方式与各种应用或数据源交互。</p>
+<p>假设开发了一个天气服务，用户想要查询深圳的天气，这里分别以传统API方式和MCP方式进行对比：</p>
+<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20250408164311.png" srcset="/img/loading.gif" lazyload alt="image-20250408164310704"></p>
+<h3 id="对现有SpringBoot服务改造"><a href="#对现有SpringBoot服务改造" class="headerlink" title="对现有SpringBoot服务改造"></a>对现有SpringBoot服务改造</h3><p>这里为了演示，先准备好一个图书管理服务，图书实体字段如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">import</span> jakarta.persistence.*;<br><span class="hljs-keyword">import</span> jakarta.validation.constraints.NotBlank;<br><span class="hljs-keyword">import</span> jakarta.validation.constraints.NotNull;<br><span class="hljs-keyword">import</span> jakarta.validation.constraints.PastOrPresent;<br><span class="hljs-keyword">import</span> lombok.AllArgsConstructor;<br><span class="hljs-keyword">import</span> lombok.Data;<br><span class="hljs-keyword">import</span> lombok.NoArgsConstructor;<br><span class="hljs-keyword">import</span> java.time.LocalDate;<br><br><span class="hljs-meta">@Entity</span><br><span class="hljs-meta">@Table(name = &quot;books&quot;)</span><br><span class="hljs-meta">@Data</span><br><span class="hljs-meta">@AllArgsConstructor</span><br><span class="hljs-meta">@NoArgsConstructor</span><br>publicclass Book &#123;<br>    <span class="hljs-meta">@Id</span><br>    <span class="hljs-meta">@GeneratedValue(strategy = GenerationType.IDENTITY)</span><br>    <span class="hljs-keyword">private</span> Long id;<br><br>    <span class="hljs-meta">@NotBlank(message = &quot;书名不能为空&quot;)</span><br>    <span class="hljs-meta">@Column(nullable = false)</span><br>    <span class="hljs-keyword">private</span> String title;<br><br>    <span class="hljs-meta">@NotBlank(message = &quot;分类不能为空&quot;)</span><br>    <span class="hljs-meta">@Column(nullable = false)</span><br>    <span class="hljs-keyword">private</span> String category;<br><br>    <span class="hljs-meta">@NotBlank(message = &quot;作者不能为空&quot;)</span><br>    <span class="hljs-meta">@Column(nullable = false)</span><br>    <span class="hljs-keyword">private</span> String author;<br><br>    <span class="hljs-meta">@NotNull(message = &quot;出版日期不能为空&quot;)</span><br>    <span class="hljs-meta">@PastOrPresent(message = &quot;出版日期不能是未来日期&quot;)</span><br>    <span class="hljs-meta">@Column(nullable = false)</span><br>    <span class="hljs-keyword">private</span> LocalDate publicationDate;<br><br>    <span class="hljs-meta">@NotBlank(message = &quot;ISBN编码不能为空&quot;)</span><br>    <span class="hljs-meta">@Column(nullable = false, unique = true)</span><br>    <span class="hljs-keyword">private</span> String isbn;<br><br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>为这个服务编写了2个测试方法：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">import</span> com.example.entity.Book;<br><br><span class="hljs-keyword">import</span> java.util.List;<br><br>publicinterface BookService &#123;<br>    <span class="hljs-comment">// 根据作者查询</span><br>    List&lt;Book&gt; <span class="hljs-title function_">findBooksByAuthor</span><span class="hljs-params">(String author)</span>;<br><br>    <span class="hljs-comment">// 根据分类查询</span><br>    List&lt;Book&gt; <span class="hljs-title function_">findBooksByCategory</span><span class="hljs-params">(String category)</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>现在要将这个SpringBoot服务改造成MCP服务，需要以下步骤：</p>
+<h4 id="1-导入依赖"><a href="#1-导入依赖" class="headerlink" title="1.导入依赖"></a>1.导入依赖</h4><p>在pom.xml中引入相关依赖，这里提示一下anthropic的访问需要代理，否则会提示403。</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><code class="hljs xml"><span class="hljs-comment">&lt;!-- Spring AI 核心依赖 --&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">dependency</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">groupId</span>&gt;</span>org.springframework.ai<span class="hljs-tag">&lt;/<span class="hljs-name">groupId</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">artifactId</span>&gt;</span>spring-ai-core<span class="hljs-tag">&lt;/<span class="hljs-name">artifactId</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">dependency</span>&gt;</span><br><br><span class="hljs-comment">&lt;!-- Anthropic 模型支持 --&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">dependency</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">groupId</span>&gt;</span>org.springframework.ai<span class="hljs-tag">&lt;/<span class="hljs-name">groupId</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">artifactId</span>&gt;</span>spring-ai-anthropic-spring-boot-starter<span class="hljs-tag">&lt;/<span class="hljs-name">artifactId</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">dependency</span>&gt;</span><br><br><span class="hljs-comment">&lt;!-- MCP 服务器支持 - WebMVC版本 --&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">dependency</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">groupId</span>&gt;</span>org.springframework.ai<span class="hljs-tag">&lt;/<span class="hljs-name">groupId</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">artifactId</span>&gt;</span>spring-ai-mcp-server-webmvc-spring-boot-starter<span class="hljs-tag">&lt;/<span class="hljs-name">artifactId</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">dependency</span>&gt;</span><br></code></pre></td></tr></table></figure>
+
+<p>由于目前这些依赖还是预览版本，所以在Maven中央仓库中是找不到的，需要额外引入仓库地址。</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><code class="hljs xml"><span class="hljs-tag">&lt;<span class="hljs-name">repositories</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">repository</span>&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">id</span>&gt;</span>spring-milestones<span class="hljs-tag">&lt;/<span class="hljs-name">id</span>&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">name</span>&gt;</span>Spring Milestones<span class="hljs-tag">&lt;/<span class="hljs-name">name</span>&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">url</span>&gt;</span>https://repo.spring.io/milestone<span class="hljs-tag">&lt;/<span class="hljs-name">url</span>&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">snapshots</span>&gt;</span><br>            <span class="hljs-tag">&lt;<span class="hljs-name">enabled</span>&gt;</span>false<span class="hljs-tag">&lt;/<span class="hljs-name">enabled</span>&gt;</span><br>        <span class="hljs-tag">&lt;/<span class="hljs-name">snapshots</span>&gt;</span><br>    <span class="hljs-tag">&lt;/<span class="hljs-name">repository</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">repository</span>&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">id</span>&gt;</span>spring-snapshots<span class="hljs-tag">&lt;/<span class="hljs-name">id</span>&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">name</span>&gt;</span>Spring Snapshots<span class="hljs-tag">&lt;/<span class="hljs-name">name</span>&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">url</span>&gt;</span>https://repo.spring.io/snapshot<span class="hljs-tag">&lt;/<span class="hljs-name">url</span>&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">releases</span>&gt;</span><br>            <span class="hljs-tag">&lt;<span class="hljs-name">enabled</span>&gt;</span>false<span class="hljs-tag">&lt;/<span class="hljs-name">enabled</span>&gt;</span><br>        <span class="hljs-tag">&lt;/<span class="hljs-name">releases</span>&gt;</span><br>    <span class="hljs-tag">&lt;/<span class="hljs-name">repository</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">repository</span>&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">name</span>&gt;</span>Central Portal Snapshots<span class="hljs-tag">&lt;/<span class="hljs-name">name</span>&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">id</span>&gt;</span>central-portal-snapshots<span class="hljs-tag">&lt;/<span class="hljs-name">id</span>&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">url</span>&gt;</span>https://central.sonatype.com/repository/maven-snapshots/<span class="hljs-tag">&lt;/<span class="hljs-name">url</span>&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">releases</span>&gt;</span><br>            <span class="hljs-tag">&lt;<span class="hljs-name">enabled</span>&gt;</span>false<span class="hljs-tag">&lt;/<span class="hljs-name">enabled</span>&gt;</span><br>        <span class="hljs-tag">&lt;/<span class="hljs-name">releases</span>&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">snapshots</span>&gt;</span><br>            <span class="hljs-tag">&lt;<span class="hljs-name">enabled</span>&gt;</span>true<span class="hljs-tag">&lt;/<span class="hljs-name">enabled</span>&gt;</span><br>        <span class="hljs-tag">&lt;/<span class="hljs-name">snapshots</span>&gt;</span><br>    <span class="hljs-tag">&lt;/<span class="hljs-name">repository</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">repositories</span>&gt;</span><br></code></pre></td></tr></table></figure>
+
+<p>关于项目中代理的配置可以参考我这段配置：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">import</span> jakarta.annotation.PostConstruct;<br><span class="hljs-keyword">import</span> org.springframework.context.annotation.Configuration;<br><br><br><span class="hljs-meta">@Configuration</span><br>publicclass ProxyConfig &#123;<br><br><span class="hljs-comment">// 代理设置</span><br>privatefinal <span class="hljs-type">String</span> <span class="hljs-variable">PROXY_HOST</span> <span class="hljs-operator">=</span> <span class="hljs-string">&quot;127.0.0.1&quot;</span>;<br><span class="hljs-type">privatefinalint</span> <span class="hljs-variable">PROXY_PORT</span> <span class="hljs-operator">=</span> <span class="hljs-number">10080</span>;<br><br><span class="hljs-meta">@PostConstruct</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">setSystemProxy</span><span class="hljs-params">()</span> &#123;<br>    <span class="hljs-comment">// 设置系统代理属性，这会影响Spring Boot自动配置的HTTP客户端</span><br>    System.setProperty(<span class="hljs-string">&quot;http.proxyHost&quot;</span>, PROXY_HOST);<br>    System.setProperty(<span class="hljs-string">&quot;http.proxyPort&quot;</span>, String.valueOf(PROXY_PORT));<br>    System.setProperty(<span class="hljs-string">&quot;https.proxyHost&quot;</span>, PROXY_HOST);<br>    System.setProperty(<span class="hljs-string">&quot;https.proxyPort&quot;</span>, String.valueOf(PROXY_PORT));<br><br>    System.out.println(<span class="hljs-string">&quot;System proxy configured: http://&quot;</span> + PROXY_HOST + <span class="hljs-string">&quot;:&quot;</span> + PROXY_PORT);<br>  &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<h4 id="2-引入配置"><a href="#2-引入配置" class="headerlink" title="2.引入配置"></a>2.引入配置</h4><p>的目的是将一个Spring服务改造成MCP服务，所以这里不需要进行客户端的配置，同理，在引入依赖的时候也不用引入客户端的依赖。</p>
+<figure class="highlight yml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs yml"><span class="hljs-comment"># Spring AI api-key</span><br><span class="hljs-string">spring.ai.anthropic.api-key=这里换成你的api-key</span><br><br><span class="hljs-comment"># MCP服务端开启</span><br><span class="hljs-string">spring.ai.mcp.server.enabled=true</span><br><br><span class="hljs-comment"># MCP服务端配置</span><br><span class="hljs-string">spring.ai.mcp.server.name=book-management-server</span><br><span class="hljs-string">spring.ai.mcp.server.version=1.0.0</span><br><span class="hljs-string">spring.ai.mcp.server.type=SYNC</span><br><span class="hljs-string">spring.ai.mcp.server.sse-message-endpoint=/mcp/message</span><br></code></pre></td></tr></table></figure>
+
+<h4 id="3-改造原服务方法"><a href="#3-改造原服务方法" class="headerlink" title="3.改造原服务方法"></a>3.改造原服务方法</h4><p>服务的改造有两种思路-分别是工具配置方式和函数Bean方式，这里对两种方式都做下简略说明：</p>
+<p>工具配置方式在需要改造的实现类对需要改造的方法加上<code>@Tool</code>和<code>@ToolParam</code>注解分别标记方法和参数。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">import</span> com.example.entity.Book;<br><span class="hljs-keyword">import</span> com.example.repository.BookRepository;<br><span class="hljs-keyword">import</span> com.example.service.BookService;<br><span class="hljs-keyword">import</span> jakarta.annotation.Resource;<br><span class="hljs-keyword">import</span> lombok.RequiredArgsConstructor;<br><span class="hljs-keyword">import</span> org.springframework.ai.tool.annotation.Tool;<br><span class="hljs-keyword">import</span> org.springframework.ai.tool.annotation.ToolParam;<br><span class="hljs-keyword">import</span> org.springframework.stereotype.Service;<br><br><span class="hljs-keyword">import</span> java.util.List;<br><br><span class="hljs-meta">@Service</span><br><span class="hljs-meta">@RequiredArgsConstructor</span><br>publicclass BookServiceImpl  <span class="hljs-keyword">implements</span> <span class="hljs-title class_">BookService</span> &#123;<br><br>    <span class="hljs-meta">@Resource</span><br>    <span class="hljs-keyword">private</span> BookRepository bookRepository;<br><br><br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-meta">@Tool(name = &quot;findBooksByTitle&quot;, description = &quot;根据书名模糊查询图书，支持部分标题匹配&quot;)</span><br>    <span class="hljs-keyword">public</span> List&lt;Book&gt; <span class="hljs-title function_">findBooksByTitle</span><span class="hljs-params">(<span class="hljs-meta">@ToolParam(description = &quot;书名关键词&quot;)</span> String title)</span> &#123;<br>        <span class="hljs-keyword">return</span> bookRepository.findByTitleContaining(title);<br>    &#125;<br><br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-meta">@Tool(name = &quot;findBooksByAuthor&quot;, description = &quot;根据作者精确查询图书&quot;)</span><br>    <span class="hljs-keyword">public</span> List&lt;Book&gt; <span class="hljs-title function_">findBooksByAuthor</span><span class="hljs-params">(<span class="hljs-meta">@ToolParam(description = &quot;作者姓名&quot;)</span> String author)</span> &#123;<br>        <span class="hljs-keyword">return</span> bookRepository.findByAuthor(author);<br>    &#125;<br><br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-meta">@Tool(name = &quot;findBooksByCategory&quot;, description = &quot;根据图书分类精确查询图书&quot;)</span><br>    <span class="hljs-keyword">public</span> List&lt;Book&gt; <span class="hljs-title function_">findBooksByCategory</span><span class="hljs-params">(<span class="hljs-meta">@ToolParam(description = &quot;图书分类&quot;)</span>String category)</span> &#123;<br>        <span class="hljs-keyword">return</span> bookRepository.findByCategory(category);<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>接着将这个实现类注册到MCP服务器配置上即可。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">import</span> com.example.service.BookService;<br><span class="hljs-keyword">import</span> org.springframework.ai.tool.ToolCallbackProvider;<br><span class="hljs-keyword">import</span> org.springframework.ai.tool.method.MethodToolCallbackProvider;<br><span class="hljs-keyword">import</span> org.springframework.context.annotation.Bean;<br><span class="hljs-keyword">import</span> org.springframework.context.annotation.Configuration;<br><br><span class="hljs-comment">/**</span><br><span class="hljs-comment"> * MCP服务器配置类，负责注册MCP工具</span><br><span class="hljs-comment"> */</span><br><span class="hljs-meta">@Configuration</span><br>publicclass McpServerConfig &#123;<br><br>    <span class="hljs-comment">/**</span><br><span class="hljs-comment">       * 注册工具回调提供者，将BookQueryService中的<span class="hljs-doctag">@Tool</span>方法暴露为MCP工具</span><br><span class="hljs-comment">       *</span><br><span class="hljs-comment">       * <span class="hljs-doctag">@param</span> bookService 图书服务</span><br><span class="hljs-comment">       * <span class="hljs-doctag">@return</span> 工具回调提供者</span><br><span class="hljs-comment">       */</span><br>    <span class="hljs-meta">@Bean</span><br>    <span class="hljs-keyword">public</span> ToolCallbackProvider <span class="hljs-title function_">bookToolCallbackProvider</span><span class="hljs-params">(BookService bookService)</span> &#123;<br>        <span class="hljs-keyword">return</span> MethodToolCallbackProvider.builder()<br>                .toolObjects(bookService)<br>                .build();<br>    &#125;<br><br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>此时在聊天客户端配置引入注册工具即可。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">import</span> org.springframework.ai.chat.client.ChatClient;<br><span class="hljs-keyword">import</span> org.springframework.ai.tool.ToolCallbackProvider;<br><span class="hljs-keyword">import</span> org.springframework.beans.factory.annotation.Autowired;<br><span class="hljs-keyword">import</span> org.springframework.context.annotation.Bean;<br><span class="hljs-keyword">import</span> org.springframework.context.annotation.Configuration;<br><br><span class="hljs-comment">/**</span><br><span class="hljs-comment"> * 聊天客户端配置类</span><br><span class="hljs-comment"> */</span><br><span class="hljs-meta">@Configuration</span><br>publicclass ChatClientConfig &#123;<br><br>    <span class="hljs-meta">@Autowired</span><br>    <span class="hljs-keyword">private</span> ToolCallbackProvider toolCallbackProvider;<br><br>    <span class="hljs-comment">/**</span><br><span class="hljs-comment">       * 配置ChatClient，注册系统指令和工具函数</span><br><span class="hljs-comment">       */</span><br>    <span class="hljs-meta">@Bean</span><br>    <span class="hljs-keyword">public</span> ChatClient <span class="hljs-title function_">chatClient</span><span class="hljs-params">(ChatClient.Builder builder)</span> &#123;<br>        <span class="hljs-keyword">return</span> builder<br>                .defaultSystem(<span class="hljs-string">&quot;你是一个图书管理助手，可以帮助用户查询图书信息。&quot;</span> +<br>                        <span class="hljs-string">&quot;你可以根据书名模糊查询、根据作者查询和根据分类查询图书。&quot;</span> +<br>                        <span class="hljs-string">&quot;回复时，请使用简洁友好的语言，并将图书信息整理为易读的格式。&quot;</span>)<br>                <span class="hljs-comment">// 注册工具方法</span><br>                .defaultTools(toolCallbackProvider)<br>                .build();<br>     &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>除了上述的方式，还可以单独声明一个类将查询方法作为函数Bean导出。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">import</span> com.example.entity.Book;<br><span class="hljs-keyword">import</span> com.example.service.BookService;<br><span class="hljs-keyword">import</span> jakarta.annotation.Resource;<br><span class="hljs-keyword">import</span> org.springframework.context.annotation.Bean;<br><span class="hljs-keyword">import</span> org.springframework.stereotype.Service;<br><br><span class="hljs-keyword">import</span> java.util.List;<br><span class="hljs-keyword">import</span> java.util.function.Function;<br><br><span class="hljs-comment">/**</span><br><span class="hljs-comment"> * 图书查询服务，将查询方法作为函数Bean导出</span><br><span class="hljs-comment"> */</span><br><span class="hljs-meta">@Service</span><br>publicclass BookQueryService &#123;<br><br>    <span class="hljs-meta">@Resource</span><br>    <span class="hljs-keyword">private</span> BookService bookService;<br><br>    <span class="hljs-comment">/**</span><br><span class="hljs-comment">       * 根据书名查询图书的函数Bean</span><br><span class="hljs-comment">       */</span><br>    <span class="hljs-meta">@Bean</span><br>    <span class="hljs-keyword">public</span> Function&lt;String, List&lt;Book&gt;&gt; <span class="hljs-title function_">findBooksByTitle</span><span class="hljs-params">()</span> &#123;<br>        <span class="hljs-keyword">return</span> title -&gt; bookService.findBooksByTitle(title);<br>    &#125;<br><br>    <span class="hljs-comment">/**</span><br><span class="hljs-comment">       * 根据作者查询图书的函数Bean</span><br><span class="hljs-comment">       */</span><br>    <span class="hljs-meta">@Bean</span><br>    <span class="hljs-keyword">public</span> Function&lt;String, List&lt;Book&gt;&gt; <span class="hljs-title function_">findBooksByAuthor</span><span class="hljs-params">()</span> &#123;<br>        <span class="hljs-keyword">return</span> author -&gt; bookService.findBooksByAuthor(author);<br>    &#125;<br><br>    <span class="hljs-comment">/**</span><br><span class="hljs-comment">       * 根据分类查询图书的函数Bean</span><br><span class="hljs-comment">       */</span><br>    <span class="hljs-meta">@Bean</span><br>    <span class="hljs-keyword">public</span> Function&lt;String, List&lt;Book&gt;&gt; <span class="hljs-title function_">findBooksByCategory</span><span class="hljs-params">()</span> &#123;<br>        <span class="hljs-keyword">return</span> category -&gt; bookService.findBooksByCategory(category);<br>    &#125;<br><br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>采用这种方式在定义AI聊天客户端的时候需要显式地声明。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">import</span> org.springframework.ai.chat.client.ChatClient;<br><span class="hljs-keyword">import</span> org.springframework.context.annotation.Bean;<br><span class="hljs-keyword">import</span> org.springframework.context.annotation.Configuration;<br><br><span class="hljs-comment">/**</span><br><span class="hljs-comment"> * 聊天客户端配置类</span><br><span class="hljs-comment"> */</span><br><span class="hljs-meta">@Configuration</span><br>publicclass ChatClientConfig &#123;<br><br>    <span class="hljs-comment">/**</span><br><span class="hljs-comment">       * 配置ChatClient，注册系统指令和工具函数</span><br><span class="hljs-comment">       */</span><br>    <span class="hljs-meta">@Bean</span><br>    <span class="hljs-keyword">public</span> ChatClient <span class="hljs-title function_">chatClient</span><span class="hljs-params">(ChatClient.Builder builder)</span> &#123;<br>        <span class="hljs-keyword">return</span> builder<br>                .defaultSystem(<span class="hljs-string">&quot;你是一个图书管理助手，可以帮助用户查询图书信息。&quot;</span> +<br>                        <span class="hljs-string">&quot;你可以根据书名模糊查询、根据作者查询和根据分类查询图书。&quot;</span> +<br>                        <span class="hljs-string">&quot;回复时，请使用简洁友好的语言，并将图书信息整理为易读的格式。&quot;</span>)<br>                <span class="hljs-comment">// 注册工具方法，这里使用方法名称来引用Spring上下文中的函数Bean</span><br>                .defaultTools(<br>                        <span class="hljs-string">&quot;findBooksByTitle&quot;</span>,<br>                        <span class="hljs-string">&quot;findBooksByAuthor&quot;</span>,<br>                        <span class="hljs-string">&quot;findBooksByCategory&quot;</span><br>                )<br>                .build();<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<h4 id="4-接口测试"><a href="#4-接口测试" class="headerlink" title="4.接口测试"></a>4.接口测试</h4><p>完成了服务开发后，就可以声明一个控制器对外暴露进行调用。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">import</span> com.example.model.ChatRequest;<br><span class="hljs-keyword">import</span> com.example.model.ChatResponse;<br><span class="hljs-keyword">import</span> jakarta.annotation.Resource;<br><span class="hljs-keyword">import</span> org.springframework.ai.chat.client.ChatClient;<br><span class="hljs-keyword">import</span> org.springframework.http.ResponseEntity;<br><span class="hljs-keyword">import</span> org.springframework.web.bind.annotation.*;<br><br><span class="hljs-comment">/**</span><br><span class="hljs-comment"> * 聊天控制器，处理AI聊天请求</span><br><span class="hljs-comment"> */</span><br><span class="hljs-meta">@RestController</span><br><span class="hljs-meta">@RequestMapping(&quot;/api/chat&quot;)</span><br>publicclass ChatController &#123;<br><br>    <span class="hljs-meta">@Resource</span><br>    <span class="hljs-keyword">private</span> ChatClient chatClient;<br><br>    <span class="hljs-comment">/**</span><br><span class="hljs-comment">       * 处理聊天请求，使用AI和MCP工具进行响应</span><br><span class="hljs-comment">       *</span><br><span class="hljs-comment">       * <span class="hljs-doctag">@param</span> request 聊天请求</span><br><span class="hljs-comment">       * <span class="hljs-doctag">@return</span> 包含AI回复的响应</span><br><span class="hljs-comment">       */</span><br>    <span class="hljs-meta">@PostMapping</span><br>    <span class="hljs-keyword">public</span> ResponseEntity&lt;ChatResponse&gt; <span class="hljs-title function_">chat</span><span class="hljs-params">(<span class="hljs-meta">@RequestBody</span> ChatRequest request)</span> &#123;<br>        <span class="hljs-keyword">try</span> &#123;<br>          <span class="hljs-comment">// 创建用户消息</span><br>          <span class="hljs-type">String</span> <span class="hljs-variable">userMessage</span> <span class="hljs-operator">=</span> request.getMessage();<br><br>          <span class="hljs-comment">// 使用流式API调用聊天</span><br>          <span class="hljs-type">String</span> <span class="hljs-variable">content</span> <span class="hljs-operator">=</span> chatClient.prompt()<br>                  .user(userMessage)<br>                  .call()<br>                  .content();<br><br>          <span class="hljs-keyword">return</span> ResponseEntity.ok(<span class="hljs-keyword">new</span> <span class="hljs-title class_">ChatResponse</span>(content));<br>        &#125; <span class="hljs-keyword">catch</span> (Exception e) &#123;<br>          e.printStackTrace();<br>          <span class="hljs-keyword">return</span> ResponseEntity.ok(<span class="hljs-keyword">new</span> <span class="hljs-title class_">ChatResponse</span>(<span class="hljs-string">&quot;处理请求时出错: &quot;</span> + e.getMessage()));<br>        &#125;<br>    &#125;<br><br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>为了方便测试，开发一个数据初始化器，通过实现<code>CommandLineRunner</code>接口，它会在的应用程序启动时自动向数据库中加载这些测试数据。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">import</span> com.example.entity.Book;<br><span class="hljs-keyword">import</span> com.example.repository.BookRepository;<br><span class="hljs-keyword">import</span> jakarta.annotation.Resource;<br><span class="hljs-keyword">import</span> lombok.RequiredArgsConstructor;<br><span class="hljs-keyword">import</span> org.springframework.boot.CommandLineRunner;<br><span class="hljs-keyword">import</span> org.springframework.stereotype.Component;<br><br><span class="hljs-keyword">import</span> java.time.LocalDate;<br><span class="hljs-keyword">import</span> java.util.Arrays;<br><span class="hljs-keyword">import</span> java.util.List;<br><br><span class="hljs-meta">@Component</span><br><span class="hljs-meta">@RequiredArgsConstructor</span><br>publicclass DataInitializer  <span class="hljs-keyword">implements</span> <span class="hljs-title class_">CommandLineRunner</span> &#123;<br><br>    <span class="hljs-meta">@Resource</span><br>    <span class="hljs-keyword">private</span> BookRepository bookRepository;<br><br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">run</span><span class="hljs-params">(String... args)</span> <span class="hljs-keyword">throws</span> Exception &#123;<br>        <span class="hljs-comment">// 准备示例数据</span><br>        List&lt;Book&gt; sampleBooks = Arrays.asList(<br>                <span class="hljs-keyword">new</span> <span class="hljs-title class_">Book</span>(<span class="hljs-literal">null</span>, <span class="hljs-string">&quot;Spring实战（第6版）&quot;</span>, <span class="hljs-string">&quot;编程&quot;</span>, <span class="hljs-string">&quot;Craig Walls&quot;</span>,<br>                        LocalDate.of(<span class="hljs-number">2022</span>, <span class="hljs-number">1</span>, <span class="hljs-number">15</span>), <span class="hljs-string">&quot;9787115582247&quot;</span>),<br>                <span class="hljs-keyword">new</span> <span class="hljs-title class_">Book</span>(<span class="hljs-literal">null</span>, <span class="hljs-string">&quot;深入理解Java虚拟机&quot;</span>, <span class="hljs-string">&quot;编程&quot;</span>, <span class="hljs-string">&quot;周志明&quot;</span>,<br>                        LocalDate.of(<span class="hljs-number">2019</span>, <span class="hljs-number">12</span>, <span class="hljs-number">1</span>), <span class="hljs-string">&quot;9787111641247&quot;</span>),<br>                <span class="hljs-keyword">new</span> <span class="hljs-title class_">Book</span>(<span class="hljs-literal">null</span>, <span class="hljs-string">&quot;Java编程思想（第4版）&quot;</span>, <span class="hljs-string">&quot;编程&quot;</span>, <span class="hljs-string">&quot;Bruce Eckel&quot;</span>,<br>                        LocalDate.of(<span class="hljs-number">2007</span>, <span class="hljs-number">6</span>, <span class="hljs-number">1</span>), <span class="hljs-string">&quot;9787111213826&quot;</span>),<br>                <span class="hljs-keyword">new</span> <span class="hljs-title class_">Book</span>(<span class="hljs-literal">null</span>, <span class="hljs-string">&quot;算法（第4版）&quot;</span>, <span class="hljs-string">&quot;计算机科学&quot;</span>, <span class="hljs-string">&quot;Robert Sedgewick&quot;</span>,<br>                        LocalDate.of(<span class="hljs-number">2012</span>, <span class="hljs-number">10</span>, <span class="hljs-number">1</span>), <span class="hljs-string">&quot;9787115293800&quot;</span>),<br>                <span class="hljs-keyword">new</span> <span class="hljs-title class_">Book</span>(<span class="hljs-literal">null</span>, <span class="hljs-string">&quot;云原生架构&quot;</span>, <span class="hljs-string">&quot;架构设计&quot;</span>, <span class="hljs-string">&quot;张三&quot;</span>,<br>                        LocalDate.of(<span class="hljs-number">2023</span>, <span class="hljs-number">3</span>, <span class="hljs-number">15</span>), <span class="hljs-string">&quot;9781234567890&quot;</span>),<br>                <span class="hljs-keyword">new</span> <span class="hljs-title class_">Book</span>(<span class="hljs-literal">null</span>, <span class="hljs-string">&quot;微服务设计模式&quot;</span>, <span class="hljs-string">&quot;架构设计&quot;</span>, <span class="hljs-string">&quot;张三&quot;</span>,<br>                        LocalDate.of(<span class="hljs-number">2021</span>, <span class="hljs-number">8</span>, <span class="hljs-number">20</span>), <span class="hljs-string">&quot;9789876543210&quot;</span>),<br>                <span class="hljs-keyword">new</span> <span class="hljs-title class_">Book</span>(<span class="hljs-literal">null</span>, <span class="hljs-string">&quot;领域驱动设计&quot;</span>, <span class="hljs-string">&quot;架构设计&quot;</span>, <span class="hljs-string">&quot;Eric Evans&quot;</span>,<br>                        LocalDate.of(<span class="hljs-number">2010</span>, <span class="hljs-number">4</span>, <span class="hljs-number">10</span>), <span class="hljs-string">&quot;9787111214748&quot;</span>),<br>                <span class="hljs-keyword">new</span> <span class="hljs-title class_">Book</span>(<span class="hljs-literal">null</span>, <span class="hljs-string">&quot;高性能MySQL&quot;</span>, <span class="hljs-string">&quot;数据库&quot;</span>, <span class="hljs-string">&quot;Baron Schwartz&quot;</span>,<br>                        LocalDate.of(<span class="hljs-number">2013</span>, <span class="hljs-number">5</span>, <span class="hljs-number">25</span>), <span class="hljs-string">&quot;9787111464747&quot;</span>),<br>                <span class="hljs-keyword">new</span> <span class="hljs-title class_">Book</span>(<span class="hljs-literal">null</span>, <span class="hljs-string">&quot;Redis实战&quot;</span>, <span class="hljs-string">&quot;数据库&quot;</span>, <span class="hljs-string">&quot;Josiah L. Carlson&quot;</span>,<br>                        LocalDate.of(<span class="hljs-number">2015</span>, <span class="hljs-number">9</span>, <span class="hljs-number">30</span>), <span class="hljs-string">&quot;9787115419378&quot;</span>),<br>                <span class="hljs-keyword">new</span> <span class="hljs-title class_">Book</span>(<span class="hljs-literal">null</span>, <span class="hljs-string">&quot;深入浅出Docker&quot;</span>, <span class="hljs-string">&quot;容器技术&quot;</span>, <span class="hljs-string">&quot;李四&quot;</span>,<br>                        LocalDate.of(<span class="hljs-number">2022</span>, <span class="hljs-number">11</span>, <span class="hljs-number">20</span>), <span class="hljs-string">&quot;9787123456789&quot;</span>)<br>        );<br><br>        <span class="hljs-comment">// 保存示例数据</span><br>        bookRepository.saveAll(sampleBooks);<br><br>        System.out.println(<span class="hljs-string">&quot;数据初始化完成，共加载 &quot;</span> + sampleBooks.size() + <span class="hljs-string">&quot; 本图书&quot;</span>);<br>      &#125;<br><br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>接下来通过请求接口进行如下测试：</p>
+<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20250408164955.png" srcset="/img/loading.gif" lazyload alt="image-20250408164954348"></p>
+<p>可以看到此时返回结果是数据库中的测试数据内容。这里是根据用户输入的问题，大模型会判断开放的工具方法中是否有匹配的，如果有则进行调用并返回。</p>
+<h3 id="小结"><a href="#小结" class="headerlink" title="小结"></a>小结</h3><p>通过Spring Boot与MCP的整合，轻松实现了传统CRUD系统到智能AI助手的转变。MCP作为AI与服务之间的桥梁，极大简化了集成工作。未来随着MCP生态发展，”对话即服务”将可能成为应用的开发范式，让复杂系统变得更加易用。</p>
+<p>代码示例：</p>
+<p><em><a target="_blank" rel="noopener" href="https://github.com/Pitayafruits/spring-boot-mcp-demo">https://github.com/Pitayafruits/spring-boot-mcp-demo</a></em></p>
+
+              
+            </div>
+            <hr/>
+            <div>
+              <div>
+  <img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20241112163319.png" srcset="/img/loading.gif" lazyload>
+</div>
+<div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/13-%E7%AC%AC%E4%B8%89%E6%96%B9/" class="category-chain-item">13_第三方</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/13-%E7%AC%AC%E4%B8%89%E6%96%B9/03-OpenAI/" class="category-chain-item">03_OpenAI</a>
+  
+  
+
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/%E7%AC%AC%E4%B8%89%E6%96%B9/">#第三方</a>
+      
+        <a href="/tags/OpenAI/">#OpenAI</a>
+      
+        <a href="/tags/MCP/">#MCP</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>10-SpringBoot+MCP整合AI与服务的桥梁</div>
+      <div>https://janycode.github.io/2025/04/08/13_第三方/03_OpenAI/10-SpringBoot+MCP整合AI与服务的桥梁/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Jerry(姜源)</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2025年4月8日</div>
+        </div>
+      
+      
+      <div class="license-meta-item">
+        <div>许可协议</div>
+        <div>
+          
+            
+            
+              <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+              <span class="hint--top hint--rounded" aria-label="BY - 姜源">
+                <i class="iconfont icon-by"></i>
+              </span>
+              </a>
+            
+          
+        </div>
+      </div>
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2025/04/28/06_%E6%9C%8D%E5%8A%A1%E5%99%A8/00_Server/07-rsync%E4%BD%BF%E7%94%A8%E8%AF%A6%E8%A7%A3/" title="07-rsync使用详解">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">07-rsync使用详解</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2025/03/03/13_%E7%AC%AC%E4%B8%89%E6%96%B9/03_OpenAI/09-DeepSeek%E6%8F%90%E6%95%88%EF%BC%9A%E7%94%BB%E5%9B%BE&amp;%E7%94%9F%E6%88%90sql&amp;%E7%94%9F%E6%88%90java%E4%BB%A3%E7%A0%81/" title="09-DeepSeek提效：画图&amp;生成sql&amp;生成java代码">
+                        <span class="hidden-mobile">09-DeepSeek提效：画图&amp;生成sql&amp;生成java代码</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+  <article id="comments" lazyload>
+    
+  <div id="SOHUCS" sid='https://janycode.github.io/2025/04/08/13_%E7%AC%AC%E4%B8%89%E6%96%B9/03_OpenAI/10-SpringBoot+MCP%E6%95%B4%E5%90%88AI%E4%B8%8E%E6%9C%8D%E5%8A%A1%E7%9A%84%E6%A1%A5%E6%A2%81/'></div>
+  <script type="text/javascript">
+    Fluid.utils.loadComments('#SOHUCS', function() {
+      Fluid.utils.createScript("https://changyan.sohu.com/upload/changyan.js", function() {
+        window.changyan.api.config({"appid":"cyw5OHIcO","appkey":"fea3446b3df4b3f129f34da4cbc87e51"})
+      });
+    });
+  </script>
+  <noscript>Please enable JavaScript to view the comments</noscript>
+
+
+  </article>
+
+
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://simple.blog.csdn.net" target="_blank" rel="nofollow noopener"><span>CSDN</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/janycode" target="_blank" rel="nofollow noopener"><span>GitHub</span></a> <i class="iconfont icon-love"></i> <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="busuanzi_container_site_pv" style="display: none">
+        总访问量(PV) 
+        <span id="busuanzi_value_site_pv"></span>
+         次，
+      </span>
+    
+    
+      <span id="busuanzi_container_site_uv" style="display: none">
+        总访客数(UV) 
+        <span id="busuanzi_value_site_uv"></span>
+         人
+      </span>
+    
+    
+  
+</div>
+
+  
+  
+  
+</div>
+
+<!-- live2d 动画 -->
+<script src="https://eqcn.ajz.miesnfu.com/wp-content/plugins/wp-3d-pony/live2dw/lib/L2Dwidget.min.js"></script>
+<script>
+    L2Dwidget.init({
+        "model": {
+            jsonPath: "https://unpkg.com/live2d-widget-model-haruto@1.0.5/assets/haruto.model.json",
+            "scale": 1
+        },
+        "display": {
+            "position": "right",
+            "width": 100,
+            "height": 200,
+            "hOffset": 35,
+            "vOffset": -85
+        },
+        "mobile": {
+            "show": false,
+            "scale": 0.1
+        },
+        "react": {
+            "opacityDefault": 0.75,
+            "opacityOnHover": 0.2
+        }
+    });
+</script>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <!-- Baidu Analytics -->
+    <script defer>
+      if (!Fluid.ctx.dnt) {
+        var _hmt = _hmt || [];
+        (function() {
+          var hm = document.createElement("script");
+          hm.src = "https://hm.baidu.com/hm.js?bfff735c897eb60ea49b735096b20e47";
+          var s = document.getElementsByTagName("script")[0];
+          s.parentNode.insertBefore(hm, s);
+        })();
+      }
+    </script>
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.0/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      headingSelector : CONFIG.toc.headingSelector || 'h1,h2,h3,h4,h5,h6',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      collapseDepth   : CONFIG.toc.collapseDepth || 0,
+      scrollSmooth    : true,
+      headingsOffset  : -boardTop
+    });
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+  });
+</script>
+
+
+  <script>
+  (function() {
+    var enableLang = CONFIG.code_language.enable && CONFIG.code_language.default;
+    var enableCopy = CONFIG.copy_btn;
+    if (!enableLang && !enableCopy) {
+      return;
+    }
+
+    function getBgClass(ele) {
+      return Fluid.utils.getBackgroundLightness(ele) >= 0 ? 'code-widget-light' : 'code-widget-dark';
+    }
+
+    var copyTmpl = '';
+    copyTmpl += '<div class="code-widget">';
+    copyTmpl += 'LANG';
+    copyTmpl += '</div>';
+    jQuery('.markdown-body pre').each(function() {
+      var $pre = jQuery(this);
+      if ($pre.find('code.mermaid').length > 0) {
+        return;
+      }
+      if ($pre.find('span.line').length > 0) {
+        return;
+      }
+
+      var lang = '';
+
+      if (enableLang) {
+        lang = CONFIG.code_language.default;
+        if ($pre[0].children.length > 0 && $pre[0].children[0].classList.length >= 2 && $pre.children().hasClass('hljs')) {
+          lang = $pre[0].children[0].classList[1];
+        } else if ($pre[0].getAttribute('data-language')) {
+          lang = $pre[0].getAttribute('data-language');
+        } else if ($pre.parent().hasClass('sourceCode') && $pre[0].children.length > 0 && $pre[0].children[0].classList.length >= 2) {
+          lang = $pre[0].children[0].classList[1];
+          $pre.parent().addClass('code-wrapper');
+        } else if ($pre.parent().hasClass('markdown-body') && $pre[0].classList.length === 0) {
+          $pre.wrap('<div class="code-wrapper"></div>');
+        }
+        lang = lang.toUpperCase().replace('NONE', CONFIG.code_language.default);
+      }
+      $pre.append(copyTmpl.replace('LANG', lang).replace('code-widget">',
+        getBgClass($pre[0]) + (enableCopy ? ' code-widget copy-btn" data-clipboard-snippet><i class="iconfont icon-copy"></i>' : ' code-widget">')));
+
+      if (enableCopy) {
+        Fluid.utils.createScript('https://lib.baomitu.com/clipboard.js/2.0.10/clipboard.min.js', function() {
+          var clipboard = new window.ClipboardJS('.copy-btn', {
+            target: function(trigger) {
+              var nodes = trigger.parentNode.childNodes;
+              for (var i = 0; i < nodes.length; i++) {
+                if (nodes[i].tagName === 'CODE') {
+                  return nodes[i];
+                }
+              }
+            }
+          });
+          clipboard.on('success', function(e) {
+            e.clearSelection();
+            e.trigger.innerHTML = e.trigger.innerHTML.replace('icon-copy', 'icon-success');
+            setTimeout(function() {
+              e.trigger.innerHTML = e.trigger.innerHTML.replace('icon-success', 'icon-copy');
+            }, 2000);
+          });
+        });
+      }
+    });
+  })();
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

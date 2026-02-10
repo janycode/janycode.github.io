@@ -1,0 +1,900 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=light>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Jerry(姜源)">
+  <meta name="keywords" content="Java,Html,CSS,JavaScript,Python,C,Linux,shell编程经验分享、技术总结、心得体会">
+  
+    <meta name="description" content="参考资料：  使用Let’s Encrypt免费申请泛域名解析：https:&#x2F;&#x2F;www.cnblogs.com&#x2F;michaelshen&#x2F;p&#x2F;18538178  1. 安装Certbot1.1 snapd123456789101112yum update#如果有epel-aliyuncs-release，这一步则不需要安装 epel-releaseyum -y install epel-releas">
+<meta property="og:type" content="article">
+<meta property="og:title" content="05-免费SSL证书配置https自动续期">
+<meta property="og:url" content="https://janycode.github.io/2024/05/28/06_%E6%9C%8D%E5%8A%A1%E5%99%A8/00_Server/05-%E5%85%8D%E8%B4%B9SSL%E8%AF%81%E4%B9%A6%E9%85%8D%E7%BD%AEhttps/index.html">
+<meta property="og:site_name" content="姜源の云笔记">
+<meta property="og:description" content="参考资料：  使用Let’s Encrypt免费申请泛域名解析：https:&#x2F;&#x2F;www.cnblogs.com&#x2F;michaelshen&#x2F;p&#x2F;18538178  1. 安装Certbot1.1 snapd123456789101112yum update#如果有epel-aliyuncs-release，这一步则不需要安装 epel-releaseyum -y install epel-releas">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20241024153859.png">
+<meta property="article:published_time" content="2024-05-28T11:57:23.000Z">
+<meta property="article:modified_time" content="2026-02-10T09:21:30.148Z">
+<meta property="article:author" content="Jerry(姜源)">
+<meta property="article:tag" content="服务器">
+<meta property="article:tag" content="ssl">
+<meta property="article:tag" content="https">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20241024153859.png">
+  
+  
+    <meta name="referrer" content="no-referrer-when-downgrade">
+  
+  
+  <title>05-免费SSL证书配置https自动续期 - 姜源の云笔记</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"janycode.github.io","root":"/","version":"1.9.0","typing":{"enable":true,"typeSpeed":50,"cursorChar":"|","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":false},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":"bfff735c897eb60ea49b735096b20e47","google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+
+  
+<meta name="generator" content="Hexo 6.2.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 50vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>姜源の云笔记</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tools/">
+                <i class="iconfont icon-slack-fill"></i>
+                工具
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" target="_blank" rel="noopener" href="https://yuancodes.github.io/">
+                <i class="iconfont icon-notebook"></i>
+                Docsify
+              </a>
+            </li>
+          
+        
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="05-免费SSL证书配置https自动续期"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-author" aria-hidden="true"></i>
+        Jerry(姜源)
+      </span>
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2024-05-28 19:57" pubdate>
+          星期二, 2024/05/28 19:57:23
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          <!-- compatible with older versions-->
+          8k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          <!-- compatible with older versions-->
+          67 分钟
+        
+      </span>
+    
+
+    
+    
+      
+        <span id="busuanzi_container_page_pv" style="display: none">
+          <i class="iconfont icon-eye" aria-hidden="true"></i>
+          <span id="busuanzi_value_page_pv"></span> 次
+        </span>
+        
+      
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">05-免费SSL证书配置https自动续期</h1>
+            
+            <div class="markdown-body">
+              
+              <p>参考资料：</p>
+<ul>
+<li>使用Let’s Encrypt免费申请泛域名解析：<a target="_blank" rel="noopener" href="https://www.cnblogs.com/michaelshen/p/18538178">https://www.cnblogs.com/michaelshen/p/18538178</a></li>
+</ul>
+<h2 id="1-安装Certbot"><a href="#1-安装Certbot" class="headerlink" title="1. 安装Certbot"></a>1. 安装Certbot</h2><h3 id="1-1-snapd"><a href="#1-1-snapd" class="headerlink" title="1.1 snapd"></a>1.1 snapd</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><code class="hljs bash">yum update<br><span class="hljs-comment">#如果有epel-aliyuncs-release，这一步则不需要安装 epel-release</span><br>yum -y install epel-release<br>yum -y install snapd<br><br><span class="hljs-comment">#启动并设置开机启动</span><br>systemctl start snapd<br>systemctl <span class="hljs-built_in">enable</span> snapd<br><br><span class="hljs-comment">#为了确保 /snap 目录可用，在某些情况下需要创建一个符号链接</span><br><span class="hljs-built_in">ln</span> -s /var/lib/snapd/snap /snap<br><br></code></pre></td></tr></table></figure>
+
+<h3 id="1-2-certbot"><a href="#1-2-certbot" class="headerlink" title="1.2 certbot"></a>1.2 certbot</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-comment">#安装Certbot</span><br>snap install --classic certbot<br><span class="hljs-comment">#创建一个符号链接，确保可以执行certbot命令（相当于快捷方式）</span><br><span class="hljs-built_in">ln</span> -s /snap/bin/certbot /usr/bin/certbot<br></code></pre></td></tr></table></figure>
+
+
+
+<h2 id="2-申请泛域名证书"><a href="#2-申请泛域名证书" class="headerlink" title="2. 申请泛域名证书"></a>2. 申请泛域名证书</h2><p>泛域名证书（Wildcard Certificate）可以为同一主域名下的所有子域名提供 HTTPS 支持。例如，<code>*.example.com</code> 可以覆盖 <code>blog.example.com</code>、<code>api.example.com</code> 等子域名。</p>
+<h4 id="使用-DNS-验证申请泛域名证书"><a href="#使用-DNS-验证申请泛域名证书" class="headerlink" title="使用 DNS 验证申请泛域名证书"></a>使用 DNS 验证申请泛域名证书</h4><p>Let’s Encrypt 要求通过 <strong>DNS-01</strong> 验证来申请泛域名证书。运行以下命令（**<code>核心命令</code>**）：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">certbot certonly --manual --preferred-challenges dns -d *.example.com -d example.com<br></code></pre></td></tr></table></figure>
+
+<p>Certbot 会要求你在 域名解析的 DNS（比如阿里云DNS解析）中创建一个特定的 <strong>TXT 记录</strong> 以验证域名的所有权。</p>
+<figure class="highlight txt"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs TXT">_acme-challenge.example.com  IN  TXT  &quot;certbot给出的随机字符串&quot;<br></code></pre></td></tr></table></figure>
+
+<p>前往你的域名 DNS 管理页面，添加该记录后，返回命令行按下 <code>Enter</code>。</p>
+<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20250415112607.png" srcset="/img/loading.gif" lazyload alt="img"></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-comment">#真实案例：</span><br>[root@ecs-webmanage ~]<span class="hljs-comment"># certbot certonly --manual --preferred-challenges dns -d *.example.com -d example.com</span><br>Saving debug <span class="hljs-built_in">log</span> to /var/log/letsencrypt/letsencrypt.log<br>Requesting a certificate <span class="hljs-keyword">for</span> *.example.com and example.com<br><br>- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -<br>Please deploy a DNS TXT record under the name:<br><br>_acme-challenge.example.com.<br><br>with the following value:<br><br>lpzeQIa8na7tqaPJGQt-zVS1sv5a0FojFGTPfxepQdw<br><br>Before continuing, verify the TXT record has been deployed. Depending on the DNS<br>provider, this may take some time, from a few seconds to multiple minutes. You can<br>check <span class="hljs-keyword">if</span> it has finished deploying with aid of online tools, such as the Google<br>Admin Toolbox: https://toolbox.googleapps.com/apps/dig/<span class="hljs-comment">#TXT/_acme-challenge.example.com.</span><br>Look <span class="hljs-keyword">for</span> one or more bolded line(s) below the line <span class="hljs-string">&#x27;;ANSWER&#x27;</span>. It should show the<br>value(s) you<span class="hljs-string">&#x27;ve just added.</span><br><span class="hljs-string"></span><br><span class="hljs-string">- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -</span><br><span class="hljs-string">Press Enter to Continue</span><br><span class="hljs-string"></span><br><span class="hljs-string">Successfully received certificate.</span><br><span class="hljs-string">Certificate is saved at: /etc/letsencrypt/live/example.com/fullchain.pem</span><br><span class="hljs-string">Key is saved at:         /etc/letsencrypt/live/example.com/privkey.pem</span><br><span class="hljs-string">This certificate expires on 202x-07-14.</span><br><span class="hljs-string">These files will be updated when the certificate renews.</span><br><span class="hljs-string"></span><br><span class="hljs-string">NEXT STEPS:</span><br><span class="hljs-string">- This certificate will not be renewed automatically. Autorenewal of --manual certificates requires the use of an authentication hook script (--manual-auth-hook) but one was not provided. To renew this certificate, repeat this same certbot command before the certificate&#x27;</span>s expiry <span class="hljs-built_in">date</span>.<br><br>- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -<br>If you like Certbot, please consider supporting our work by:<br> * Donating to ISRG / Let<span class="hljs-string">&#x27;s Encrypt:   https://letsencrypt.org/donate</span><br><span class="hljs-string"> * Donating to EFF:                    https://eff.org/donate-le</span><br><span class="hljs-string">- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -</span><br></code></pre></td></tr></table></figure>
+
+
+
+<h2 id="3-配置nginx"><a href="#3-配置nginx" class="headerlink" title="3.配置nginx"></a>3.配置nginx</h2><h3 id="申请的-SSL-证书文件所在目录"><a href="#申请的-SSL-证书文件所在目录" class="headerlink" title="申请的 SSL 证书文件所在目录"></a>申请的 SSL 证书文件所在目录</h3><p>当使用 <strong>Certbot</strong> 成功申请到 SSL 证书后，证书文件将默认保存在以下目录中：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">/etc/letsencrypt/live/your-domain-name/<br></code></pre></td></tr></table></figure>
+
+<p>具体包含以下几个文件：</p>
+<ul>
+<li><code>cert.pem</code>：这是你的 <strong>SSL 证书</strong> 文件。</li>
+<li><code>privkey.pem</code>：这是你的 <strong>私钥</strong> 文件，务必妥善保管，切勿泄露。</li>
+<li><code>chain.pem</code>：这是 <strong>中间证书链</strong> 文件，用于验证证书的完整性。</li>
+<li><code>fullchain.pem</code>：这是 <strong>完整证书链</strong> 文件，通常用于 Nginx 或 Apache 的 SSL 配置中。</li>
+</ul>
+<p>例如，如果你的域名是 <code>example.com</code>，则目录路径为：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">/etc/letsencrypt/live/example.com/<br></code></pre></td></tr></table></figure>
+
+<p>你可以使用以下命令查看证书详细信息：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">sudo certbot certificates<br></code></pre></td></tr></table></figure>
+
+<p>输出示例：</p>
+<figure class="highlight txt"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs TXT">Certificate Name: example.com<br>    Domains: example.com www.example.com<br>    Expiry Date: 2024-02-10 14:30:00+00:00 (VALID: 75 days)<br>    Certificate Path: /etc/letsencrypt/live/example.com/fullchain.pem<br>    Private Key Path: /etc/letsencrypt/live/example.com/privkey.pem<br></code></pre></td></tr></table></figure>
+
+<blockquote>
+<p><strong>提示</strong>：为了避免证书路径错误，建议在 Nginx 或 Apache 配置中直接使用 <code>fullchain.pem</code> 和 <code>privkey.pem</code> 两个文件。</p>
+</blockquote>
+<h3 id="nginx配置证书示例"><a href="#nginx配置证书示例" class="headerlink" title="nginx配置证书示例"></a>nginx配置证书示例</h3><figure class="highlight nginx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><code class="hljs nginx"><span class="hljs-section">server</span> &#123;<br>    <span class="hljs-attribute">listen</span> <span class="hljs-number">80</span>;<br>    <span class="hljs-attribute">server_name</span> example.com www.example.com;<br> <br>    <span class="hljs-section">location</span> / &#123;<br>        <span class="hljs-attribute">return</span> <span class="hljs-number">301</span> https://<span class="hljs-variable">$host</span><span class="hljs-variable">$request_uri</span>;<br>    &#125;<br>&#125;<br> <br><span class="hljs-section">server</span> &#123;<br>    <span class="hljs-attribute">listen</span> <span class="hljs-number">443</span> ssl;<br>    <span class="hljs-attribute">server_name</span> example.com www.example.com;<br> <br>    <span class="hljs-attribute">ssl_certificate</span> /etc/letsencrypt/live/example.com/fullchain.pem;<br>    <span class="hljs-attribute">ssl_certificate_key</span> /etc/letsencrypt/live/example.com/privkey.pem;<br> <br>    <span class="hljs-section">location</span> / &#123;<br>        <span class="hljs-attribute">proxy_pass</span> http://127.0.0.1:8080;<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>如果使用docker nginx，可以通过docker挂载卷使用证书，比如我就是这样使用的：<br><code>compose.yml：</code></p>
+<figure class="highlight yml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><code class="hljs yml"><span class="hljs-attr">services:</span><br>  <span class="hljs-attr">nginx:</span><br>    <span class="hljs-attr">image:</span> <span class="hljs-string">nginx:latest</span><br>    <span class="hljs-attr">networks:</span><br>     <span class="hljs-bullet">-</span> <span class="hljs-string">spy</span><br>    <span class="hljs-attr">ports:</span><br>      <span class="hljs-bullet">-</span> <span class="hljs-string">&quot;80:80&quot;</span><br>      <span class="hljs-bullet">-</span> <span class="hljs-string">&quot;443:443&quot;</span><br>    <span class="hljs-attr">environment:</span><br>      <span class="hljs-bullet">-</span> <span class="hljs-string">TZ=Asia/Shanghai</span> <span class="hljs-comment"># 设置为上海时区</span><br>    <span class="hljs-attr">volumes:</span><br>    <span class="hljs-comment"># 主配置</span><br>      <span class="hljs-bullet">-</span> <span class="hljs-string">./nginx/nginx.conf:/etc/nginx/nginx.conf:rw</span> <br>    <span class="hljs-comment"># include配置</span><br>      <span class="hljs-bullet">-</span> <span class="hljs-string">./nginx/conf.d/:/etc/nginx/conf.d/:rw</span><br>    <span class="hljs-comment"># 证书</span><br>      <span class="hljs-bullet">-</span> <span class="hljs-string">/etc/letsencrypt/live/spystudy.cn/fullchain.pem:/etc/ssl/certs/spystudy.cn/fullchain.pem:rw</span><br>      <span class="hljs-bullet">-</span> <span class="hljs-string">/etc/letsencrypt/live/spystudy.cn/privkey.pem:/etc/ssl/certs/spystudy.cn/private.pem:rw</span><br>    <span class="hljs-comment"># 日志</span><br>      <span class="hljs-bullet">-</span> <span class="hljs-string">./nginx/logs/:/var/log/nginx/:rw</span><br></code></pre></td></tr></table></figure>
+
+<p>然后nginx配置文件：</p>
+<figure class="highlight nginx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs nginx"><span class="hljs-section">server</span> &#123;<br>    <span class="hljs-attribute">listen</span> <span class="hljs-number">443</span> ssl;<br>    <span class="hljs-attribute">server_name</span> spystudy.cn;<br> <br>    <span class="hljs-attribute">ssl_certificate</span> /etc/ssl/certs/spystudy.cn/fullchain.pem;<br>    <span class="hljs-attribute">ssl_certificate_key</span> /etc/ssl/certs/spystudy.cn/private.pem;<br> <br>    <span class="hljs-attribute">return</span> <span class="hljs-number">301</span> https://www.spystudy.cn<span class="hljs-variable">$request_uri</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<h3 id="查看证书信息和剩余时间"><a href="#查看证书信息和剩余时间" class="headerlink" title="查看证书信息和剩余时间"></a>查看证书信息和剩余时间</h3><p>证书安装完成后，可以通过访问 <code>https://example.com</code> 检查是否成功启用了 HTTPS。你也可以使用以下命令查看证书状态：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">certbot certificates<br></code></pre></td></tr></table></figure>
+
+<p>如果证书信息显示正确，并且 <code>expiry date</code> 在未来日期，说明配置成功。</p>
+<h2 id="4-自动续期"><a href="#4-自动续期" class="headerlink" title="4.自动续期"></a>4.自动续期</h2><h3 id="手动"><a href="#手动" class="headerlink" title="手动"></a>手动</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-comment">#手动续期</span><br>certbot renew<br></code></pre></td></tr></table></figure>
+
+<p>将手动排续期加入定时任务：</p>
+<figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs awk">crontab -e<br><span class="hljs-number">0</span> *<span class="hljs-regexp">/12 * * * /u</span>sr<span class="hljs-regexp">/bin/</span>certbot renew --quiet<br></code></pre></td></tr></table></figure>
+
+<p>每 12 小时（即每天的 0 点和 12 点）执行一次 certbot renew 命令，–quiet 选项用于在执行时不输出过多信息。</p>
+<p>也可参考下方设置：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-comment">#测试续期</span><br>sudo certbot renew --dry-run<br><br><span class="hljs-comment">#为了尽量确保证书不失效，我们配置一下定时任务即可更新证书并重启nginx，使用 crontab -e 配置定时任务：</span><br>0 0 * 1 * sudo certbot renew &amp;&amp; nginx -s reload<br><br><span class="hljs-comment">#使用certbot的renew命令续签之前申请的通配符域名时遇到了一个报错，本文记录该问题的解决方法。</span><br><span class="hljs-comment">#使用的命令如下，由于certbot判定我的这个证书还没有接近到期，所以使用--force-renew参数来强制续签证书。</span><br>certbot renew --force-renew<br><br><span class="hljs-comment">#报错</span><br>The error was: PluginError(<span class="hljs-string">&#x27;An authentication script must be provided with --manual-auth-hook when using the manual plugin non-interactively.&#x27;</span>,). Skipping.<br><br>可以看到，问题的原因是：An authentication script must be provided with --manual-auth-hook when using the manual plugin non-interactively.<br>也就是需要使用--manual-auth-hook参数来指定一个脚本来续签证书。<br>问题原因<br>出现这个问题的原因是，第一次申请证书的时候使用的是DNS验证方式，而续签时需要使用脚本来更新DNS记录，如果你想使用脚本来更新的话，可以从github中搜寻相关自动DNS验证脚本，本文将使用另一种方式解决。<br>问题解决<br>可以使用standalone命令来解决续签问题，使用该方法的前提是，本机的certbot目录中已存在之前申请过的证书相关资料<br><br>certbot certonly --standalone<br></code></pre></td></tr></table></figure>
+
+
+
+<h3 id="自动"><a href="#自动" class="headerlink" title="自动"></a>自动</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-comment"># systemctl list-timers</span><br>NEXT                         LEFT          LAST                         PASSED  UNIT                         ACTIVATES<br>Tue 202x-04-15 17:20:30 CST  3h 20min left Mon 202x-04-14 17:20:30 CST  20h ago systemd-tmpfiles-clean.timer systemd-tmpfiles-clean.service<br>Tue 202x-04-15 18:19:00 CST  4h 18min left n/a                          n/a     snap.certbot.renew.timer     snap.certbot.renew.service<br><br></code></pre></td></tr></table></figure>
+
+<p>系统使用 <code>systemd timer</code> 来管理定时任务。如果看到类似下面的输出，则表示 <code>certbot</code> 的自动续期 timer 已启用：</p>
+<figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs apache"><span class="hljs-attribute">Tue</span> <span class="hljs-number">202</span>x-<span class="hljs-number">04</span>-<span class="hljs-number">15</span> <span class="hljs-number">18</span>:<span class="hljs-number">19</span>:<span class="hljs-number">00</span> CST  <span class="hljs-number">4</span>h <span class="hljs-number">18</span>min left n/a                          n/a     snap.certbot.renew.timer     snap.certbot.renew.service<br></code></pre></td></tr></table></figure>
+
+<ul>
+<li><strong>NEXT</strong>：下一次激活时间为 <code>202x-04-15 18:19:00</code>（周二）。</li>
+<li><strong>LEFT</strong>：距离下次激活还有 <strong>4 小时 18 分钟</strong>。</li>
+<li><strong>LAST</strong>：<code>n/a</code>，表示该定时器从未激活过（可能是首次运行或刚安装）。</li>
+<li><strong>PASSED</strong>：<code>n/a</code>，同上。</li>
+<li><strong>UNIT</strong>：定时器单元为 <code>snap.certbot.renew.timer</code>，注意前缀 <code>snap.</code>，说明这是通过 <strong>Snap 包</strong>安装的 Certbot 自动续期定时器（而非传统的 RPM&#x2F;DEB 包）。</li>
+<li><strong>ACTIVATES</strong>：激活 <code>snap.certbot.renew.service</code> 服务，用于执行 SSL 证书续期任务。</li>
+</ul>
+<blockquote>
+<p>若需修改续期频率，需编辑 Snap 定时器的配置（需通过 Snap 命令或修改系统级定时器文件），但默认配置已足够安全（证书到期前 30 天内才会实际续期）。</p>
+</blockquote>
+<h3 id="强制手动续期"><a href="#强制手动续期" class="headerlink" title="强制手动续期"></a>强制手动续期</h3><p><code>自动续期如果不生效使用【手动】命令：</code></p>
+<blockquote>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">certbot certonly --standalone --email my@qq.com -d xxx.abc.com<br></code></pre></td></tr></table></figure>
+
+<p>生成之后然后去改nginx即可。如果 80 端口占用，则需要停掉nginx进行配置。</p>
+<p>设置自动续期：Certbot 支持设置自动续期任务，以确保你的 SSL 证书在到期前得到更新。你可以使用系统的计划任务工具（如 cron）来定期运行 Certbot 命令。 示例: cron 任务配置，每天凌晨 2 点自动运行 Certbot：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">0 2 * * * certbot renew --quiet<br></code></pre></td></tr></table></figure>
+</blockquote>
+<h2 id="5-不同服务器使用"><a href="#5-不同服务器使用" class="headerlink" title="5.不同服务器使用"></a>5.不同服务器使用</h2><p>我在服务器A已经生成了证书，用于 test 和 pre的域名；</p>
+<p>我在服务器B还需要拷贝证书，用于 prod 的域名。</p>
+<p>因此需要做如下操作：</p>
+<p><strong>第一步</strong>：参考步骤 1.安装Certbot</p>
+<p><strong>第二步</strong>：拷贝服务器A上生成的文件到服务器B，并设置相应的权限和软连接</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-comment">#服务器A上执行，拷贝到服务器B</span><br>scp -r /etc/letsencrypt/live user@IP地址:/etc/letsencrypt/<br>scp -r /etc/letsencrypt/renewal user@IP地址:/etc/letsencrypt/<br>scp -r /etc/letsencrypt/archive user@IP地址:/etc/letsencrypt/<br><br><span class="hljs-comment">#服务器B上做如下操作</span><br><span class="hljs-built_in">chown</span> -R root:root /etc/letsencrypt<br><span class="hljs-built_in">chmod</span> -R 600 /etc/letsencrypt/archive<br><span class="hljs-built_in">chmod</span> -R 644 /etc/letsencrypt/renewal<br><span class="hljs-comment">#注意域名路径</span><br><span class="hljs-built_in">cd</span> /etc/letsencrypt/live/example.com<br><span class="hljs-built_in">rm</span> -f cert.pem chain.pem fullchain.pem privkey.pem<br><span class="hljs-built_in">ln</span> -s /etc/letsencrypt/archive/example.com/cert1.pem cert.pem<br><span class="hljs-built_in">ln</span> -s /etc/letsencrypt/archive/example.com/chain1.pem chain.pem<br><span class="hljs-built_in">ln</span> -s /etc/letsencrypt/archive/example.com/fullchain1.pem fullchain.pem<br><span class="hljs-built_in">ln</span> -s /etc/letsencrypt/archive/example.com/privkey1.pem privkey.pem<br><span class="hljs-built_in">ls</span> -l /etc/letsencrypt/live/example.com<br><br></code></pre></td></tr></table></figure>
+
+<p><strong>第三步</strong>：验证拷贝结果</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-comment">#执行命令</span><br>certbot certificates<br><br>Saving debug <span class="hljs-built_in">log</span> to /var/log/letsencrypt/letsencrypt.log<br>- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -<br>Found the following certs:<br>  Certificate Name: example.com<br>    Serial Number: 6f1e25e49555e71e57857ea2b13ae68f604<br>    Key Type: ECDSA<br>    Domains: *.example.com example.com<br>    Expiry Date: 202x-07-14 02:27:54+00:00 (VALID: 89 days)<br>    Certificate Path: /etc/letsencrypt/live/example.com/fullchain.pem<br>    Private Key Path: /etc/letsencrypt/live/example.com/privkey.pem<br>- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -<br></code></pre></td></tr></table></figure>
+
+<p><strong>第四步</strong>：检查自动续期timer是否启用</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-comment">#检查certbot的timer是否存在</span><br>systemctl list-timers |grep certbot<br>Wed 202x-04-16 04:52:00 CST  13h left    Tue 202x-04-15 14:36:05 CST  18min ago     snap.certbot.renew.timer     snap.certbot.renew.service<br></code></pre></td></tr></table></figure>
+
+<p><strong>第五步</strong>：服务器B修改相应的nginx ssl证书配置即可，参考服务器A。</p>
+
+              
+            </div>
+            <hr/>
+            <div>
+              <div>
+  <img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20241112163319.png" srcset="/img/loading.gif" lazyload>
+</div>
+<div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/06-%E6%9C%8D%E5%8A%A1%E5%99%A8/" class="category-chain-item">06_服务器</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/06-%E6%9C%8D%E5%8A%A1%E5%99%A8/00-Server/" class="category-chain-item">00_Server</a>
+  
+  
+
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/%E6%9C%8D%E5%8A%A1%E5%99%A8/">#服务器</a>
+      
+        <a href="/tags/ssl/">#ssl</a>
+      
+        <a href="/tags/https/">#https</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>05-免费SSL证书配置https自动续期</div>
+      <div>https://janycode.github.io/2024/05/28/06_服务器/00_Server/05-免费SSL证书配置https/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Jerry(姜源)</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2024年5月28日</div>
+        </div>
+      
+      
+      <div class="license-meta-item">
+        <div>许可协议</div>
+        <div>
+          
+            
+            
+              <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+              <span class="hint--top hint--rounded" aria-label="BY - 姜源">
+                <i class="iconfont icon-by"></i>
+              </span>
+              </a>
+            
+          
+        </div>
+      </div>
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2024/06/30/17_%E9%A1%B9%E7%9B%AE%E8%AE%BE%E8%AE%A1/03_%E5%9C%BA%E6%99%AF%E8%AE%BE%E8%AE%A1/01-%E6%8E%A5%E5%8F%A3%E9%98%B2%E6%8A%96%E5%8D%B3%E9%98%B2%E9%87%8D%E5%A4%8D%E6%8F%90%E4%BA%A4%E6%96%B9%E6%A1%88/" title="01-接口防抖即防重复提交方案">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">01-接口防抖即防重复提交方案</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2024/05/28/08_%E6%A1%86%E6%9E%B6%E6%8A%80%E6%9C%AF/04_SpringBoot/21-SpringBoot%E8%A7%A3%E5%86%B3%E8%B7%A8%E5%9F%9F%E9%97%AE%E9%A2%98/" title="21-SpringBoot解决跨域问题">
+                        <span class="hidden-mobile">21-SpringBoot解决跨域问题</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+  <article id="comments" lazyload>
+    
+  <div id="SOHUCS" sid='https://janycode.github.io/2024/05/28/06_%E6%9C%8D%E5%8A%A1%E5%99%A8/00_Server/05-%E5%85%8D%E8%B4%B9SSL%E8%AF%81%E4%B9%A6%E9%85%8D%E7%BD%AEhttps/'></div>
+  <script type="text/javascript">
+    Fluid.utils.loadComments('#SOHUCS', function() {
+      Fluid.utils.createScript("https://changyan.sohu.com/upload/changyan.js", function() {
+        window.changyan.api.config({"appid":"cyw5OHIcO","appkey":"fea3446b3df4b3f129f34da4cbc87e51"})
+      });
+    });
+  </script>
+  <noscript>Please enable JavaScript to view the comments</noscript>
+
+
+  </article>
+
+
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://simple.blog.csdn.net" target="_blank" rel="nofollow noopener"><span>CSDN</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/janycode" target="_blank" rel="nofollow noopener"><span>GitHub</span></a> <i class="iconfont icon-love"></i> <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="busuanzi_container_site_pv" style="display: none">
+        总访问量(PV) 
+        <span id="busuanzi_value_site_pv"></span>
+         次，
+      </span>
+    
+    
+      <span id="busuanzi_container_site_uv" style="display: none">
+        总访客数(UV) 
+        <span id="busuanzi_value_site_uv"></span>
+         人
+      </span>
+    
+    
+  
+</div>
+
+  
+  
+  
+</div>
+
+<!-- live2d 动画 -->
+<script src="https://eqcn.ajz.miesnfu.com/wp-content/plugins/wp-3d-pony/live2dw/lib/L2Dwidget.min.js"></script>
+<script>
+    L2Dwidget.init({
+        "model": {
+            jsonPath: "https://unpkg.com/live2d-widget-model-haruto@1.0.5/assets/haruto.model.json",
+            "scale": 1
+        },
+        "display": {
+            "position": "right",
+            "width": 100,
+            "height": 200,
+            "hOffset": 35,
+            "vOffset": -85
+        },
+        "mobile": {
+            "show": false,
+            "scale": 0.1
+        },
+        "react": {
+            "opacityDefault": 0.75,
+            "opacityOnHover": 0.2
+        }
+    });
+</script>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <!-- Baidu Analytics -->
+    <script defer>
+      if (!Fluid.ctx.dnt) {
+        var _hmt = _hmt || [];
+        (function() {
+          var hm = document.createElement("script");
+          hm.src = "https://hm.baidu.com/hm.js?bfff735c897eb60ea49b735096b20e47";
+          var s = document.getElementsByTagName("script")[0];
+          s.parentNode.insertBefore(hm, s);
+        })();
+      }
+    </script>
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.0/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      headingSelector : CONFIG.toc.headingSelector || 'h1,h2,h3,h4,h5,h6',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      collapseDepth   : CONFIG.toc.collapseDepth || 0,
+      scrollSmooth    : true,
+      headingsOffset  : -boardTop
+    });
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+  });
+</script>
+
+
+  <script>
+  (function() {
+    var enableLang = CONFIG.code_language.enable && CONFIG.code_language.default;
+    var enableCopy = CONFIG.copy_btn;
+    if (!enableLang && !enableCopy) {
+      return;
+    }
+
+    function getBgClass(ele) {
+      return Fluid.utils.getBackgroundLightness(ele) >= 0 ? 'code-widget-light' : 'code-widget-dark';
+    }
+
+    var copyTmpl = '';
+    copyTmpl += '<div class="code-widget">';
+    copyTmpl += 'LANG';
+    copyTmpl += '</div>';
+    jQuery('.markdown-body pre').each(function() {
+      var $pre = jQuery(this);
+      if ($pre.find('code.mermaid').length > 0) {
+        return;
+      }
+      if ($pre.find('span.line').length > 0) {
+        return;
+      }
+
+      var lang = '';
+
+      if (enableLang) {
+        lang = CONFIG.code_language.default;
+        if ($pre[0].children.length > 0 && $pre[0].children[0].classList.length >= 2 && $pre.children().hasClass('hljs')) {
+          lang = $pre[0].children[0].classList[1];
+        } else if ($pre[0].getAttribute('data-language')) {
+          lang = $pre[0].getAttribute('data-language');
+        } else if ($pre.parent().hasClass('sourceCode') && $pre[0].children.length > 0 && $pre[0].children[0].classList.length >= 2) {
+          lang = $pre[0].children[0].classList[1];
+          $pre.parent().addClass('code-wrapper');
+        } else if ($pre.parent().hasClass('markdown-body') && $pre[0].classList.length === 0) {
+          $pre.wrap('<div class="code-wrapper"></div>');
+        }
+        lang = lang.toUpperCase().replace('NONE', CONFIG.code_language.default);
+      }
+      $pre.append(copyTmpl.replace('LANG', lang).replace('code-widget">',
+        getBgClass($pre[0]) + (enableCopy ? ' code-widget copy-btn" data-clipboard-snippet><i class="iconfont icon-copy"></i>' : ' code-widget">')));
+
+      if (enableCopy) {
+        Fluid.utils.createScript('https://lib.baomitu.com/clipboard.js/2.0.10/clipboard.min.js', function() {
+          var clipboard = new window.ClipboardJS('.copy-btn', {
+            target: function(trigger) {
+              var nodes = trigger.parentNode.childNodes;
+              for (var i = 0; i < nodes.length; i++) {
+                if (nodes[i].tagName === 'CODE') {
+                  return nodes[i];
+                }
+              }
+            }
+          });
+          clipboard.on('success', function(e) {
+            e.clearSelection();
+            e.trigger.innerHTML = e.trigger.innerHTML.replace('icon-copy', 'icon-success');
+            setTimeout(function() {
+              e.trigger.innerHTML = e.trigger.innerHTML.replace('icon-success', 'icon-copy');
+            }, 2000);
+          });
+        });
+      }
+    });
+  })();
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

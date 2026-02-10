@@ -1,0 +1,878 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=light>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Jerry(姜源)">
+  <meta name="keywords" content="Java,Html,CSS,JavaScript,Python,C,Linux,shell编程经验分享、技术总结、心得体会">
+  
+    <meta name="description" content="欲速则不达，欲达则欲速！ —— 佚名 代码优化的目标是： 减小代码的体积 提高代码运行的效率 代码优化细节 1、尽量使用final修饰符带有final修饰符的类是不可派生的，在Java核心API中，有很多应用final的例子，例如Java.lang.String，整个类都是final的。为类指定final修饰符可以让类不可继承，为方法指定final修饰符可以让方法不可以被重写。如果制定了一个类为f">
+<meta property="og:type" content="article">
+<meta property="og:title" content="01-35条Java代码性能优化细节">
+<meta property="og:url" content="https://janycode.github.io/2017/12/20/16_%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96/01_Java%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96/01-35%E6%9D%A1Java%E4%BB%A3%E7%A0%81%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E7%BB%86%E8%8A%82/index.html">
+<meta property="og:site_name" content="姜源の云笔记">
+<meta property="og:description" content="欲速则不达，欲达则欲速！ —— 佚名 代码优化的目标是： 减小代码的体积 提高代码运行的效率 代码优化细节 1、尽量使用final修饰符带有final修饰符的类是不可派生的，在Java核心API中，有很多应用final的例子，例如Java.lang.String，整个类都是final的。为类指定final修饰符可以让类不可继承，为方法指定final修饰符可以让方法不可以被重写。如果制定了一个类为f">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://oscimg.oschina.net/oscnet/b96e091fb6ba6a595dccf0de313a27ec72c.jpg">
+<meta property="article:published_time" content="2017-12-20T14:19:37.000Z">
+<meta property="article:modified_time" content="2026-02-10T09:21:30.332Z">
+<meta property="article:author" content="Jerry(姜源)">
+<meta property="article:tag" content="性能优化">
+<meta property="article:tag" content="JavaSE">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://oscimg.oschina.net/oscnet/b96e091fb6ba6a595dccf0de313a27ec72c.jpg">
+  
+  
+    <meta name="referrer" content="no-referrer-when-downgrade">
+  
+  
+  <title>01-35条Java代码性能优化细节 - 姜源の云笔记</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"janycode.github.io","root":"/","version":"1.9.0","typing":{"enable":true,"typeSpeed":50,"cursorChar":"|","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":false},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":"bfff735c897eb60ea49b735096b20e47","google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+
+  
+<meta name="generator" content="Hexo 6.2.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 50vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>姜源の云笔记</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tools/">
+                <i class="iconfont icon-slack-fill"></i>
+                工具
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" target="_blank" rel="noopener" href="https://yuancodes.github.io/">
+                <i class="iconfont icon-notebook"></i>
+                Docsify
+              </a>
+            </li>
+          
+        
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="01-35条Java代码性能优化细节"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-author" aria-hidden="true"></i>
+        Jerry(姜源)
+      </span>
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2017-12-20 22:19" pubdate>
+          星期三, 2017/12/20 22:19:37
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          <!-- compatible with older versions-->
+          5.5k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          <!-- compatible with older versions-->
+          47 分钟
+        
+      </span>
+    
+
+    
+    
+      
+        <span id="busuanzi_container_page_pv" style="display: none">
+          <i class="iconfont icon-eye" aria-hidden="true"></i>
+          <span id="busuanzi_value_page_pv"></span> 次
+        </span>
+        
+      
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">01-35条Java代码性能优化细节</h1>
+            
+            <div class="markdown-body">
+              
+              <p><code>欲速则不达，欲达则欲速！</code> —— 佚名</p>
+<p>代码优化的目标是：</p>
+<p>减小代码的体积</p>
+<p>提高代码运行的效率</p>
+<p>代码优化细节</p>
+<h3 id="1、尽量使用final修饰符"><a href="#1、尽量使用final修饰符" class="headerlink" title="1、尽量使用final修饰符"></a>1、尽量使用final修饰符</h3><p>带有final修饰符的类是不可派生的，在Java核心API中，有很多应用final的例子，例如Java.lang.String，整个类都是final的。为类指定final修饰符可以让类不可继承，为方法指定final修饰符可以让方法不可以被重写。如果制定了一个类为final，则该类所有的方法都是final的。Java编译器会寻找机会内联所有的final方法，内联对于提升Java运行效率作用巨大，能使性能平均提升50%。</p>
+<h3 id="2、尽量重用对象"><a href="#2、尽量重用对象" class="headerlink" title="2、尽量重用对象"></a>2、尽量重用对象</h3><p>特别是String对象的使用，出现字符串连接时应该使用StringBuilder或StringBuffer代替。由于Java虚拟机不仅要花时间生成对象，以后可能还需要花时间对这些对象进行垃圾回收和处理，因此，生成过多的对象将会给程序的性能带来很大的影响。</p>
+<h3 id="3、尽可能使用局部变量"><a href="#3、尽可能使用局部变量" class="headerlink" title="3、尽可能使用局部变量"></a>3、尽可能使用局部变量</h3><p>调用方法时传递的参数以及在调用中创建的临时变量都会保存在栈中，速度较快，其它变量，如静态变量、实例变量等，都在堆中创建，速度较慢。另外，栈中创建的变量，随着方法的运行结束，这些内容就没了，不需要额外的垃圾回收。</p>
+<h3 id="4、及时关闭流"><a href="#4、及时关闭流" class="headerlink" title="4、及时关闭流"></a>4、及时关闭流</h3><p>Java编程过程中，进行数据库连接、IO流操作时务必小心，在使用完毕后，及时关闭以释放资源。因为对这些大对象的操作会造成很大的开销，稍有不慎，将会导致严重的后果。</p>
+<h3 id="5、尽量减少对变量的重复计算"><a href="#5、尽量减少对变量的重复计算" class="headerlink" title="5、尽量减少对变量的重复计算"></a>5、尽量减少对变量的重复计算</h3><p>明确一个概念，对方法的调用，即使方法中只有一句语句，也是消耗的，包括创建栈帧、调用方法时保护现场、调用方法完毕时恢复现场。所以例如下面的操作：</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs stylus"><span class="hljs-function"><span class="hljs-title">for</span><span class="hljs-params">(int i=<span class="hljs-number">0</span>;i&lt;list.size;i++)</span></span>&#123;&#125;<br></code></pre></td></tr></table></figure>
+
+<p>建议替换为：</p>
+<figure class="highlight glsl"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs glsl"><span class="hljs-keyword">for</span>(<span class="hljs-type">int</span> i=<span class="hljs-number">0</span>,<span class="hljs-type">int</span> <span class="hljs-built_in">length</span>=list.size;i&lt;<span class="hljs-built_in">length</span>;i++)&#123;&#125;<br></code></pre></td></tr></table></figure>
+
+<p>这样，在list.size很大的时候，就减少了很多的消耗。</p>
+<h3 id="6、尽量采用懒加载的策略，即在需要的时候才创建"><a href="#6、尽量采用懒加载的策略，即在需要的时候才创建" class="headerlink" title="6、尽量采用懒加载的策略，即在需要的时候才创建"></a>6、尽量采用懒加载的策略，即在需要的时候才创建</h3><p>例如：</p>
+<figure class="highlight processing"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs processing"><span class="hljs-built_in">String</span> <span class="hljs-built_in">str</span> = <span class="hljs-string">&quot;aaa&quot;</span>;<span class="hljs-keyword">if</span> (i == <span class="hljs-number">1</span>)&#123;list.<span class="hljs-property">add</span>(<span class="hljs-built_in">str</span>);&#125;<br></code></pre></td></tr></table></figure>
+
+<p>建议替换为：</p>
+<figure class="highlight abnf"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs abnf">if (i <span class="hljs-operator">=</span><span class="hljs-operator">=</span> <span class="hljs-number">1</span>)&#123;String str <span class="hljs-operator">=</span> <span class="hljs-string">&quot;aaa&quot;</span><span class="hljs-comment">;list.add(str);&#125;</span><br></code></pre></td></tr></table></figure>
+
+<h3 id="7、慎用异常"><a href="#7、慎用异常" class="headerlink" title="7、慎用异常"></a>7、慎用异常</h3><p>异常对性能不利。抛出异常首先要创建一个新的对象，Throwable接口的构造函数调用名为fillInStackTrace的本地同步方法，fillInStackTrace方法检查堆栈，收集调用跟踪信息。只要有异常被抛出，Java虚拟机就必须调整调用堆栈，因为在处理过程中创建了一个新的对象。异常只能用于错误处理，不应该用来控制程序流程。</p>
+<h3 id="8、不要在循环中使用trycatch"><a href="#8、不要在循环中使用trycatch" class="headerlink" title="8、不要在循环中使用trycatch"></a>8、不要在循环中使用trycatch</h3><p><code>应该把其放在最外层</code></p>
+<p>除非不得已。如果毫无理由地这么写了，只要你的领导资深一点、有强迫症一点，八成就要骂你为什么写出这种垃圾代码来了。</p>
+<h3 id="9、尽量指定数组或集合的初识长度"><a href="#9、尽量指定数组或集合的初识长度" class="headerlink" title="9、尽量指定数组或集合的初识长度"></a>9、尽量指定数组或集合的初识长度</h3><p>尽量能估计到待添加的内容的长度，为底层以数组方式实现的集合、工具类指定初始长度。</p>
+<p>比如ArrayList、LinkedLlist、StringBuilder、StringBuffer、HashMap、HashSet等等，以StringBuilder为例：</p>
+<p>① StringBuilder &#x2F;&#x2F;默认分配16个字符的空间</p>
+<p>② StringBuilder(int size)&#x2F;&#x2F;默认分配size个字符的空间</p>
+<p>③ StringBuider(String str)&#x2F;&#x2F;默认分配16个字符+st.length个字符空间</p>
+<p>设定初始化容量，可以明显提升性能。比如StringBuilder，length表示当前StringBuilder能保持的字符数量。因为当StringBuilder达到最大容量的时候，它会将自身容量增加到当前的2倍再加2，无论何时只StringBuilder达到它的最大容量，它就不得不创建一个新的字符数组然后将旧的字符数组内容拷贝到新字符数组中–这是一个非常耗费性能的操作。试想，如果能预估到字符数组中大概要存放5000个字符而不指定长度，最接近5000的2次幂是4096，每次扩容2倍加2，那么：</p>
+<p>① 在4096的基础上，再申请8194个大小的字符数组，加起来相当于一次申请了12290个大小的字符数组，如果一开始能指定5000个大小的字符数组，就节省了一倍以上的空间。</p>
+<p>② 把原来的4096个字符拷贝到新的字符数组中去。</p>
+<p>这样，既浪费内存空间又降低代码运行效率。所以，给底层以数组实现的集合、工具类设置一个合理的初始化容量是错不了的，这会带来立竿见影的效果。但是，注意，像hashmap这种以数组+链表实现的集合，别把初始大小和你估计的大小设置的一样，因为一个table上只连接一个对象的可能性几乎为0。初始大小建议设置为2的N次幂，如果能估计到有2000个元素，设置成new hashmap(128)、new hashmap(256)都可以。</p>
+<h3 id="10、当复制大量数据时，使用system-arraycopy命令"><a href="#10、当复制大量数据时，使用system-arraycopy命令" class="headerlink" title="10、当复制大量数据时，使用system.arraycopy命令"></a>10、当复制大量数据时，使用system.arraycopy命令</h3><h3 id="11、乘法和除法使用移位操作"><a href="#11、乘法和除法使用移位操作" class="headerlink" title="11、乘法和除法使用移位操作"></a>11、乘法和除法使用移位操作</h3><p>例如：</p>
+<figure class="highlight abnf"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs abnf">int a <span class="hljs-operator">=</span> <span class="hljs-number">0</span><span class="hljs-comment">;</span><br>int b <span class="hljs-operator">=</span> <span class="hljs-number">0</span><span class="hljs-comment">;</span><br>for (int i <span class="hljs-operator">=</span> <span class="hljs-number">0</span><span class="hljs-comment">; i &lt; 1000000000; i++)&#123;</span><br>   a <span class="hljs-operator">=</span> i * <span class="hljs-number">8</span><span class="hljs-comment">;</span><br>   b <span class="hljs-operator">=</span> i / <span class="hljs-number">2</span><span class="hljs-comment">;</span><br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>用移位操作可以极大地提高性能，因为在计算机底层，对位的操作是最方便、最快的，因此建议修改为：</p>
+<figure class="highlight abnf"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs abnf">int a1 <span class="hljs-operator">=</span> <span class="hljs-number">0</span><span class="hljs-comment">;</span><br>int b1 <span class="hljs-operator">=</span> <span class="hljs-number">0</span><span class="hljs-comment">;</span><br>for (int i <span class="hljs-operator">=</span> <span class="hljs-number">0</span><span class="hljs-comment">; i &lt; 1000000000; i++)&#123;</span><br>    a1 <span class="hljs-operator">=</span> i &lt;&lt; <span class="hljs-number">3</span><span class="hljs-comment">;</span><br>    b1 <span class="hljs-operator">=</span> i &gt;&gt; <span class="hljs-number">1</span><span class="hljs-comment">;</span><br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p><img src="https://oscimg.oschina.net/oscnet/b96e091fb6ba6a595dccf0de313a27ec72c.jpg" srcset="/img/loading.gif" lazyload alt="img"></p>
+<p>移位操作虽然快，但是可能会使代码不太好理解，因此最好加上相应的注释。 </p>
+<p>感觉有点吹毛求疵了，这都多少循环了，才差了2毫秒！！！</p>
+<h3 id="12、循环内不要不断创建对象引用"><a href="#12、循环内不要不断创建对象引用" class="headerlink" title="12、循环内不要不断创建对象引用"></a>12、循环内不要不断创建对象引用</h3><p>例如：</p>
+<figure class="highlight abnf"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs abnf">for (int i <span class="hljs-operator">=</span> <span class="hljs-number">1</span><span class="hljs-comment">; i &lt;= count; i++)&#123;</span><br>    Object obj <span class="hljs-operator">=</span> new Object<span class="hljs-comment">;</span><br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>这种做法会导致内存中有count份Object对象引用存在，count很大的话，就耗费内存了，建议为改为：</p>
+<figure class="highlight abnf"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs abnf">Object obj <span class="hljs-operator">=</span> null<span class="hljs-comment">;</span><br>for (int i <span class="hljs-operator">=</span> <span class="hljs-number">0</span><span class="hljs-comment">; i &lt;= count; i++) &#123;</span><br>    obj <span class="hljs-operator">=</span> new Object<span class="hljs-comment">;</span><br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>这样的话，内存中只有一份Object对象引用，每次new Object的时候，Object对象引用指向不同的Object罢了，但是内存中只有一份，这样就大大节省了内存空间了。</p>
+<h3 id="13、array优先，其次是ArrayList"><a href="#13、array优先，其次是ArrayList" class="headerlink" title="13、array优先，其次是ArrayList"></a>13、array优先，其次是ArrayList</h3><p>基于效率和类型检查的考虑，应该尽可能使用array，无法确定数组大小时才使用ArrayList</p>
+<h3 id="14、尽量使用hashmap、ArrayList、stringbuilder"><a href="#14、尽量使用hashmap、ArrayList、stringbuilder" class="headerlink" title="14、尽量使用hashmap、ArrayList、stringbuilder"></a>14、尽量使用hashmap、ArrayList、stringbuilder</h3><p>除非线程安全需要，否则不建议使用hashtable、vector、stringbuffer，后三者由于使用同步机制而导致了性能开销。</p>
+<h3 id="15、不要讲数组声明为public-static-final"><a href="#15、不要讲数组声明为public-static-final" class="headerlink" title="15、不要讲数组声明为public static final"></a>15、不要讲数组声明为public static final</h3><h3 id="16、尽量在合适的场合使用单例模式"><a href="#16、尽量在合适的场合使用单例模式" class="headerlink" title="16、尽量在合适的场合使用单例模式"></a>16、尽量在合适的场合使用单例模式</h3><p>使用单例模式可以减轻加载的负担、缩短加载的时间、提高加载的效率，并不是所有地方都适合单例模式，简单来说，单例模式主要适用于以下三个方面：</p>
+<p>① 控制资源的使用，通过线程同步来控制资源的并发访问</p>
+<p>② 控制实例的产生，以达到节约资源的目的</p>
+<p>③ 控制数据的共享，在不建立直接关联的条件下，让多个不相关的进程或线程之间实现通信</p>
+<h3 id="17、尽量避免使用静态变量"><a href="#17、尽量避免使用静态变量" class="headerlink" title="17、尽量避免使用静态变量"></a>17、尽量避免使用静态变量</h3><p>要知道，当某个对象被定义为static的，那么gc通常不会回收这个对象所占有的堆内存的，</p>
+<figure class="highlight haxe"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs haxe"><span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">A</span></span>&#123;<br>    <span class="hljs-keyword">private</span> <span class="hljs-keyword">static</span> B b = <span class="hljs-keyword">new</span> <span class="hljs-type">B</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>此时静态变量b的生命周期与A类相同，如果A类不被卸载，那么引用B指向的对象会常驻内存，直至程序终止。</p>
+<h3 id="18、及时清除不再需要的会话"><a href="#18、及时清除不再需要的会话" class="headerlink" title="18、及时清除不再需要的会话"></a>18、及时清除不再需要的会话</h3><p>为了清除不再活动的会话，许多服务器都会有默认的超时时间，一般为30分钟。当应用服务器需要保存更多的会话时，如果内存不足，那么操作系统会把部分数据转移到磁盘，应用服务器也可能把不活跃的会话转储到磁盘，甚至可能抛出内存不足的异常。如果会话要被转储到磁盘，那么必须要先被序列化，在大规模集群中，对对象序列化的代价是很高昂的。因此，当会话不再需要时，应当及时调用httpseesion的invalidate方法清除会话。</p>
+<h3 id="19、普通for与增强foreach"><a href="#19、普通for与增强foreach" class="headerlink" title="19、普通for与增强foreach"></a>19、普通for与增强foreach</h3><p><code>实现RandomAccess接口的集合比如ArrayList，应当使用最普通的for循环而不是foreach循环</code></p>
+<p>实现RandomAccess接口，表明其支持快速随机访问，此接口的主要目的是允许一般的算法更改其行为，从而将其应用到随机或连续访问列表时能提供良好的性能。实际经验表明，实现RandomAccess接口的类实例，假如是随机访问的，使用普通for循环效率将高于使用foreach循环，反过来，如果是顺序访问的，使用Iterator效率会更高。可以使用类似如下代码作判断：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs php"><span class="hljs-keyword">if</span> (<span class="hljs-keyword">list</span> <span class="hljs-keyword">instanceof</span> RandomAccess)&#123; <br>    <span class="hljs-keyword">for</span> (<span class="hljs-keyword">int</span> i = <span class="hljs-number">0</span>; i &lt; <span class="hljs-keyword">list</span>.size; i++)&#123;&#125;<br>&#125;<span class="hljs-keyword">else</span>&#123;<br>    <span class="hljs-built_in">Iterator</span><span class="hljs-meta">&lt;?</span>&gt; iterator = <span class="hljs-keyword">list</span>.<span class="hljs-keyword">iterable</span>; <span class="hljs-keyword">while</span> (iterator.hasNext)&#123;iterator.next&#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>foreach的底层实现就是Iterator。</p>
+<h3 id="20、使用同步代码块代替同步方法"><a href="#20、使用同步代码块代替同步方法" class="headerlink" title="20、使用同步代码块代替同步方法"></a>20、使用同步代码块代替同步方法</h3><h3 id="21、将常量声明为static-final，并以大写命名"><a href="#21、将常量声明为static-final，并以大写命名" class="headerlink" title="21、将常量声明为static final，并以大写命名"></a>21、将常量声明为static final，并以大写命名</h3><p>这样在编译期间就可以将这些内容放入常量池中，避免运行期间计算生成常量的值。另外，将常量的名字以大写命名也可以方便区分出常量与变量。</p>
+<h3 id="22、不要创建一些不使用的对象，不要导入一些不使用的类"><a href="#22、不要创建一些不使用的对象，不要导入一些不使用的类" class="headerlink" title="22、不要创建一些不使用的对象，不要导入一些不使用的类"></a>22、不要创建一些不使用的对象，不要导入一些不使用的类</h3><h3 id="23、程序运行过程中避免使用反射"><a href="#23、程序运行过程中避免使用反射" class="headerlink" title="23、程序运行过程中避免使用反射"></a>23、程序运行过程中避免使用反射</h3><p>反射是Java提供的一个很强大的功能，功能强大意味着效率不高。不建议在程序运行过程中使用尤其是频繁的使用反射机制，特别是Method的invoke方法，如果确实有必要，一种建议性的做法是将那些需要通过反射加载的类在项目启动的时候通过反射实例化出一个对象并放入内存–用户只关心交互的速度，而不关心项目启动的时间。</p>
+<h3 id="24、使用数据库连接池和线程池"><a href="#24、使用数据库连接池和线程池" class="headerlink" title="24、使用数据库连接池和线程池"></a>24、使用数据库连接池和线程池</h3><p>前者可以避免频繁的打开关闭连接；后者可以避免频繁的创建和销毁线程</p>
+<h3 id="25、使用带缓冲的输入输出流进行IO操作"><a href="#25、使用带缓冲的输入输出流进行IO操作" class="headerlink" title="25、使用带缓冲的输入输出流进行IO操作"></a>25、使用带缓冲的输入输出流进行IO操作</h3><p>带缓冲的输入输出流，即BufferedReader、BufferedWriter、BufferedInputStream、BufferedOutputStream，这可以极大地提升IO效率。</p>
+<h3 id="26、ArrayList与LinkedList"><a href="#26、ArrayList与LinkedList" class="headerlink" title="26、ArrayList与LinkedList"></a>26、ArrayList与LinkedList</h3><p>顺序插入和随机访问比较多的场景用ArrayList，元素删除和中间插入比较多的场景使用LinkedList</p>
+<h3 id="27、不要让public方法中有太多的参数"><a href="#27、不要让public方法中有太多的参数" class="headerlink" title="27、不要让public方法中有太多的参数"></a>27、不要让public方法中有太多的参数</h3><h3 id="28、字符串变量和字符串常量equals的时候将字符串常量写在前面"><a href="#28、字符串变量和字符串常量equals的时候将字符串常量写在前面" class="headerlink" title="28、字符串变量和字符串常量equals的时候将字符串常量写在前面"></a>28、字符串变量和字符串常量equals的时候将字符串常量写在前面</h3><p>这么做主要是可以避免空指针异常。</p>
+<h3 id="29、if-i-x3D-x3D-1-和if-1-x3D-x3D-i"><a href="#29、if-i-x3D-x3D-1-和if-1-x3D-x3D-i" class="headerlink" title="29、if (i &#x3D;&#x3D; 1)和if (1 &#x3D;&#x3D; i)"></a>29、if (i &#x3D;&#x3D; 1)和if (1 &#x3D;&#x3D; i)</h3><p>请知道，在java中if (i &#x3D;&#x3D; 1)和if (1 &#x3D;&#x3D; i)是没有区别的，但从阅读习惯上讲，建议使用前者</p>
+<h3 id="30、不要对数组使用toString方法"><a href="#30、不要对数组使用toString方法" class="headerlink" title="30、不要对数组使用toString方法"></a>30、不要对数组使用toString方法</h3><h3 id="31、不要对超出范围的基础数据类型做向下强制类型转型"><a href="#31、不要对超出范围的基础数据类型做向下强制类型转型" class="headerlink" title="31、不要对超出范围的基础数据类型做向下强制类型转型"></a>31、不要对超出范围的基础数据类型做向下强制类型转型</h3><h3 id="32、公用的集合类中不使用的数据一定要及时的remove掉"><a href="#32、公用的集合类中不使用的数据一定要及时的remove掉" class="headerlink" title="32、公用的集合类中不使用的数据一定要及时的remove掉"></a>32、公用的集合类中不使用的数据一定要及时的remove掉</h3><p>如果一个集合类是公用的（也就是说不是方法里面的属性），那么这个集合里面的元素是不会自动释放的，因为始终有引用指向它们。所以，如果公用集合里面的某些数据不使用而不去remove掉它们，那么将会造成这个公用集合不断增大，使得系统有内存泄露的隐患。</p>
+<h3 id="33、toString最快"><a href="#33、toString最快" class="headerlink" title="33、toString最快"></a>33、toString最快</h3><p>把一个基本类型转为字符串，toString最快，String.valueOf次之，数据+“”最慢。</p>
+<p>所以以后遇到把一个基本数据类型转为String的时候，优先考虑使用toString方法。至于为什么，很简单：</p>
+<p>① String.valueOf方法底层调用了Integer.toString方法，但是会在调用前做空判断</p>
+<p>② Integer.toString方法就不说了，直接调用了</p>
+<p>③ i + “”底层使用了StringBuilder实现，先用append方法拼接，再用toString方法获取字符串</p>
+<p>三者对比下来，明显是②最快、①次之、③最慢</p>
+<h3 id="34、使用最有效率的方法去遍历map"><a href="#34、使用最有效率的方法去遍历map" class="headerlink" title="34、使用最有效率的方法去遍历map"></a>34、使用最有效率的方法去遍历map</h3><h3 id="35、对资源的close-建议分开操作"><a href="#35、对资源的close-建议分开操作" class="headerlink" title="35、对资源的close()建议分开操作"></a>35、对资源的close()建议分开操作</h3><p>意思是，比如我有这么一段代码：</p>
+<figure class="highlight cos"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs cos"><span class="hljs-keyword">try</span>&#123;<br>    XXX.<span class="hljs-keyword">close</span><span class="hljs-comment">;</span><br>    YYY.<span class="hljs-keyword">close</span><span class="hljs-comment">;</span><br>&#125;<span class="hljs-keyword">catch</span> (Exception e)&#123;<br>...<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>建议修改为：</p>
+<figure class="highlight cos"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs cos"><span class="hljs-keyword">try</span>&#123; <br>    XXX.<span class="hljs-keyword">close</span><span class="hljs-comment">; </span><br>&#125;<span class="hljs-keyword">catch</span> (Exception e) &#123;<br> ... <br>&#125;<br><span class="hljs-keyword">try</span>&#123; <br>    YYY.<span class="hljs-keyword">close</span><span class="hljs-comment">; </span><br>&#125;<span class="hljs-keyword">catch</span> (Exception e) &#123;<br> ... <br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>虽然有些麻烦，却能避免资源泄露。我想，如果没有修改过的代码，万一XXX.close抛异常了，那么就进入了cath块中了，YYY.close不会执行，YYY这块资源就不会回收了，一直占用着，这样的代码一多，是可能引起资源句柄泄露的。而改为上面的写法之后，就保证了无论如何XXX和YYY都会被close掉。</p>
+
+              
+            </div>
+            <hr/>
+            <div>
+              <div>
+  <img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20241112163319.png" srcset="/img/loading.gif" lazyload>
+</div>
+<div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/16-%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96/" class="category-chain-item">16_性能优化</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/16-%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96/01-Java%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96/" class="category-chain-item">01_Java性能优化</a>
+  
+  
+
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96/">#性能优化</a>
+      
+        <a href="/tags/JavaSE/">#JavaSE</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>01-35条Java代码性能优化细节</div>
+      <div>https://janycode.github.io/2017/12/20/16_性能优化/01_Java性能优化/01-35条Java代码性能优化细节/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Jerry(姜源)</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2017年12月20日</div>
+        </div>
+      
+      
+      <div class="license-meta-item">
+        <div>许可协议</div>
+        <div>
+          
+            
+            
+              <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+              <span class="hint--top hint--rounded" aria-label="BY - 姜源">
+                <i class="iconfont icon-by"></i>
+              </span>
+              </a>
+            
+          
+        </div>
+      </div>
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2018/03/28/06_%E6%9C%8D%E5%8A%A1%E5%99%A8/02_Nginx/01-Nginx%20%E9%85%8D%E7%BD%AE%E8%AF%A6%E8%A7%A3/" title="01-Nginx 配置详解">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">01-Nginx 配置详解</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2017/12/18/00_%E5%85%88%E5%88%A9%E5%85%B6%E5%99%A8/01_Intellij%20IDEA/08-IDEA-MyBatisCodeHelper%E6%8F%92%E4%BB%B6/" title="08-IDEA-MyBatisCodeHelper插件">
+                        <span class="hidden-mobile">08-IDEA-MyBatisCodeHelper插件</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+  <article id="comments" lazyload>
+    
+  <div id="SOHUCS" sid='https://janycode.github.io/2017/12/20/16_%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96/01_Java%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96/01-35%E6%9D%A1Java%E4%BB%A3%E7%A0%81%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E7%BB%86%E8%8A%82/'></div>
+  <script type="text/javascript">
+    Fluid.utils.loadComments('#SOHUCS', function() {
+      Fluid.utils.createScript("https://changyan.sohu.com/upload/changyan.js", function() {
+        window.changyan.api.config({"appid":"cyw5OHIcO","appkey":"fea3446b3df4b3f129f34da4cbc87e51"})
+      });
+    });
+  </script>
+  <noscript>Please enable JavaScript to view the comments</noscript>
+
+
+  </article>
+
+
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://simple.blog.csdn.net" target="_blank" rel="nofollow noopener"><span>CSDN</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/janycode" target="_blank" rel="nofollow noopener"><span>GitHub</span></a> <i class="iconfont icon-love"></i> <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="busuanzi_container_site_pv" style="display: none">
+        总访问量(PV) 
+        <span id="busuanzi_value_site_pv"></span>
+         次，
+      </span>
+    
+    
+      <span id="busuanzi_container_site_uv" style="display: none">
+        总访客数(UV) 
+        <span id="busuanzi_value_site_uv"></span>
+         人
+      </span>
+    
+    
+  
+</div>
+
+  
+  
+  
+</div>
+
+<!-- live2d 动画 -->
+<script src="https://eqcn.ajz.miesnfu.com/wp-content/plugins/wp-3d-pony/live2dw/lib/L2Dwidget.min.js"></script>
+<script>
+    L2Dwidget.init({
+        "model": {
+            jsonPath: "https://unpkg.com/live2d-widget-model-haruto@1.0.5/assets/haruto.model.json",
+            "scale": 1
+        },
+        "display": {
+            "position": "right",
+            "width": 100,
+            "height": 200,
+            "hOffset": 35,
+            "vOffset": -85
+        },
+        "mobile": {
+            "show": false,
+            "scale": 0.1
+        },
+        "react": {
+            "opacityDefault": 0.75,
+            "opacityOnHover": 0.2
+        }
+    });
+</script>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <!-- Baidu Analytics -->
+    <script defer>
+      if (!Fluid.ctx.dnt) {
+        var _hmt = _hmt || [];
+        (function() {
+          var hm = document.createElement("script");
+          hm.src = "https://hm.baidu.com/hm.js?bfff735c897eb60ea49b735096b20e47";
+          var s = document.getElementsByTagName("script")[0];
+          s.parentNode.insertBefore(hm, s);
+        })();
+      }
+    </script>
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.0/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      headingSelector : CONFIG.toc.headingSelector || 'h1,h2,h3,h4,h5,h6',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      collapseDepth   : CONFIG.toc.collapseDepth || 0,
+      scrollSmooth    : true,
+      headingsOffset  : -boardTop
+    });
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+  });
+</script>
+
+
+  <script>
+  (function() {
+    var enableLang = CONFIG.code_language.enable && CONFIG.code_language.default;
+    var enableCopy = CONFIG.copy_btn;
+    if (!enableLang && !enableCopy) {
+      return;
+    }
+
+    function getBgClass(ele) {
+      return Fluid.utils.getBackgroundLightness(ele) >= 0 ? 'code-widget-light' : 'code-widget-dark';
+    }
+
+    var copyTmpl = '';
+    copyTmpl += '<div class="code-widget">';
+    copyTmpl += 'LANG';
+    copyTmpl += '</div>';
+    jQuery('.markdown-body pre').each(function() {
+      var $pre = jQuery(this);
+      if ($pre.find('code.mermaid').length > 0) {
+        return;
+      }
+      if ($pre.find('span.line').length > 0) {
+        return;
+      }
+
+      var lang = '';
+
+      if (enableLang) {
+        lang = CONFIG.code_language.default;
+        if ($pre[0].children.length > 0 && $pre[0].children[0].classList.length >= 2 && $pre.children().hasClass('hljs')) {
+          lang = $pre[0].children[0].classList[1];
+        } else if ($pre[0].getAttribute('data-language')) {
+          lang = $pre[0].getAttribute('data-language');
+        } else if ($pre.parent().hasClass('sourceCode') && $pre[0].children.length > 0 && $pre[0].children[0].classList.length >= 2) {
+          lang = $pre[0].children[0].classList[1];
+          $pre.parent().addClass('code-wrapper');
+        } else if ($pre.parent().hasClass('markdown-body') && $pre[0].classList.length === 0) {
+          $pre.wrap('<div class="code-wrapper"></div>');
+        }
+        lang = lang.toUpperCase().replace('NONE', CONFIG.code_language.default);
+      }
+      $pre.append(copyTmpl.replace('LANG', lang).replace('code-widget">',
+        getBgClass($pre[0]) + (enableCopy ? ' code-widget copy-btn" data-clipboard-snippet><i class="iconfont icon-copy"></i>' : ' code-widget">')));
+
+      if (enableCopy) {
+        Fluid.utils.createScript('https://lib.baomitu.com/clipboard.js/2.0.10/clipboard.min.js', function() {
+          var clipboard = new window.ClipboardJS('.copy-btn', {
+            target: function(trigger) {
+              var nodes = trigger.parentNode.childNodes;
+              for (var i = 0; i < nodes.length; i++) {
+                if (nodes[i].tagName === 'CODE') {
+                  return nodes[i];
+                }
+              }
+            }
+          });
+          clipboard.on('success', function(e) {
+            e.clearSelection();
+            e.trigger.innerHTML = e.trigger.innerHTML.replace('icon-copy', 'icon-success');
+            setTimeout(function() {
+              e.trigger.innerHTML = e.trigger.innerHTML.replace('icon-success', 'icon-copy');
+            }, 2000);
+          });
+        });
+      }
+    });
+  })();
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

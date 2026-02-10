@@ -1,0 +1,851 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=light>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Jerry(姜源)">
+  <meta name="keywords" content="Java,Html,CSS,JavaScript,Python,C,Linux,shell编程经验分享、技术总结、心得体会">
+  
+    <meta name="description" content="1. 订单状态与超时 订单的状态  待支付 → 待发货 → 待确认 → 待评价 → 已评价  超时订单、取消订单（未支付）、退款（已支付、待发货）、退货（待评价、待确认）、换货、售后（维修）  订单的超时  1.支付超时：如点餐 15 分钟需要支付而未支付  2.确认超时：超过 7 天还未确认收货，系统自动确认收货  3.评价超时：超过 7 天未评价的，系统自动评价  4.订单的超卖：不能超过库">
+<meta property="og:type" content="article">
+<meta property="og:title" content="02-订单服务">
+<meta property="og:url" content="https://janycode.github.io/2020/03/02/14_%E5%BE%AE%E6%9C%8D%E5%8A%A1/09_%E5%95%86%E5%93%81%E6%9C%8D%E5%8A%A1/02-%E8%AE%A2%E5%8D%95%E6%9C%8D%E5%8A%A1/index.html">
+<meta property="og:site_name" content="姜源の云笔记">
+<meta property="og:description" content="1. 订单状态与超时 订单的状态  待支付 → 待发货 → 待确认 → 待评价 → 已评价  超时订单、取消订单（未支付）、退款（已支付、待发货）、退货（待评价、待确认）、换货、售后（维修）  订单的超时  1.支付超时：如点餐 15 分钟需要支付而未支付  2.确认超时：超过 7 天还未确认收货，系统自动确认收货  3.评价超时：超过 7 天未评价的，系统自动评价  4.订单的超卖：不能超过库">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20200815205850.png">
+<meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20200815211238.png">
+<meta property="article:published_time" content="2020-03-02T09:59:44.000Z">
+<meta property="article:modified_time" content="2026-02-10T09:21:30.313Z">
+<meta property="article:author" content="Jerry(姜源)">
+<meta property="article:tag" content="微服务">
+<meta property="article:tag" content="订单服务">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20200815205850.png">
+  
+  
+    <meta name="referrer" content="no-referrer-when-downgrade">
+  
+  
+  <title>02-订单服务 - 姜源の云笔记</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"janycode.github.io","root":"/","version":"1.9.0","typing":{"enable":true,"typeSpeed":50,"cursorChar":"|","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":false},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":"bfff735c897eb60ea49b735096b20e47","google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+
+  
+<meta name="generator" content="Hexo 6.2.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 50vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>姜源の云笔记</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tools/">
+                <i class="iconfont icon-slack-fill"></i>
+                工具
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" target="_blank" rel="noopener" href="https://yuancodes.github.io/">
+                <i class="iconfont icon-notebook"></i>
+                Docsify
+              </a>
+            </li>
+          
+        
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="02-订单服务"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-author" aria-hidden="true"></i>
+        Jerry(姜源)
+      </span>
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2020-03-02 17:59" pubdate>
+          星期一, 2020/03/02 17:59:44
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          <!-- compatible with older versions-->
+          13k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          <!-- compatible with older versions-->
+          106 分钟
+        
+      </span>
+    
+
+    
+    
+      
+        <span id="busuanzi_container_page_pv" style="display: none">
+          <i class="iconfont icon-eye" aria-hidden="true"></i>
+          <span id="busuanzi_value_page_pv"></span> 次
+        </span>
+        
+      
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">02-订单服务</h1>
+            
+            <div class="markdown-body">
+              
+              <p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20200815205850.png" srcset="/img/loading.gif" lazyload alt="image-20200815205849107"></p>
+<h3 id="1-订单状态与超时"><a href="#1-订单状态与超时" class="headerlink" title="1. 订单状态与超时"></a>1. 订单状态与超时</h3><ul>
+<li><p>订单的状态<br>  <code>待支付</code> → <code>待发货</code> → <code>待确认</code> → <code>待评价</code> → <code>已评价</code><br>  <strong>超时订单</strong>、<strong>取消订单</strong>（未支付）、<strong>退款</strong>（已支付、待发货）、<strong>退货</strong>（待评价、待确认）、<strong>换货</strong>、<strong>售后</strong>（维修）</p>
+</li>
+<li><p>订单的超时<br>  1.支付超时：如点餐 15 分钟需要支付而未支付<br>  2.确认超时：超过 7 天还未确认收货，系统自动确认收货<br>  3.评价超时：超过 7 天未评价的，系统自动评价<br>  4.订单的超卖：不能超过库存限制</p>
+</li>
+</ul>
+<h3 id="2-订单超时处理方案"><a href="#2-订单超时处理方案" class="headerlink" title="2. 订单超时处理方案"></a>2. 订单超时处理方案</h3><h4 id="2-1-定时任务"><a href="#2-1-定时任务" class="headerlink" title="2.1 定时任务"></a>2.1 定时任务</h4><p><code>间隔1分钟</code><br>每隔1分钟，定时任务触发，查询订单（1.待支付 2.下单时间 超过30分钟），满足的订单，更改订单的状态为超时状态，同时释放：库存、优惠卷、积分（京豆、淘金币）、满减优惠、成长值等等。</p>
+<h4 id="2-2-Redis"><a href="#2-2-Redis" class="headerlink" title="2.2 Redis"></a>2.2 Redis</h4><p><code>设置有效期30分钟，失效监听</code></p>
+<p>参考1：<a target="_blank" rel="noopener" href="https://blog.csdn.net/VringSbsda/article/details/105199832">https://blog.csdn.net/VringSbsda/article/details/105199832</a></p>
+<p>参考2：<a target="_blank" rel="noopener" href="https://blog.csdn.net/for_the_time_begin/article/details/90376873">https://blog.csdn.net/for_the_time_begin/article/details/90376873</a></p>
+<p>参考3：<a target="_blank" rel="noopener" href="https://blog.csdn.net/ypp91zr/article/details/105635225">https://blog.csdn.net/ypp91zr/article/details/105635225</a></p>
+<p>下单的时候，同时在Redis中存储订单（String类型 有效期30分钟，key: 订单编号 value 时间戳），在Redis的配置文件中，开启失效监听,在 redis.conf 中 开启：**<code>notify-keyspace-events Ex</code>**同时在程序中，实现 KeyExpirationEventMessageListener 。完成Key的失效监听。只能获取到失效的key，但是此时不能根据key获取value值，因为该事件是在数据失效后才触发。获取订单号查询数据库，是否为待支付，如果hi待支付，订单需要更改为超时订单，同时释放资源。</p>
+<p>Redis 开启键空间通知功能需要消耗一些 CPU，所以在<code>默认该功能处于关闭状态</code>。</p>
+<p>开启该功能需要修改 <a href="">redis.conf</a> 中的  <code>notify-keyspace-events</code>  参数，参数可以是以下字符的任意组合， 它指定了服务器该发送哪些类型的通知。</p>
+<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20200815211238.png" srcset="/img/loading.gif" lazyload alt="image-20200815211236749"></p>
+<p>输入的参数中至少要有一个 K 或者 E，否则的话，不管其余的参数是什么，都不会有任何通知被分发。</p>
+<p>如： </p>
+<ul>
+<li><strong>notify-keyspace-events “Ex”</strong> 表示对过期事件进行通知发送；</li>
+<li><strong>notify-keyspace-events “kx”</strong> 表示想监控某个 key 的失效事件；</li>
+<li>将参数设为字符串 AKE 表示发送所有类型的通知。</li>
+</ul>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs sh">过期事件测试:<br><span class="hljs-comment">#客户端订阅</span><br>&gt; subscribe __keyevent@0__:expired <br><span class="hljs-comment">#在另一个客户端执行</span><br>setex name 10 txl<br><span class="hljs-comment"># 10 秒过后，订阅端就会接收到消息。</span><br></code></pre></td></tr></table></figure>
+
+
+
+<h4 id="2-3-RabbitMQ"><a href="#2-3-RabbitMQ" class="headerlink" title="2.3 RabbitMQ"></a>2.3 RabbitMQ</h4><p><code>死信消息和死信队列</code></p>
+<p>下单的时候，将订单信息发送到-延迟队列(设置消息超时时间为30分钟，不需要消费者)，然后为延迟队列设置死信交换器和路由匹配，如果消息超过30分钟，就会变成死信消息，就会通过死信交换器转发到对应的死信队列(需要有消费者)，消息消费者监听死信队列，获取的消息（超时消息30分钟后）。查询数据库，订单是否支付，如果订单状态为待支付，那么就需要把订单状态更改为超时状态，同时释放资源。</p>
+<h3 id="3-超时订单-死信队列实现"><a href="#3-超时订单-死信队列实现" class="headerlink" title="3. 超时订单-死信队列实现"></a>3. 超时订单-死信队列实现</h3><h4 id="3-1-数据库表"><a href="#3-1-数据库表" class="headerlink" title="3.1 数据库表"></a>3.1 数据库表</h4><p>demo 数据库和表：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><code class="hljs mysql">CREATE DATABASE db_orderapi;<br><br>USE db_orderapi;<br><br>-- 订单和支付服务<br>-- 订单表<br> CREATE TABLE t_order (<br>  id BIGINT PRIMARY KEY,<br>  aid INT COMMENT &#x27;收货地址&#x27;,<br>  money INT,<br>  discountmoney INT,<br>  uid INT,<br>  paymoney INT,<br>  flag INT COMMENT &#x27;订单状态： 1待支付 2待发货 3待收货 4待评价 5已评价 6超时订单 7取消订单&#x27;,<br>  ctime DATETIME<br>);<br><br>-- 订单详情表<br> CREATE TABLE t_orderitem (<br>  id BIGINT PRIMARY KEY AUTO_INCREMENT,<br>  oid BIGINT,<br>  gid INT,<br>  gskuid INT,<br>  num INT,<br>  price INT,<br>  ctime DATETIME<br>);<br><br>-- 订单流水表<br> CREATE TABLE t_orderlog (<br>  id BIGINT PRIMARY KEY AUTO_INCREMENT,<br>  oid BIGINT,<br>  STATUS INT COMMENT &#x27;订单状态&#x27;,<br>  info VARCHAR (50),<br>  ctime DATETIME<br>);<br></code></pre></td></tr></table></figure>
+
+<h4 id="3-2-配置死信队列"><a href="#3-2-配置死信队列" class="headerlink" title="3.2 配置死信队列"></a>3.2 配置死信队列</h4><p>基于 RabbitMQ 的死信队列超时订单 配置类：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">import</span> org.springframework.amqp.core.*;<br><span class="hljs-keyword">import</span> org.springframework.context.annotation.Bean;<br><span class="hljs-keyword">import</span> org.springframework.context.annotation.Configuration;<br><br><span class="hljs-keyword">import</span> java.util.HashMap;<br><span class="hljs-keyword">import</span> java.util.Map;<br><br><span class="hljs-meta">@Configuration</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">RabbitConfig</span> &#123;<br>    <span class="hljs-comment">/**</span><br><span class="hljs-comment">     * 延迟队列 有效期  无消费者</span><br><span class="hljs-comment">     */</span><br>    <span class="hljs-keyword">private</span> <span class="hljs-type">String</span> <span class="hljs-variable">qname1</span> <span class="hljs-operator">=</span> <span class="hljs-string">&quot;open:order:timeoutorder&quot;</span>;<br><br>    <span class="hljs-comment">/**</span><br><span class="hljs-comment">     * 订单超时的死信队列 有消费者</span><br><span class="hljs-comment">     */</span><br>    <span class="hljs-keyword">private</span> <span class="hljs-type">String</span> <span class="hljs-variable">qname2</span> <span class="hljs-operator">=</span> <span class="hljs-string">&quot;open:order:dlxtimeorder&quot;</span>;<br><br>    <span class="hljs-comment">/**</span><br><span class="hljs-comment">     * 死信交换器</span><br><span class="hljs-comment">     */</span><br>    <span class="hljs-keyword">private</span> <span class="hljs-type">String</span> <span class="hljs-variable">exchange1</span> <span class="hljs-operator">=</span> <span class="hljs-string">&quot;open:dlxexchange&quot;</span>;<br><br>    <span class="hljs-comment">/**</span><br><span class="hljs-comment">     * 路由匹配 超时订单</span><br><span class="hljs-comment">     */</span><br>    <span class="hljs-keyword">private</span> <span class="hljs-type">String</span> <span class="hljs-variable">routkey1</span> <span class="hljs-operator">=</span> <span class="hljs-string">&quot;open:rout:timeoutorder&quot;</span>;<br><br>    <span class="hljs-meta">@Bean</span><br>    <span class="hljs-keyword">public</span> Queue <span class="hljs-title function_">createQ1</span><span class="hljs-params">()</span> &#123;<br>        Map&lt;String, Object&gt; params = <span class="hljs-keyword">new</span> <span class="hljs-title class_">HashMap</span>&lt;&gt;();<br>        <span class="hljs-comment">//设置参数 3个参数 固定</span><br>        <span class="hljs-comment">//设置内部消息的有效期 也就是失效的时间 30min</span><br>        params.put(<span class="hljs-string">&quot;x-message-ttl&quot;</span>, <span class="hljs-number">1800000</span>);<br>        <span class="hljs-comment">//设置死信交换器</span><br>        params.put(<span class="hljs-string">&quot;x-dead-letter-exchange&quot;</span>, exchange1);<br>        <span class="hljs-comment">//设置路由匹配</span><br>        params.put(<span class="hljs-string">&quot;x-dead-letter-routingkey&quot;</span>, routkey1);<br>        <span class="hljs-keyword">return</span> QueueBuilder.durable(qname1).withArguments(params).build();<br>    &#125;<br><br>    <span class="hljs-meta">@Bean</span><br>    <span class="hljs-keyword">public</span> Queue <span class="hljs-title function_">createQ2</span><span class="hljs-params">()</span> &#123;<br>        <span class="hljs-keyword">return</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">Queue</span>(qname2);<br>    &#125;<br><br>    <span class="hljs-comment">/**</span><br><span class="hljs-comment">     * 创建交换器</span><br><span class="hljs-comment">     */</span><br>    <span class="hljs-meta">@Bean</span><br>    <span class="hljs-keyword">public</span> DirectExchange <span class="hljs-title function_">createDE</span><span class="hljs-params">()</span> &#123;<br>        <span class="hljs-keyword">return</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">DirectExchange</span>(exchange1);<br>    &#125;<br><br>    <span class="hljs-comment">/**</span><br><span class="hljs-comment">     * 绑定</span><br><span class="hljs-comment">     * <span class="hljs-doctag">@param</span> exchange</span><br><span class="hljs-comment">     * <span class="hljs-doctag">@return</span></span><br><span class="hljs-comment">     */</span><br>    <span class="hljs-meta">@Bean</span><br>    <span class="hljs-keyword">public</span> Binding <span class="hljs-title function_">createBD</span><span class="hljs-params">(DirectExchange exchange)</span> &#123;<br>        <span class="hljs-keyword">return</span> BindingBuilder.bind(createQ2()).to(exchange).with(routkey1);<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<h4 id="3-3-监听死信队列"><a href="#3-3-监听死信队列" class="headerlink" title="3.3 监听死信队列"></a>3.3 监听死信队列</h4><ul>
+<li>枚举</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">enum</span> <span class="hljs-title class_">OrderFlag</span> &#123;<br>    待支付(<span class="hljs-number">1</span>), 待发货(<span class="hljs-number">2</span>), 待确认(<span class="hljs-number">3</span>), 待评价(<span class="hljs-number">4</span>), 已评价(<span class="hljs-number">5</span>), 超时订单(<span class="hljs-number">6</span>), 取消订单(<span class="hljs-number">7</span>);<br>    <span class="hljs-keyword">private</span> <span class="hljs-type">int</span> val;<br>    <span class="hljs-keyword">public</span> <span class="hljs-type">int</span> <span class="hljs-title function_">getVal</span><span class="hljs-params">()</span> &#123;<br>        <span class="hljs-keyword">return</span> val;<br>    &#125;<br>    <span class="hljs-keyword">private</span> <span class="hljs-title function_">OrderFlag</span><span class="hljs-params">(<span class="hljs-type">int</span> v)</span> &#123;<br>        val = v;<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<ul>
+<li>监听器</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-comment">// dto</span><br><span class="hljs-meta">@Data</span><br><span class="hljs-meta">@AllArgsConstructor</span><br><span class="hljs-meta">@NoArgsConstructor</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">MqMsgDto</span>&lt;T&gt; <span class="hljs-keyword">implements</span> <span class="hljs-title class_">Serializable</span> &#123;<br>    <span class="hljs-keyword">private</span> <span class="hljs-type">long</span> id;<br>    <span class="hljs-keyword">private</span> <span class="hljs-type">int</span> type;<span class="hljs-comment">//类型</span><br>    <span class="hljs-keyword">private</span>  T obj;<br>&#125;<br><br><span class="hljs-comment">// Listener</span><br><span class="hljs-keyword">import</span> org.springframework.amqp.rabbit.annotation.RabbitHandler;<br><span class="hljs-keyword">import</span> org.springframework.amqp.rabbit.annotation.RabbitListener;<br><span class="hljs-keyword">import</span> org.springframework.beans.factory.annotation.Autowired;<br><span class="hljs-keyword">import</span> org.springframework.stereotype.Component;<br><span class="hljs-keyword">import</span> org.springframework.transaction.annotation.Transactional;<br><br><span class="hljs-meta">@Component</span><br><span class="hljs-meta">@RabbitListener(queues = &quot;open:order:dlxtimeorder&quot;)</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">TimeOutOrderListener</span> &#123;<br>    <span class="hljs-meta">@Autowired</span><br>    <span class="hljs-keyword">private</span> OrderDao dao;<br><br>    <span class="hljs-meta">@RabbitHandler</span><br>    <span class="hljs-meta">@Transactional</span> <span class="hljs-comment">//开启本地事务</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">handler</span><span class="hljs-params">(MqMsgDto&lt;Long&gt; dto)</span> &#123;<br>        <span class="hljs-comment">//1,获取订单号</span><br>        <span class="hljs-type">long</span> <span class="hljs-variable">oid</span> <span class="hljs-operator">=</span> dto.getObj();<br>        <span class="hljs-comment">//2.查询订单对象</span><br>        <span class="hljs-type">Order</span> <span class="hljs-variable">order</span> <span class="hljs-operator">=</span> dao.selectById(oid);<br>        <span class="hljs-keyword">if</span> (order != <span class="hljs-literal">null</span>) &#123;<br>            <span class="hljs-comment">//3.校验订单的状态</span><br>            <span class="hljs-keyword">if</span> (order.getFlag().equals(OrderFlag.待支付.getVal())) &#123;<br>                <span class="hljs-comment">//超时 未支付</span><br><br>                <span class="hljs-comment">//更改订单状态</span><br>                <span class="hljs-keyword">if</span> (dao.updateFlag(oid, OrderFlag.超时订单.getVal()) &gt; <span class="hljs-number">0</span>) &#123;<br>                    <span class="hljs-comment">//释放库存</span><br>                    <span class="hljs-comment">//释放各种优惠</span><br>                    <span class="hljs-comment">//生成订单流水</span><br>                    <span class="hljs-comment">//消息</span><br>                &#125;<br>            &#125;<br>        &#125;<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+
+
+<h4 id="3-3-生成订单逻辑"><a href="#3-3-生成订单逻辑" class="headerlink" title="3.3 生成订单逻辑"></a>3.3 生成订单逻辑</h4><p>生成订单逻辑流程：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">import</span> org.springframework.amqp.rabbit.core.RabbitTemplate;<br><span class="hljs-keyword">import</span> org.springframework.beans.factory.annotation.Autowired;<br><span class="hljs-keyword">import</span> org.springframework.stereotype.Service;<br><span class="hljs-keyword">import</span> org.springframework.web.client.RestTemplate;<br><br><span class="hljs-keyword">import</span> java.util.HashMap;<br><span class="hljs-keyword">import</span> java.util.Map;<br><br><span class="hljs-meta">@Service</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">OrderServiceImpl</span> <span class="hljs-keyword">implements</span> <span class="hljs-title class_">OrderService</span> &#123;<br>    <span class="hljs-meta">@Autowired</span><br>    <span class="hljs-keyword">private</span> OrderDao orderDao;<br>    <span class="hljs-meta">@Autowired</span><br>    <span class="hljs-keyword">private</span> RestTemplate restTemplate;<br>    <span class="hljs-meta">@Autowired</span><br>    <span class="hljs-keyword">private</span> RabbitTemplate rabbitTemplate;<br>    <span class="hljs-meta">@Autowired</span><br>    <span class="hljs-keyword">private</span> IdGenerator generator; <span class="hljs-comment">//工具类+配置类注入 雪花算法ID生成器</span><br>    <span class="hljs-meta">@Autowired</span><br>    <span class="hljs-keyword">private</span> RedissonUtil redissonUtil; <span class="hljs-comment">//工具类+配置类注入 分布式锁实现</span><br><br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-keyword">public</span> R <span class="hljs-title function_">createOrder</span><span class="hljs-params">(GoodsOrderDto dto)</span> &#123;<br>        <span class="hljs-comment">//1.查询对应的商品详情 SKU</span><br>        <span class="hljs-type">GoodsSkuDto</span> <span class="hljs-variable">goodsSkuDto</span> <span class="hljs-operator">=</span> restTemplate.getForObject(<span class="hljs-string">&quot;http://goodsserver/server/goods/sku.do?skuid=&quot;</span> + dto.getSkuid(), GoodsSkuDto.class);<br>        <span class="hljs-keyword">if</span> (goodsSkuDto != <span class="hljs-literal">null</span>) &#123;<br>            <span class="hljs-keyword">try</span> &#123;<br>                redissonUtil.lock(<span class="hljs-string">&quot;open:order:createorder&quot;</span>);<br>                <span class="hljs-comment">//2.校验库存</span><br>                <span class="hljs-keyword">if</span> (goodsSkuDto.getRepertory() &gt;= dto.getNum()) &#123;<br>                    <span class="hljs-comment">//库存足够</span><br>                    <span class="hljs-comment">//3.生成订单</span><br>                    <span class="hljs-type">Order</span> <span class="hljs-variable">order</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">Order</span>();<br>                    order.setAid(dto.getAid());<br>                    order.setFlag(<span class="hljs-number">1</span>);<br>                    order.setUid(dto.getUid());<br>                    order.setMoney(dto.getNum() * (<span class="hljs-type">int</span>) (goodsSkuDto.getSaleprice() * <span class="hljs-number">100</span>));<br>                    order.setDiscountmoney(dto.getDmoney());<br>                    order.setPaymoney(order.getMoney() - order.getDiscountmoney());<br><br>                    <span class="hljs-comment">//4.保存订单</span><br>                    <span class="hljs-keyword">if</span> (orderDao.save(order) &gt; <span class="hljs-number">0</span>) &#123;<br>                        <span class="hljs-comment">//5.更改库存</span><br>                        Map&lt;String, Object&gt; map = <span class="hljs-keyword">new</span> <span class="hljs-title class_">HashMap</span>&lt;&gt;();<br>                        map.put(<span class="hljs-string">&quot;skuid&quot;</span>, dto.getSkuid());<br>                        map.put(<span class="hljs-string">&quot;num&quot;</span>, dto.getNum());<br>                        <span class="hljs-type">R</span> <span class="hljs-variable">r</span> <span class="hljs-operator">=</span> restTemplate.postForObject(<span class="hljs-string">&quot;changeSku&quot;</span>, map, R.class);<br>                        <span class="hljs-keyword">if</span> (r.getCode() == ResultConfig.R_OK) &#123;<br>                            <span class="hljs-comment">//6.生成订单详情</span><br><br>                            <span class="hljs-comment">//7.订单流水日志</span><br><br>                            <span class="hljs-comment">//8.消息通知</span><br><br>                            <span class="hljs-comment">//9.发送MQ消息 -- 实现超时订单自动失效</span><br>                            MqMsgDto&lt;Long&gt; msgDto = <span class="hljs-keyword">new</span> <span class="hljs-title class_">MqMsgDto</span>&lt;&gt;(generator.nextId(), <span class="hljs-number">1</span>, order.getId());<br>                            rabbitTemplate.convertAndSend(<span class="hljs-literal">null</span>, <span class="hljs-string">&quot;open:order:timeoutorder&quot;</span>, msgDto);<br>                            <span class="hljs-keyword">return</span> R.ok();<br>                        &#125;<br>                    &#125;<br>                &#125;<br>            &#125; <span class="hljs-keyword">finally</span> &#123;<br>                redissonUtil.unlock(<span class="hljs-string">&quot;open:order:createorder&quot;</span>);<br>            &#125;<br>        &#125;<br>        <span class="hljs-keyword">return</span> R.error();<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+
+
+<h4 id="3-4-ID生成-雪花算法"><a href="#3-4-ID生成-雪花算法" class="headerlink" title="3.4 ID生成-雪花算法"></a>3.4 ID生成-雪花算法</h4><p>ID生成器 工具类<code>完善可CV</code>：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br><span class="line">169</span><br><span class="line">170</span><br><span class="line">171</span><br><span class="line">172</span><br><span class="line">173</span><br><span class="line">174</span><br><span class="line">175</span><br><span class="line">176</span><br><span class="line">177</span><br><span class="line">178</span><br><span class="line">179</span><br><span class="line">180</span><br><span class="line">181</span><br><span class="line">182</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-comment">/**</span><br><span class="hljs-comment"> * twitter的一个id生成算法  雪花算法</span><br><span class="hljs-comment"> * &lt;p&gt;</span><br><span class="hljs-comment"> * Twitter-Snowflake算法产生的背景相当简单，为了满足Twitter每秒上万条消息的请求，</span><br><span class="hljs-comment"> * 每条消息都必须分配一条唯一的id，这些id还需要一些大致的顺序（方便客户端排序），</span><br><span class="hljs-comment"> * 并且在分布式系统中不同机器产生的id必须不同。</span><br><span class="hljs-comment"> * 000000000000</span><br><span class="hljs-comment"> * 1位标识，由于long基本类型在Java中是带符号的，最高位是符号位，正数是0，负数是1，所以id一般是正数，最高位是0&lt;br&gt;</span><br><span class="hljs-comment"> * 41位时间截(毫秒级)，注意，41位时间截不是存储当前时间的时间截，而是存储时间截的差值（当前时间截 - 开始时间截)</span><br><span class="hljs-comment"> * 得到的值），这里的的开始时间截，一般是我们的id生成器开始使用的时间</span><br><span class="hljs-comment"> * ，由我们程序来指定的（如下下面程序IdWorker类的startTime属性）。41位的时间截，可以使用69年，年T = (1L &lt;&lt; 41) /</span><br><span class="hljs-comment"> * (1000L * 60 * 60 * 24 * 365) = 69&lt;br&gt;</span><br><span class="hljs-comment"> * 10位的数据机器位，可以部署在1024个节点，包括5位datacenterId和5位workerId&lt;br&gt;</span><br><span class="hljs-comment"> * 12位序列，毫秒内的计数，12位的计数顺序号支持每个节点每毫秒(同一机器，同一时间截)产生4096个ID序号&lt;br&gt;</span><br><span class="hljs-comment"> * 加起来刚好64位，为一个Long型。&lt;br&gt;</span><br><span class="hljs-comment"> * SnowFlake的优点是，整体上按照时间自增排序，并且整个分布式系统内不会产生ID碰撞(由数据中心ID和机器ID作区分)，并且效率较高，经测试，</span><br><span class="hljs-comment"> * SnowFlake每秒能够产生26万ID左右。</span><br><span class="hljs-comment"> */</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">IdGenerator</span> &#123;<br><br>    <span class="hljs-comment">/**</span><br><span class="hljs-comment">     * 开始时间截 (2015-01-01)</span><br><span class="hljs-comment">     */</span><br>    <span class="hljs-keyword">private</span> <span class="hljs-keyword">final</span> <span class="hljs-type">long</span> <span class="hljs-variable">twepoch</span> <span class="hljs-operator">=</span> <span class="hljs-number">1420041600000L</span>;<br><br>    <span class="hljs-comment">/**</span><br><span class="hljs-comment">     * 机器id所占的位数</span><br><span class="hljs-comment">     */</span><br>    <span class="hljs-keyword">private</span> <span class="hljs-keyword">final</span> <span class="hljs-type">long</span> <span class="hljs-variable">workerIdBits</span> <span class="hljs-operator">=</span> <span class="hljs-number">5L</span>;<br><br>    <span class="hljs-comment">/**</span><br><span class="hljs-comment">     * 数据标识id所占的位数</span><br><span class="hljs-comment">     */</span><br>    <span class="hljs-keyword">private</span> <span class="hljs-keyword">final</span> <span class="hljs-type">long</span> <span class="hljs-variable">datacenterIdBits</span> <span class="hljs-operator">=</span> <span class="hljs-number">5L</span>;<br><br>    <span class="hljs-comment">/**</span><br><span class="hljs-comment">     * 支持的最大机器id，结果是31 (这个移位算法可以很快的计算出几位二进制数所能表示的最大十进制数)</span><br><span class="hljs-comment">     */</span><br>    <span class="hljs-keyword">private</span> <span class="hljs-keyword">final</span> <span class="hljs-type">long</span> <span class="hljs-variable">maxWorkerId</span> <span class="hljs-operator">=</span> -<span class="hljs-number">1L</span> ^ (-<span class="hljs-number">1L</span> &lt;&lt; workerIdBits);<br><br>    <span class="hljs-comment">/**</span><br><span class="hljs-comment">     * 支持的最大数据标识id，结果是31</span><br><span class="hljs-comment">     */</span><br>    <span class="hljs-keyword">private</span> <span class="hljs-keyword">final</span> <span class="hljs-type">long</span> <span class="hljs-variable">maxDatacenterId</span> <span class="hljs-operator">=</span> -<span class="hljs-number">1L</span> ^ (-<span class="hljs-number">1L</span> &lt;&lt; datacenterIdBits);<br><br>    <span class="hljs-comment">/**</span><br><span class="hljs-comment">     * 序列在id中占的位数</span><br><span class="hljs-comment">     */</span><br>    <span class="hljs-keyword">private</span> <span class="hljs-keyword">final</span> <span class="hljs-type">long</span> <span class="hljs-variable">sequenceBits</span> <span class="hljs-operator">=</span> <span class="hljs-number">12L</span>;<br><br>    <span class="hljs-comment">/**</span><br><span class="hljs-comment">     * 机器ID向左移12位</span><br><span class="hljs-comment">     */</span><br>    <span class="hljs-keyword">private</span> <span class="hljs-keyword">final</span> <span class="hljs-type">long</span> <span class="hljs-variable">workerIdShift</span> <span class="hljs-operator">=</span> sequenceBits;<br><br>    <span class="hljs-comment">/**</span><br><span class="hljs-comment">     * 数据标识id向左移17位(12+5)</span><br><span class="hljs-comment">     */</span><br>    <span class="hljs-keyword">private</span> <span class="hljs-keyword">final</span> <span class="hljs-type">long</span> <span class="hljs-variable">datacenterIdShift</span> <span class="hljs-operator">=</span> sequenceBits + workerIdBits;<br><br>    <span class="hljs-comment">/**</span><br><span class="hljs-comment">     * 时间截向左移22位(5+5+12)</span><br><span class="hljs-comment">     */</span><br>    <span class="hljs-keyword">private</span> <span class="hljs-keyword">final</span> <span class="hljs-type">long</span> <span class="hljs-variable">timestampLeftShift</span> <span class="hljs-operator">=</span> sequenceBits + workerIdBits<br>            + datacenterIdBits;<br><br>    <span class="hljs-comment">/**</span><br><span class="hljs-comment">     * 生成序列的掩码，这里为4095 (0b111111111111=0xfff=4095)</span><br><span class="hljs-comment">     */</span><br>    <span class="hljs-keyword">private</span> <span class="hljs-keyword">final</span> <span class="hljs-type">long</span> <span class="hljs-variable">sequenceMask</span> <span class="hljs-operator">=</span> -<span class="hljs-number">1L</span> ^ (-<span class="hljs-number">1L</span> &lt;&lt; sequenceBits);<br><br>    <span class="hljs-comment">/**</span><br><span class="hljs-comment">     * 工作机器ID(0~31)</span><br><span class="hljs-comment">     */</span><br>    <span class="hljs-keyword">private</span> <span class="hljs-type">long</span> workerId;<br><br>    <span class="hljs-comment">/**</span><br><span class="hljs-comment">     * 数据中心ID(0~31)</span><br><span class="hljs-comment">     */</span><br>    <span class="hljs-keyword">private</span> <span class="hljs-type">long</span> datacenterId;<br><br>    <span class="hljs-comment">/**</span><br><span class="hljs-comment">     * 毫秒内序列(0~4095)</span><br><span class="hljs-comment">     */</span><br>    <span class="hljs-keyword">private</span> <span class="hljs-type">long</span> <span class="hljs-variable">sequence</span> <span class="hljs-operator">=</span> <span class="hljs-number">0L</span>;<br><br>    <span class="hljs-comment">/**</span><br><span class="hljs-comment">     * 上次生成ID的时间截</span><br><span class="hljs-comment">     */</span><br>    <span class="hljs-keyword">private</span> <span class="hljs-type">long</span> <span class="hljs-variable">lastTimestamp</span> <span class="hljs-operator">=</span> -<span class="hljs-number">1L</span>;<br><br>    <span class="hljs-comment">/**</span><br><span class="hljs-comment">     * 构造函数</span><br><span class="hljs-comment">     *</span><br><span class="hljs-comment">     * <span class="hljs-doctag">@param</span> workerId     工作ID (0~31)</span><br><span class="hljs-comment">     * <span class="hljs-doctag">@param</span> datacenterId 数据中心ID (0~31)</span><br><span class="hljs-comment">     */</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-title function_">IdGenerator</span><span class="hljs-params">(<span class="hljs-type">long</span> workerId, <span class="hljs-type">long</span> datacenterId)</span> &#123;<br>        <span class="hljs-keyword">if</span> (workerId &gt; maxWorkerId || workerId &lt; <span class="hljs-number">0</span>) &#123;<br>            <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">IllegalArgumentException</span>(String.format(<br>                    <span class="hljs-string">&quot;worker Id can&#x27;t be greater than %d or less than 0&quot;</span>,<br>                    maxWorkerId));<br>        &#125;<br>        <span class="hljs-keyword">if</span> (datacenterId &gt; maxDatacenterId || datacenterId &lt; <span class="hljs-number">0</span>) &#123;<br>            <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">IllegalArgumentException</span>(String.format(<br>                    <span class="hljs-string">&quot;datacenter Id can&#x27;t be greater than %d or less than 0&quot;</span>,<br>                    maxDatacenterId));<br>        &#125;<br>        <span class="hljs-built_in">this</span>.workerId = workerId;<br>        <span class="hljs-built_in">this</span>.datacenterId = datacenterId;<br>    &#125;<br><br>    <span class="hljs-keyword">public</span> <span class="hljs-title function_">IdGenerator</span><span class="hljs-params">()</span> &#123;<br>        <span class="hljs-built_in">this</span>.workerId = <span class="hljs-number">0l</span>;<br>        <span class="hljs-built_in">this</span>.datacenterId = <span class="hljs-number">0l</span>;<br>    &#125;<br><br>    ;<br><br>    <span class="hljs-comment">/**</span><br><span class="hljs-comment">     * 获得下一个ID (该方法是线程安全的)</span><br><span class="hljs-comment">     *</span><br><span class="hljs-comment">     * <span class="hljs-doctag">@return</span> SnowflakeId</span><br><span class="hljs-comment">     */</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">synchronized</span> <span class="hljs-type">long</span> <span class="hljs-title function_">nextId</span><span class="hljs-params">()</span> &#123;<br>        <span class="hljs-type">long</span> <span class="hljs-variable">timestamp</span> <span class="hljs-operator">=</span> timeGen();<br><br>        <span class="hljs-comment">// 如果当前时间小于上一次ID生成的时间戳，说明系统时钟回退过这个时候应当抛出异常</span><br>        <span class="hljs-keyword">if</span> (timestamp &lt; lastTimestamp) &#123;<br>            <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">RuntimeException</span>(<br>                    String.format(<br>                            <span class="hljs-string">&quot;Clock moved backwards.  Refusing to generate id for %d milliseconds&quot;</span>,<br>                            lastTimestamp - timestamp));<br>        &#125;<br><br>        <span class="hljs-comment">// 如果是同一时间生成的，则进行毫秒内序列</span><br>        <span class="hljs-keyword">if</span> (lastTimestamp == timestamp) &#123;<br>            sequence = (sequence + <span class="hljs-number">1</span>) &amp; sequenceMask;<br>            <span class="hljs-comment">// 毫秒内序列溢出</span><br>            <span class="hljs-keyword">if</span> (sequence == <span class="hljs-number">0</span>) &#123;<br>                <span class="hljs-comment">// 阻塞到下一个毫秒,获得新的时间戳</span><br>                timestamp = tilNextMillis(lastTimestamp);<br>            &#125;<br>        &#125;<br>        <span class="hljs-comment">// 时间戳改变，毫秒内序列重置</span><br>        <span class="hljs-keyword">else</span> &#123;<br>            sequence = <span class="hljs-number">0L</span>;<br>        &#125;<br><br>        <span class="hljs-comment">// 上次生成ID的时间截</span><br>        lastTimestamp = timestamp;<br><br>        <span class="hljs-comment">// 移位并通过或运算拼到一起组成64位的ID</span><br>        <span class="hljs-keyword">return</span> ((timestamp - twepoch) &lt;&lt; timestampLeftShift)<br>                | (datacenterId &lt;&lt; datacenterIdShift)<br>                | (workerId &lt;&lt; workerIdShift)<br>                | sequence;<br>    &#125;<br><br>    <span class="hljs-comment">/**</span><br><span class="hljs-comment">     * 阻塞到下一个毫秒，直到获得新的时间戳</span><br><span class="hljs-comment">     *</span><br><span class="hljs-comment">     * <span class="hljs-doctag">@param</span> lastTimestamp 上次生成ID的时间截</span><br><span class="hljs-comment">     * <span class="hljs-doctag">@return</span> 当前时间戳</span><br><span class="hljs-comment">     */</span><br>    <span class="hljs-keyword">protected</span> <span class="hljs-type">long</span> <span class="hljs-title function_">tilNextMillis</span><span class="hljs-params">(<span class="hljs-type">long</span> lastTimestamp)</span> &#123;<br>        <span class="hljs-type">long</span> <span class="hljs-variable">timestamp</span> <span class="hljs-operator">=</span> timeGen();<br>        <span class="hljs-keyword">while</span> (timestamp &lt;= lastTimestamp) &#123;<br>            timestamp = timeGen();<br>        &#125;<br>        <span class="hljs-keyword">return</span> timestamp;<br>    &#125;<br><br>    <span class="hljs-comment">/**</span><br><span class="hljs-comment">     * 返回以毫秒为单位的当前时间</span><br><span class="hljs-comment">     *</span><br><span class="hljs-comment">     * <span class="hljs-doctag">@return</span> 当前时间(毫秒)</span><br><span class="hljs-comment">     */</span><br>    <span class="hljs-keyword">protected</span> <span class="hljs-type">long</span> <span class="hljs-title function_">timeGen</span><span class="hljs-params">()</span> &#123;<br>        <span class="hljs-keyword">return</span> System.currentTimeMillis();<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<h4 id="3-5-分布式锁"><a href="#3-5-分布式锁" class="headerlink" title="3.5 分布式锁"></a>3.5 分布式锁</h4><p>分布式锁<code>根据情况可修改</code>：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">import</span> org.redisson.Redisson;<br><span class="hljs-keyword">import</span> org.redisson.api.RedissonClient;<br><span class="hljs-keyword">import</span> org.redisson.config.Config;<br><br><span class="hljs-keyword">import</span> java.util.concurrent.TimeUnit;<br><span class="hljs-keyword">import</span> java.util.concurrent.locks.Lock;<br><span class="hljs-keyword">import</span> java.util.concurrent.locks.ReentrantLock;<br><br><span class="hljs-comment">/**</span><br><span class="hljs-comment"> * <span class="hljs-doctag">@description</span>: 单例模式  懒汉</span><br><span class="hljs-comment"> */</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">RedissonUtil</span> &#123;<br>    <span class="hljs-keyword">private</span> <span class="hljs-keyword">static</span> RedissonUtil redissonUtil;<br><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> RedissonUtil <span class="hljs-title function_">getInstance</span><span class="hljs-params">(String host, <span class="hljs-type">int</span> port, String pass)</span> &#123;<br>        <span class="hljs-type">Lock</span> <span class="hljs-variable">lock</span> <span class="hljs-operator">=</span> <span class="hljs-literal">null</span>;<br>        <span class="hljs-keyword">try</span> &#123;<br>            lock = <span class="hljs-keyword">new</span> <span class="hljs-title class_">ReentrantLock</span>();<br>            lock.lock();<br>            <span class="hljs-keyword">if</span> (redissonUtil == <span class="hljs-literal">null</span>) &#123;<br>                redissonUtil = <span class="hljs-keyword">new</span> <span class="hljs-title class_">RedissonUtil</span>(host, port, pass);<br>            &#125;<br>        &#125; <span class="hljs-keyword">finally</span> &#123;<br>            lock.unlock();<br>        &#125;<br>        <span class="hljs-keyword">return</span> redissonUtil;<br>    &#125;<br><br>    <span class="hljs-comment">//加锁 释放锁</span><br>    <span class="hljs-keyword">private</span> RedissonClient client;<br><br>    <span class="hljs-keyword">private</span> <span class="hljs-title function_">RedissonUtil</span><span class="hljs-params">(String host, <span class="hljs-type">int</span> port, String pass)</span> &#123;<br>        <span class="hljs-type">Config</span> <span class="hljs-variable">config</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">Config</span>();<br>        config.useSingleServer().setAddress(<span class="hljs-string">&quot;redis://&quot;</span> + host + <span class="hljs-string">&quot;:&quot;</span> + port).setPassword(pass);<br>        client = Redisson.create(config);<br>    &#125;<br><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">saveStr</span><span class="hljs-params">(String key, String value)</span> &#123;<br>        client.getBucket(key).set(value);<br>        <span class="hljs-comment">//client.getMap(key).put();</span><br>        <span class="hljs-comment">//client.getScoredSortedSet(key).add();</span><br>        <span class="hljs-comment">//client.getList(key);</span><br>        <span class="hljs-comment">//client.getSet().add();</span><br>        <span class="hljs-comment">//client.getGeo(key).add();</span><br>    &#125;<br><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">lock</span><span class="hljs-params">(String key)</span> &#123;<br>        client.getLock(key).lock();<br>    &#125;<br><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">lock</span><span class="hljs-params">(String key, <span class="hljs-type">long</span> timeseconds)</span> &#123;<br>        client.getLock(key).lock(timeseconds, TimeUnit.SECONDS);<br>    &#125;<br><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">unlock</span><span class="hljs-params">(String key)</span> &#123;<br>        client.getLock(key).unlock();<br>    &#125;<br><br>    <span class="hljs-keyword">public</span> <span class="hljs-type">boolean</span> <span class="hljs-title function_">checkLock</span><span class="hljs-params">(String key)</span> &#123;<br>        <span class="hljs-keyword">return</span> client.getLock(key).isLocked();<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<h4 id="3-6-依赖注入Bean"><a href="#3-6-依赖注入Bean" class="headerlink" title="3.6 依赖注入Bean"></a>3.6 依赖注入Bean</h4><p>以配置类方式将 工具类 注入：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-comment">// RibbonConfig</span><br><span class="hljs-meta">@Configuration</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">RibbonConfig</span> &#123;<br>    <span class="hljs-meta">@Bean</span><br>    <span class="hljs-meta">@LoadBalanced</span><br>    <span class="hljs-keyword">public</span> RestTemplate <span class="hljs-title function_">createRT</span><span class="hljs-params">()</span>&#123;<br>        <span class="hljs-keyword">return</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">RestTemplate</span>();<br>    &#125;<br>&#125;<br><br><span class="hljs-comment">// IdGeneratorConfig</span><br><span class="hljs-meta">@Configuration</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">IdGeneratorConfig</span> &#123;<br>    <span class="hljs-meta">@Bean</span><br>    <span class="hljs-keyword">public</span> IdGenerator <span class="hljs-title function_">createID</span><span class="hljs-params">()</span>&#123;<br>        <span class="hljs-keyword">return</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">IdGenerator</span>();<br>    &#125;<br>&#125;<br><br><span class="hljs-comment">// RedissonConfig</span><br><span class="hljs-meta">@Configuration</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">RedissonConfig</span> &#123;<br>	<span class="hljs-meta">@Value(&quot;...&quot;)</span> <span class="hljs-comment">// 在 application.yml 中配置即可</span><br>    <span class="hljs-keyword">private</span> String host;<br>    <span class="hljs-meta">@Value(&quot;...&quot;)</span><br>    <span class="hljs-keyword">private</span> <span class="hljs-type">int</span> port;<br>    <span class="hljs-meta">@Value(&quot;...&quot;)</span><br>    <span class="hljs-keyword">private</span> String pass;<br>    <span class="hljs-meta">@Bean</span><br>    <span class="hljs-keyword">public</span> RedissonUtil <span class="hljs-title function_">createRU</span><span class="hljs-params">()</span>&#123;<br>        <span class="hljs-keyword">return</span> RedissonUtil.getInstance(host,port,pass);<br>    &#125;<br>&#125;<br><br><span class="hljs-comment">// RibbonConfig</span><br><span class="hljs-meta">@Configuration</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">RibbonConfig</span> &#123;<br>    <span class="hljs-meta">@Bean</span><br>    <span class="hljs-meta">@LoadBalanced</span><br>    <span class="hljs-keyword">public</span> RestTemplate <span class="hljs-title function_">createRT</span><span class="hljs-params">()</span>&#123;<br>        <span class="hljs-keyword">return</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">RestTemplate</span>();<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+              
+            </div>
+            <hr/>
+            <div>
+              <div>
+  <img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20241112163319.png" srcset="/img/loading.gif" lazyload>
+</div>
+<div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/14-%E5%BE%AE%E6%9C%8D%E5%8A%A1/" class="category-chain-item">14_微服务</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/14-%E5%BE%AE%E6%9C%8D%E5%8A%A1/09-%E5%95%86%E5%93%81%E6%9C%8D%E5%8A%A1/" class="category-chain-item">09_商品服务</a>
+  
+  
+
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/%E5%BE%AE%E6%9C%8D%E5%8A%A1/">#微服务</a>
+      
+        <a href="/tags/%E8%AE%A2%E5%8D%95%E6%9C%8D%E5%8A%A1/">#订单服务</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>02-订单服务</div>
+      <div>https://janycode.github.io/2020/03/02/14_微服务/09_商品服务/02-订单服务/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Jerry(姜源)</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2020年3月2日</div>
+        </div>
+      
+      
+      <div class="license-meta-item">
+        <div>许可协议</div>
+        <div>
+          
+            
+            
+              <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+              <span class="hint--top hint--rounded" aria-label="BY - 姜源">
+                <i class="iconfont icon-by"></i>
+              </span>
+              </a>
+            
+          
+        </div>
+      </div>
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2020/03/02/14_%E5%BE%AE%E6%9C%8D%E5%8A%A1/11_%E7%BC%93%E5%AD%98%E6%9C%8D%E5%8A%A1/Spring%20Data%20Redis+Redisson/" title="Spring Data Redis+Redisson">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">Spring Data Redis+Redisson</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2020/03/02/14_%E5%BE%AE%E6%9C%8D%E5%8A%A1/09_%E5%95%86%E5%93%81%E6%9C%8D%E5%8A%A1/01-%E5%95%86%E5%93%81%20SPU+SKU/" title="01-商品 SPU+SKU">
+                        <span class="hidden-mobile">01-商品 SPU+SKU</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+  <article id="comments" lazyload>
+    
+  <div id="SOHUCS" sid='https://janycode.github.io/2020/03/02/14_%E5%BE%AE%E6%9C%8D%E5%8A%A1/09_%E5%95%86%E5%93%81%E6%9C%8D%E5%8A%A1/02-%E8%AE%A2%E5%8D%95%E6%9C%8D%E5%8A%A1/'></div>
+  <script type="text/javascript">
+    Fluid.utils.loadComments('#SOHUCS', function() {
+      Fluid.utils.createScript("https://changyan.sohu.com/upload/changyan.js", function() {
+        window.changyan.api.config({"appid":"cyw5OHIcO","appkey":"fea3446b3df4b3f129f34da4cbc87e51"})
+      });
+    });
+  </script>
+  <noscript>Please enable JavaScript to view the comments</noscript>
+
+
+  </article>
+
+
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://simple.blog.csdn.net" target="_blank" rel="nofollow noopener"><span>CSDN</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/janycode" target="_blank" rel="nofollow noopener"><span>GitHub</span></a> <i class="iconfont icon-love"></i> <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="busuanzi_container_site_pv" style="display: none">
+        总访问量(PV) 
+        <span id="busuanzi_value_site_pv"></span>
+         次，
+      </span>
+    
+    
+      <span id="busuanzi_container_site_uv" style="display: none">
+        总访客数(UV) 
+        <span id="busuanzi_value_site_uv"></span>
+         人
+      </span>
+    
+    
+  
+</div>
+
+  
+  
+  
+</div>
+
+<!-- live2d 动画 -->
+<script src="https://eqcn.ajz.miesnfu.com/wp-content/plugins/wp-3d-pony/live2dw/lib/L2Dwidget.min.js"></script>
+<script>
+    L2Dwidget.init({
+        "model": {
+            jsonPath: "https://unpkg.com/live2d-widget-model-haruto@1.0.5/assets/haruto.model.json",
+            "scale": 1
+        },
+        "display": {
+            "position": "right",
+            "width": 100,
+            "height": 200,
+            "hOffset": 35,
+            "vOffset": -85
+        },
+        "mobile": {
+            "show": false,
+            "scale": 0.1
+        },
+        "react": {
+            "opacityDefault": 0.75,
+            "opacityOnHover": 0.2
+        }
+    });
+</script>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <!-- Baidu Analytics -->
+    <script defer>
+      if (!Fluid.ctx.dnt) {
+        var _hmt = _hmt || [];
+        (function() {
+          var hm = document.createElement("script");
+          hm.src = "https://hm.baidu.com/hm.js?bfff735c897eb60ea49b735096b20e47";
+          var s = document.getElementsByTagName("script")[0];
+          s.parentNode.insertBefore(hm, s);
+        })();
+      }
+    </script>
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.0/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      headingSelector : CONFIG.toc.headingSelector || 'h1,h2,h3,h4,h5,h6',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      collapseDepth   : CONFIG.toc.collapseDepth || 0,
+      scrollSmooth    : true,
+      headingsOffset  : -boardTop
+    });
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+  });
+</script>
+
+
+  <script>
+  (function() {
+    var enableLang = CONFIG.code_language.enable && CONFIG.code_language.default;
+    var enableCopy = CONFIG.copy_btn;
+    if (!enableLang && !enableCopy) {
+      return;
+    }
+
+    function getBgClass(ele) {
+      return Fluid.utils.getBackgroundLightness(ele) >= 0 ? 'code-widget-light' : 'code-widget-dark';
+    }
+
+    var copyTmpl = '';
+    copyTmpl += '<div class="code-widget">';
+    copyTmpl += 'LANG';
+    copyTmpl += '</div>';
+    jQuery('.markdown-body pre').each(function() {
+      var $pre = jQuery(this);
+      if ($pre.find('code.mermaid').length > 0) {
+        return;
+      }
+      if ($pre.find('span.line').length > 0) {
+        return;
+      }
+
+      var lang = '';
+
+      if (enableLang) {
+        lang = CONFIG.code_language.default;
+        if ($pre[0].children.length > 0 && $pre[0].children[0].classList.length >= 2 && $pre.children().hasClass('hljs')) {
+          lang = $pre[0].children[0].classList[1];
+        } else if ($pre[0].getAttribute('data-language')) {
+          lang = $pre[0].getAttribute('data-language');
+        } else if ($pre.parent().hasClass('sourceCode') && $pre[0].children.length > 0 && $pre[0].children[0].classList.length >= 2) {
+          lang = $pre[0].children[0].classList[1];
+          $pre.parent().addClass('code-wrapper');
+        } else if ($pre.parent().hasClass('markdown-body') && $pre[0].classList.length === 0) {
+          $pre.wrap('<div class="code-wrapper"></div>');
+        }
+        lang = lang.toUpperCase().replace('NONE', CONFIG.code_language.default);
+      }
+      $pre.append(copyTmpl.replace('LANG', lang).replace('code-widget">',
+        getBgClass($pre[0]) + (enableCopy ? ' code-widget copy-btn" data-clipboard-snippet><i class="iconfont icon-copy"></i>' : ' code-widget">')));
+
+      if (enableCopy) {
+        Fluid.utils.createScript('https://lib.baomitu.com/clipboard.js/2.0.10/clipboard.min.js', function() {
+          var clipboard = new window.ClipboardJS('.copy-btn', {
+            target: function(trigger) {
+              var nodes = trigger.parentNode.childNodes;
+              for (var i = 0; i < nodes.length; i++) {
+                if (nodes[i].tagName === 'CODE') {
+                  return nodes[i];
+                }
+              }
+            }
+          });
+          clipboard.on('success', function(e) {
+            e.clearSelection();
+            e.trigger.innerHTML = e.trigger.innerHTML.replace('icon-copy', 'icon-success');
+            setTimeout(function() {
+              e.trigger.innerHTML = e.trigger.innerHTML.replace('icon-success', 'icon-copy');
+            }, 2000);
+          });
+        });
+      }
+    });
+  })();
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

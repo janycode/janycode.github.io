@@ -1,0 +1,871 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=light>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Jerry(姜源)">
+  <meta name="keywords" content="Java,Html,CSS,JavaScript,Python,C,Linux,shell编程经验分享、技术总结、心得体会">
+  
+    <meta name="description" content="官网文档：https:&#x2F;&#x2F;spring.io&#x2F;projects&#x2F;spring-cloud-openfeign 1. 简介Spring Cloud OpenFeign : Declarative REST Client: Feign（音[feɪn]即”飞恩”, 声明式 REST 服务调用）是一种声明式的 webService 客户端，可以使用它的注解修饰接口，它也支持自定义编解码。Spring C">
+<meta property="og:type" content="article">
+<meta property="og:title" content="03-SpringCloud OpenFeign源码分析">
+<meta property="og:url" content="https://janycode.github.io/2021/03/07/18_%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/03-SpringCloud%20OpenFeign%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/index.html">
+<meta property="og:site_name" content="姜源の云笔记">
+<meta property="og:description" content="官网文档：https:&#x2F;&#x2F;spring.io&#x2F;projects&#x2F;spring-cloud-openfeign 1. 简介Spring Cloud OpenFeign : Declarative REST Client: Feign（音[feɪn]即”飞恩”, 声明式 REST 服务调用）是一种声明式的 webService 客户端，可以使用它的注解修饰接口，它也支持自定义编解码。Spring C">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20200729130826.png">
+<meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20210307175428.png">
+<meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20210307175817.png">
+<meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20210307174115.png">
+<meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20210307174303.png">
+<meta property="article:published_time" content="2021-03-07T09:59:46.000Z">
+<meta property="article:modified_time" content="2026-02-10T09:21:30.350Z">
+<meta property="article:author" content="Jerry(姜源)">
+<meta property="article:tag" content="源码分析">
+<meta property="article:tag" content="Feign">
+<meta property="article:tag" content="OpenFeign">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20200729130826.png">
+  
+  
+    <meta name="referrer" content="no-referrer-when-downgrade">
+  
+  
+  <title>03-SpringCloud OpenFeign源码分析 - 姜源の云笔记</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"janycode.github.io","root":"/","version":"1.9.0","typing":{"enable":true,"typeSpeed":50,"cursorChar":"|","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":false},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":"bfff735c897eb60ea49b735096b20e47","google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+
+  
+<meta name="generator" content="Hexo 6.2.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 50vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>姜源の云笔记</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tools/">
+                <i class="iconfont icon-slack-fill"></i>
+                工具
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" target="_blank" rel="noopener" href="https://yuancodes.github.io/">
+                <i class="iconfont icon-notebook"></i>
+                Docsify
+              </a>
+            </li>
+          
+        
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="03-SpringCloud OpenFeign源码分析"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-author" aria-hidden="true"></i>
+        Jerry(姜源)
+      </span>
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2021-03-07 17:59" pubdate>
+          星期日, 2021/03/07 17:59:46
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          <!-- compatible with older versions-->
+          4.5k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          <!-- compatible with older versions-->
+          38 分钟
+        
+      </span>
+    
+
+    
+    
+      
+        <span id="busuanzi_container_page_pv" style="display: none">
+          <i class="iconfont icon-eye" aria-hidden="true"></i>
+          <span id="busuanzi_value_page_pv"></span> 次
+        </span>
+        
+      
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">03-SpringCloud OpenFeign源码分析</h1>
+            
+            <div class="markdown-body">
+              
+              <p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20200729130826.png" srcset="/img/loading.gif" lazyload alt="image-20200729130824878"></p>
+<p>官网文档：<a target="_blank" rel="noopener" href="https://spring.io/projects/spring-cloud-openfeign">https://spring.io/projects/spring-cloud-openfeign</a></p>
+<h3 id="1-简介"><a href="#1-简介" class="headerlink" title="1. 简介"></a>1. 简介</h3><p><strong><code>Spring Cloud OpenFeign</code></strong> : Declarative REST Client: Feign（音[feɪn]即”飞恩”, 声明式 REST 服务调用）是一种声明式的 webService 客户端，可以使用它的注解修饰接口，它也支持自定义编解码。Spring Cloud 集成了 <strong>Ribbon 和 Eureka 为客户端提供了负载均衡策略</strong>。</p>
+<p>Feign是实现服务的远程调用技术。主要是作用在服务客户端，用于实现服务的调用。  </p>
+<p>Feign有两个主要注解： <code>@EnableFeignClients</code> 用于开启feign功能，<code>@FeignClient</code> 用于定义feign 接口</p>
+<h3 id="2-基本使用"><a href="#2-基本使用" class="headerlink" title="2. 基本使用"></a>2. 基本使用</h3><h4 id="2-1-Feign-依赖"><a href="#2-1-Feign-依赖" class="headerlink" title="2.1 Feign 依赖"></a>2.1 Feign 依赖</h4><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs xml"><span class="hljs-comment">&lt;!--OpenFeign--&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">dependency</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">groupId</span>&gt;</span>org.springframework.cloud<span class="hljs-tag">&lt;/<span class="hljs-name">groupId</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">artifactId</span>&gt;</span>spring-cloud-starter-openfeign<span class="hljs-tag">&lt;/<span class="hljs-name">artifactId</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">dependency</span>&gt;</span><br></code></pre></td></tr></table></figure>
+
+<h4 id="2-2-Feign-注解"><a href="#2-2-Feign-注解" class="headerlink" title="2.2 Feign 注解"></a>2.2 Feign 注解</h4><p>接口：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@FeignClient(name = &quot;yiguan&quot;, url = &quot;$&#123;serverapi.yiguan.outer.url&#125;&quot;)</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">interface</span> <span class="hljs-title class_">YiGuanFeign</span> &#123;<br>    <span class="hljs-comment">/**</span><br><span class="hljs-comment">     * 获取易观统计数据</span><br><span class="hljs-comment">     *</span><br><span class="hljs-comment">     * <span class="hljs-doctag">@param</span> params 请求参数</span><br><span class="hljs-comment">     * <span class="hljs-doctag">@return</span> 返回结果</span><br><span class="hljs-comment">     */</span><br>    <span class="hljs-meta">@PostMapping(&quot;$&#123;serverapi.yiguan.outer.accessdataapi&#125;&quot;)</span><br>    Object <span class="hljs-title function_">getAccessDataApi</span><span class="hljs-params">(<span class="hljs-meta">@RequestBody</span> Map&lt;String, Object&gt; params)</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>启动类：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@SpringBootApplication</span><br><span class="hljs-meta">@EnableFeignClients</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">MpServiceApplication</span> &#123;<br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">main</span><span class="hljs-params">(String[] args)</span> &#123;<br>        SpringApplication.run(MpServiceApplication.class, args);<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+
+
+<h4 id="2-3-Feign-测试"><a href="#2-3-Feign-测试" class="headerlink" title="2.3 Feign 测试"></a>2.3 Feign 测试</h4><p>调用外部易观的PV和UV访问数据测试(数据已解析)：</p>
+<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20210307175428.png" srcset="/img/loading.gif" lazyload alt="image-20210307175426921"></p>
+<p>请求和响应(日志)：</p>
+<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20210307175817.png" srcset="/img/loading.gif" lazyload alt="image-20210307175816223"></p>
+<h4 id="2-4-Feign-配置-可选"><a href="#2-4-Feign-配置-可选" class="headerlink" title="2.4 Feign 配置(可选)"></a>2.4 Feign 配置(可选)</h4><ul>
+<li>Feign 配置自定义连接超时时间、读取响应超时时间</li>
+</ul>
+<figure class="highlight yml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs yml"><span class="hljs-comment">#Feign 连接超时时间和读取响应超时时间配置</span><br><span class="hljs-attr">feign:</span><br>  <span class="hljs-attr">client:</span><br>    <span class="hljs-attr">config:</span><br>      <span class="hljs-attr">default:</span><br>        <span class="hljs-attr">connectTimeout:</span> <span class="hljs-number">5000</span>    <span class="hljs-comment">#连接超时时间</span><br>        <span class="hljs-attr">readTimeout:</span> <span class="hljs-number">5000</span>       <span class="hljs-comment">#读取超时时间</span><br>        <span class="hljs-attr">loggerLevel:</span> <span class="hljs-string">basic</span>      <span class="hljs-comment">#日志等级</span><br></code></pre></td></tr></table></figure>
+
+<ul>
+<li><p>使用 Okhttp 发送 request</p>
+<blockquote>
+<p><code>Okhttp优势：</code><br><strong>网络优化方面</strong>：<br>（1）内置连接池，支持连接复用；<br>（2）支持gzip压缩响应体；<br>（3）通过缓存避免重复的请求；<br>（4）支持http2，对一台机器的所有请求共享同一个socket。</p>
+<p><strong>功能方面</strong>：<br>功能全面，满足了网络请求的大部分需求</p>
+<p><strong>扩展性方面：</strong><br>责任链模式使得很容易添加一个自定义拦截器对请求和返回结果进行处理</p>
+</blockquote>
+</li>
+</ul>
+<figure class="highlight yml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs yml"><span class="hljs-attr">feign:</span><br>  <span class="hljs-attr">client:</span><br>    <span class="hljs-attr">config:</span><br>      <span class="hljs-attr">default:</span><br>        <span class="hljs-attr">connectTimeout:</span> <span class="hljs-number">5000</span><br>        <span class="hljs-attr">readTimeout:</span> <span class="hljs-number">5000</span><br>        <span class="hljs-attr">loggerLevel:</span> <span class="hljs-string">basic</span><br>  <span class="hljs-attr">okhttp:</span><br>    <span class="hljs-attr">enabled:</span> <span class="hljs-literal">true</span>  <span class="hljs-comment">#使用OKhttp发送request</span><br>  <span class="hljs-attr">hystrix:</span><br>    <span class="hljs-attr">enabled:</span> <span class="hljs-literal">true</span><br></code></pre></td></tr></table></figure>
+<ul>
+<li>Spring Cloud Feign支持对请求和响应进行 GZIP 压缩，以提高通信效率：</li>
+</ul>
+<figure class="highlight yml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs yml"><span class="hljs-attr">feign:</span><br>  <span class="hljs-attr">compression:</span><br>    <span class="hljs-attr">request:</span>  <span class="hljs-comment">#请求</span><br>      <span class="hljs-attr">enabled:</span> <span class="hljs-literal">true</span>  <span class="hljs-comment">#开启</span><br>      <span class="hljs-attr">mime-types:</span> <span class="hljs-string">text/xml,application/xml,application/json</span>  <span class="hljs-comment">#开启支持压缩的MIME TYPE</span><br>      <span class="hljs-attr">min-request-size:</span> <span class="hljs-number">2048</span>  <span class="hljs-comment">#配置压缩数据大小的下限</span><br>    <span class="hljs-attr">response:</span>  <span class="hljs-comment">#响应</span><br>      <span class="hljs-attr">enabled:</span> <span class="hljs-literal">true</span>  <span class="hljs-comment">#开启响应GZIP压缩</span><br></code></pre></td></tr></table></figure>
+
+
+
+<h3 id="3-源码分析"><a href="#3-源码分析" class="headerlink" title="3. 源码分析"></a>3. 源码分析</h3><p>疑问：</p>
+<ul>
+<li><p><code>请求是如何转到 Feign 的 ?</code></p>
+</li>
+<li><p><code>Feign 是怎么工作的 ?</code></p>
+</li>
+<li><p><code>Feign 的负载均衡策略？</code></p>
+</li>
+</ul>
+<p>通过源码分析解答这三个疑问。</p>
+<h4 id="3-1-原理和源码详解"><a href="#3-1-原理和源码详解" class="headerlink" title="3.1 原理和源码详解"></a>3.1 原理和源码详解</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@Retention(RetentionPolicy.RUNTIME)</span><br><span class="hljs-meta">@Target(ElementType.TYPE)</span><br><span class="hljs-meta">@Documented</span><br><span class="hljs-meta">@Import(FeignClientsRegistrar.class)</span><br><span class="hljs-keyword">public</span> <span class="hljs-meta">@interface</span> EnableFeignClients &#123;<br>	String[] value() <span class="hljs-keyword">default</span> &#123;&#125;;<br>	String[] basePackages() <span class="hljs-keyword">default</span> &#123;&#125;;<br>	Class&lt;?&gt;[] basePackageClasses() <span class="hljs-keyword">default</span> &#123;&#125;;<br>	Class&lt;?&gt;[] defaultConfiguration() <span class="hljs-keyword">default</span> &#123;&#125;;<br>	Class&lt;?&gt;[] clients() <span class="hljs-keyword">default</span> &#123;&#125;;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@Target(ElementType.TYPE)</span><br><span class="hljs-meta">@Retention(RetentionPolicy.RUNTIME)</span><br><span class="hljs-meta">@Documented</span><br><span class="hljs-keyword">public</span> <span class="hljs-meta">@interface</span> FeignClient &#123;<br>	<span class="hljs-meta">@AliasFor(&quot;name&quot;)</span><br>	String <span class="hljs-title function_">value</span><span class="hljs-params">()</span> <span class="hljs-keyword">default</span> <span class="hljs-string">&quot;&quot;</span>;<br>	<span class="hljs-meta">@Deprecated</span><br>	String <span class="hljs-title function_">serviceId</span><span class="hljs-params">()</span> <span class="hljs-keyword">default</span> <span class="hljs-string">&quot;&quot;</span>;<br>	<span class="hljs-meta">@AliasFor(&quot;value&quot;)</span><br>	String <span class="hljs-title function_">name</span><span class="hljs-params">()</span> <span class="hljs-keyword">default</span> <span class="hljs-string">&quot;&quot;</span>;<br>	String <span class="hljs-title function_">qualifier</span><span class="hljs-params">()</span> <span class="hljs-keyword">default</span> <span class="hljs-string">&quot;&quot;</span>;<br>	String <span class="hljs-title function_">url</span><span class="hljs-params">()</span> <span class="hljs-keyword">default</span> <span class="hljs-string">&quot;&quot;</span>;<br>	<span class="hljs-type">boolean</span> <span class="hljs-title function_">decode404</span><span class="hljs-params">()</span> <span class="hljs-keyword">default</span> <span class="hljs-literal">false</span>;<br>	Class&lt;?&gt;[] configuration() <span class="hljs-keyword">default</span> &#123;&#125;;<br>	Class&lt;?&gt; fallback() <span class="hljs-keyword">default</span> <span class="hljs-keyword">void</span>.class;<br>	Class&lt;?&gt; fallbackFactory() <span class="hljs-keyword">default</span> <span class="hljs-keyword">void</span>.class;<br>	String <span class="hljs-title function_">path</span><span class="hljs-params">()</span> <span class="hljs-keyword">default</span> <span class="hljs-string">&quot;&quot;</span>;<br>	<span class="hljs-type">boolean</span> <span class="hljs-title function_">primary</span><span class="hljs-params">()</span> <span class="hljs-keyword">default</span> <span class="hljs-literal">true</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+
+
+<ol>
+<li>Feign基本原理</li>
+</ol>
+<ul>
+<li>启动时，程序会进行包扫描，扫描所有包下所有 @FeignClient 注解的类，并将这些类注入到 spring 的 IOC 容器中。当定义的 Feign 中的接口被调用时，通过 JDK 的动态代理来生成 RequestTemplate。</li>
+<li>RequestTemplate 中包含请求的所有信息，如请求参数，请求URL等。</li>
+<li>RequestTemplate 生成 Request，然后将 Request 交给 client 处理，这个 client 默认是 JDK 的 HTTPUrlConnection ，也可以是 OKhttp、Apache 的 HTTPClient 等。</li>
+<li>最后 client 封装成 LoadBaLanceClient，结合 Ribbon 负载均衡地发起调用。</li>
+</ul>
+<ol start="2">
+<li>Feign源码分析(图解)</li>
+</ol>
+<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20210307174115.png" srcset="/img/loading.gif" lazyload alt="image-20210307174113861"></p>
+<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20210307174303.png" srcset="/img/loading.gif" lazyload alt="image-20210307174301648"></p>
+<h4 id="3-2-请求是如何转到-Feign-的？"><a href="#3-2-请求是如何转到-Feign-的？" class="headerlink" title="3.2 请求是如何转到 Feign 的？"></a>3.2 请求是如何转到 Feign 的？</h4><p>分为两部分，第一是为接口定义的每个接口都生成一个实现方法，结果就是 SynchronousMethodHandler 对象。第二是为该服务接口生成了动态代理。动态代理的实现是 ReflectiveFeign.FeignInvocationHanlder，代理被调用的时候，会根据当前调用的方法，转到对应的 SynchronousMethodHandler。</p>
+<h4 id="3-3-Feign-是怎么工作的？"><a href="#3-3-Feign-是怎么工作的？" class="headerlink" title="3.3 Feign 是怎么工作的？"></a>3.3 Feign 是怎么工作的？</h4><p>当对接口的实例进行请求时（Autowire 的对象是某个ReflectiveFeign.FeignInvocationHanlder 的实例），根据方法名进入了某个 SynchronousMethodHandler 对象的 invoke 方法。</p>
+<p>SynchronousMethodHandler 其实也并不处理具体的 HTTP 请求，它关心的更多的是请求结果的处理。HTTP 请求的过程，包括服务发现，都交给了当前 context 注册中的 Client 实现类，比如 LoadBalancerFeignClient。Retry 的逻辑实际上已经提出来了，但是 fallback 并没有在上面体现，因为我们上面分析动态代理的过程中，用的是 Feign.Builder，而如果有 fallback 的情况下，会使用 HystrixFeign.Builder，这是 Feign.Builder 的一个子类。它在创建动态代理的时候，主要改了一个一个东西，就是 invocationFactory 从默认的 InvocationHandlerFactory.Default 变成了一个内部匿名工厂，这个工厂的create 方法返回的不是 ReflectiveFeign.FeignInvocationHandler，而是 HystrixInvocationHandler。所以动态代理类换掉了，invoke 的逻辑就变了。在新的逻辑里，没有简单的将方法转到对应的 SynchronousMethodHandler 上面，而是将 fallback 和 SynchronousMethodHandler一起封装成了 HystrixMethod，并且执行该对象。</p>
+<h4 id="3-4-Feign-的负载均衡策略？"><a href="#3-4-Feign-的负载均衡策略？" class="headerlink" title="3.4 Feign 的负载均衡策略？"></a>3.4 Feign 的负载均衡策略？</h4><p>Feign 默认集成了 Ribbon 的<code>轮询</code>方式的负载均衡策略。</p>
+<p>Feign 的时候，如何去切换到 Ribbon 中其他均衡策略呢？甚至切换到自定义的策略呢？</p>
+<p>在 application.yml 配置文件中来指定，如下：</p>
+<figure class="highlight yml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs yml"><span class="hljs-comment"># feign和ribbon结合，指定负载均衡策略为【随机策略】</span><br><span class="hljs-attr">MICROSERVICE-ORDER:</span><br> <span class="hljs-attr">ribbon:</span><br>   <span class="hljs-attr">NFLoadBalancerRuleClassName:</span> <span class="hljs-string">com.netflix.loadbalancer.RandomRule</span><br></code></pre></td></tr></table></figure>
+
+<p>MICROSERVICE-ORDER 表示作用到哪个微服务，com.netflix.loadbalancer.RandomRule 即 Ribbon 里面的随机策略，当然，也可以指定为其他策略，包括自己定义的，只要把相应的包路径写到这即可。</p>
+
+              
+            </div>
+            <hr/>
+            <div>
+              <div>
+  <img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20241112163319.png" srcset="/img/loading.gif" lazyload>
+</div>
+<div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/18-%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/" class="category-chain-item">18_源码分析</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/">#源码分析</a>
+      
+        <a href="/tags/Feign/">#Feign</a>
+      
+        <a href="/tags/OpenFeign/">#OpenFeign</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>03-SpringCloud OpenFeign源码分析</div>
+      <div>https://janycode.github.io/2021/03/07/18_源码分析/03-SpringCloud OpenFeign源码分析/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Jerry(姜源)</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2021年3月7日</div>
+        </div>
+      
+      
+      <div class="license-meta-item">
+        <div>许可协议</div>
+        <div>
+          
+            
+            
+              <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+              <span class="hint--top hint--rounded" aria-label="BY - 姜源">
+                <i class="iconfont icon-by"></i>
+              </span>
+              </a>
+            
+          
+        </div>
+      </div>
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2021/03/14/21_%E4%BB%A3%E7%A0%81%E7%89%87%E6%AE%B5/01_%E5%B7%A5%E5%85%B7%E7%B1%BB/00-XxEnum/" title="00-XxEnum">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">00-XxEnum</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2021/03/05/15_%E5%88%86%E5%B8%83%E5%BC%8F/05_%E5%88%86%E5%B8%83%E5%BC%8F%E4%BB%BB%E5%8A%A1/01-XXL-JOB%E6%A1%86%E6%9E%B6/" title="01 XXL-JOB分布式任务调度框架">
+                        <span class="hidden-mobile">01 XXL-JOB分布式任务调度框架</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+  <article id="comments" lazyload>
+    
+  <div id="SOHUCS" sid='https://janycode.github.io/2021/03/07/18_%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/03-SpringCloud%20OpenFeign%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/'></div>
+  <script type="text/javascript">
+    Fluid.utils.loadComments('#SOHUCS', function() {
+      Fluid.utils.createScript("https://changyan.sohu.com/upload/changyan.js", function() {
+        window.changyan.api.config({"appid":"cyw5OHIcO","appkey":"fea3446b3df4b3f129f34da4cbc87e51"})
+      });
+    });
+  </script>
+  <noscript>Please enable JavaScript to view the comments</noscript>
+
+
+  </article>
+
+
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://simple.blog.csdn.net" target="_blank" rel="nofollow noopener"><span>CSDN</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/janycode" target="_blank" rel="nofollow noopener"><span>GitHub</span></a> <i class="iconfont icon-love"></i> <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="busuanzi_container_site_pv" style="display: none">
+        总访问量(PV) 
+        <span id="busuanzi_value_site_pv"></span>
+         次，
+      </span>
+    
+    
+      <span id="busuanzi_container_site_uv" style="display: none">
+        总访客数(UV) 
+        <span id="busuanzi_value_site_uv"></span>
+         人
+      </span>
+    
+    
+  
+</div>
+
+  
+  
+  
+</div>
+
+<!-- live2d 动画 -->
+<script src="https://eqcn.ajz.miesnfu.com/wp-content/plugins/wp-3d-pony/live2dw/lib/L2Dwidget.min.js"></script>
+<script>
+    L2Dwidget.init({
+        "model": {
+            jsonPath: "https://unpkg.com/live2d-widget-model-haruto@1.0.5/assets/haruto.model.json",
+            "scale": 1
+        },
+        "display": {
+            "position": "right",
+            "width": 100,
+            "height": 200,
+            "hOffset": 35,
+            "vOffset": -85
+        },
+        "mobile": {
+            "show": false,
+            "scale": 0.1
+        },
+        "react": {
+            "opacityDefault": 0.75,
+            "opacityOnHover": 0.2
+        }
+    });
+</script>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <!-- Baidu Analytics -->
+    <script defer>
+      if (!Fluid.ctx.dnt) {
+        var _hmt = _hmt || [];
+        (function() {
+          var hm = document.createElement("script");
+          hm.src = "https://hm.baidu.com/hm.js?bfff735c897eb60ea49b735096b20e47";
+          var s = document.getElementsByTagName("script")[0];
+          s.parentNode.insertBefore(hm, s);
+        })();
+      }
+    </script>
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.0/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      headingSelector : CONFIG.toc.headingSelector || 'h1,h2,h3,h4,h5,h6',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      collapseDepth   : CONFIG.toc.collapseDepth || 0,
+      scrollSmooth    : true,
+      headingsOffset  : -boardTop
+    });
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+  });
+</script>
+
+
+  <script>
+  (function() {
+    var enableLang = CONFIG.code_language.enable && CONFIG.code_language.default;
+    var enableCopy = CONFIG.copy_btn;
+    if (!enableLang && !enableCopy) {
+      return;
+    }
+
+    function getBgClass(ele) {
+      return Fluid.utils.getBackgroundLightness(ele) >= 0 ? 'code-widget-light' : 'code-widget-dark';
+    }
+
+    var copyTmpl = '';
+    copyTmpl += '<div class="code-widget">';
+    copyTmpl += 'LANG';
+    copyTmpl += '</div>';
+    jQuery('.markdown-body pre').each(function() {
+      var $pre = jQuery(this);
+      if ($pre.find('code.mermaid').length > 0) {
+        return;
+      }
+      if ($pre.find('span.line').length > 0) {
+        return;
+      }
+
+      var lang = '';
+
+      if (enableLang) {
+        lang = CONFIG.code_language.default;
+        if ($pre[0].children.length > 0 && $pre[0].children[0].classList.length >= 2 && $pre.children().hasClass('hljs')) {
+          lang = $pre[0].children[0].classList[1];
+        } else if ($pre[0].getAttribute('data-language')) {
+          lang = $pre[0].getAttribute('data-language');
+        } else if ($pre.parent().hasClass('sourceCode') && $pre[0].children.length > 0 && $pre[0].children[0].classList.length >= 2) {
+          lang = $pre[0].children[0].classList[1];
+          $pre.parent().addClass('code-wrapper');
+        } else if ($pre.parent().hasClass('markdown-body') && $pre[0].classList.length === 0) {
+          $pre.wrap('<div class="code-wrapper"></div>');
+        }
+        lang = lang.toUpperCase().replace('NONE', CONFIG.code_language.default);
+      }
+      $pre.append(copyTmpl.replace('LANG', lang).replace('code-widget">',
+        getBgClass($pre[0]) + (enableCopy ? ' code-widget copy-btn" data-clipboard-snippet><i class="iconfont icon-copy"></i>' : ' code-widget">')));
+
+      if (enableCopy) {
+        Fluid.utils.createScript('https://lib.baomitu.com/clipboard.js/2.0.10/clipboard.min.js', function() {
+          var clipboard = new window.ClipboardJS('.copy-btn', {
+            target: function(trigger) {
+              var nodes = trigger.parentNode.childNodes;
+              for (var i = 0; i < nodes.length; i++) {
+                if (nodes[i].tagName === 'CODE') {
+                  return nodes[i];
+                }
+              }
+            }
+          });
+          clipboard.on('success', function(e) {
+            e.clearSelection();
+            e.trigger.innerHTML = e.trigger.innerHTML.replace('icon-copy', 'icon-success');
+            setTimeout(function() {
+              e.trigger.innerHTML = e.trigger.innerHTML.replace('icon-success', 'icon-copy');
+            }, 2000);
+          });
+        });
+      }
+    });
+  })();
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

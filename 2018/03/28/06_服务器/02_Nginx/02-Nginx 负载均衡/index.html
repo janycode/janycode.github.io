@@ -1,0 +1,932 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=light>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Jerry(姜源)">
+  <meta name="keywords" content="Java,Html,CSS,JavaScript,Python,C,Linux,shell编程经验分享、技术总结、心得体会">
+  
+    <meta name="description" content="1. Nginx 简介1.1 Nginx是什么Nginx : nginx [engine x]是HTTP和反向代理服务器，邮件代理服务器和通用TCP &#x2F; UDP代理服务器，最初由Igor Sysoev编写。  特别是在高并发下，应用广泛 功能丰富 插件繁多 配置灵活 低消耗  1.2 正向代理和反向代理正向代理：是代理的用户本机的请求，比如：翻墙、网络加速器等，安装在用户的电脑上。反向">
+<meta property="og:type" content="article">
+<meta property="og:title" content="02-Nginx 负载均衡">
+<meta property="og:url" content="https://janycode.github.io/2018/03/28/06_%E6%9C%8D%E5%8A%A1%E5%99%A8/02_Nginx/02-Nginx%20%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1/index.html">
+<meta property="og:site_name" content="姜源の云笔记">
+<meta property="og:description" content="1. Nginx 简介1.1 Nginx是什么Nginx : nginx [engine x]是HTTP和反向代理服务器，邮件代理服务器和通用TCP &#x2F; UDP代理服务器，最初由Igor Sysoev编写。  特别是在高并发下，应用广泛 功能丰富 插件繁多 配置灵活 低消耗  1.2 正向代理和反向代理正向代理：是代理的用户本机的请求，比如：翻墙、网络加速器等，安装在用户的电脑上。反向">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20200719221340.png">
+<meta property="article:published_time" content="2018-03-28T15:06:42.000Z">
+<meta property="article:modified_time" content="2026-02-10T09:21:30.156Z">
+<meta property="article:author" content="Jerry(姜源)">
+<meta property="article:tag" content="Nginx">
+<meta property="article:tag" content="负载均衡">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20200719221340.png">
+  
+  
+    <meta name="referrer" content="no-referrer-when-downgrade">
+  
+  
+  <title>02-Nginx 负载均衡 - 姜源の云笔记</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"janycode.github.io","root":"/","version":"1.9.0","typing":{"enable":true,"typeSpeed":50,"cursorChar":"|","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":false},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":"bfff735c897eb60ea49b735096b20e47","google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+
+  
+<meta name="generator" content="Hexo 6.2.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 50vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>姜源の云笔记</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tools/">
+                <i class="iconfont icon-slack-fill"></i>
+                工具
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" target="_blank" rel="noopener" href="https://yuancodes.github.io/">
+                <i class="iconfont icon-notebook"></i>
+                Docsify
+              </a>
+            </li>
+          
+        
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="02-Nginx 负载均衡"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-author" aria-hidden="true"></i>
+        Jerry(姜源)
+      </span>
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2018-03-28 23:06" pubdate>
+          星期三, 2018/03/28 23:06:42
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          <!-- compatible with older versions-->
+          8.2k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          <!-- compatible with older versions-->
+          69 分钟
+        
+      </span>
+    
+
+    
+    
+      
+        <span id="busuanzi_container_page_pv" style="display: none">
+          <i class="iconfont icon-eye" aria-hidden="true"></i>
+          <span id="busuanzi_value_page_pv"></span> 次
+        </span>
+        
+      
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">02-Nginx 负载均衡</h1>
+            
+            <div class="markdown-body">
+              
+              <p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20200719221340.png" srcset="/img/loading.gif" lazyload alt="image-20200719221339233"></p>
+<h2 id="1-Nginx-简介"><a href="#1-Nginx-简介" class="headerlink" title="1. Nginx 简介"></a>1. Nginx 简介</h2><h3 id="1-1-Nginx是什么"><a href="#1-1-Nginx是什么" class="headerlink" title="1.1 Nginx是什么"></a>1.1 Nginx是什么</h3><p>Nginx : nginx [engine x]是HTTP和反向代理服务器，邮件代理服务器和通用TCP &#x2F; UDP代理服务器，最初由Igor Sysoev编写。</p>
+<ul>
+<li>特别是在高并发下，应用广泛</li>
+<li>功能丰富</li>
+<li>插件繁多</li>
+<li>配置灵活</li>
+<li>低消耗</li>
+</ul>
+<h3 id="1-2-正向代理和反向代理"><a href="#1-2-正向代理和反向代理" class="headerlink" title="1.2 正向代理和反向代理"></a>1.2 正向代理和反向代理</h3><p>正向代理：是代理的用户本机的请求，比如：翻墙、网络加速器等，安装在用户的电脑上。<br>反向代理：是代理的服务端的请求，比如：Nginx ，安装在服务器上。</p>
+<h3 id="1-3-Nginx作用"><a href="#1-3-Nginx作用" class="headerlink" title="1.3 Nginx作用"></a>1.3 Nginx作用</h3><ol>
+<li>静态服务器：图片服务器、视频服务器 可以抗万级并发</li>
+<li>动态服务器，可以代理：php\Java\数据库</li>
+<li>可以实现负载均衡</li>
+<li>缓存服务器</li>
+</ol>
+<h3 id="1-4-Nginx优点"><a href="#1-4-Nginx优点" class="headerlink" title="1.4 Nginx优点"></a>1.4 Nginx优点</h3><ol>
+<li>占用资源，2万并发，10个线程，只需要占用几百M</li>
+<li>简单、灵活</li>
+<li>支持类型的多：http、负载均衡、邮件、tcp</li>
+<li>配置 实现IP限速、预过滤等</li>
+<li>高并发支持</li>
+</ol>
+<h3 id="1-5-Nginx负载均衡算法"><a href="#1-5-Nginx负载均衡算法" class="headerlink" title="1.5 Nginx负载均衡算法"></a>1.5 Nginx负载均衡算法</h3><p>Nginx作为负载均衡服务器，就需要对所有的请求进行分发，那么这个分发策略，有哪些？</p>
+<ol>
+<li><code>轮询</code> 默认</li>
+<li><code>权重</code> 根据权重分配请求 权重大的分配的概率高</li>
+<li><code>IP_hash</code> 根据IP进行分配</li>
+<li><code>最少连接分配</code></li>
+<li>fair <code>最小响应时间</code></li>
+</ol>
+<h2 id="2-Nginx应用"><a href="#2-Nginx应用" class="headerlink" title="2. Nginx应用"></a>2. Nginx应用</h2><h3 id="2-1-安装Nginx"><a href="#2-1-安装Nginx" class="headerlink" title="2.1 安装Nginx"></a>2.1 安装Nginx</h3><ul>
+<li>Linux原生安装</li>
+<li>Docker安装Nginx</li>
+</ul>
+<p>默认监听 80 端口</p>
+<p>Docker 实现 Nginx 的安装：</p>
+<ol>
+<li>下载镜像 <code>docker pull nginx:latest</code></li>
+<li>创建文件夹并准备配置<ul>
+<li>创建文件夹：<code>mkdir -p /docker/nginx/</code></li>
+<li>拷贝配置文件：<code>vim /docker/nginx/nginx.conf</code></li>
+</ul>
+</li>
+</ol>
+<p>拷贝如下内容：——来源：windows上下载的 nginx 解压后找到 nginx.conf</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br></pre></td><td class="code"><pre><code class="hljs sh"><span class="hljs-comment">#user  nobody;</span><br>worker_processes  1;<br><br><span class="hljs-comment">#error_log  logs/error.log;</span><br><span class="hljs-comment">#error_log  logs/error.log  notice;</span><br><span class="hljs-comment">#error_log  logs/error.log  info;</span><br><br><span class="hljs-comment">#pid        logs/nginx.pid;</span><br><br>events &#123;<br>    worker_connections  1024;<br>&#125;<br><br>http &#123;<br>    include       mime.types;<br>    default_type  application/octet-stream;<br><br>    <span class="hljs-comment">#log_format  main  &#x27;$remote_addr - $remote_user [$time_local] &quot;$request&quot; &#x27;</span><br>    <span class="hljs-comment">#                  &#x27;$status $body_bytes_sent &quot;$http_referer&quot; &#x27;</span><br>    <span class="hljs-comment">#                  &#x27;&quot;$http_user_agent&quot; &quot;$http_x_forwarded_for&quot;&#x27;;</span><br><br>    <span class="hljs-comment">#access_log  logs/access.log  main;</span><br><br>    sendfile        on;<br>    <span class="hljs-comment">#tcp_nopush     on;</span><br><br>    <span class="hljs-comment">#keepalive_timeout  0;</span><br>    keepalive_timeout  65;<br><br>    <span class="hljs-comment">#gzip  on;</span><br><br>    server &#123;<br>        listen       80;<br>        server_name  localhost;<br><br>        <span class="hljs-comment">#charset koi8-r;</span><br><br>        <span class="hljs-comment">#access_log  logs/host.access.log  main;</span><br><br>        location / &#123;<br>            root   html;<br>            index  index.html index.htm;<br>        &#125;<br><br>        <span class="hljs-comment">#error_page  404              /404.html;</span><br><br>        <span class="hljs-comment"># redirect server error pages to the static page /50x.html</span><br>        <span class="hljs-comment">#</span><br>        error_page   500 502 503 504  /50x.html;<br>        location = /50x.html &#123;<br>            root   html;<br>        &#125;<br><br>        <span class="hljs-comment"># proxy the PHP scripts to Apache listening on 127.0.0.1:80</span><br>        <span class="hljs-comment">#</span><br>        <span class="hljs-comment">#location ~ \.php$ &#123;</span><br>        <span class="hljs-comment">#    proxy_pass   http://127.0.0.1;</span><br>        <span class="hljs-comment">#&#125;</span><br><br>        <span class="hljs-comment"># pass the PHP scripts to FastCGI server listening on 127.0.0.1:9000</span><br>        <span class="hljs-comment">#</span><br>        <span class="hljs-comment">#location ~ \.php$ &#123;</span><br>        <span class="hljs-comment">#    root           html;</span><br>        <span class="hljs-comment">#    fastcgi_pass   127.0.0.1:9000;</span><br>        <span class="hljs-comment">#    fastcgi_index  index.php;</span><br>        <span class="hljs-comment">#    fastcgi_param  SCRIPT_FILENAME  /scripts$fastcgi_script_name;</span><br>        <span class="hljs-comment">#    include        fastcgi_params;</span><br>        <span class="hljs-comment">#&#125;</span><br><br>        <span class="hljs-comment"># deny access to .htaccess files, if Apache&#x27;s document root</span><br>        <span class="hljs-comment"># concurs with nginx&#x27;s one</span><br>        <span class="hljs-comment">#</span><br>        <span class="hljs-comment">#location ~ /\.ht &#123;</span><br>        <span class="hljs-comment">#    deny  all;</span><br>        <span class="hljs-comment">#&#125;</span><br>    &#125;<br><br>    <span class="hljs-comment"># another virtual host using mix of IP-, name-, and port-based configuration</span><br>    <span class="hljs-comment">#</span><br>    <span class="hljs-comment">#server &#123;</span><br>    <span class="hljs-comment">#    listen       8000;</span><br>    <span class="hljs-comment">#    listen       somename:8080;</span><br>    <span class="hljs-comment">#    server_name  somename  alias  another.alias;</span><br><br>    <span class="hljs-comment">#    location / &#123;</span><br>    <span class="hljs-comment">#        root   html;</span><br>    <span class="hljs-comment">#        index  index.html index.htm;</span><br>    <span class="hljs-comment">#    &#125;</span><br>    <span class="hljs-comment">#&#125;</span><br><br>    <span class="hljs-comment"># HTTPS server</span><br>    <span class="hljs-comment">#</span><br>    <span class="hljs-comment">#server &#123;</span><br>    <span class="hljs-comment">#    listen       443 ssl;</span><br>    <span class="hljs-comment">#    server_name  localhost;</span><br><br>    <span class="hljs-comment">#    ssl_certificate      cert.pem;</span><br>    <span class="hljs-comment">#    ssl_certificate_key  cert.key;</span><br><br>    <span class="hljs-comment">#    ssl_session_cache    shared:SSL:1m;</span><br>    <span class="hljs-comment">#    ssl_session_timeout  5m;</span><br><br>    <span class="hljs-comment">#    ssl_ciphers  HIGH:!aNULL:!MD5;</span><br>    <span class="hljs-comment">#    ssl_prefer_server_ciphers  on;</span><br><br>    <span class="hljs-comment">#    location / &#123;</span><br>    <span class="hljs-comment">#        root   html;</span><br>    <span class="hljs-comment">#        index  index.html index.htm;</span><br>    <span class="hljs-comment">#    &#125;</span><br>    <span class="hljs-comment">#&#125;</span><br>&#125;<br></code></pre></td></tr></table></figure>
+
+
+
+<ol start="3">
+<li><p>创建默认页面</p>
+<p> 创建目录：<code>mkdir -p /docker/nginx/html/</code><br> 拷贝页面 index.html  50x.html 到该目录</p>
+</li>
+<li><p>创建 Nginx 容器<br> 运行：<code>docker run -d --name nginx81 -p 81:80  -v /docker/nginx/nginx.conf:/etc/nginx/nginx.conf -v  /docker/nginx/html:/usr/share/nginx/html nginx</code></p>
+</li>
+<li><p>访问 Nginx 容器<br> 输入：<code>http://IP地址:81端口/</code></p>
+</li>
+</ol>
+<h3 id="2-2-基于Nginx实现负载均衡"><a href="#2-2-基于Nginx实现负载均衡" class="headerlink" title="2.2 基于Nginx实现负载均衡"></a>2.2 基于Nginx实现负载均衡</h3><p>基于Nginx搭建Tomcat的集群，实现的话，需要提前准备多个Tomcat容器。</p>
+<p>比如准备3个Tomcat容器，实现Nginx负载均衡</p>
+<p>使用 3个 Tomcat的不同端口实例，模拟 3台实际的服务器实现负载均衡。</p>
+<ol>
+<li>搭建3台Tomcat</li>
+</ol>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><code class="hljs sh"><span class="hljs-comment">#1.创建文件夹，3个</span><br><span class="hljs-built_in">mkdir</span> -p /docker/tomcat/webapp8081<br><span class="hljs-built_in">mkdir</span> -p /docker/tomcat/webapp8082<br><span class="hljs-built_in">mkdir</span> -p /docker/tomcat/webapp8083<br><span class="hljs-comment">#2.依次创建3台Tomcat容器</span><br>docker run -d --name tomcat8081 -p 8081:8080 -v /docker/tomcat/webapp8081:/usr/local/tomcat/webapps/<br>tomcat<br>docker run -d --name tomcat8082 -p 8082:8080 -v /docker/tomcat/webapp8082:/usr/local/tomcat/webapps/<br>tomcat<br>docker run -d --name tomcat8083 -p 8083:8080 -v /docker/tomcat/webapp8083:/usr/local/tomcat/webapps/<br>tomcat<br><span class="hljs-comment">#3.发布要运行项目</span><br>依次上传3个本地war包到3台Tomcat容器中，对应的webapp8081、webapp8082、webapp8083<br><span class="hljs-comment">#4.访问发布的项目</span><br>依次访问3台Tomcat,确保都可以正常访问<br></code></pre></td></tr></table></figure>
+
+<ol start="2">
+<li>修改Nginx配置文件</li>
+</ol>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><code class="hljs sh"><span class="hljs-comment">#配置负载均衡</span><br>vim /docker/nginx/nginx.conf<br><br>    <span class="hljs-comment">#CPU核心 一般都是服务器的核数  进程数量</span><br>    worker_processes  1;<br>    <span class="hljs-comment">#事件  配置每个进程的连接数</span><br>    events &#123;<br>        worker_connections  1024;<br>    &#125;<br>    <span class="hljs-comment">#1.使用管理员</span><br>    user root;<br>    <span class="hljs-comment">#2.设置要负载均衡的机器</span><br>    <span class="hljs-comment">#在http 内部配置负载均衡</span><br>    <span class="hljs-comment">#配置负载均衡的服务器 weight权重 值越大机率越高</span><br>    upstream lxtomcat &#123;<br>        server 172.18.0.6:8080 weight=4;<br>        server 172.18.0.7:8080 weight=2;<br>        server 172.18.0.9:8080 weight=3;<br>    &#125;<br>    <span class="hljs-comment">#s:容器与容器的通信，需要使用容器本身的ip地址,也需要写容器本身的端口，通过 docker inspect 容器名称，查看容器的ip地址</span><br>    Tomcat8081 172.18.0.6<br>    Tomcat8082 172.18.0.7<br>    Tomcat8083 172.18.0.9<br>    <span class="hljs-comment">#3.在server 标签内部：</span><br>    <span class="hljs-comment">#配置：</span><br>    server_name lxtomcat;<br>    <span class="hljs-comment">#在配置访问规则：</span><br>    location / &#123;<br>        <span class="hljs-comment">#root html;</span><br>        <span class="hljs-comment">#index index.html index.htm;</span><br>        proxy_connect_timeout 5;<br>        proxy_read_timeout 10;<br>        proxy_send_timeout 20;<br>        proxy_pass http://lxtomcat;<br>    &#125; <br><br><span class="hljs-comment">#保存上传配置文件</span><br><span class="hljs-comment">#重启Nginx容器</span><br>docker restart nginx<br><span class="hljs-comment">#访问测试</span><br>访问 http://IP地址:81端口/tomcat可访问页<br></code></pre></td></tr></table></figure>
+
+
+
+<h2 id="3-Nginx-负载均衡基础配置"><a href="#3-Nginx-负载均衡基础配置" class="headerlink" title="3. Nginx 负载均衡基础配置"></a>3. Nginx 负载均衡基础配置</h2><p>首先，搭建一个基础的 Nginx 负载均衡器，用于将流量分发到多个后端服务器上。</p>
+<h3 id="步骤-1：安装-Nginx"><a href="#步骤-1：安装-Nginx" class="headerlink" title="步骤 1：安装 Nginx"></a>步骤 1：安装 Nginx</h3><p>在每台要作为负载均衡器的服务器上，安装 Nginx。可以使用包管理工具进行安装，例如在 Ubuntu 上执行以下命令：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs bash">sudo apt update<br>sudo apt install nginx<br></code></pre></td></tr></table></figure>
+
+<h3 id="步骤-2：配置-Nginx-负载均衡"><a href="#步骤-2：配置-Nginx-负载均衡" class="headerlink" title="步骤 2：配置 Nginx 负载均衡"></a>步骤 2：配置 Nginx 负载均衡</h3><p>Nginx 的核心是配置文件 nginx.conf，我们可以在其中定义后端服务器池以及负载均衡策略。以下是一个简单的 Nginx 负载均衡配置：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-comment">#定义一个名为 backend 的后端服务器池</span><br>upstream backend &#123;<br>    server backend1.example.com weight=5;  <span class="hljs-comment"># 设置权重</span><br>    server backend2.example.com weight=3;<br>    server backend3.example.com weight=2;<br>    <br>    <span class="hljs-comment"># 启用健康检查（需要 Nginx Plus 支持开箱配置，开源版本需要第三方模块）</span><br>    <span class="hljs-comment"># Nginx Plus 示例：</span><br>    health_check interval=10s fails=3 passes=2;<br>&#125;<br><br><span class="hljs-comment">#配置 HTTP 服务器</span><br>server &#123;<br>    listen 80;<br>    server_name loadbalancer.example.com;<br>    <br>    location / &#123;<br>        proxy_pass http://backend;<br>        proxy_set_header Host <span class="hljs-variable">$host</span>;<br>        proxy_set_header X-Real-IP <span class="hljs-variable">$remote_addr</span>;<br>        proxy_set_header X-Forwarded-For <span class="hljs-variable">$proxy_add_x_forwarded_for</span>;<br>        proxy_set_header X-Forwarded-Proto <span class="hljs-variable">$scheme</span>;<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>配置详解：</p>
+<ul>
+<li><p>upstream 指令：定义了后端服务器池（<code>backend</code>），并为各服务器分配了不同的权重，Nginx 根据权重将流量按照比例分发到后端服务器。</p>
+</li>
+<li><p>健康检查：此配置会定期检查后端服务器是否可用，确保当某个服务器宕机时，不会继续向其发送请求。</p>
+</li>
+<li><p>proxy_pass：将客户端请求代理到后端服务器池。</p>
+</li>
+</ul>
+<h3 id="步骤-3：启动和测试-Nginx"><a href="#步骤-3：启动和测试-Nginx" class="headerlink" title="步骤 3：启动和测试 Nginx"></a>步骤 3：启动和测试 Nginx</h3><p>确保配置无误后，启动或重启 Nginx 服务：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs bash">sudo nginx -t  <span class="hljs-comment"># 测试配置文件是否正确</span><br>sudo systemctl restart nginx  <span class="hljs-comment"># 重启 Nginx</span><br></code></pre></td></tr></table></figure>
+
+
+<p>测试：通过访问 <a target="_blank" rel="noopener" href="http://loadbalancer.example.com,验证请求是否被均匀分发到后端服务器./">http://loadbalancer.example.com，验证请求是否被均匀分发到后端服务器。</a></p>
+<h2 id="4-高可用性配置（Keepalived-Nginx）"><a href="#4-高可用性配置（Keepalived-Nginx）" class="headerlink" title="4. 高可用性配置（Keepalived + Nginx）"></a>4. 高可用性配置（Keepalived + Nginx）</h2><p>单独使用 Nginx 进行负载均衡仍然会面临单点故障问题。如果前端的 Nginx 宕机，整个服务将不可用。因此，我们需要通过 Keepalived 实现高可用的 Nginx 集群。</p>
+<h3 id="步骤-1：安装-Keepalived"><a href="#步骤-1：安装-Keepalived" class="headerlink" title="步骤 1：安装 Keepalived"></a>步骤 1：安装 Keepalived</h3><p>在每台 Nginx 服务器上安装 Keepalived。以 Ubuntu 为例：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">sudo apt install keepalived<br></code></pre></td></tr></table></figure>
+
+<h3 id="步骤-2：配置-Keepalived"><a href="#步骤-2：配置-Keepalived" class="headerlink" title="步骤 2：配置 Keepalived"></a>步骤 2：配置 Keepalived</h3><p>Keepalived 通过虚拟 IP 地址（VIP）实现故障转移。当主服务器宕机时，VIP 自动切换到备用服务器，确保服务的高可用性。</p>
+<p>在主 Nginx 服务器上，编辑 Keepalived 的配置文件 &#x2F;etc&#x2F;keepalived&#x2F;keepalived.conf：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><code class="hljs bash">vrrp_instance VI_1 &#123;<br>    state MASTER  <span class="hljs-comment"># 主服务器</span><br>    interface eth0  <span class="hljs-comment"># 网络接口</span><br>    virtual_router_id 51<br>    priority 100  <span class="hljs-comment"># 主服务器优先级较高</span><br>    advert_int 1  <span class="hljs-comment"># 广播间隔</span><br>    authentication &#123;<br>        auth_type PASS<br>        auth_pass 123456  <span class="hljs-comment"># 密码</span><br>    &#125;<br>    virtual_ipaddress &#123;<br>        192.168.0.100  <span class="hljs-comment"># 虚拟IP地址</span><br>    &#125;<br>    track_script &#123;<br>        chk_nginx  <span class="hljs-comment"># 监控 Nginx 状态的脚本</span><br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+
+<p>在备用 Nginx 服务器上，将 state 设置为 BACKUP，并将 priority 设置为较低的值，例如 90。</p>
+<h3 id="步骤-3：监控-Nginx-状态"><a href="#步骤-3：监控-Nginx-状态" class="headerlink" title="步骤 3：监控 Nginx 状态"></a>步骤 3：监控 Nginx 状态</h3><p>Keepalived 可以通过监控 Nginx 的运行状态来决定是否切换 VIP。创建一个监控脚本 &#x2F;etc&#x2F;keepalived&#x2F;check_nginx.sh：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-meta">#!/bin/bash</span><br><span class="hljs-keyword">if</span> ! pidof nginx &gt; /dev/null<br><span class="hljs-keyword">then</span><br>    systemctl stop keepalived  <span class="hljs-comment"># 如果 Nginx 停止，关闭 Keepalived 以触发 VIP 切换</span><br><span class="hljs-keyword">fi</span><br></code></pre></td></tr></table></figure>
+
+
+<p>将此脚本添加为可执行：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">sudo <span class="hljs-built_in">chmod</span> +x /etc/keepalived/check_nginx.sh<br></code></pre></td></tr></table></figure>
+
+
+<p>在 Keepalived 的配置文件中添加监控脚本：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs bash">vrrp_script chk_nginx &#123;<br>    script <span class="hljs-string">&quot;/etc/keepalived/check_nginx.sh&quot;</span><br>    interval 2<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<h3 id="步骤-4：启动-Keepalived"><a href="#步骤-4：启动-Keepalived" class="headerlink" title="步骤 4：启动 Keepalived"></a>步骤 4：启动 Keepalived</h3><p>完成配置后，启动或重启 Keepalived 服务：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">sudo systemctl restart keepalived<br></code></pre></td></tr></table></figure>
+
+
+<p>测试：关闭主服务器的 Nginx，VIP 应该自动切换到备用服务器，确保服务不中断。</p>
+<h2 id="5-Nginx-健康检查和动态扩展"><a href="#5-Nginx-健康检查和动态扩展" class="headerlink" title="5. Nginx 健康检查和动态扩展"></a>5. Nginx 健康检查和动态扩展</h2><p>Nginx 可以结合健康检查功能，确保只有状态正常的服务器参与负载均衡。另外，动态扩展是应对突发流量的关键。以下是相关配置和实战方案。</p>
+<h3 id="步骤-3-1：配置健康检查（开源版本）"><a href="#步骤-3-1：配置健康检查（开源版本）" class="headerlink" title="步骤 3.1：配置健康检查（开源版本）"></a>步骤 3.1：配置健康检查（开源版本）</h3><p>Nginx 开源版本不自带健康检查模块，可以通过第三方模块（如 ngx_http_healthcheck_module）实现健康检查。假设已安装此模块，配置如下：</p>
+<pre><code class="hljs">upstream backend &#123;
+    server backend1.example.com;
+    server backend2.example.com;
+    server backend3.example.com;
+    # 使用第三方模块实现健康检查
+    check interval=5000 rise=2 fall=5 timeout=2000;
+&#125;
+</code></pre>
+<h3 id="步骤-3-2：动态扩展后端服务器"><a href="#步骤-3-2：动态扩展后端服务器" class="headerlink" title="步骤 3.2：动态扩展后端服务器"></a>步骤 3.2：动态扩展后端服务器</h3><p>结合容器化技术（如 Docker 或 Kubernetes），可以根据流量自动扩展后端服务器。例如，在 Kubernetes 集群中可以使用 Horizontal Pod Autoscaler (HPA) 自动扩展应用服务的副本数。</p>
+<p>以下是在 Kubernetes 中配置自动扩展的示例：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><code class="hljs bash">apiVersion: autoscaling/v1<br>kind: HorizontalPodAutoscaler<br>metadata:<br>  name: backend-hpa<br>spec:<br>  scaleTargetRef:<br>    apiVersion: apps/v1<br>    kind: Deployment<br>    name: backend<br>  minReplicas: 3<br>  maxReplicas: 10<br>  targetCPUUtilizationPercentage: 70  <span class="hljs-comment"># 当 CPU 利用率超过 70% 时扩容</span><br></code></pre></td></tr></table></figure>
+
+
+<p>通过这种方式，后端服务可以根据负载动态扩展，Nginx 通过配置服务发现机制可以自动识别新的后端服务器。</p>
+<h2 id="6-Nginx-SSL-x2F-TLS-配置"><a href="#6-Nginx-SSL-x2F-TLS-配置" class="headerlink" title="6. Nginx SSL&#x2F;TLS 配置"></a>6. Nginx SSL&#x2F;TLS 配置</h2><p>在生产环境中，启用 HTTPS 是必不可少的。以下是启用 SSL&#x2F;TLS 的配置：</p>
+<h3 id="步骤-4-1：生成或获取-SSL-证书"><a href="#步骤-4-1：生成或获取-SSL-证书" class="headerlink" title="步骤 4.1：生成或获取 SSL 证书"></a>步骤 4.1：生成或获取 SSL 证书</h3><p>使用 Let’s Encrypt 生成免费的 SSL 证书：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs bash">sudo apt install certbot python3-certbot-nginx<br>sudo certbot --nginx -d yourdomain.com<br></code></pre></td></tr></table></figure>
+
+<h3 id="步骤-4-2：配置-Nginx-使用-SSL"><a href="#步骤-4-2：配置-Nginx-使用-SSL" class="headerlink" title="步骤 4.2：配置 Nginx 使用 SSL"></a>步骤 4.2：配置 Nginx 使用 SSL</h3><figure class="highlight nginx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><code class="hljs nginx"><span class="hljs-section">server</span> &#123;<br>    <span class="hljs-attribute">listen</span> <span class="hljs-number">443</span> ssl;<br>    <span class="hljs-attribute">server_name</span> yourdomain.com;<br><br>    <span class="hljs-attribute">ssl_certificate</span> /etc/letsencrypt/live/yourdomain.com/fullchain.pem;<br>    <span class="hljs-attribute">ssl_certificate_key</span> /etc/letsencrypt/live/yourdomain.com/privkey.pem;<br><br>    <span class="hljs-section">location</span> / &#123;<br>        <span class="hljs-attribute">proxy_pass</span> http://backend;<br>        <span class="hljs-attribute">proxy_set_header</span> Host <span class="hljs-variable">$host</span>;<br>        <span class="hljs-attribute">proxy_set_header</span> X-Real-IP <span class="hljs-variable">$remote_addr</span>;<br>        <span class="hljs-attribute">proxy_set_header</span> X-Forwarded-For <span class="hljs-variable">$proxy_add_x_forwarded_for</span>;<br>        <span class="hljs-attribute">proxy_set_header</span> X-Forwarded-Proto <span class="hljs-variable">$scheme</span>;<br>    &#125;<br>&#125;<br><br><span class="hljs-comment"># 自动将 HTTP 请求重定向到 HTTPS</span><br><span class="hljs-section">server</span> &#123;<br>    <span class="hljs-attribute">listen</span> <span class="hljs-number">80</span>;<br>    <span class="hljs-attribute">server_name</span> yourdomain.com;<br>    <span class="hljs-attribute">return</span> <span class="hljs-number">301</span> https://<span class="hljs-variable">$host</span><span class="hljs-variable">$request_uri</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
+              
+            </div>
+            <hr/>
+            <div>
+              <div>
+  <img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20241112163319.png" srcset="/img/loading.gif" lazyload>
+</div>
+<div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/06-%E6%9C%8D%E5%8A%A1%E5%99%A8/" class="category-chain-item">06_服务器</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/06-%E6%9C%8D%E5%8A%A1%E5%99%A8/02-Nginx/" class="category-chain-item">02_Nginx</a>
+  
+  
+
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/Nginx/">#Nginx</a>
+      
+        <a href="/tags/%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1/">#负载均衡</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>02-Nginx 负载均衡</div>
+      <div>https://janycode.github.io/2018/03/28/06_服务器/02_Nginx/02-Nginx 负载均衡/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Jerry(姜源)</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2018年3月28日</div>
+        </div>
+      
+      
+      <div class="license-meta-item">
+        <div>许可协议</div>
+        <div>
+          
+            
+            
+              <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+              <span class="hint--top hint--rounded" aria-label="BY - 姜源">
+                <i class="iconfont icon-by"></i>
+              </span>
+              </a>
+            
+          
+        </div>
+      </div>
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2018/03/28/07_%E8%99%9A%E6%8B%9F%E6%9C%BA/02-JVM%E7%BA%BF%E7%A8%8B%E5%92%8C%E8%BF%9B%E7%A8%8B%E8%B0%83%E5%BA%A6/" title="02-JVM线程和进程调度">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">02-JVM线程和进程调度</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2018/03/28/06_%E6%9C%8D%E5%8A%A1%E5%99%A8/03_CentOS/01-CentOS7%E5%BC%80%E5%8F%91&amp;%E8%BF%90%E7%BB%B4%E7%8E%AF%E5%A2%83/" title="01-CentOS7开发&amp;运维环境配置">
+                        <span class="hidden-mobile">01-CentOS7开发&amp;运维环境配置</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+  <article id="comments" lazyload>
+    
+  <div id="SOHUCS" sid='https://janycode.github.io/2018/03/28/06_%E6%9C%8D%E5%8A%A1%E5%99%A8/02_Nginx/02-Nginx%20%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1/'></div>
+  <script type="text/javascript">
+    Fluid.utils.loadComments('#SOHUCS', function() {
+      Fluid.utils.createScript("https://changyan.sohu.com/upload/changyan.js", function() {
+        window.changyan.api.config({"appid":"cyw5OHIcO","appkey":"fea3446b3df4b3f129f34da4cbc87e51"})
+      });
+    });
+  </script>
+  <noscript>Please enable JavaScript to view the comments</noscript>
+
+
+  </article>
+
+
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://simple.blog.csdn.net" target="_blank" rel="nofollow noopener"><span>CSDN</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/janycode" target="_blank" rel="nofollow noopener"><span>GitHub</span></a> <i class="iconfont icon-love"></i> <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="busuanzi_container_site_pv" style="display: none">
+        总访问量(PV) 
+        <span id="busuanzi_value_site_pv"></span>
+         次，
+      </span>
+    
+    
+      <span id="busuanzi_container_site_uv" style="display: none">
+        总访客数(UV) 
+        <span id="busuanzi_value_site_uv"></span>
+         人
+      </span>
+    
+    
+  
+</div>
+
+  
+  
+  
+</div>
+
+<!-- live2d 动画 -->
+<script src="https://eqcn.ajz.miesnfu.com/wp-content/plugins/wp-3d-pony/live2dw/lib/L2Dwidget.min.js"></script>
+<script>
+    L2Dwidget.init({
+        "model": {
+            jsonPath: "https://unpkg.com/live2d-widget-model-haruto@1.0.5/assets/haruto.model.json",
+            "scale": 1
+        },
+        "display": {
+            "position": "right",
+            "width": 100,
+            "height": 200,
+            "hOffset": 35,
+            "vOffset": -85
+        },
+        "mobile": {
+            "show": false,
+            "scale": 0.1
+        },
+        "react": {
+            "opacityDefault": 0.75,
+            "opacityOnHover": 0.2
+        }
+    });
+</script>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <!-- Baidu Analytics -->
+    <script defer>
+      if (!Fluid.ctx.dnt) {
+        var _hmt = _hmt || [];
+        (function() {
+          var hm = document.createElement("script");
+          hm.src = "https://hm.baidu.com/hm.js?bfff735c897eb60ea49b735096b20e47";
+          var s = document.getElementsByTagName("script")[0];
+          s.parentNode.insertBefore(hm, s);
+        })();
+      }
+    </script>
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.0/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      headingSelector : CONFIG.toc.headingSelector || 'h1,h2,h3,h4,h5,h6',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      collapseDepth   : CONFIG.toc.collapseDepth || 0,
+      scrollSmooth    : true,
+      headingsOffset  : -boardTop
+    });
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+  });
+</script>
+
+
+  <script>
+  (function() {
+    var enableLang = CONFIG.code_language.enable && CONFIG.code_language.default;
+    var enableCopy = CONFIG.copy_btn;
+    if (!enableLang && !enableCopy) {
+      return;
+    }
+
+    function getBgClass(ele) {
+      return Fluid.utils.getBackgroundLightness(ele) >= 0 ? 'code-widget-light' : 'code-widget-dark';
+    }
+
+    var copyTmpl = '';
+    copyTmpl += '<div class="code-widget">';
+    copyTmpl += 'LANG';
+    copyTmpl += '</div>';
+    jQuery('.markdown-body pre').each(function() {
+      var $pre = jQuery(this);
+      if ($pre.find('code.mermaid').length > 0) {
+        return;
+      }
+      if ($pre.find('span.line').length > 0) {
+        return;
+      }
+
+      var lang = '';
+
+      if (enableLang) {
+        lang = CONFIG.code_language.default;
+        if ($pre[0].children.length > 0 && $pre[0].children[0].classList.length >= 2 && $pre.children().hasClass('hljs')) {
+          lang = $pre[0].children[0].classList[1];
+        } else if ($pre[0].getAttribute('data-language')) {
+          lang = $pre[0].getAttribute('data-language');
+        } else if ($pre.parent().hasClass('sourceCode') && $pre[0].children.length > 0 && $pre[0].children[0].classList.length >= 2) {
+          lang = $pre[0].children[0].classList[1];
+          $pre.parent().addClass('code-wrapper');
+        } else if ($pre.parent().hasClass('markdown-body') && $pre[0].classList.length === 0) {
+          $pre.wrap('<div class="code-wrapper"></div>');
+        }
+        lang = lang.toUpperCase().replace('NONE', CONFIG.code_language.default);
+      }
+      $pre.append(copyTmpl.replace('LANG', lang).replace('code-widget">',
+        getBgClass($pre[0]) + (enableCopy ? ' code-widget copy-btn" data-clipboard-snippet><i class="iconfont icon-copy"></i>' : ' code-widget">')));
+
+      if (enableCopy) {
+        Fluid.utils.createScript('https://lib.baomitu.com/clipboard.js/2.0.10/clipboard.min.js', function() {
+          var clipboard = new window.ClipboardJS('.copy-btn', {
+            target: function(trigger) {
+              var nodes = trigger.parentNode.childNodes;
+              for (var i = 0; i < nodes.length; i++) {
+                if (nodes[i].tagName === 'CODE') {
+                  return nodes[i];
+                }
+              }
+            }
+          });
+          clipboard.on('success', function(e) {
+            e.clearSelection();
+            e.trigger.innerHTML = e.trigger.innerHTML.replace('icon-copy', 'icon-success');
+            setTimeout(function() {
+              e.trigger.innerHTML = e.trigger.innerHTML.replace('icon-success', 'icon-copy');
+            }, 2000);
+          });
+        });
+      }
+    });
+  })();
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>
