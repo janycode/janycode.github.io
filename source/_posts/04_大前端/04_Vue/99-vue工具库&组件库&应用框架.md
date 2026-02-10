@@ -665,9 +665,9 @@ export default {
 
 ### 1.5 BI大屏应用
 
-* datav：http://datav.jiaminghi.com/
+* `datav`：http://datav.jiaminghi.com/
 
-* GoView：https://mtruning.club/
+* `GoView`：https://mtruning.club/
 
 
 
