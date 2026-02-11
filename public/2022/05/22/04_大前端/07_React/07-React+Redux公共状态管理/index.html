@@ -1,0 +1,1037 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=light>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Jerry(姜源)">
+  <meta name="keywords" content="Java,Html,CSS,JavaScript,Python,C,Linux,shell编程经验分享、技术总结、心得体会">
+  
+    <meta name="description" content="参考：  Flux 架构思想框架×15：https:&#x2F;&#x2F;github.com&#x2F;voronianski&#x2F;flux-comparison Redux 源码：https:&#x2F;&#x2F;github.com&#x2F;reduxjs&#x2F;redux Redux 官网：https:&#x2F;&#x2F;redux.js.org&#x2F; React-Redux 源码：https:&#x2F;&#x2F;github.com&#x2F;reactjs&#x2F;react-redux Redux">
+<meta property="og:type" content="article">
+<meta property="og:title" content="07-React+Redux公共状态管理">
+<meta property="og:url" content="https://janycode.github.io/2022/05/22/04_%E5%A4%A7%E5%89%8D%E7%AB%AF/07_React/07-React+Redux%E5%85%AC%E5%85%B1%E7%8A%B6%E6%80%81%E7%AE%A1%E7%90%86/index.html">
+<meta property="og:site_name" content="姜源の云笔记">
+<meta property="og:description" content="参考：  Flux 架构思想框架×15：https:&#x2F;&#x2F;github.com&#x2F;voronianski&#x2F;flux-comparison Redux 源码：https:&#x2F;&#x2F;github.com&#x2F;reduxjs&#x2F;redux Redux 官网：https:&#x2F;&#x2F;redux.js.org&#x2F; React-Redux 源码：https:&#x2F;&#x2F;github.com&#x2F;reactjs&#x2F;react-redux Redux">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20260128100650181.png">
+<meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20260124115556842.png">
+<meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20260125102049435.png">
+<meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20260124115446450.gif">
+<meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20260124135939363.gif">
+<meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20260124191317156.png">
+<meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20260124190728505.png">
+<meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20260124191234390.png">
+<meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20260124191454835.png">
+<meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20260124193651107.png">
+<meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20260125135959040.png">
+<meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20260125141920851.png">
+<meta property="article:published_time" content="2022-05-22T13:36:21.000Z">
+<meta property="article:modified_time" content="2026-02-10T09:28:24.888Z">
+<meta property="article:author" content="Jerry(姜源)">
+<meta property="article:tag" content="React">
+<meta property="article:tag" content="Flux">
+<meta property="article:tag" content="Redux">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20260128100650181.png">
+  
+  
+    <meta name="referrer" content="no-referrer-when-downgrade">
+  
+  
+  <title>07-React+Redux公共状态管理 - 姜源の云笔记</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"janycode.github.io","root":"/","version":"1.9.0","typing":{"enable":true,"typeSpeed":50,"cursorChar":"|","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":false},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":"bfff735c897eb60ea49b735096b20e47","google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+
+  
+<meta name="generator" content="Hexo 6.2.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 50vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>姜源の云笔记</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tools/">
+                <i class="iconfont icon-slack-fill"></i>
+                工具
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" target="_blank" rel="noopener" href="https://yuancodes.github.io/">
+                <i class="iconfont icon-notebook"></i>
+                Docsify
+              </a>
+            </li>
+          
+        
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="07-React+Redux公共状态管理"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-author" aria-hidden="true"></i>
+        Jerry(姜源)
+      </span>
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2022-05-22 21:36" pubdate>
+          星期日, 2022/05/22 21:36:21
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          <!-- compatible with older versions-->
+          25k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          <!-- compatible with older versions-->
+          207 分钟
+        
+      </span>
+    
+
+    
+    
+      
+        <span id="busuanzi_container_page_pv" style="display: none">
+          <i class="iconfont icon-eye" aria-hidden="true"></i>
+          <span id="busuanzi_value_page_pv"></span> 次
+        </span>
+        
+      
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">07-React+Redux公共状态管理</h1>
+            
+            <div class="markdown-body">
+              
+              <p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20260128100650181.png" srcset="/img/loading.gif" lazyload alt="re269r227-react-logo-react-logo-import-io"></p>
+<p>参考：</p>
+<ul>
+<li>Flux 架构思想框架×15：<a target="_blank" rel="noopener" href="https://github.com/voronianski/flux-comparison">https://github.com/voronianski/flux-comparison</a></li>
+<li>Redux 源码：<a target="_blank" rel="noopener" href="https://github.com/reduxjs/redux">https://github.com/reduxjs/redux</a></li>
+<li>Redux 官网：<a target="_blank" rel="noopener" href="https://redux.js.org/">https://redux.js.org/</a></li>
+<li>React-Redux 源码：<a target="_blank" rel="noopener" href="https://github.com/reactjs/react-redux">https://github.com/reactjs/react-redux</a></li>
+<li>Redux 持久化：<a target="_blank" rel="noopener" href="https://github.com/rt2zz/redux-persist">https://github.com/rt2zz/redux-persist</a></li>
+<li>本文 Demo 源码：<a target="_blank" rel="noopener" href="https://github.com/janycode/react-router-v6-demo">https://github.com/janycode/react-router-v6-demo</a></li>
+</ul>
+<h2 id="1-Flux-架构"><a href="#1-Flux-架构" class="headerlink" title="1. Flux 架构"></a>1. Flux 架构</h2><h3 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h3><p><code>Flux</code> 是一种架构思想，专门解决软件的结构问题。它跟MVC架构是同一类东西，但是更加简单和清晰。</p>
+<ul>
+<li>Flux 存在多种实现(至少15种)：<a target="_blank" rel="noopener" href="https://github.com/voronianski/flux-comparison">https://github.com/voronianski/flux-comparison</a></li>
+<li>Facebook Flux 是 Facebook 官方实现且推荐的，用来构建客户端Web应用的应用架构。（<code>但是不好用</code>）</li>
+</ul>
+<h3 id="Redux"><a href="#Redux" class="headerlink" title="Redux"></a>Redux</h3><p><code>Redux</code> 是 Flux 的其中一种实现方式，最主要是用作应用状态的管理。【<code>推荐</code>】</p>
+<p>简言之，Redux 用一个单独的<code>常量状态树（state对象）保存这一整个应用的状态，这个对象不能直接被改变</code>。当一些数据变化了，一个新的对象就会被创建（使用 actions 和 reducers ），这样就可以进行数据追踪，实现时光旅行。</p>
+<ul>
+<li>state 以单一对象存储在 store 对象中</li>
+<li>state 只读（每次都返回一个新的对象）</li>
+<li>使用纯函数 reducer 执行 state 更新</li>
+</ul>
+<h3 id="Redux-工作流-原理"><a href="#Redux-工作流-原理" class="headerlink" title="Redux 工作流(原理)"></a>Redux 工作流(原理)</h3><p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20260124115556842.png" srcset="/img/loading.gif" lazyload alt="image-20260124115555540"></p>
+<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20260125102049435.png" srcset="/img/loading.gif" lazyload alt="image-20260125102047946"></p>
+<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20260124115446450.gif" srcset="/img/loading.gif" lazyload alt="Redux data flow diagram"></p>
+<h2 id="2-Redux-公共状态管理"><a href="#2-Redux-公共状态管理" class="headerlink" title="2. Redux 公共状态管理"></a>2. Redux 公共状态管理</h2><h3 id="2-1-安装"><a href="#2-1-安装" class="headerlink" title="2.1 安装"></a>2.1 安装</h3><p>安装：<em>npm i <a href="mailto:&#x72;&#101;&#100;&#x75;&#x78;&#x40;&#52;&#x2e;&#49;&#46;&#50;">&#x72;&#101;&#100;&#x75;&#x78;&#x40;&#52;&#x2e;&#49;&#46;&#50;</a></em> - 以 v4.1.2 为例</p>
+<h3 id="2-2-使用-新vs旧用法"><a href="#2-2-使用-新vs旧用法" class="headerlink" title="2.2 使用(新vs旧用法)"></a>2.2 使用(新vs旧用法)</h3><p>场景：显示或隐藏 Tabbar，即进入详情页隐藏页面底部 Tabbar 为例，其他页面默认还是保持展示页面底部 Tabbar。</p>
+<p>App.js &gt;&gt; store.js(订阅发布机制) &lt;&lt; Detail.js</p>
+<p>案例源码：<a target="_blank" rel="noopener" href="https://github.com/janycode/react-router-v6-demo/commit/c9c4bc00fcaa394db7a853cf82d5f0be06402e39">https://github.com/janycode/react-router-v6-demo/commit/c9c4bc00fcaa394db7a853cf82d5f0be06402e39</a></p>
+<p>目录：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs js">src/<br>  redux/<br>    actionCreator/<br>      <span class="hljs-title class_">TabbarActionCreator</span>.<span class="hljs-property">js</span><br>    store.<span class="hljs-property">js</span><br>  views/<br>    <span class="hljs-title class_">Detail</span>.<span class="hljs-property">js</span><br>  <span class="hljs-title class_">App</span>.<span class="hljs-property">js</span><br></code></pre></td></tr></table></figure>
+
+<p>redux&#x2F;store.js</p>
+<ul>
+<li>旧版本 redux 创建 store 使用：<code>import &#123; createStore &#125; from &#39;redux&#39;</code></li>
+<li>新版本 redux 创建 store 使用： <code>import &#123; legacy_createStore as createStore &#125; from &#39;redux&#39;</code></li>
+</ul>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><code class="hljs js"><span class="hljs-keyword">import</span> &#123; createStore &#125; <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;redux&#x27;</span>  <span class="hljs-comment">// 引入 redux4.1.2 为例</span><br><br><span class="hljs-keyword">const</span> <span class="hljs-title function_">reducer</span> = (<span class="hljs-params">prevState = &#123;</span><br><span class="hljs-params">    show: <span class="hljs-literal">true</span>,</span><br><span class="hljs-params">    //...</span><br><span class="hljs-params">&#125;, action</span>) =&gt; &#123;<br>    <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&quot;action:&quot;</span>, action);<br>    <span class="hljs-keyword">let</span> newState = &#123;...prevState&#125;  <span class="hljs-comment">//必须使用深拷贝，不影响原 state</span><br>    <span class="hljs-keyword">switch</span> (action?.<span class="hljs-property">type</span>) &#123;  <span class="hljs-comment">//根据不同的自定义 action.type 修改 state 并返回</span><br>        <span class="hljs-keyword">case</span> <span class="hljs-string">&quot;hide-tabbar&quot;</span>:<br>            newState.<span class="hljs-property">show</span> = <span class="hljs-literal">false</span><br>            <span class="hljs-keyword">return</span> newState<br>        <span class="hljs-keyword">case</span> <span class="hljs-string">&quot;show-tabbar&quot;</span>:<br>            newState.<span class="hljs-property">show</span> = <span class="hljs-literal">true</span><br>            <span class="hljs-keyword">return</span> newState<br>        <span class="hljs-attr">default</span>:<br>            <span class="hljs-keyword">return</span> prevState<br>    &#125;<br>    <span class="hljs-keyword">return</span> prevState<br>&#125;<br><span class="hljs-keyword">const</span> store = <span class="hljs-title function_">createStore</span>(reducer)<br></code></pre></td></tr></table></figure>
+
+<p>views&#x2F;Detail.js</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><code class="hljs js"><span class="hljs-keyword">import</span> &#123; useEffect &#125; <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;react&#x27;</span>;<br><span class="hljs-keyword">import</span> &#123; useNavigate, useParams &#125; <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;react-router-dom&#x27;</span>;<br><span class="hljs-keyword">import</span> store <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;../redux/store&#x27;</span>;<br><span class="hljs-keyword">import</span> &#123; hide, show &#125; <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;../redux/actionCreator/TabbarActionCreator&#x27;</span>;<br><br><span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> <span class="hljs-keyword">function</span> <span class="hljs-title function_">Detail</span>(<span class="hljs-params"></span>) &#123;<br>    <span class="hljs-keyword">const</span> params = <span class="hljs-title function_">useParams</span>()  <span class="hljs-comment">//获取动态路由参数</span><br>    <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(params.<span class="hljs-property">myid</span>);   <span class="hljs-comment">//自定义参数 myid 在路由配置中</span><br>    <span class="hljs-keyword">const</span> navigate = <span class="hljs-title function_">useNavigate</span>()<br><br>    <span class="hljs-title function_">useEffect</span>(<span class="hljs-function">() =&gt;</span> &#123;<br>        <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&quot;create&quot;</span>);<br>        <span class="hljs-comment">// store.dispatch 发布（通知）</span><br>        store.<span class="hljs-title function_">dispatch</span>(<span class="hljs-title function_">hide</span>()) <span class="hljs-comment">// hide() 参数等价于 &#123; type: &quot;hide-tabbar&quot; &#125;</span><br>      <span class="hljs-keyword">return</span> <span class="hljs-function">() =&gt;</span> &#123;<br>          <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&quot;destory&quot;</span>);<br>          store.<span class="hljs-title function_">dispatch</span>(<span class="hljs-title function_">show</span>()) <span class="hljs-comment">// show() 参数等价于 &#123; type: &quot;show-tabbar&quot; &#125;</span><br>      &#125;<br>    &#125;, [])<br><br>    <span class="hljs-keyword">return</span> (<br>        <span class="language-xml"><span class="hljs-tag">&lt;<span class="hljs-name">div</span>&gt;</span>Detail</span><br><span class="language-xml">            <span class="hljs-tag">&lt;<span class="hljs-name">button</span> <span class="hljs-attr">onClick</span>=<span class="hljs-string">&#123;()</span> =&gt;</span> &#123;</span><br><span class="language-xml">                navigate(&quot;/detail/888&quot;) //跳转当前组件，解析新的参数渲染新的内容</span><br><span class="language-xml">            &#125;&#125;&gt;猜你喜欢<span class="hljs-tag">&lt;/<span class="hljs-name">button</span>&gt;</span></span><br><span class="language-xml">        <span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span></span><br>    )<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>App.js</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><code class="hljs js"><span class="hljs-keyword">import</span> &#123; <span class="hljs-title class_">BrowserRouter</span> &#125; <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;react-router-dom&#x27;</span><br><span class="hljs-keyword">import</span> <span class="hljs-string">&#x27;./App.css&#x27;</span><br><span class="hljs-keyword">import</span> <span class="hljs-title class_">MRouter</span> <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;./router/index&#x27;</span><br><span class="hljs-keyword">import</span> <span class="hljs-title class_">Tabbar</span> <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;./components/Tabbar&#x27;</span><br><span class="hljs-keyword">import</span> store <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;./redux/store&#x27;</span><br><span class="hljs-keyword">import</span> &#123; useEffect, useState &#125; <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;react&#x27;</span><br><br><span class="hljs-keyword">function</span> <span class="hljs-title function_">App</span>(<span class="hljs-params"></span>) &#123;<br>  <span class="hljs-keyword">const</span> [isShow, setIsShow] = <span class="hljs-title function_">useState</span>(<span class="hljs-literal">true</span>)<br>  <span class="hljs-comment">// store.subscribe 订阅</span><br>  <span class="hljs-title function_">useEffect</span>(<span class="hljs-function">() =&gt;</span> &#123;<br>    store.<span class="hljs-title function_">subscribe</span>(<span class="hljs-function">() =&gt;</span> &#123;<br>      <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&quot;app subscribe 订阅:&quot;</span>, store.<span class="hljs-title function_">getState</span>());<br>      <span class="hljs-title function_">setIsShow</span>(store.<span class="hljs-title function_">getState</span>().<span class="hljs-property">show</span>)<br>    &#125;)<br>  &#125;, [])<br><br>  <span class="hljs-keyword">return</span> (<br>    <span class="language-xml"><span class="hljs-tag">&lt;<span class="hljs-name">BrowserRouter</span>&gt;</span>     &#123;/* 指定 BrowserRouter 路由模式 */&#125;</span><br><span class="language-xml">      <span class="hljs-tag">&lt;<span class="hljs-name">MRouter</span> /&gt;</span>       &#123;/* 路由组件封装 router/index.js */&#125;</span><br><span class="language-xml">      &#123;isShow &amp;&amp; <span class="hljs-tag">&lt;<span class="hljs-name">Tabbar</span> /&gt;</span>&#125;</span><br><span class="language-xml">    <span class="hljs-tag">&lt;/<span class="hljs-name">BrowserRouter</span>&gt;</span></span><br>  )<br>&#125;<br><br><span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> <span class="hljs-title class_">App</span><br></code></pre></td></tr></table></figure>
+
+<p>actionCreator&#x2F;TabbarActionCreator.js</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs js"><span class="hljs-keyword">function</span> <span class="hljs-title function_">hide</span>(<span class="hljs-params"></span>) &#123;<br>    <span class="hljs-keyword">return</span> &#123; <span class="hljs-attr">type</span>: <span class="hljs-string">&quot;hide-tabbar&quot;</span> &#125;<br>&#125;<br><span class="hljs-keyword">function</span> <span class="hljs-title function_">show</span>(<span class="hljs-params"></span>) &#123;<br>    <span class="hljs-keyword">return</span> &#123; <span class="hljs-attr">type</span>: <span class="hljs-string">&quot;show-tabbar&quot;</span> &#125;<br>&#125;<br><span class="hljs-keyword">export</span> &#123;<br>    hide,<br>    show<br>&#125;<br></code></pre></td></tr></table></figure>
+
+
+
+<h3 id="2-3-store-原理"><a href="#2-3-store-原理" class="headerlink" title="2.3 store 原理"></a>2.3 store 原理</h3><p>自定义实现 <code>createJerryStore(reducer)</code> 实现 和 官方 createStore 相同的效果，逻辑来源于源码。</p>
+<ul>
+<li>原理：订阅 subscribe&#x2F;dispatch 发布机制。<ul>
+<li>subscribe 订阅并传入回调函数 callback</li>
+<li>dispatch 发布并触发 callback 执行，但会经过 action 的 switch-case 分支处理修改 state 值</li>
+<li>getState 返回最新的 state</li>
+</ul>
+</li>
+</ul>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br></pre></td><td class="code"><pre><code class="hljs js"><span class="hljs-comment">// 1. 引入 redux4.1.2 为例</span><br><span class="hljs-comment">// 2. createStore( reducer )</span><br><span class="hljs-keyword">import</span> &#123; createStore &#125; <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;redux&#x27;</span><br><br><span class="hljs-keyword">const</span> <span class="hljs-title function_">reducer</span> = (<span class="hljs-params">prevState = &#123;</span><br><span class="hljs-params">    show: <span class="hljs-literal">true</span>,</span><br><span class="hljs-params">    cityName: <span class="hljs-string">&quot;北京&quot;</span>  //当前在内存中，需要持久化存储</span><br><span class="hljs-params">    //...</span><br><span class="hljs-params">&#125;, action</span>) =&gt; &#123;<br>    <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&quot;action:&quot;</span>, action);<br>    <span class="hljs-keyword">let</span> newState = &#123; ...prevState &#125;  <span class="hljs-comment">//必须使用深拷贝，不影响原 state</span><br>    <span class="hljs-keyword">switch</span> (action?.<span class="hljs-property">type</span>) &#123;  <span class="hljs-comment">//根据不同的自定义 action.type 修改 state 并返回</span><br>        <span class="hljs-keyword">case</span> <span class="hljs-string">&quot;hide-tabbar&quot;</span>:<br>            newState.<span class="hljs-property">show</span> = <span class="hljs-literal">false</span><br>            <span class="hljs-keyword">return</span> newState<br>        <span class="hljs-keyword">case</span> <span class="hljs-string">&quot;show-tabbar&quot;</span>:<br>            newState.<span class="hljs-property">show</span> = <span class="hljs-literal">true</span><br>            <span class="hljs-keyword">return</span> newState<br>        <span class="hljs-keyword">case</span> <span class="hljs-string">&quot;change-city&quot;</span>:<br>            newState.<span class="hljs-property">cityName</span> = action.<span class="hljs-property">payload</span>  <span class="hljs-comment">// 自定义字段 payload</span><br>            <span class="hljs-keyword">return</span> newState<br>        <span class="hljs-attr">default</span>:<br>            <span class="hljs-keyword">return</span> prevState<br>    &#125;<br>    <span class="hljs-keyword">return</span> prevState<br>&#125;<br><span class="hljs-comment">// const store = createStore(reducer)</span><br><span class="hljs-keyword">const</span> store = <span class="hljs-title function_">createJerryStore</span>(reducer)  <span class="hljs-comment">//使用自写的 redux store 效果也能实现</span><br><br><span class="hljs-comment">// redux store 原理，源码分析模拟</span><br><span class="hljs-keyword">function</span> <span class="hljs-title function_">createJerryStore</span>(<span class="hljs-params">reducer</span>) &#123;<br>    <span class="hljs-keyword">let</span> list = []<br>    <span class="hljs-keyword">let</span> state = <span class="hljs-title function_">reducer</span>()<br>    <span class="hljs-comment">// 订阅：存回调函数</span><br>    <span class="hljs-keyword">function</span> <span class="hljs-title function_">subscribe</span>(<span class="hljs-params">callback</span>) &#123;<br>        list.<span class="hljs-title function_">push</span>(callback)<br>    &#125;<br>    <span class="hljs-comment">// 发布：发布并触发 callback 执行，但会经过 action 的 switch-case 分支处理修改 state 值</span><br>    <span class="hljs-keyword">function</span> <span class="hljs-title function_">dispatch</span>(<span class="hljs-params">action</span>) &#123;<br>        state = <span class="hljs-title function_">reducer</span>(state, action)<br>        <span class="hljs-keyword">for</span> (<span class="hljs-keyword">let</span> i <span class="hljs-keyword">in</span> list) &#123;<br>            list[i] &amp;&amp; list[i]()<br>        &#125;<br>    &#125;<br>    <span class="hljs-comment">// 获取：拿到最新的 state 值，做后续逻辑处理</span><br>    <span class="hljs-keyword">function</span> <span class="hljs-title function_">getState</span>(<span class="hljs-params"></span>) &#123;<br>        <span class="hljs-keyword">return</span> state<br>    &#125;<br>    <span class="hljs-keyword">return</span> &#123;<br>        subscribe,<br>        dispatch,<br>        getState<br>    &#125;<br>&#125;<br><br><span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> store<br></code></pre></td></tr></table></figure>
+
+
+
+<h3 id="2-4-reducer-合并-combineReducers"><a href="#2-4-reducer-合并-combineReducers" class="headerlink" title="2.4 reducer 合并 combineReducers()"></a>2.4 reducer 合并 combineReducers()</h3><p>如果如果不同的 action 所处理的状态之间没有联系，就可以把 Reducer 函数拆分。不同的函数负责处理不同属性，最终把它们合并成一个大的 Reducer 即可。</p>
+<p><code>combineReducers(&#123;...&#125;)</code>，合并 reducer 后取值需要加上 XxxReducer 名字空间来访问 state，但 dispatch 会自动匹配无需添加合并的名字。</p>
+<ul>
+<li>eg: <code>store.getState().CityReducer.cityName</code></li>
+</ul>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><code class="hljs js"><span class="hljs-keyword">import</span> &#123;combineReducers&#125; <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;redux&quot;</span>;<br><span class="hljs-keyword">const</span> reducer = <span class="hljs-title function_">combineReducers</span>(&#123;<br>    <span class="hljs-attr">a</span>: functionA,<br>    <span class="hljs-attr">b</span>: functionB,<br>    <span class="hljs-attr">c</span>: functionC<br>&#125;)<br><span class="hljs-comment">//访问：</span><br>(state)=&gt;&#123;<br>    <span class="hljs-keyword">return</span> &#123;<br>    	<span class="hljs-attr">jerrystate</span>:state.<span class="hljs-property">a</span> (不同的命名空间)<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>目录：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs js">src/<br>  redux/<br>    reducers/             <span class="hljs-comment">//拆分管理 reducer</span><br>      <span class="hljs-title class_">CityReducers</span>.<span class="hljs-property">js</span><br>      <span class="hljs-title class_">TabbarReducers</span>.<span class="hljs-property">js</span><br>    store.<span class="hljs-property">js</span>              <span class="hljs-comment">//合并 reducer</span><br>  views/<br>    <span class="hljs-title class_">Cinema</span>.<span class="hljs-property">js</span>             <span class="hljs-comment">//获取状态 store.getStore().XxxReducer.xxx</span><br>    <span class="hljs-title class_">City</span>.<span class="hljs-property">js</span>               <span class="hljs-comment">//获取状态 store.getStore().YyyReducer.yyy</span><br>  <span class="hljs-title class_">App</span>.<span class="hljs-property">js</span><br></code></pre></td></tr></table></figure>
+
+<p>redux&#x2F;store.js</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs js"><span class="hljs-keyword">import</span> &#123; combineReducers, createStore &#125; <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;redux&#x27;</span>  <span class="hljs-comment">//引入 redux4.1.2 为例</span><br><span class="hljs-keyword">import</span> <span class="hljs-title class_">CityReducer</span> <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;./reducers/CityReducer&#x27;</span>;<br><span class="hljs-keyword">import</span> <span class="hljs-title class_">TabbarReducer</span> <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;./reducers/TabbarReducer&#x27;</span>;<br><br><span class="hljs-comment">// reducer 合并：combineReducers(&#123;...&#125;)，合并后取值需要加上 XxxReducer 名字空间</span><br><span class="hljs-keyword">const</span> reducer = <span class="hljs-title function_">combineReducers</span>(&#123;<br>    <span class="hljs-title class_">CityReducer</span>,<br>    <span class="hljs-title class_">TabbarReducer</span><br>&#125;)<br><br><span class="hljs-keyword">const</span> store = <span class="hljs-title function_">createStore</span>(reducer)<br></code></pre></td></tr></table></figure>
+
+<p>redux&#x2F;reducers&#x2F;CityReducers.js</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><code class="hljs js"><span class="hljs-keyword">const</span> <span class="hljs-title function_">CityReducer</span> = (<span class="hljs-params">prevState = &#123;</span><br><span class="hljs-params">    cityName: <span class="hljs-string">&quot;北京&quot;</span>  //当前在内存中，需要持久化存储</span><br><span class="hljs-params">&#125;, action</span>) =&gt; &#123;<br>    <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&quot;action:&quot;</span>, action);<br>    <span class="hljs-keyword">let</span> newState = &#123; ...prevState &#125;  <span class="hljs-comment">//必须使用深拷贝，不影响原 state</span><br>    <span class="hljs-keyword">switch</span> (action?.<span class="hljs-property">type</span>) &#123;  <span class="hljs-comment">//根据不同的自定义 action.type 修改 state 并返回</span><br>        <span class="hljs-keyword">case</span> <span class="hljs-string">&quot;change-city&quot;</span>:<br>            newState.<span class="hljs-property">cityName</span> = action.<span class="hljs-property">payload</span>  <span class="hljs-comment">// 自定义字段 payload</span><br>            <span class="hljs-keyword">return</span> newState<br>        <span class="hljs-attr">default</span>:<br>            <span class="hljs-keyword">return</span> prevState<br>    &#125;<br>    <span class="hljs-keyword">return</span> prevState<br>&#125;<br><br><span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> <span class="hljs-title class_">CityReducer</span><br></code></pre></td></tr></table></figure>
+
+<p>redux&#x2F;reducers&#x2F;TabbarReducers.js</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><code class="hljs js"><span class="hljs-keyword">const</span> <span class="hljs-title function_">TabbarReducer</span> = (<span class="hljs-params">prevState = &#123;</span><br><span class="hljs-params">    show: <span class="hljs-literal">true</span>,</span><br><span class="hljs-params">&#125;, action</span>) =&gt; &#123;<br>    <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&quot;action:&quot;</span>, action);<br>    <span class="hljs-keyword">let</span> newState = &#123; ...prevState &#125;  <span class="hljs-comment">//必须使用深拷贝，不影响原 state</span><br>    <span class="hljs-keyword">switch</span> (action?.<span class="hljs-property">type</span>) &#123;  <span class="hljs-comment">//根据不同的自定义 action.type 修改 state 并返回</span><br>        <span class="hljs-keyword">case</span> <span class="hljs-string">&quot;hide-tabbar&quot;</span>:<br>            newState.<span class="hljs-property">show</span> = <span class="hljs-literal">false</span><br>            <span class="hljs-keyword">return</span> newState<br>        <span class="hljs-keyword">case</span> <span class="hljs-string">&quot;show-tabbar&quot;</span>:<br>            newState.<span class="hljs-property">show</span> = <span class="hljs-literal">true</span><br>            <span class="hljs-keyword">return</span> newState<br>        <span class="hljs-attr">default</span>:<br>            <span class="hljs-keyword">return</span> prevState<br>    &#125;<br>    <span class="hljs-keyword">return</span> prevState<br>&#125;<br><br><span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> <span class="hljs-title class_">TabbarReducer</span><br></code></pre></td></tr></table></figure>
+
+<p>views&#x2F;Cinema.js</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><code class="hljs js"><span class="hljs-keyword">import</span> <span class="hljs-title class_">React</span>, &#123; useState &#125; <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;react&#x27;</span><br><span class="hljs-keyword">import</span> store <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;../redux/store&#x27;</span><br><span class="hljs-keyword">import</span> &#123; useNavigate &#125; <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;react-router-dom&#x27;</span><br><br><span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> <span class="hljs-keyword">function</span> <span class="hljs-title function_">Cinema</span>(<span class="hljs-params">props</span>) &#123;<br>  <span class="hljs-comment">// 每次进入页面只访问公共状态 cityName</span><br>  <span class="hljs-keyword">const</span> [cityName] = <span class="hljs-title function_">useState</span>(store.<span class="hljs-title function_">getState</span>().<span class="hljs-property">CityReducer</span>.<span class="hljs-property">cityName</span>)<br>  <span class="hljs-keyword">const</span> navigate = <span class="hljs-title function_">useNavigate</span>()<br>  <span class="hljs-keyword">return</span> (<br>    <span class="language-xml"><span class="hljs-tag">&lt;<span class="hljs-name">div</span>&gt;</span></span><br><span class="language-xml">      <span class="hljs-tag">&lt;<span class="hljs-name">button</span> <span class="hljs-attr">onClick</span>=<span class="hljs-string">&#123;()</span> =&gt;</span> &#123;</span><br><span class="language-xml">        navigate(`/city`)</span><br><span class="language-xml">      &#125;&#125;&gt;&#123;cityName&#125;<span class="hljs-tag">&lt;/<span class="hljs-name">button</span>&gt;</span></span><br><span class="language-xml">      Cinema</span><br><span class="language-xml">    <span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span></span><br>  )<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>views&#x2F;City.js</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><code class="hljs js"><span class="hljs-keyword">import</span> <span class="hljs-title class_">React</span>, &#123; useState &#125; <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;react&#x27;</span><br><span class="hljs-keyword">import</span> store <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;../redux/store&#x27;</span><br><span class="hljs-keyword">import</span> &#123; useNavigate &#125; <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;react-router-dom&#x27;</span><br><br><span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> <span class="hljs-keyword">function</span> <span class="hljs-title function_">City</span>(<span class="hljs-params"></span>) &#123;<br>    <span class="hljs-keyword">const</span> [list] = <span class="hljs-title function_">useState</span>([<span class="hljs-string">&quot;北京&quot;</span>, <span class="hljs-string">&quot;上海&quot;</span>, <span class="hljs-string">&quot;广州&quot;</span>, <span class="hljs-string">&quot;深圳&quot;</span>])<br>    <span class="hljs-keyword">const</span> navigate = <span class="hljs-title function_">useNavigate</span>()<br>    <span class="hljs-keyword">return</span> (<br>        <span class="language-xml"><span class="hljs-tag">&lt;<span class="hljs-name">div</span>&gt;</span>City</span><br><span class="language-xml">            <span class="hljs-tag">&lt;<span class="hljs-name">ul</span>&gt;</span></span><br><span class="language-xml">                &#123;</span><br><span class="language-xml">                    list.map(item =&gt;</span><br><span class="language-xml">                        <span class="hljs-tag">&lt;<span class="hljs-name">li</span> <span class="hljs-attr">key</span>=<span class="hljs-string">&#123;item&#125;</span> <span class="hljs-attr">onClick</span>=<span class="hljs-string">&#123;()</span> =&gt;</span> &#123;</span><br><span class="language-xml">                            store.dispatch(&#123;  // 发布（通知），让公共 store 处理 type 返回新的 state</span><br><span class="language-xml">                                type: &quot;change-city&quot;,</span><br><span class="language-xml">                                payload: item  // 自定义字段 payload</span><br><span class="language-xml">                            &#125;)</span><br><span class="language-xml">                            //navigate(&quot;/cinemas&quot;) //进入 /cinemas 或 返回上一页</span><br><span class="language-xml">                            navigate(-1) //返回上一页，即 /cinemas 会自动再次读取 store 中新的 state 显示 cityName</span><br><span class="language-xml">                        &#125;&#125;&gt;&#123;item&#125;<span class="hljs-tag">&lt;/<span class="hljs-name">li</span>&gt;</span></span><br><span class="language-xml">                    )</span><br><span class="language-xml">                &#125;</span><br><span class="language-xml">            <span class="hljs-tag">&lt;/<span class="hljs-name">ul</span>&gt;</span></span><br><span class="language-xml">        <span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span></span><br>    )<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>App.js</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><code class="hljs js"><span class="hljs-comment">//import &#123; HashRouter &#125; from &#x27;react-router-dom&#x27;  //引入路由模块</span><br><span class="hljs-keyword">import</span> &#123; <span class="hljs-title class_">BrowserRouter</span> &#125; <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;react-router-dom&#x27;</span><br><span class="hljs-keyword">import</span> <span class="hljs-string">&#x27;./App.css&#x27;</span><br><span class="hljs-keyword">import</span> <span class="hljs-title class_">MRouter</span> <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;./router/index&#x27;</span><br><span class="hljs-keyword">import</span> <span class="hljs-title class_">Tabbar</span> <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;./components/Tabbar&#x27;</span><br><span class="hljs-keyword">import</span> store <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;./redux/store&#x27;</span><br><span class="hljs-keyword">import</span> &#123; useEffect, useState &#125; <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;react&#x27;</span><br><br><span class="hljs-keyword">function</span> <span class="hljs-title function_">App</span>(<span class="hljs-params"></span>) &#123;<br>  <span class="hljs-keyword">const</span> [isShow, setIsShow] = <span class="hljs-title function_">useState</span>(<span class="hljs-literal">true</span>)<br>  <span class="hljs-comment">// store.subscribe 订阅</span><br>  <span class="hljs-title function_">useEffect</span>(<span class="hljs-function">() =&gt;</span> &#123;<br>    store.<span class="hljs-title function_">subscribe</span>(<span class="hljs-function">() =&gt;</span> &#123;<br>      <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&quot;app subscribe 订阅:&quot;</span>, store.<span class="hljs-title function_">getState</span>());<br>      <span class="hljs-title function_">setIsShow</span>(store.<span class="hljs-title function_">getState</span>().<span class="hljs-property">TabbarReducer</span>.<span class="hljs-property">show</span>)<br>    &#125;)<br>  &#125;, [])<br><br>  <span class="hljs-keyword">return</span> (<br>    <span class="language-xml"><span class="hljs-tag">&lt;<span class="hljs-name">BrowserRouter</span>&gt;</span>     &#123;/* 指定 BrowserRouter 路由模式 */&#125;</span><br><span class="language-xml">      <span class="hljs-tag">&lt;<span class="hljs-name">MRouter</span> /&gt;</span>       &#123;/* 路由组件封装 router/index.js */&#125;</span><br><span class="language-xml">      &#123;isShow &amp;&amp; <span class="hljs-tag">&lt;<span class="hljs-name">Tabbar</span> /&gt;</span>&#125;</span><br><span class="language-xml">    <span class="hljs-tag">&lt;/<span class="hljs-name">BrowserRouter</span>&gt;</span></span><br>  )<br>&#125;<br><br><span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> <span class="hljs-title class_">App</span><br></code></pre></td></tr></table></figure>
+
+<p>效果：</p>
+<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20260124135939363.gif" srcset="/img/loading.gif" lazyload alt="chrome-capture-2026-01-24"></p>
+<h2 id="3-Redux-异步中间件"><a href="#3-Redux-异步中间件" class="headerlink" title="3. Redux 异步中间件"></a>3. Redux 异步中间件</h2><p>在 Redux 里，action 仅仅是携带了数据的普通 js 对象。action creator 返回的值是这个 action 类型的对象。然后通过 store.dispatch() 进行分发。同步的情况下一切都很完美，但是 <code>reducer 无法处理异步</code>的情况。</p>
+<p>那么就需要在 action 和 reducer 中间架起一座桥梁来处理异步，这就是middleware。</p>
+<p>中间件的原理：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs js"><span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> <span class="hljs-keyword">function</span> <span class="hljs-title function_">thunkMiddleware</span>(<span class="hljs-params">&#123; dispatch, getState &#125;</span>) &#123;<br>    <span class="hljs-keyword">return</span> <span class="hljs-function"><span class="hljs-params">next</span> =&gt;</span> <span class="hljs-function"><span class="hljs-params">action</span> =&gt;</span><br>    	<span class="hljs-keyword">typeof</span> action === <span class="hljs-string">&#x27;function&#x27;</span> ? <span class="hljs-title function_">action</span>(dispatch, getState) : <span class="hljs-title function_">next</span>(action);<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>这段代码的意思是，中间件这个桥梁接受到的参数 action，如果不是 function 则和过去一样直接执行 next 方法(下一步处理)，相当于中间件没有做任何事。如果 action 是 function，则先执行 action，action 的处理结束之后，再在 action 的内部调用 dispatch。</p>
+<h3 id="3-1-redux-thunk"><a href="#3-1-redux-thunk" class="headerlink" title="3.1 redux-thunk"></a>3.1 redux-thunk</h3><p>安装：<em>npm i redux-thunk@2</em> - 兼容版本，为了兼容 redux 4.1.2</p>
+<p>案例源码：<a target="_blank" rel="noopener" href="https://github.com/janycode/react-router-v6-demo/commit/ff79daf706d8dd5a063186f5adaf9450cebf8065">https://github.com/janycode/react-router-v6-demo/commit/ff79daf706d8dd5a063186f5adaf9450cebf8065</a></p>
+<p>目录：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs js">src/<br>  redux/<br>    actionCreator/<br>      getCinemaListAction.<span class="hljs-property">js</span><br>    reducers/                 <span class="hljs-comment">//拆分管理 reducer</span><br>      <span class="hljs-title class_">CinemaListReducer</span>.<span class="hljs-property">js</span><br>    store.<span class="hljs-property">js</span><br>  views/<br>    <span class="hljs-title class_">Cinema</span>.<span class="hljs-property">js</span><br></code></pre></td></tr></table></figure>
+
+<p>redux&#x2F;store.js - 引入并使用 <code>redux-thunk</code> 组件，就搭建了桥梁，最终会执行封装方法中的 dispatch 函数</p>
+<ul>
+<li>依赖 Cinema.js 组件中 <code>store.dispatch(getCinemaListAction())</code> 传入的函数</li>
+</ul>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><code class="hljs js"><span class="hljs-keyword">import</span> &#123; applyMiddleware, combineReducers, createStore &#125; <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;redux&#x27;</span>  <span class="hljs-comment">//引入 redux4.1.2 为例</span><br><span class="hljs-keyword">import</span> <span class="hljs-title class_">CityReducer</span> <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;./reducers/CityReducer&#x27;</span>;<br><span class="hljs-keyword">import</span> <span class="hljs-title class_">TabbarReducer</span> <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;./reducers/TabbarReducer&#x27;</span>;<br><span class="hljs-keyword">import</span> <span class="hljs-title class_">CinemaListReducer</span> <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;./reducers/CinemaListReducer&#x27;</span>;<br><span class="hljs-keyword">import</span> reduxThunk <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;redux-thunk&#x27;</span>; <span class="hljs-comment">// redux-thunk：1.导入中间件</span><br><br><span class="hljs-comment">// reducer 合并：combineReducers(&#123;...&#125;)，合并后取值需要加上 XxxReducer 名字空间</span><br><span class="hljs-keyword">const</span> reducer = <span class="hljs-title function_">combineReducers</span>(&#123;<br>    <span class="hljs-title class_">CityReducer</span>,<br>    <span class="hljs-title class_">TabbarReducer</span>,<br>    <span class="hljs-title class_">CinemaListReducer</span><br>&#125;)<br><br><span class="hljs-keyword">const</span> store = <span class="hljs-title function_">createStore</span>(reducer, <span class="hljs-title function_">applyMiddleware</span>(reduxThunk)) <span class="hljs-comment">// redux-thunk：2.应用中间件</span><br></code></pre></td></tr></table></figure>
+
+<p>redux&#x2F;actionCreator&#x2F;getCinemaListAction.js - 封装异步请求 axios 函数</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><code class="hljs js"><span class="hljs-keyword">import</span> axios <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;axios&#x27;</span><br><br><span class="hljs-comment">// 函数返回函数，作为回调使用，通过 redux-thunk 中间件穿如何 dispatch 并执行 dispatch 发布函数</span><br><span class="hljs-keyword">function</span> <span class="hljs-title function_">getCinemaListAction</span>(<span class="hljs-params"></span>) &#123;<br>    <span class="hljs-keyword">return</span> <span class="hljs-function">(<span class="hljs-params">dispatch</span>) =&gt;</span> &#123;<br>        <span class="hljs-title function_">axios</span>(&#123;<br>            <span class="hljs-attr">url</span>: <span class="hljs-string">&#x27;https://m.maizuo.com/gateway?cityId=110100&amp;ticketFlag=1&amp;k=9366495&#x27;</span>,<br>            <span class="hljs-attr">headers</span>: &#123;<br>                <span class="hljs-string">&#x27;x-client-info&#x27;</span>: <span class="hljs-string">&#x27;&#123;&quot;a&quot;:&quot;3000&quot;,&quot;ch&quot;:&quot;1002&quot;,&quot;v&quot;:&quot;5.2.1&quot;,&quot;e&quot;:&quot;17689720181688867040133121&quot;,&quot;bc&quot;:&quot;410100&quot;&#125;&#x27;</span>,<br>                <span class="hljs-string">&#x27;x-host&#x27;</span>: <span class="hljs-string">&#x27;mall.film-ticket.cinema.list&#x27;</span>,<br>            &#125;,<br>        &#125;).<span class="hljs-title function_">then</span>(<span class="hljs-function"><span class="hljs-params">res</span> =&gt;</span> &#123;<br>            <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(res.<span class="hljs-property">data</span>.<span class="hljs-property">data</span>.<span class="hljs-property">cinemas</span>)<br>            <span class="hljs-title function_">dispatch</span>(&#123;<br>                <span class="hljs-attr">type</span>: <span class="hljs-string">&quot;change-list&quot;</span>,<br>                <span class="hljs-attr">payload</span>: res.<span class="hljs-property">data</span>.<span class="hljs-property">data</span>.<span class="hljs-property">cinemas</span><br>            &#125;)<br>        &#125;)<br>    &#125;<br>&#125;<br><br><span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> getCinemaListAction<br></code></pre></td></tr></table></figure>
+
+<p>redux&#x2F;reducers&#x2F;CinemaListReducer.js</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><code class="hljs js"><span class="hljs-keyword">const</span> <span class="hljs-title function_">CinemaListReducer</span> = (<span class="hljs-params">prevState = &#123;</span><br><span class="hljs-params">    list: []  //当前在内存中，需要持久化存储</span><br><span class="hljs-params">&#125;, action</span>) =&gt; &#123;<br>    <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&quot;action:&quot;</span>, action);<br>    <span class="hljs-keyword">let</span> newState = &#123; ...prevState &#125;  <span class="hljs-comment">//必须使用深拷贝，不影响原 state</span><br>    <span class="hljs-keyword">switch</span> (action?.<span class="hljs-property">type</span>) &#123;  <span class="hljs-comment">//根据不同的自定义 action.type 修改 state 并返回</span><br>        <span class="hljs-keyword">case</span> <span class="hljs-string">&quot;change-list&quot;</span>:<br>            newState.<span class="hljs-property">list</span> = action.<span class="hljs-property">payload</span>  <span class="hljs-comment">// 自定义字段 payload</span><br>            <span class="hljs-keyword">return</span> newState<br>        <span class="hljs-attr">default</span>:<br>            <span class="hljs-keyword">return</span> prevState<br>    &#125;<br>    <span class="hljs-keyword">return</span> prevState<br>&#125;<br><br><span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> <span class="hljs-title class_">CinemaListReducer</span><br></code></pre></td></tr></table></figure>
+
+<p>views&#x2F;Cinema.js - 在 useEffect 中<strong>通过 store.dispatch 触发 redux-thunk 执行对应函数请求到数据，然后去做订阅拿到数据、再取消订阅(防止重复触发订阅)</strong></p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br></pre></td><td class="code"><pre><code class="hljs js"><span class="hljs-keyword">import</span> &#123; useEffect, useState &#125; <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;react&#x27;</span><br><span class="hljs-keyword">import</span> &#123; useNavigate &#125; <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;react-router-dom&#x27;</span><br><span class="hljs-keyword">import</span> getCinemaListAction <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;../redux/actionCreator/getCinemaListAction&#x27;</span><br><span class="hljs-keyword">import</span> store <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;../redux/store&#x27;</span><br><br><span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> <span class="hljs-keyword">function</span> <span class="hljs-title function_">Cinema</span>(<span class="hljs-params">props</span>) &#123;<br>  <span class="hljs-comment">// 每次进入页面只访问公共状态 cityName</span><br>  <span class="hljs-keyword">const</span> [cityName] = <span class="hljs-title function_">useState</span>(store.<span class="hljs-title function_">getState</span>().<span class="hljs-property">CityReducer</span>.<span class="hljs-property">cityName</span>)<br>  <span class="hljs-keyword">const</span> [cinemaList, setCinemaList] = <span class="hljs-title function_">useState</span>(store.<span class="hljs-title function_">getState</span>().<span class="hljs-property">CinemaListReducer</span>.<span class="hljs-property">list</span>)<br>  <span class="hljs-keyword">const</span> navigate = <span class="hljs-title function_">useNavigate</span>()<br><br>  <span class="hljs-title function_">useEffect</span>(<span class="hljs-function">() =&gt;</span> &#123;<br>    <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&quot;Cinema:&quot;</span>, store.<span class="hljs-title function_">getState</span>().<span class="hljs-property">CinemaListReducer</span>.<span class="hljs-property">list</span>);<br>    <span class="hljs-keyword">let</span> list = store.<span class="hljs-title function_">getState</span>().<span class="hljs-property">CinemaListReducer</span>.<span class="hljs-property">list</span><br>    <span class="hljs-keyword">if</span> (list?.<span class="hljs-property">length</span> === <span class="hljs-number">0</span>) &#123;<br>      <span class="hljs-comment">//请求数据</span><br>      <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&quot;Cinema 请求数据&quot;</span>);<br>      <span class="hljs-comment">// actionCreator 里写异步请求数据</span><br>      store.<span class="hljs-title function_">dispatch</span>(<span class="hljs-title function_">getCinemaListAction</span>())<br>    &#125; <span class="hljs-keyword">else</span> &#123;<br>      <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&quot;默认 list 非空时，走的是 store 缓存&quot;</span>);<br>    &#125;<br>    <span class="hljs-comment">// 订阅： redux-thunk 中异步请求数据，因为 store 是全局，订阅每次都会触发</span><br>    <span class="hljs-keyword">let</span> unsubscribe = store.<span class="hljs-title function_">subscribe</span>(<span class="hljs-function">() =&gt;</span> &#123;<br>      <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&quot;Cinema 订阅内容：&quot;</span>, store.<span class="hljs-title function_">getState</span>().<span class="hljs-property">CinemaListReducer</span>.<span class="hljs-property">list</span>);<br>      <span class="hljs-title function_">setCinemaList</span>(store.<span class="hljs-title function_">getState</span>().<span class="hljs-property">CinemaListReducer</span>.<span class="hljs-property">list</span>)<br>    &#125;)<br>    <span class="hljs-keyword">return</span> <span class="hljs-function">() =&gt;</span> &#123;<br>      <span class="hljs-comment">// 取消订阅：通过订阅的返回值，是个函数，调用就会取消订阅</span><br>      <span class="hljs-title function_">unsubscribe</span>()<br>    &#125;<br>  &#125;, [])<br><br>  <span class="hljs-keyword">return</span> (<br>    <span class="language-xml"><span class="hljs-tag">&lt;<span class="hljs-name">div</span>&gt;</span></span><br><span class="language-xml">      <span class="hljs-tag">&lt;<span class="hljs-name">div</span>&gt;</span></span><br><span class="language-xml">        <span class="hljs-tag">&lt;<span class="hljs-name">button</span> <span class="hljs-attr">onClick</span>=<span class="hljs-string">&#123;()</span> =&gt;</span> &#123;</span><br><span class="language-xml">          navigate(`/city`)</span><br><span class="language-xml">        &#125;&#125;&gt;&#123;cityName&#125;<span class="hljs-tag">&lt;/<span class="hljs-name">button</span>&gt;</span></span><br><span class="language-xml">      <span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span></span><br><span class="language-xml">      &#123;</span><br><span class="language-xml">        cinemaList.map(item =&gt;</span><br><span class="language-xml">          <span class="hljs-tag">&lt;<span class="hljs-name">dl</span> <span class="hljs-attr">key</span>=<span class="hljs-string">&#123;item.cinemaId&#125;</span> <span class="hljs-attr">style</span>=<span class="hljs-string">&#123;&#123;</span> <span class="hljs-attr">padding:</span> &quot;<span class="hljs-attr">10px</span>&quot; &#125;&#125;&gt;</span></span><br><span class="language-xml">            <span class="hljs-tag">&lt;<span class="hljs-name">dt</span>&gt;</span>&#123;item.name&#125;<span class="hljs-tag">&lt;/<span class="hljs-name">dt</span>&gt;</span></span><br><span class="language-xml">            <span class="hljs-tag">&lt;<span class="hljs-name">dt</span> <span class="hljs-attr">style</span>=<span class="hljs-string">&#123;&#123;</span> <span class="hljs-attr">fontSize:</span> &quot;<span class="hljs-attr">12px</span>&quot;, <span class="hljs-attr">color:</span> &#x27;<span class="hljs-attr">gray</span>&#x27; &#125;&#125;&gt;</span>&#123;item.address&#125;<span class="hljs-tag">&lt;/<span class="hljs-name">dt</span>&gt;</span></span><br><span class="language-xml">          <span class="hljs-tag">&lt;/<span class="hljs-name">dl</span>&gt;</span></span><br><span class="language-xml">        )</span><br><span class="language-xml">      &#125;</span><br><span class="language-xml">    <span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span></span><br>  )<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>效果：cinemaList 可以正常走 store 中订阅的数据缓存。</p>
+<h3 id="3-2-redux-promise"><a href="#3-2-redux-promise" class="headerlink" title="3.2 redux-promise"></a>3.2 redux-promise</h3><p>安装：<em>npm i redux-promise</em>  - 默认版本@0.6.0</p>
+<p>案例源码：<a target="_blank" rel="noopener" href="https://github.com/janycode/react-router-v6-demo/commit/fdd78a47da598658fbe6a16d55028e0b3880cb19">https://github.com/janycode/react-router-v6-demo/commit/fdd78a47da598658fbe6a16d55028e0b3880cb19</a></p>
+<p>基于 redux-thunk 的例子 demo 改造如下文件：</p>
+<p>redux&#x2F;actionCreator&#x2F;getCinemaListAction.js - 封装异步请求 axios 函数</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><code class="hljs js"><span class="hljs-keyword">import</span> axios <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;axios&#x27;</span><br><br><span class="hljs-comment">// redux-promise 风格：直接返回一个 promise 对象</span><br><span class="hljs-keyword">function</span> <span class="hljs-title function_">getCinemaListAction</span>(<span class="hljs-params"></span>) &#123;<br>    <span class="hljs-keyword">return</span> <span class="hljs-title function_">axios</span>(&#123;<br>        <span class="hljs-attr">url</span>: <span class="hljs-string">&#x27;https://m.maizuo.com/gateway?cityId=110100&amp;ticketFlag=1&amp;k=9366495&#x27;</span>,<br>        <span class="hljs-attr">headers</span>: &#123;<br>            <span class="hljs-string">&#x27;x-client-info&#x27;</span>: <span class="hljs-string">&#x27;&#123;&quot;a&quot;:&quot;3000&quot;,&quot;ch&quot;:&quot;1002&quot;,&quot;v&quot;:&quot;5.2.1&quot;,&quot;e&quot;:&quot;17689720181688867040133121&quot;,&quot;bc&quot;:&quot;410100&quot;&#125;&#x27;</span>,<br>            <span class="hljs-string">&#x27;x-host&#x27;</span>: <span class="hljs-string">&#x27;mall.film-ticket.cinema.list&#x27;</span>,<br>        &#125;,<br>    &#125;).<span class="hljs-title function_">then</span>(<span class="hljs-function"><span class="hljs-params">res</span> =&gt;</span> &#123;<br>        <span class="hljs-comment">// console.log(res.data.data.cinemas)</span><br>        <span class="hljs-keyword">return</span> &#123;<br>            <span class="hljs-attr">type</span>: <span class="hljs-string">&quot;change-list&quot;</span>,<br>            <span class="hljs-attr">payload</span>: res.<span class="hljs-property">data</span>.<span class="hljs-property">data</span>.<span class="hljs-property">cinemas</span><br>        &#125;<br>    &#125;)<br>&#125;<br><br><span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> getCinemaListAction<br></code></pre></td></tr></table></figure>
+
+<p>redux&#x2F;store.js - 引入并使用 <code>redux-promise</code> 组件，<code>applyMiddleware</code> 方法可以传入多个参数</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><code class="hljs js"><span class="hljs-keyword">import</span> &#123; applyMiddleware, combineReducers, createStore &#125; <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;redux&#x27;</span>  <span class="hljs-comment">//引入 redux4.1.2 为例</span><br><span class="hljs-keyword">import</span> <span class="hljs-title class_">CityReducer</span> <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;./reducers/CityReducer&#x27;</span>;<br><span class="hljs-keyword">import</span> <span class="hljs-title class_">TabbarReducer</span> <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;./reducers/TabbarReducer&#x27;</span>;<br><span class="hljs-keyword">import</span> <span class="hljs-title class_">CinemaListReducer</span> <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;./reducers/CinemaListReducer&#x27;</span>;<br><span class="hljs-keyword">import</span> reduxThunk <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;redux-thunk&#x27;</span>; <span class="hljs-comment">// redux-thunk：1.导入中间件</span><br><span class="hljs-keyword">import</span> reduxPromise <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;redux-promise&#x27;</span>; <span class="hljs-comment">// redux-promise: 2.导入中间件</span><br><br><span class="hljs-comment">// reducer 合并：combineReducers(&#123;...&#125;)，合并后取值需要加上 XxxReducer 名字空间</span><br><span class="hljs-keyword">const</span> reducer = <span class="hljs-title function_">combineReducers</span>(&#123;<br>    <span class="hljs-title class_">CityReducer</span>,<br>    <span class="hljs-title class_">TabbarReducer</span>,<br>    <span class="hljs-title class_">CinemaListReducer</span><br>&#125;)<br><br><span class="hljs-keyword">const</span> store = <span class="hljs-title function_">createStore</span>(reducer, <span class="hljs-title function_">applyMiddleware</span>(reduxThunk, reduxPromise)) <span class="hljs-comment">// redux-thunk,redux-promise：2.应用中间件，可以多个</span><br></code></pre></td></tr></table></figure>
+
+<p>效果：cinemaList 可以正常走 store 中订阅的数据缓存。</p>
+<h4 id="async-await"><a href="#async-await" class="headerlink" title="async+await"></a>async+await</h4><p>基于 redux-promise 中间件的使用，封装的异步请求中也支持 async + await 等待请求返回数据。</p>
+<p>redux&#x2F;actionCreator&#x2F;getCinemaListAction.js</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><code class="hljs js"><span class="hljs-keyword">import</span> axios <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;axios&#x27;</span><br><br><span class="hljs-comment">// redux-promise 风格：直接返回一个 promise 对象，该防范也支持 async+await</span><br><span class="hljs-keyword">async</span> <span class="hljs-keyword">function</span> <span class="hljs-title function_">getCinemaListAction</span>(<span class="hljs-params"></span>) &#123;<br>    <span class="hljs-keyword">return</span> <span class="hljs-keyword">await</span> <span class="hljs-title function_">axios</span>(&#123;<br>        <span class="hljs-attr">url</span>: <span class="hljs-string">&#x27;https://m.maizuo.com/gateway?cityId=110100&amp;ticketFlag=1&amp;k=9366495&#x27;</span>,<br>        <span class="hljs-attr">headers</span>: &#123;<br>            <span class="hljs-string">&#x27;x-client-info&#x27;</span>: <span class="hljs-string">&#x27;&#123;&quot;a&quot;:&quot;3000&quot;,&quot;ch&quot;:&quot;1002&quot;,&quot;v&quot;:&quot;5.2.1&quot;,&quot;e&quot;:&quot;17689720181688867040133121&quot;,&quot;bc&quot;:&quot;410100&quot;&#125;&#x27;</span>,<br>            <span class="hljs-string">&#x27;x-host&#x27;</span>: <span class="hljs-string">&#x27;mall.film-ticket.cinema.list&#x27;</span>,<br>        &#125;,<br>    &#125;).<span class="hljs-title function_">then</span>(<span class="hljs-function"><span class="hljs-params">res</span> =&gt;</span> &#123;<br>        <span class="hljs-comment">// console.log(res.data.data.cinemas)</span><br>        <span class="hljs-keyword">return</span> &#123;<br>            <span class="hljs-attr">type</span>: <span class="hljs-string">&quot;change-list&quot;</span>,<br>            <span class="hljs-attr">payload</span>: res.<span class="hljs-property">data</span>.<span class="hljs-property">data</span>.<span class="hljs-property">cinemas</span><br>        &#125;<br>    &#125;)<br>&#125;<br></code></pre></td></tr></table></figure>
+
+
+
+<h2 id="4-Redux-DevTools-Extension插件"><a href="#4-Redux-DevTools-Extension插件" class="headerlink" title="4. Redux DevTools Extension插件"></a>4. Redux DevTools Extension插件</h2><p>插件开源地址：<a target="_blank" rel="noopener" href="https://github.com/zalmoxisus/redux-devtools-extension">https://github.com/zalmoxisus/redux-devtools-extension</a></p>
+<p>谷歌浏览器插件下载：<a target="_blank" rel="noopener" href="https://www.crxsoso.com/webstore/detail/lmhkpmbekcpmknklioeibfkpmmfibljd">Redux DevTools.crx</a></p>
+<p>需要重启浏览器才能看到 Redux 菜单：</p>
+<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20260124191317156.png" srcset="/img/loading.gif" lazyload alt="image-20260124191315642"></p>
+<p>代码中配置：</p>
+<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20260124190728505.png" srcset="/img/loading.gif" lazyload alt="image-20260124190727230"></p>
+<p>redux&#x2F;store.js</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><code class="hljs js"><span class="hljs-comment">//Redux DevTools Extension插件支持：1.导入 compose</span><br><span class="hljs-keyword">import</span> &#123; applyMiddleware, combineReducers, compose, createStore &#125; <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;redux&#x27;</span>  <span class="hljs-comment">//redux4.1.2</span><br><span class="hljs-keyword">import</span> <span class="hljs-title class_">CityReducer</span> <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;./reducers/CityReducer&#x27;</span>;<br><span class="hljs-keyword">import</span> <span class="hljs-title class_">TabbarReducer</span> <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;./reducers/TabbarReducer&#x27;</span>;<br><span class="hljs-keyword">import</span> <span class="hljs-title class_">CinemaListReducer</span> <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;./reducers/CinemaListReducer&#x27;</span>;<br><span class="hljs-keyword">import</span> reduxThunk <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;redux-thunk&#x27;</span>; <span class="hljs-comment">// redux-thunk：1.导入中间件</span><br><span class="hljs-keyword">import</span> reduxPromise <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;redux-promise&#x27;</span>; <span class="hljs-comment">// redux-promise: 2.导入中间件</span><br><br><span class="hljs-comment">// reducer 合并：combineReducers(&#123;...&#125;)，合并后取值需要加上 XxxReducer 名字空间</span><br><span class="hljs-keyword">const</span> reducer = <span class="hljs-title function_">combineReducers</span>(&#123;<br>    <span class="hljs-title class_">CityReducer</span>,<br>    <span class="hljs-title class_">TabbarReducer</span>,<br>    <span class="hljs-title class_">CinemaListReducer</span><br>&#125;)<br><span class="hljs-comment">// Redux DevTools Extension插件支持：2.拷贝官方需要的此行代码</span><br><span class="hljs-keyword">const</span> composeEnhancers = <span class="hljs-variable language_">window</span>.<span class="hljs-property">__REDUX_DEVTOOLS_EXTENSION_COMPOSE__</span> || compose; <br><span class="hljs-comment">// Redux DevTools Extension插件支持：composeEnhancers() 简单使用可以不传参数，使用异步中间件时传入applyMiddleware</span><br><span class="hljs-keyword">const</span> store = <span class="hljs-title function_">createStore</span>(reducer, <span class="hljs-title function_">composeEnhancers</span>(<span class="hljs-title function_">applyMiddleware</span>(reduxThunk, reduxPromise)))<br></code></pre></td></tr></table></figure>
+
+<p>浏览器查看 redux 的 store 中数据效果：</p>
+<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20260124191234390.png" srcset="/img/loading.gif" lazyload alt="image-20260124191228491"></p>
+<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20260124191454835.png" srcset="/img/loading.gif" lazyload alt="image-20260124191450875"></p>
+<h2 id="5-React-Redux-使用-★"><a href="#5-React-Redux-使用-★" class="headerlink" title="5. React-Redux 使用(★)"></a>5. React-Redux 使用(★)</h2><p>案例源码：<a target="_blank" rel="noopener" href="https://github.com/janycode/react-router-v6-demo/commit/80e75b3fdf8e391c7ceb021a3f8ea65bb8fc06ad">https://github.com/janycode/react-router-v6-demo/commit/80e75b3fdf8e391c7ceb021a3f8ea65bb8fc06ad</a></p>
+<h3 id="5-1-模型"><a href="#5-1-模型" class="headerlink" title="5.1 模型"></a>5.1 模型</h3><p>官网：<a target="_blank" rel="noopener" href="https://github.com/reactjs/react-redux">https://github.com/reactjs/react-redux</a></p>
+<p>（1）UI组件</p>
+<ul>
+<li>只负责 UI 的呈现，不带有任何业务逻辑</li>
+<li>没有状态（即：不使用 this.state 这个变量）</li>
+<li>所有数据都由参数（this.props）提供</li>
+<li>不使用任何 Redux 的 API</li>
+</ul>
+<p> (2) 容器组件</p>
+<ul>
+<li>负责管理数据和业务逻辑，不负责 UI 的呈现</li>
+<li>带有内部状态</li>
+<li>使用 Redux 的 API</li>
+</ul>
+<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20260124193651107.png" srcset="/img/loading.gif" lazyload alt="image-20260124193649309"></p>
+<h3 id="5-2-安装-v18降级兼容"><a href="#5-2-安装-v18降级兼容" class="headerlink" title="5.2 安装(v18降级兼容)"></a>5.2 安装(v18降级兼容)</h3><p>安装：<em>npm i react-redux@8</em></p>
+<p>核心版本兼容表：</p>
+<table>
+<thead>
+<tr>
+<th align="center">react 版本</th>
+<th align="center">兼容的 react-redux 版本</th>
+<th align="center">要求的 redux 版本</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">16.8&#x2F;17&#x2F;18</td>
+<td align="center">8.x &#x2F; 9.x</td>
+<td align="center">8.x 配 4.x&#x2F;5.x；9.x 配 5.x</td>
+</tr>
+<tr>
+<td align="center">19+</td>
+<td align="center">9.x 及以上</td>
+<td align="center">5.x 及以上</td>
+</tr>
+</tbody></table>
+<p>因此 **保留旧代码方案 ** ：<code>降级 React 到 18.x，继续用 redux@4.x + react-redux@8.x</code></p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs sh"><span class="hljs-comment"># 降级 React + React DOM 到 18.x</span><br>npm i react@18 react-dom@18<br><span class="hljs-comment"># 再安装 react-redux@8.x（此时无依赖冲突）</span><br>npm i react-redux@8<br></code></pre></td></tr></table></figure>
+
+<p>然后重启服务：<em>npm start</em> - 实测无报错，旧代码功能正常。</p>
+<p>package.json 版本情况：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs js"><span class="hljs-string">&quot;dependencies&quot;</span>: &#123;<br>  ...<br>  <span class="hljs-string">&quot;react&quot;</span>: <span class="hljs-string">&quot;^18.3.1&quot;</span>,                   <span class="hljs-comment">//react v18</span><br>  <span class="hljs-string">&quot;react-dom&quot;</span>: <span class="hljs-string">&quot;^18.3.1&quot;</span>,               <span class="hljs-comment">//react v18</span><br>  <span class="hljs-string">&quot;react-redux&quot;</span>: <span class="hljs-string">&quot;^8.1.3&quot;</span>,              <span class="hljs-comment">//react-redux v8</span><br>  <span class="hljs-string">&quot;react-router-dom&quot;</span>: <span class="hljs-string">&quot;^6.30.3&quot;</span>,<br>  <span class="hljs-string">&quot;react-scripts&quot;</span>: <span class="hljs-string">&quot;5.0.1&quot;</span>,<br>  <span class="hljs-string">&quot;redux&quot;</span>: <span class="hljs-string">&quot;^4.1.2&quot;</span>,                    <span class="hljs-comment">//redux v4</span><br>  <span class="hljs-string">&quot;redux-promise&quot;</span>: <span class="hljs-string">&quot;^0.6.0&quot;</span>,<br>  <span class="hljs-string">&quot;redux-thunk&quot;</span>: <span class="hljs-string">&quot;^2.4.2&quot;</span><br>&#125;,<br></code></pre></td></tr></table></figure>
+
+
+
+<h3 id="5-3-lt-Provider-gt-与-connect"><a href="#5-3-lt-Provider-gt-与-connect" class="headerlink" title="5.3  &lt;Provider&gt; 与 connect()()"></a>5.3  &lt;Provider&gt; 与 connect()()</h3><p>（1）React-Redux 提供 <code>&lt;Provider&gt;</code> 组件，可以让<strong>容器组件</strong>拿到 state。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><code class="hljs js"><span class="hljs-keyword">import</span> <span class="hljs-title class_">React</span> <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;react&#x27;</span>;<br><span class="hljs-keyword">import</span> <span class="hljs-title class_">ReactDOM</span> <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;react-dom/client&#x27;</span>;<br><span class="hljs-keyword">import</span> <span class="hljs-title class_">App</span> <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;./App&#x27;</span>;<br><span class="hljs-keyword">import</span> &#123; <span class="hljs-title class_">Provider</span> &#125; <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;react-redux&#x27;</span>;<br><span class="hljs-keyword">import</span> store <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;./redux/store&#x27;</span>;<br><br><span class="hljs-keyword">const</span> root = <span class="hljs-title class_">ReactDOM</span>.<span class="hljs-title function_">createRoot</span>(<span class="hljs-variable language_">document</span>.<span class="hljs-title function_">getElementById</span>(<span class="hljs-string">&#x27;root&#x27;</span>));<br>root.<span class="hljs-title function_">render</span>(<br>  <span class="language-xml"><span class="hljs-tag">&lt;<span class="hljs-name">React.StrictMode</span>&gt;</span></span><br><span class="language-xml">    <span class="hljs-tag">&lt;<span class="hljs-name">Provider</span> <span class="hljs-attr">store</span>=<span class="hljs-string">&#123;store&#125;</span>&gt;</span>  &#123;/* 包裹 App组件，并携带属性 store (公共状态管理) */&#125;</span><br><span class="language-xml">      <span class="hljs-tag">&lt;<span class="hljs-name">App</span> /&gt;</span></span><br><span class="language-xml">    <span class="hljs-tag">&lt;/<span class="hljs-name">Provider</span>&gt;</span></span><br><span class="language-xml">  <span class="hljs-tag">&lt;/<span class="hljs-name">React.StrictMode</span>&gt;</span></span><br>);<br></code></pre></td></tr></table></figure>
+
+<p>（2）React-Redux 提供 <code>connect()()</code> 方法，用于从 UI 组件生成容器组件。connect 就是将这两种组件连起来（即拥有 store 的订阅发布能力）。</p>
+<p>以 Cinema.js 为例：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><code class="hljs js"><span class="hljs-comment">//进入 Cinema 的 props 中携带，通过 props.list, props.cityName 调用</span><br><span class="hljs-keyword">const</span> <span class="hljs-title function_">mapStateToProps</span> = (<span class="hljs-params">state</span>) =&gt; &#123;<br>  <span class="hljs-keyword">return</span> &#123;<br>    <span class="hljs-attr">list</span>: state.<span class="hljs-property">CinemaListReducer</span>.<span class="hljs-property">list</span>,<br>    <span class="hljs-attr">cityName</span>: state.<span class="hljs-property">CityReducer</span>.<span class="hljs-property">cityName</span><br>  &#125;<br>&#125;<br><span class="hljs-keyword">const</span> mapDispatchToProps = &#123;<br>  getCinemaListAction  <span class="hljs-comment">//进入 Cinema 的 props 中携带，通过 props.getCinemaListAction() 调用</span><br>&#125;<br><span class="hljs-comment">// connect(参数1-将来给孩子传的属性, 参数2-将来给孩子传的回调函数)</span><br><span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> <span class="hljs-title function_">connect</span>(mapStateToProps, mapDispatchToProps)(<span class="hljs-title class_">Cinema</span>)<br></code></pre></td></tr></table></figure>
+
+<p>Cinema.js 完整代码：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br></pre></td><td class="code"><pre><code class="hljs js"><span class="hljs-keyword">import</span> &#123; useEffect &#125; <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;react&#x27;</span><br><span class="hljs-keyword">import</span> &#123; connect &#125; <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;react-redux&#x27;</span><br><span class="hljs-keyword">import</span> &#123; useNavigate &#125; <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;react-router-dom&#x27;</span><br><span class="hljs-keyword">import</span> getCinemaListAction <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;../redux/actionCreator/getCinemaListAction&#x27;</span><br><br><span class="hljs-keyword">function</span> <span class="hljs-title function_">Cinema</span>(<span class="hljs-params">props</span>) &#123;<br>  <span class="hljs-keyword">const</span> navigate = <span class="hljs-title function_">useNavigate</span>()<br>  <span class="hljs-keyword">let</span> &#123;list, getCinemaListAction&#125; = props<br>  <span class="hljs-title function_">useEffect</span>(<span class="hljs-function">() =&gt;</span> &#123;<br>    <span class="hljs-keyword">if</span> (list.<span class="hljs-property">length</span> === <span class="hljs-number">0</span>) &#123;<br>      <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&quot;Cinema 请求数据&quot;</span>);<br>      <span class="hljs-title function_">getCinemaListAction</span>()<br>    &#125; <span class="hljs-keyword">else</span> &#123;<br>      <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">&quot;默认 list 非空时，走的是 store 缓存&quot;</span>);<br>    &#125;<br>  &#125;, [list, getCinemaListAction])<br><br>  <span class="hljs-keyword">return</span> (<br>    <span class="language-xml"><span class="hljs-tag">&lt;<span class="hljs-name">div</span>&gt;</span></span><br><span class="language-xml">      <span class="hljs-tag">&lt;<span class="hljs-name">div</span> <span class="hljs-attr">style</span>=<span class="hljs-string">&#123;&#123;</span> <span class="hljs-attr">height:</span> &quot;<span class="hljs-attr">30px</span>&quot; &#125;&#125;&gt;</span></span><br><span class="language-xml">        <span class="hljs-tag">&lt;<span class="hljs-name">div</span>&gt;</span></span><br><span class="language-xml">          <span class="hljs-tag">&lt;<span class="hljs-name">button</span> <span class="hljs-attr">style</span>=<span class="hljs-string">&#123;&#123;</span> <span class="hljs-attr">float:</span> &#x27;<span class="hljs-attr">left</span>&#x27; &#125;&#125; <span class="hljs-attr">onClick</span>=<span class="hljs-string">&#123;()</span> =&gt;</span> &#123;</span><br><span class="language-xml">            navigate(`/city`)</span><br><span class="language-xml">          &#125;&#125;&gt;&#123;props.cityName&#125;<span class="hljs-tag">&lt;/<span class="hljs-name">button</span>&gt;</span></span><br><span class="language-xml">        <span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span></span><br><span class="language-xml">        <span class="hljs-tag">&lt;<span class="hljs-name">div</span> <span class="hljs-attr">style</span>=<span class="hljs-string">&#123;&#123;</span> <span class="hljs-attr">float:</span> &#x27;<span class="hljs-attr">right</span>&#x27; &#125;&#125;&gt;</span></span><br><span class="language-xml">          <span class="hljs-tag">&lt;<span class="hljs-name">button</span> <span class="hljs-attr">onClick</span>=<span class="hljs-string">&#123;()</span> =&gt;</span> &#123;</span><br><span class="language-xml">            navigate(`/cinemas/search`)</span><br><span class="language-xml">          &#125;&#125;&gt;搜索<span class="hljs-tag">&lt;/<span class="hljs-name">button</span>&gt;</span></span><br><span class="language-xml">        <span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span></span><br><span class="language-xml">      <span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span></span><br><span class="language-xml">      &#123;</span><br><span class="language-xml">        props.list.map(item =&gt;</span><br><span class="language-xml">          <span class="hljs-tag">&lt;<span class="hljs-name">dl</span> <span class="hljs-attr">key</span>=<span class="hljs-string">&#123;item.cinemaId&#125;</span> <span class="hljs-attr">style</span>=<span class="hljs-string">&#123;&#123;</span> <span class="hljs-attr">padding:</span> &quot;<span class="hljs-attr">10px</span>&quot; &#125;&#125;&gt;</span></span><br><span class="language-xml">            <span class="hljs-tag">&lt;<span class="hljs-name">dt</span>&gt;</span>&#123;item.name&#125;<span class="hljs-tag">&lt;/<span class="hljs-name">dt</span>&gt;</span></span><br><span class="language-xml">            <span class="hljs-tag">&lt;<span class="hljs-name">dt</span> <span class="hljs-attr">style</span>=<span class="hljs-string">&#123;&#123;</span> <span class="hljs-attr">fontSize:</span> &quot;<span class="hljs-attr">12px</span>&quot;, <span class="hljs-attr">color:</span> &#x27;<span class="hljs-attr">gray</span>&#x27; &#125;&#125;&gt;</span>&#123;item.address&#125;<span class="hljs-tag">&lt;/<span class="hljs-name">dt</span>&gt;</span></span><br><span class="language-xml">          <span class="hljs-tag">&lt;/<span class="hljs-name">dl</span>&gt;</span></span><br><span class="language-xml">        )</span><br><span class="language-xml">      &#125;</span><br><span class="language-xml">    <span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span></span><br>  )<br>&#125;<br><br><span class="hljs-comment">//进入 Cinema 的 props 中携带，通过 props.list, props.cityName 调用</span><br><span class="hljs-keyword">const</span> <span class="hljs-title function_">mapStateToProps</span> = (<span class="hljs-params">state</span>) =&gt; &#123;<br>  <span class="hljs-keyword">return</span> &#123;<br>    <span class="hljs-attr">list</span>: state.<span class="hljs-property">CinemaListReducer</span>.<span class="hljs-property">list</span>,<br>    <span class="hljs-attr">cityName</span>: state.<span class="hljs-property">CityReducer</span>.<span class="hljs-property">cityName</span><br>  &#125;<br>&#125;<br><span class="hljs-keyword">const</span> mapDispatchToProps = &#123;<br>  getCinemaListAction  <span class="hljs-comment">//进入 Cinema 的 props 中携带，通过 props.getCinemaListAction() 调用</span><br>&#125;<br><span class="hljs-comment">// connect(参数1-将来给孩子传的属性, 参数2-将来给孩子传的回调函数)</span><br><span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> <span class="hljs-title function_">connect</span>(mapStateToProps, mapDispatchToProps)(<span class="hljs-title class_">Cinema</span>)<br></code></pre></td></tr></table></figure>
+
+
+
+<h3 id="5-4-原理"><a href="#5-4-原理" class="headerlink" title="5.4 原理"></a>5.4 原理</h3><p>HOC（高阶组件）与 context 通信在react-redux 底层中的应用：</p>
+<p>(1) <strong>connect 是HOC， 高阶组件</strong></p>
+<p>(2) <strong>Provider 组件，可以让容器组件拿到 state，使用了 context</strong></p>
+<p>HOC 不仅仅是一个方法，确切说应该是一个组件工厂，获取低阶组件，生成高阶组件。</p>
+<p>(1) <strong>代码复用，代码模块化</strong></p>
+<p>(2) <strong>增删改props</strong></p>
+<p>(3) <strong>渲染劫持</strong></p>
+<p>NotFound.js - 示例 jerryconnect 自定义。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><code class="hljs js"><span class="hljs-keyword">import</span> &#123; useEffect &#125; <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;react&#x27;</span>;<br><br><span class="hljs-keyword">function</span> <span class="hljs-title function_">NotFound</span>(<span class="hljs-params">props</span>) &#123;<br>  <span class="hljs-title function_">useEffect</span>(<span class="hljs-function">() =&gt;</span> &#123;<br>    <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(props);<br>  &#125;, [])<br><br>  <span class="hljs-keyword">return</span> (<br>    <span class="language-xml"><span class="hljs-tag">&lt;<span class="hljs-name">div</span>&gt;</span>NotFound<span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span></span><br>  )<br>&#125;<br><br><span class="hljs-comment">// connect 原理</span><br><span class="hljs-keyword">function</span> <span class="hljs-title function_">jerryconnect</span>(<span class="hljs-params">cb, obj</span>) &#123;<br>  <span class="hljs-keyword">let</span> value = <span class="hljs-title function_">cb</span>()<br>  <span class="hljs-keyword">return</span> <span class="hljs-function">(<span class="hljs-params">MyComponent</span>) =&gt;</span> &#123;<br>    <span class="hljs-keyword">return</span> <span class="hljs-function">(<span class="hljs-params">props</span>) =&gt;</span> &#123;<br>      <span class="hljs-keyword">return</span> <span class="language-xml"><span class="hljs-tag">&lt;<span class="hljs-name">div</span> <span class="hljs-attr">style</span>=<span class="hljs-string">&#123;&#123;</span> <span class="hljs-attr">color:</span> &quot;<span class="hljs-attr">red</span>&quot; &#125;&#125;&gt;</span>  &#123;/* 渲染拦截 */&#125;</span><br><span class="language-xml">        <span class="hljs-tag">&lt;<span class="hljs-name">MyComponent</span> &#123;<span class="hljs-attr">...value</span>&#125; &#123;<span class="hljs-attr">...props</span>&#125; &#123;<span class="hljs-attr">...obj</span>&#125; /&gt;</span>  &#123;/* 增减属性 */&#125;</span><br><span class="language-xml">      <span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span></span><br>    &#125;<br>  &#125;<br>&#125;<br><span class="hljs-comment">// NotFound 变高阶组件</span><br><span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> <span class="hljs-title function_">jerryconnect</span>(<span class="hljs-function">() =&gt;</span> &#123;<br>  <span class="hljs-keyword">return</span> &#123;<br>    <span class="hljs-attr">a</span>: <span class="hljs-number">1</span>,<br>    <span class="hljs-attr">b</span>: <span class="hljs-number">2</span><br>  &#125;<br>&#125;, &#123;<br>  <span class="hljs-title function_">aa</span>(<span class="hljs-params"></span>) &#123; &#125;,<br>  <span class="hljs-title function_">bb</span>(<span class="hljs-params"></span>) &#123; &#125;<br>&#125;)(<span class="hljs-title class_">NotFound</span>)<br></code></pre></td></tr></table></figure>
+
+<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20260125135959040.png" srcset="/img/loading.gif" lazyload alt="image-20260125135957566"></p>
+<h2 id="6-Redux-持久化"><a href="#6-Redux-持久化" class="headerlink" title="6. Redux 持久化"></a>6. Redux 持久化</h2><p>依托于 Redux 和 React-Redux。</p>
+<p>参考基本用法：<a target="_blank" rel="noopener" href="https://github.com/rt2zz/redux-persist?tab=readme-ov-file#basic-usage">https://github.com/rt2zz/redux-persist?tab=readme-ov-file#basic-usage</a></p>
+<p>选择性持久化：<a target="_blank" rel="noopener" href="https://github.com/rt2zz/redux-persist?tab=readme-ov-file#blacklist--whitelist">https://github.com/rt2zz/redux-persist?tab=readme-ov-file#blacklist--whitelist</a></p>
+<h3 id="6-1-安装"><a href="#6-1-安装" class="headerlink" title="6.1 安装"></a>6.1 安装</h3><p>安装：<em>npm i redux-persist</em> - 版本v6.0.0</p>
+<h3 id="6-2-使用"><a href="#6-2-使用" class="headerlink" title="6.2 使用"></a>6.2 使用</h3><p>案例源码：<a target="_blank" rel="noopener" href="https://github.com/janycode/react-router-v6-demo/commit/40c1bdd795d946e60883072773a78486c71b25b2">https://github.com/janycode/react-router-v6-demo/commit/40c1bdd795d946e60883072773a78486c71b25b2</a></p>
+<p>src&#x2F;redux&#x2F;store.js - <code>persistConfig</code>, <code>persistedReducer</code>, <code>store</code>, <code>persistor</code> 按照官方说明最终导出 store, persistor</p>
+<ul>
+<li><strong>选择性持久化</strong>：persistConfig 中 whitelist 可以限制只持久化的 reducer</li>
+</ul>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><code class="hljs js"><span class="hljs-keyword">import</span> ...<br><span class="hljs-comment">//Redux DevTools Extension插件支持：1.导入 compose</span><br><span class="hljs-keyword">import</span> &#123; applyMiddleware, combineReducers, compose, createStore &#125; <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;redux&#x27;</span>  <span class="hljs-comment">//redux4.1.2</span><br><span class="hljs-keyword">import</span> storage <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;redux-persist/lib/storage&#x27;</span> <span class="hljs-comment">// redux-persist 持久化：1.导入，默认存 localStorage</span><br><span class="hljs-keyword">import</span> &#123; persistStore, persistReducer &#125; <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;redux-persist&#x27;</span> <span class="hljs-comment">// redux-persist 持久化：1.导入</span><br><br><span class="hljs-comment">// redux-persist 持久化：2. 配置</span><br><span class="hljs-keyword">const</span> persistConfig = &#123;<br>    <span class="hljs-attr">key</span>: <span class="hljs-string">&#x27;jerry&#x27;</span>,<br>    storage,<br>    <span class="hljs-attr">whitelist</span>: [<span class="hljs-string">&#x27;CityReducer&#x27;</span>]  <span class="hljs-comment">//参数为 Reducer 数组，仅持久化 CityReducer, 即 cityName 城市名称</span><br>&#125;<br><br><span class="hljs-keyword">const</span> reducer = <span class="hljs-title function_">combineReducers</span>(&#123;<br>    <span class="hljs-title class_">CityReducer</span>,<br>    <span class="hljs-title class_">TabbarReducer</span>,<br>    <span class="hljs-title class_">CinemaListReducer</span><br>&#125;)<br><span class="hljs-comment">// redux-persist 持久化：3. 配置持久化 Reducer</span><br><span class="hljs-keyword">const</span> persistedReducer = <span class="hljs-title function_">persistReducer</span>(persistConfig, reducer)<br><br><span class="hljs-comment">// Redux DevTools Extension插件支持：2.拷贝官方需要的此行代码</span><br><span class="hljs-keyword">const</span> composeEnhancers = <span class="hljs-variable language_">window</span>.<span class="hljs-property">__REDUX_DEVTOOLS_EXTENSION_COMPOSE__</span> || compose;<br><br><span class="hljs-comment">// redux-persist 持久化：4. 传入 persistedReducer 生成 store，再生成 persistor，两者都导出去</span><br><span class="hljs-keyword">const</span> store = <span class="hljs-title function_">createStore</span>(persistedReducer, <span class="hljs-title function_">composeEnhancers</span>(<span class="hljs-title function_">applyMiddleware</span>(reduxThunk, reduxPromise)))<br><span class="hljs-keyword">let</span> persistor = <span class="hljs-title function_">persistStore</span>(store)<br><br><span class="hljs-keyword">export</span> &#123;store, persistor&#125;<br></code></pre></td></tr></table></figure>
+
+<p>src&#x2F;index.js - <code>&lt;PersistGate&gt;</code> 标签包裹</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><code class="hljs js"><span class="hljs-keyword">import</span> ...<br><span class="hljs-keyword">import</span> &#123; store, persistor &#125; <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;./redux/store&#x27;</span>;  <span class="hljs-comment">//redux-persist 持久化：导入需要的两个对象</span><br><span class="hljs-keyword">import</span> &#123; <span class="hljs-title class_">PersistGate</span> &#125; <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;redux-persist/integration/react&#x27;</span> <span class="hljs-comment">//redux-persist 持久化：导入官方介绍需要</span><br><br><span class="hljs-keyword">const</span> root = <span class="hljs-title class_">ReactDOM</span>.<span class="hljs-title function_">createRoot</span>(<span class="hljs-variable language_">document</span>.<span class="hljs-title function_">getElementById</span>(<span class="hljs-string">&#x27;root&#x27;</span>));<br>root.<span class="hljs-title function_">render</span>(<br>  <span class="language-xml"><span class="hljs-tag">&lt;<span class="hljs-name">React.StrictMode</span>&gt;</span></span><br><span class="language-xml">    &#123;/* React-Redux 提供Provider组件，可以让容器组件拿到state */&#125;</span><br><span class="language-xml">    <span class="hljs-tag">&lt;<span class="hljs-name">Provider</span> <span class="hljs-attr">store</span>=<span class="hljs-string">&#123;store&#125;</span>&gt;</span>  &#123;/* 包裹 App组件，并携带属性 store */&#125;</span><br><span class="language-xml">      <span class="hljs-tag">&lt;<span class="hljs-name">PersistGate</span> <span class="hljs-attr">loading</span>=<span class="hljs-string">&#123;null&#125;</span> <span class="hljs-attr">persistor</span>=<span class="hljs-string">&#123;persistor&#125;</span>&gt;</span></span><br><span class="language-xml">        <span class="hljs-tag">&lt;<span class="hljs-name">App</span> /&gt;</span></span><br><span class="language-xml">      <span class="hljs-tag">&lt;/<span class="hljs-name">PersistGate</span>&gt;</span></span><br><span class="language-xml">    <span class="hljs-tag">&lt;/<span class="hljs-name">Provider</span>&gt;</span></span><br><span class="language-xml">  <span class="hljs-tag">&lt;/<span class="hljs-name">React.StrictMode</span>&gt;</span></span><br>);<br></code></pre></td></tr></table></figure>
+
+<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20260125141920851.png" srcset="/img/loading.gif" lazyload alt="image-20260125141919253"></p>
+
+              
+            </div>
+            <hr/>
+            <div>
+              <div>
+  <img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20241112163319.png" srcset="/img/loading.gif" lazyload>
+</div>
+<div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/04-%E5%A4%A7%E5%89%8D%E7%AB%AF/" class="category-chain-item">04_大前端</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/04-%E5%A4%A7%E5%89%8D%E7%AB%AF/07-React/" class="category-chain-item">07_React</a>
+  
+  
+
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/React/">#React</a>
+      
+        <a href="/tags/Flux/">#Flux</a>
+      
+        <a href="/tags/Redux/">#Redux</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>07-React+Redux公共状态管理</div>
+      <div>https://janycode.github.io/2022/05/22/04_大前端/07_React/07-React+Redux公共状态管理/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Jerry(姜源)</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2022年5月22日</div>
+        </div>
+      
+      
+      <div class="license-meta-item">
+        <div>许可协议</div>
+        <div>
+          
+            
+            
+              <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+              <span class="hint--top hint--rounded" aria-label="BY - 姜源">
+                <i class="iconfont icon-by"></i>
+              </span>
+              </a>
+            
+          
+        </div>
+      </div>
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2022/05/22/04_%E5%A4%A7%E5%89%8D%E7%AB%AF/07_React/01-React%E5%9F%BA%E7%A1%80/" title="01-React基础">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">01-React基础</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2022/05/22/04_%E5%A4%A7%E5%89%8D%E7%AB%AF/07_React/06-React%E8%B7%AF%E7%94%B1/" title="06-React路由">
+                        <span class="hidden-mobile">06-React路由</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+  <article id="comments" lazyload>
+    
+  <div id="SOHUCS" sid='https://janycode.github.io/2022/05/22/04_%E5%A4%A7%E5%89%8D%E7%AB%AF/07_React/07-React+Redux%E5%85%AC%E5%85%B1%E7%8A%B6%E6%80%81%E7%AE%A1%E7%90%86/'></div>
+  <script type="text/javascript">
+    Fluid.utils.loadComments('#SOHUCS', function() {
+      Fluid.utils.createScript("https://changyan.sohu.com/upload/changyan.js", function() {
+        window.changyan.api.config({"appid":"cyw5OHIcO","appkey":"fea3446b3df4b3f129f34da4cbc87e51"})
+      });
+    });
+  </script>
+  <noscript>Please enable JavaScript to view the comments</noscript>
+
+
+  </article>
+
+
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://simple.blog.csdn.net" target="_blank" rel="nofollow noopener"><span>CSDN</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/janycode" target="_blank" rel="nofollow noopener"><span>GitHub</span></a> <i class="iconfont icon-love"></i> <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="busuanzi_container_site_pv" style="display: none">
+        总访问量(PV) 
+        <span id="busuanzi_value_site_pv"></span>
+         次，
+      </span>
+    
+    
+      <span id="busuanzi_container_site_uv" style="display: none">
+        总访客数(UV) 
+        <span id="busuanzi_value_site_uv"></span>
+         人
+      </span>
+    
+    
+  
+</div>
+
+  
+  
+  
+</div>
+
+<!-- live2d 动画 -->
+<script src="https://eqcn.ajz.miesnfu.com/wp-content/plugins/wp-3d-pony/live2dw/lib/L2Dwidget.min.js"></script>
+<script>
+    L2Dwidget.init({
+        "model": {
+            jsonPath: "https://unpkg.com/live2d-widget-model-haruto@1.0.5/assets/haruto.model.json",
+            "scale": 1
+        },
+        "display": {
+            "position": "right",
+            "width": 100,
+            "height": 200,
+            "hOffset": 35,
+            "vOffset": -85
+        },
+        "mobile": {
+            "show": false,
+            "scale": 0.1
+        },
+        "react": {
+            "opacityDefault": 0.75,
+            "opacityOnHover": 0.2
+        }
+    });
+</script>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <!-- Baidu Analytics -->
+    <script defer>
+      if (!Fluid.ctx.dnt) {
+        var _hmt = _hmt || [];
+        (function() {
+          var hm = document.createElement("script");
+          hm.src = "https://hm.baidu.com/hm.js?bfff735c897eb60ea49b735096b20e47";
+          var s = document.getElementsByTagName("script")[0];
+          s.parentNode.insertBefore(hm, s);
+        })();
+      }
+    </script>
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.0/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      headingSelector : CONFIG.toc.headingSelector || 'h1,h2,h3,h4,h5,h6',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      collapseDepth   : CONFIG.toc.collapseDepth || 0,
+      scrollSmooth    : true,
+      headingsOffset  : -boardTop
+    });
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+  });
+</script>
+
+
+  <script>
+  (function() {
+    var enableLang = CONFIG.code_language.enable && CONFIG.code_language.default;
+    var enableCopy = CONFIG.copy_btn;
+    if (!enableLang && !enableCopy) {
+      return;
+    }
+
+    function getBgClass(ele) {
+      return Fluid.utils.getBackgroundLightness(ele) >= 0 ? 'code-widget-light' : 'code-widget-dark';
+    }
+
+    var copyTmpl = '';
+    copyTmpl += '<div class="code-widget">';
+    copyTmpl += 'LANG';
+    copyTmpl += '</div>';
+    jQuery('.markdown-body pre').each(function() {
+      var $pre = jQuery(this);
+      if ($pre.find('code.mermaid').length > 0) {
+        return;
+      }
+      if ($pre.find('span.line').length > 0) {
+        return;
+      }
+
+      var lang = '';
+
+      if (enableLang) {
+        lang = CONFIG.code_language.default;
+        if ($pre[0].children.length > 0 && $pre[0].children[0].classList.length >= 2 && $pre.children().hasClass('hljs')) {
+          lang = $pre[0].children[0].classList[1];
+        } else if ($pre[0].getAttribute('data-language')) {
+          lang = $pre[0].getAttribute('data-language');
+        } else if ($pre.parent().hasClass('sourceCode') && $pre[0].children.length > 0 && $pre[0].children[0].classList.length >= 2) {
+          lang = $pre[0].children[0].classList[1];
+          $pre.parent().addClass('code-wrapper');
+        } else if ($pre.parent().hasClass('markdown-body') && $pre[0].classList.length === 0) {
+          $pre.wrap('<div class="code-wrapper"></div>');
+        }
+        lang = lang.toUpperCase().replace('NONE', CONFIG.code_language.default);
+      }
+      $pre.append(copyTmpl.replace('LANG', lang).replace('code-widget">',
+        getBgClass($pre[0]) + (enableCopy ? ' code-widget copy-btn" data-clipboard-snippet><i class="iconfont icon-copy"></i>' : ' code-widget">')));
+
+      if (enableCopy) {
+        Fluid.utils.createScript('https://lib.baomitu.com/clipboard.js/2.0.10/clipboard.min.js', function() {
+          var clipboard = new window.ClipboardJS('.copy-btn', {
+            target: function(trigger) {
+              var nodes = trigger.parentNode.childNodes;
+              for (var i = 0; i < nodes.length; i++) {
+                if (nodes[i].tagName === 'CODE') {
+                  return nodes[i];
+                }
+              }
+            }
+          });
+          clipboard.on('success', function(e) {
+            e.clearSelection();
+            e.trigger.innerHTML = e.trigger.innerHTML.replace('icon-copy', 'icon-success');
+            setTimeout(function() {
+              e.trigger.innerHTML = e.trigger.innerHTML.replace('icon-success', 'icon-copy');
+            }, 2000);
+          });
+        });
+      }
+    });
+  })();
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>
