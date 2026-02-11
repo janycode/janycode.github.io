@@ -1,0 +1,977 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=light>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Jerry(姜源)">
+  <meta name="keywords" content="Java,Html,CSS,JavaScript,Python,C,Linux,shell编程经验分享、技术总结、心得体会">
+  
+    <meta name="description" content="聚合 - Aggregation Pipline 类似于将SQL中的group by + order by + left join  等操作管道化。  常规使用 图例理解    准备数据  123456789101112131415&gt; db.orders.insertMany( [     &amp;#123; _id: 1, cust_id: &quot;abc1&quot;, ord_date">
+<meta property="og:type" content="article">
+<meta property="og:title" content="03-MongoDB索引和聚合">
+<meta property="og:url" content="https://janycode.github.io/2022/08/14/05_%E6%95%B0%E6%8D%AE%E5%BA%93/05_MongoDB/03-MongoDB%E7%B4%A2%E5%BC%95%E5%92%8C%E8%81%9A%E5%90%88/index.html">
+<meta property="og:site_name" content="姜源の云笔记">
+<meta property="og:description" content="聚合 - Aggregation Pipline 类似于将SQL中的group by + order by + left join  等操作管道化。  常规使用 图例理解    准备数据  123456789101112131415&gt; db.orders.insertMany( [     &amp;#123; _id: 1, cust_id: &quot;abc1&quot;, ord_date">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20220813214425.png">
+<meta property="article:published_time" content="2022-08-14T02:08:56.000Z">
+<meta property="article:modified_time" content="2026-02-10T09:28:24.920Z">
+<meta property="article:author" content="Jerry(姜源)">
+<meta property="article:tag" content="数据库">
+<meta property="article:tag" content="MongoDB">
+<meta property="article:tag" content="NoSQL">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20220813214425.png">
+  
+  
+    <meta name="referrer" content="no-referrer-when-downgrade">
+  
+  
+  <title>03-MongoDB索引和聚合 - 姜源の云笔记</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"janycode.github.io","root":"/","version":"1.9.0","typing":{"enable":true,"typeSpeed":50,"cursorChar":"|","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":false},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":"bfff735c897eb60ea49b735096b20e47","google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+
+  
+<meta name="generator" content="Hexo 6.2.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 50vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>姜源の云笔记</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tools/">
+                <i class="iconfont icon-slack-fill"></i>
+                工具
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" target="_blank" rel="noopener" href="https://yuancodes.github.io/">
+                <i class="iconfont icon-notebook"></i>
+                Docsify
+              </a>
+            </li>
+          
+        
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="03-MongoDB索引和聚合"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-author" aria-hidden="true"></i>
+        Jerry(姜源)
+      </span>
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2022-08-14 10:08" pubdate>
+          星期日, 2022/08/14 10:08:56
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          <!-- compatible with older versions-->
+          14k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          <!-- compatible with older versions-->
+          120 分钟
+        
+      </span>
+    
+
+    
+    
+      
+        <span id="busuanzi_container_page_pv" style="display: none">
+          <i class="iconfont icon-eye" aria-hidden="true"></i>
+          <span id="busuanzi_value_page_pv"></span> 次
+        </span>
+        
+      
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">03-MongoDB索引和聚合</h1>
+            
+            <div class="markdown-body">
+              
+              <p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20220813214347.png" srcset="/img/loading.gif" lazyload alt="image-20220813214346098"></p>
+<h2 id="聚合-Aggregation-Pipline"><a href="#聚合-Aggregation-Pipline" class="headerlink" title="聚合 - Aggregation Pipline"></a>聚合 - Aggregation Pipline</h2><blockquote>
+<p>类似于将SQL中的group by + order by + left join  等操作管道化。</p>
+</blockquote>
+<h3 id="常规使用"><a href="#常规使用" class="headerlink" title="常规使用"></a>常规使用</h3><ul>
+<li>图例理解</li>
+</ul>
+<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20260116212023549.png" srcset="/img/loading.gif" lazyload alt="img"></p>
+<ul>
+<li>准备数据</li>
+</ul>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><code class="hljs sh">&gt; db.orders.insertMany( [<br>     &#123; _id: 1, cust_id: <span class="hljs-string">&quot;abc1&quot;</span>, ord_date: ISODate(<span class="hljs-string">&quot;2012-11-02T17:04:11.102Z&quot;</span>), status: <span class="hljs-string">&quot;A&quot;</span>, amount: 50 &#125;,<br>     &#123; _id: 2, cust_id: <span class="hljs-string">&quot;xyz1&quot;</span>, ord_date: ISODate(<span class="hljs-string">&quot;2013-10-01T17:04:11.102Z&quot;</span>), status: <span class="hljs-string">&quot;A&quot;</span>, amount: 100 &#125;,<br>     &#123; _id: 3, cust_id: <span class="hljs-string">&quot;xyz1&quot;</span>, ord_date: ISODate(<span class="hljs-string">&quot;2013-10-12T17:04:11.102Z&quot;</span>), status: <span class="hljs-string">&quot;D&quot;</span>, amount: 25 &#125;,<br>     &#123; _id: 4, cust_id: <span class="hljs-string">&quot;xyz1&quot;</span>, ord_date: ISODate(<span class="hljs-string">&quot;2013-10-11T17:04:11.102Z&quot;</span>), status: <span class="hljs-string">&quot;D&quot;</span>, amount: 125 &#125;,<br>     &#123; _id: 5, cust_id: <span class="hljs-string">&quot;abc1&quot;</span>, ord_date: ISODate(<span class="hljs-string">&quot;2013-11-12T17:04:11.102Z&quot;</span>), status: <span class="hljs-string">&quot;A&quot;</span>, amount: 25 &#125;<br> ] );<br>&#123; <span class="hljs-string">&quot;acknowledged&quot;</span> : <span class="hljs-literal">true</span>, <span class="hljs-string">&quot;insertedIds&quot;</span> : [ 1, 2, 3, 4, 5 ] &#125;<br>&gt; db.orders.find(&#123;&#125;)<br>&#123; <span class="hljs-string">&quot;_id&quot;</span> : 1, <span class="hljs-string">&quot;cust_id&quot;</span> : <span class="hljs-string">&quot;abc1&quot;</span>, <span class="hljs-string">&quot;ord_date&quot;</span> : ISODate(<span class="hljs-string">&quot;2012-11-02T17:04:11.102Z&quot;</span>), <span class="hljs-string">&quot;status&quot;</span> : <span class="hljs-string">&quot;A&quot;</span>, <span class="hljs-string">&quot;amount&quot;</span> : 50 &#125;<br>&#123; <span class="hljs-string">&quot;_id&quot;</span> : 2, <span class="hljs-string">&quot;cust_id&quot;</span> : <span class="hljs-string">&quot;xyz1&quot;</span>, <span class="hljs-string">&quot;ord_date&quot;</span> : ISODate(<span class="hljs-string">&quot;2013-10-01T17:04:11.102Z&quot;</span>), <span class="hljs-string">&quot;status&quot;</span> : <span class="hljs-string">&quot;A&quot;</span>, <span class="hljs-string">&quot;amount&quot;</span> : 100 &#125;<br>&#123; <span class="hljs-string">&quot;_id&quot;</span> : 3, <span class="hljs-string">&quot;cust_id&quot;</span> : <span class="hljs-string">&quot;xyz1&quot;</span>, <span class="hljs-string">&quot;ord_date&quot;</span> : ISODate(<span class="hljs-string">&quot;2013-10-12T17:04:11.102Z&quot;</span>), <span class="hljs-string">&quot;status&quot;</span> : <span class="hljs-string">&quot;D&quot;</span>, <span class="hljs-string">&quot;amount&quot;</span> : 25 &#125;<br>&#123; <span class="hljs-string">&quot;_id&quot;</span> : 4, <span class="hljs-string">&quot;cust_id&quot;</span> : <span class="hljs-string">&quot;xyz1&quot;</span>, <span class="hljs-string">&quot;ord_date&quot;</span> : ISODate(<span class="hljs-string">&quot;2013-10-11T17:04:11.102Z&quot;</span>), <span class="hljs-string">&quot;status&quot;</span> : <span class="hljs-string">&quot;D&quot;</span>, <span class="hljs-string">&quot;amount&quot;</span> : 125 &#125;<br>&#123; <span class="hljs-string">&quot;_id&quot;</span> : 5, <span class="hljs-string">&quot;cust_id&quot;</span> : <span class="hljs-string">&quot;abc1&quot;</span>, <span class="hljs-string">&quot;ord_date&quot;</span> : ISODate(<span class="hljs-string">&quot;2013-11-12T17:04:11.102Z&quot;</span>), <span class="hljs-string">&quot;status&quot;</span> : <span class="hljs-string">&quot;A&quot;</span>, <span class="hljs-string">&quot;amount&quot;</span> : 25 &#125;<br>    <br></code></pre></td></tr></table></figure>
+
+
+
+<ul>
+<li>聚合操作</li>
+</ul>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs sh">&gt; db.orders.aggregate([<br>                      &#123; <span class="hljs-variable">$match</span>: &#123; status: <span class="hljs-string">&quot;A&quot;</span> &#125; &#125;,<br>                      &#123; <span class="hljs-variable">$group</span>: &#123; _id: <span class="hljs-string">&quot;<span class="hljs-variable">$cust_id</span>&quot;</span>, total: &#123; <span class="hljs-variable">$sum</span>: <span class="hljs-string">&quot;<span class="hljs-variable">$amount</span>&quot;</span> &#125; &#125; &#125;,<br>                      &#123; <span class="hljs-variable">$sort</span>: &#123; total: -1 &#125; &#125;<br>                    ])<br>&#123; <span class="hljs-string">&quot;_id&quot;</span> : <span class="hljs-string">&quot;xyz1&quot;</span>, <span class="hljs-string">&quot;total&quot;</span> : 100 &#125;<br>&#123; <span class="hljs-string">&quot;_id&quot;</span> : <span class="hljs-string">&quot;abc1&quot;</span>, <span class="hljs-string">&quot;total&quot;</span> : 75 &#125;<br>    <br></code></pre></td></tr></table></figure>
+
+
+
+<p>官网还有两个例子：</p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://docs.mongodb.com/v3.6/tutorial/aggregation-zip-code-data-set/">Aggregation with the Zip Code Data Set  (opens new window)</a></li>
+<li><a target="_blank" rel="noopener" href="https://docs.mongodb.com/v3.6/tutorial/aggregation-with-user-preference-data/">Aggregation with User Preference Data  (opens new window)</a></li>
+</ul>
+<h3 id="Pipline操作"><a href="#Pipline操作" class="headerlink" title="Pipline操作"></a>Pipline操作</h3><p>MongoDB的聚合管道（Pipline）将MongoDB文档在一个阶段（Stage）处理完毕后将结果传递给下一个阶段（Stage）处理。<strong>阶段（Stage）操作是可以重复的</strong>。</p>
+<p>表达式：处理输入文档并输出。表达式是无状态的，只能用于计算当前聚合管道的文档，不能处理其它的文档。</p>
+<p>这里我们介绍一下聚合框架中常用的几个Stages：</p>
+<ul>
+<li><code>$project</code>：修改输入文档的结构。可以用来重命名、增加或删除域，也可以用于创建计算结果以及嵌套文档。</li>
+<li><code>$match</code>：用于过滤数据，只输出符合条件的文档。$match使用MongoDB的标准查询操作。</li>
+<li><code>$limit</code>：用来限制MongoDB聚合管道返回的文档数。</li>
+<li><code>$skip</code>：在聚合管道中跳过指定数量的文档，并返回余下的文档。</li>
+<li><code>$unwind</code>：将文档中的某一个数组类型字段拆分成多条，每条包含数组中的一个值。</li>
+<li><code>$group</code>：将集合中的文档分组，可用于统计结果。</li>
+<li><code>$sort</code>：将输入文档排序后输出。</li>
+<li><code>$geoNear</code>：输出接近某一地理位置的有序文档。</li>
+<li><code>$bucket</code>: 分组（分桶）计算。</li>
+<li><code>$facet</code> : 多次分组计算。</li>
+<li><code>$out</code>: 将结果集输出，必须是Pipline最后一个Stage。</li>
+</ul>
+<p>举几个例子</p>
+<ul>
+<li>$project</li>
+</ul>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><code class="hljs sh">&gt; db.orders.aggregate(<br>     &#123; <span class="hljs-variable">$project</span> : &#123;<br>         _id : 0 , // 默认不显示_id<br>         cust_id : 1 ,<br>         status : 1<br>     &#125;&#125;);<br>&#123; <span class="hljs-string">&quot;cust_id&quot;</span> : <span class="hljs-string">&quot;abc1&quot;</span>, <span class="hljs-string">&quot;status&quot;</span> : <span class="hljs-string">&quot;A&quot;</span> &#125;<br>&#123; <span class="hljs-string">&quot;cust_id&quot;</span> : <span class="hljs-string">&quot;xyz1&quot;</span>, <span class="hljs-string">&quot;status&quot;</span> : <span class="hljs-string">&quot;A&quot;</span> &#125;<br>&#123; <span class="hljs-string">&quot;cust_id&quot;</span> : <span class="hljs-string">&quot;xyz1&quot;</span>, <span class="hljs-string">&quot;status&quot;</span> : <span class="hljs-string">&quot;D&quot;</span> &#125;<br>&#123; <span class="hljs-string">&quot;cust_id&quot;</span> : <span class="hljs-string">&quot;xyz1&quot;</span>, <span class="hljs-string">&quot;status&quot;</span> : <span class="hljs-string">&quot;D&quot;</span> &#125;<br>&#123; <span class="hljs-string">&quot;cust_id&quot;</span> : <span class="hljs-string">&quot;abc1&quot;</span>, <span class="hljs-string">&quot;status&quot;</span> : <span class="hljs-string">&quot;A&quot;</span> &#125;<br><br></code></pre></td></tr></table></figure>
+
+
+
+<ul>
+<li>$skip</li>
+</ul>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs sh"> db.orders.aggregate(<br>     &#123; <span class="hljs-variable">$skip</span> : 4 &#125;);<br>&#123; <span class="hljs-string">&quot;_id&quot;</span> : 5, <span class="hljs-string">&quot;cust_id&quot;</span> : <span class="hljs-string">&quot;abc1&quot;</span>, <span class="hljs-string">&quot;ord_date&quot;</span> : ISODate(<span class="hljs-string">&quot;2013-11-12T17:04:11.102Z&quot;</span>), <span class="hljs-string">&quot;status&quot;</span> : <span class="hljs-string">&quot;A&quot;</span>, <span class="hljs-string">&quot;amount&quot;</span> : 25 &#125;<br>    <br></code></pre></td></tr></table></figure>
+
+
+
+<ul>
+<li>$unwind</li>
+</ul>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs sh">&gt; db.inventory2.insertOne(&#123; <span class="hljs-string">&quot;_id&quot;</span> : 1, <span class="hljs-string">&quot;item&quot;</span> : <span class="hljs-string">&quot;ABC1&quot;</span>, sizes: [ <span class="hljs-string">&quot;S&quot;</span>, <span class="hljs-string">&quot;M&quot;</span>, <span class="hljs-string">&quot;L&quot;</span>] &#125;)<br>&#123; <span class="hljs-string">&quot;acknowledged&quot;</span> : <span class="hljs-literal">true</span>, <span class="hljs-string">&quot;insertedId&quot;</span> : 1 &#125;<br>&gt; db.inventory2.aggregate( [ &#123; <span class="hljs-variable">$unwind</span> : <span class="hljs-string">&quot;<span class="hljs-variable">$sizes</span>&quot;</span> &#125; ] )<br>&#123; <span class="hljs-string">&quot;_id&quot;</span> : 1, <span class="hljs-string">&quot;item&quot;</span> : <span class="hljs-string">&quot;ABC1&quot;</span>, <span class="hljs-string">&quot;sizes&quot;</span> : <span class="hljs-string">&quot;S&quot;</span> &#125;<br>&#123; <span class="hljs-string">&quot;_id&quot;</span> : 1, <span class="hljs-string">&quot;item&quot;</span> : <span class="hljs-string">&quot;ABC1&quot;</span>, <span class="hljs-string">&quot;sizes&quot;</span> : <span class="hljs-string">&quot;M&quot;</span> &#125;<br>&#123; <span class="hljs-string">&quot;_id&quot;</span> : 1, <span class="hljs-string">&quot;item&quot;</span> : <span class="hljs-string">&quot;ABC1&quot;</span>, <span class="hljs-string">&quot;sizes&quot;</span> : <span class="hljs-string">&quot;L&quot;</span> &#125;<br>    <br></code></pre></td></tr></table></figure>
+
+
+
+<ul>
+<li>$bucket</li>
+</ul>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br></pre></td><td class="code"><pre><code class="hljs sh">&gt; db.artwork.insertMany([<br> &#123; <span class="hljs-string">&quot;_id&quot;</span> : 1, <span class="hljs-string">&quot;title&quot;</span> : <span class="hljs-string">&quot;The Pillars of Society&quot;</span>, <span class="hljs-string">&quot;artist&quot;</span> : <span class="hljs-string">&quot;Grosz&quot;</span>, <span class="hljs-string">&quot;year&quot;</span> : 1926,<br>     <span class="hljs-string">&quot;price&quot;</span> : NumberDecimal(<span class="hljs-string">&quot;199.99&quot;</span>) &#125;,<br> &#123; <span class="hljs-string">&quot;_id&quot;</span> : 2, <span class="hljs-string">&quot;title&quot;</span> : <span class="hljs-string">&quot;Melancholy III&quot;</span>, <span class="hljs-string">&quot;artist&quot;</span> : <span class="hljs-string">&quot;Munch&quot;</span>, <span class="hljs-string">&quot;year&quot;</span> : 1902,<br>     <span class="hljs-string">&quot;price&quot;</span> : NumberDecimal(<span class="hljs-string">&quot;280.00&quot;</span>) &#125;,<br> &#123; <span class="hljs-string">&quot;_id&quot;</span> : 3, <span class="hljs-string">&quot;title&quot;</span> : <span class="hljs-string">&quot;Dancer&quot;</span>, <span class="hljs-string">&quot;artist&quot;</span> : <span class="hljs-string">&quot;Miro&quot;</span>, <span class="hljs-string">&quot;year&quot;</span> : 1925,<br>     <span class="hljs-string">&quot;price&quot;</span> : NumberDecimal(<span class="hljs-string">&quot;76.04&quot;</span>) &#125;,<br> &#123; <span class="hljs-string">&quot;_id&quot;</span> : 4, <span class="hljs-string">&quot;title&quot;</span> : <span class="hljs-string">&quot;The Great Wave off Kanagawa&quot;</span>, <span class="hljs-string">&quot;artist&quot;</span> : <span class="hljs-string">&quot;Hokusai&quot;</span>,<br>     <span class="hljs-string">&quot;price&quot;</span> : NumberDecimal(<span class="hljs-string">&quot;167.30&quot;</span>) &#125;,<br> &#123; <span class="hljs-string">&quot;_id&quot;</span> : 5, <span class="hljs-string">&quot;title&quot;</span> : <span class="hljs-string">&quot;The Persistence of Memory&quot;</span>, <span class="hljs-string">&quot;artist&quot;</span> : <span class="hljs-string">&quot;Dali&quot;</span>, <span class="hljs-string">&quot;year&quot;</span> : 1931,<br>     <span class="hljs-string">&quot;price&quot;</span> : NumberDecimal(<span class="hljs-string">&quot;483.00&quot;</span>) &#125;,<br> &#123; <span class="hljs-string">&quot;_id&quot;</span> : 6, <span class="hljs-string">&quot;title&quot;</span> : <span class="hljs-string">&quot;Composition VII&quot;</span>, <span class="hljs-string">&quot;artist&quot;</span> : <span class="hljs-string">&quot;Kandinsky&quot;</span>, <span class="hljs-string">&quot;year&quot;</span> : 1913,<br>     <span class="hljs-string">&quot;price&quot;</span> : NumberDecimal(<span class="hljs-string">&quot;385.00&quot;</span>) &#125;,<br> &#123; <span class="hljs-string">&quot;_id&quot;</span> : 7, <span class="hljs-string">&quot;title&quot;</span> : <span class="hljs-string">&quot;The Scream&quot;</span>, <span class="hljs-string">&quot;artist&quot;</span> : <span class="hljs-string">&quot;Munch&quot;</span>, <span class="hljs-string">&quot;year&quot;</span> : 1893 &#125;,<br> &#123; <span class="hljs-string">&quot;_id&quot;</span> : 8, <span class="hljs-string">&quot;title&quot;</span> : <span class="hljs-string">&quot;Blue Flower&quot;</span>, <span class="hljs-string">&quot;artist&quot;</span> : <span class="hljs-string">&quot;O&#x27;Keefe&quot;</span>, <span class="hljs-string">&quot;year&quot;</span> : 1918,<br>     <span class="hljs-string">&quot;price&quot;</span> : NumberDecimal(<span class="hljs-string">&quot;118.42&quot;</span>) &#125;<br> ])<br>&#123;<br>        <span class="hljs-string">&quot;acknowledged&quot;</span> : <span class="hljs-literal">true</span>,<br>        <span class="hljs-string">&quot;insertedIds&quot;</span> : [<br>                1,<br>                2,<br>                3,<br>                4,<br>                5,<br>                6,<br>                7,<br>                8<br>        ]<br>&#125;<br>&gt; db.artwork.find(&#123;&#125;)<br>&#123; <span class="hljs-string">&quot;_id&quot;</span> : 1, <span class="hljs-string">&quot;title&quot;</span> : <span class="hljs-string">&quot;The Pillars of Society&quot;</span>, <span class="hljs-string">&quot;artist&quot;</span> : <span class="hljs-string">&quot;Grosz&quot;</span>, <span class="hljs-string">&quot;year&quot;</span> : 1926, <span class="hljs-string">&quot;price&quot;</span> : NumberDecimal(<span class="hljs-string">&quot;199.99&quot;</span>) &#125;<br>&#123; <span class="hljs-string">&quot;_id&quot;</span> : 2, <span class="hljs-string">&quot;title&quot;</span> : <span class="hljs-string">&quot;Melancholy III&quot;</span>, <span class="hljs-string">&quot;artist&quot;</span> : <span class="hljs-string">&quot;Munch&quot;</span>, <span class="hljs-string">&quot;year&quot;</span> : 1902, <span class="hljs-string">&quot;price&quot;</span> : NumberDecimal(<span class="hljs-string">&quot;280.00&quot;</span>) &#125;<br>&#123; <span class="hljs-string">&quot;_id&quot;</span> : 3, <span class="hljs-string">&quot;title&quot;</span> : <span class="hljs-string">&quot;Dancer&quot;</span>, <span class="hljs-string">&quot;artist&quot;</span> : <span class="hljs-string">&quot;Miro&quot;</span>, <span class="hljs-string">&quot;year&quot;</span> : 1925, <span class="hljs-string">&quot;price&quot;</span> : NumberDecimal(<span class="hljs-string">&quot;76.04&quot;</span>) &#125;<br>&#123; <span class="hljs-string">&quot;_id&quot;</span> : 4, <span class="hljs-string">&quot;title&quot;</span> : <span class="hljs-string">&quot;The Great Wave off Kanagawa&quot;</span>, <span class="hljs-string">&quot;artist&quot;</span> : <span class="hljs-string">&quot;Hokusai&quot;</span>, <span class="hljs-string">&quot;price&quot;</span> : NumberDecimal(<span class="hljs-string">&quot;167.30&quot;</span>) &#125;<br>&#123; <span class="hljs-string">&quot;_id&quot;</span> : 5, <span class="hljs-string">&quot;title&quot;</span> : <span class="hljs-string">&quot;The Persistence of Memory&quot;</span>, <span class="hljs-string">&quot;artist&quot;</span> : <span class="hljs-string">&quot;Dali&quot;</span>, <span class="hljs-string">&quot;year&quot;</span> : 1931, <span class="hljs-string">&quot;price&quot;</span> : NumberDecimal(<span class="hljs-string">&quot;483.00&quot;</span>) &#125;<br>&#123; <span class="hljs-string">&quot;_id&quot;</span> : 6, <span class="hljs-string">&quot;title&quot;</span> : <span class="hljs-string">&quot;Composition VII&quot;</span>, <span class="hljs-string">&quot;artist&quot;</span> : <span class="hljs-string">&quot;Kandinsky&quot;</span>, <span class="hljs-string">&quot;year&quot;</span> : 1913, <span class="hljs-string">&quot;price&quot;</span> : NumberDecimal(<span class="hljs-string">&quot;385.00&quot;</span>) &#125;<br>&#123; <span class="hljs-string">&quot;_id&quot;</span> : 7, <span class="hljs-string">&quot;title&quot;</span> : <span class="hljs-string">&quot;The Scream&quot;</span>, <span class="hljs-string">&quot;artist&quot;</span> : <span class="hljs-string">&quot;Munch&quot;</span>, <span class="hljs-string">&quot;year&quot;</span> : 1893 &#125; // 注意这里没有price，聚合结果中为Others<br>&#123; <span class="hljs-string">&quot;_id&quot;</span> : 8, <span class="hljs-string">&quot;title&quot;</span> : <span class="hljs-string">&quot;Blue Flower&quot;</span>, <span class="hljs-string">&quot;artist&quot;</span> : <span class="hljs-string">&quot;O&#x27;Keefe&quot;</span>, <span class="hljs-string">&quot;year&quot;</span> : 1918, <span class="hljs-string">&quot;price&quot;</span> : NumberDecimal(<span class="hljs-string">&quot;118.42&quot;</span>) &#125;<br>&gt; db.artwork.aggregate( [<br>   &#123;<br>     <span class="hljs-variable">$bucket</span>: &#123;<br>       groupBy: <span class="hljs-string">&quot;<span class="hljs-variable">$price</span>&quot;</span>,<br>       boundaries: [ 0, 200, 400 ],<br>       default: <span class="hljs-string">&quot;Other&quot;</span>,<br>       output: &#123;<br>         <span class="hljs-string">&quot;count&quot;</span>: &#123; <span class="hljs-variable">$sum</span>: 1 &#125;,<br>         <span class="hljs-string">&quot;titles&quot;</span> : &#123; <span class="hljs-variable">$push</span>: <span class="hljs-string">&quot;<span class="hljs-variable">$title</span>&quot;</span> &#125;<br>       &#125;<br>     &#125;<br>   &#125;<br> ] )<br>&#123; <span class="hljs-string">&quot;_id&quot;</span> : 0, <span class="hljs-string">&quot;count&quot;</span> : 4, <span class="hljs-string">&quot;titles&quot;</span> : [ <span class="hljs-string">&quot;The Pillars of Society&quot;</span>, <span class="hljs-string">&quot;Dancer&quot;</span>, <span class="hljs-string">&quot;The Great Wave off Kanagawa&quot;</span>, <span class="hljs-string">&quot;Blue Flower&quot;</span> ] &#125;<br>&#123; <span class="hljs-string">&quot;_id&quot;</span> : 200, <span class="hljs-string">&quot;count&quot;</span> : 2, <span class="hljs-string">&quot;titles&quot;</span> : [ <span class="hljs-string">&quot;Melancholy III&quot;</span>, <span class="hljs-string">&quot;Composition VII&quot;</span> ] &#125;<br>&#123; <span class="hljs-string">&quot;_id&quot;</span> : <span class="hljs-string">&quot;Other&quot;</span>, <span class="hljs-string">&quot;count&quot;</span> : 2, <span class="hljs-string">&quot;titles&quot;</span> : [ <span class="hljs-string">&quot;The Persistence of Memory&quot;</span>, <span class="hljs-string">&quot;The Scream&quot;</span> ] &#125;<br>    <br></code></pre></td></tr></table></figure>
+
+
+
+<ul>
+<li>$bucket + $facet</li>
+</ul>
+<blockquote>
+<p>非常常用！</p>
+</blockquote>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br></pre></td><td class="code"><pre><code class="hljs sh">db.artwork.aggregate( [<br>  &#123;<br>    <span class="hljs-variable">$facet</span>: &#123;<br>      <span class="hljs-string">&quot;price&quot;</span>: [<br>        &#123;<br>          <span class="hljs-variable">$bucket</span>: &#123;<br>              groupBy: <span class="hljs-string">&quot;<span class="hljs-variable">$price</span>&quot;</span>,<br>              boundaries: [ 0, 200, 400 ],<br>              default: <span class="hljs-string">&quot;Other&quot;</span>,<br>              output: &#123;<br>                <span class="hljs-string">&quot;count&quot;</span>: &#123; <span class="hljs-variable">$sum</span>: 1 &#125;,<br>                <span class="hljs-string">&quot;artwork&quot;</span> : &#123; <span class="hljs-variable">$push</span>: &#123; <span class="hljs-string">&quot;title&quot;</span>: <span class="hljs-string">&quot;<span class="hljs-variable">$title</span>&quot;</span>, <span class="hljs-string">&quot;price&quot;</span>: <span class="hljs-string">&quot;<span class="hljs-variable">$price</span>&quot;</span> &#125; &#125;<br>              &#125;<br>          &#125;<br>        &#125;<br>      ],<br>      <span class="hljs-string">&quot;year&quot;</span>: [<br>        &#123;<br>          <span class="hljs-variable">$bucket</span>: &#123;<br>            groupBy: <span class="hljs-string">&quot;<span class="hljs-variable">$year</span>&quot;</span>,<br>            boundaries: [ 1890, 1910, 1920, 1940 ],<br>            default: <span class="hljs-string">&quot;Unknown&quot;</span>,<br>            output: &#123;<br>              <span class="hljs-string">&quot;count&quot;</span>: &#123; <span class="hljs-variable">$sum</span>: 1 &#125;,<br>              <span class="hljs-string">&quot;artwork&quot;</span>: &#123; <span class="hljs-variable">$push</span>: &#123; <span class="hljs-string">&quot;title&quot;</span>: <span class="hljs-string">&quot;<span class="hljs-variable">$title</span>&quot;</span>, <span class="hljs-string">&quot;year&quot;</span>: <span class="hljs-string">&quot;<span class="hljs-variable">$year</span>&quot;</span> &#125; &#125;<br>            &#125;<br>          &#125;<br>        &#125;<br>      ]<br>    &#125;<br>  &#125;<br>] )<br><br>// 输出<br>&#123;<br>  <span class="hljs-string">&quot;year&quot;</span> : [<br>    &#123;<br>      <span class="hljs-string">&quot;_id&quot;</span> : 1890,<br>      <span class="hljs-string">&quot;count&quot;</span> : 2,<br>      <span class="hljs-string">&quot;artwork&quot;</span> : [<br>        &#123;<br>          <span class="hljs-string">&quot;title&quot;</span> : <span class="hljs-string">&quot;Melancholy III&quot;</span>,<br>          <span class="hljs-string">&quot;year&quot;</span> : 1902<br>        &#125;,<br>        &#123;<br>          <span class="hljs-string">&quot;title&quot;</span> : <span class="hljs-string">&quot;The Scream&quot;</span>,<br>          <span class="hljs-string">&quot;year&quot;</span> : 1893<br>        &#125;<br>      ]<br>    &#125;,<br>    &#123;<br>      <span class="hljs-string">&quot;_id&quot;</span> : 1910,<br>      <span class="hljs-string">&quot;count&quot;</span> : 2,<br>      <span class="hljs-string">&quot;artwork&quot;</span> : [<br>        &#123;<br>          <span class="hljs-string">&quot;title&quot;</span> : <span class="hljs-string">&quot;Composition VII&quot;</span>,<br>          <span class="hljs-string">&quot;year&quot;</span> : 1913<br>        &#125;,<br>        &#123;<br>          <span class="hljs-string">&quot;title&quot;</span> : <span class="hljs-string">&quot;Blue Flower&quot;</span>,<br>          <span class="hljs-string">&quot;year&quot;</span> : 1918<br>        &#125;<br>      ]<br>    &#125;,<br>    &#123;<br>      <span class="hljs-string">&quot;_id&quot;</span> : 1920,<br>      <span class="hljs-string">&quot;count&quot;</span> : 3,<br>      <span class="hljs-string">&quot;artwork&quot;</span> : [<br>        &#123;<br>          <span class="hljs-string">&quot;title&quot;</span> : <span class="hljs-string">&quot;The Pillars of Society&quot;</span>,<br>          <span class="hljs-string">&quot;year&quot;</span> : 1926<br>        &#125;,<br>        &#123;<br>          <span class="hljs-string">&quot;title&quot;</span> : <span class="hljs-string">&quot;Dancer&quot;</span>,<br>          <span class="hljs-string">&quot;year&quot;</span> : 1925<br>        &#125;,<br>        &#123;<br>          <span class="hljs-string">&quot;title&quot;</span> : <span class="hljs-string">&quot;The Persistence of Memory&quot;</span>,<br>          <span class="hljs-string">&quot;year&quot;</span> : 1931<br>        &#125;<br>      ]<br>    &#125;,<br>    &#123;<br>      // Includes the document without a year, e.g., _id: 4<br>      <span class="hljs-string">&quot;_id&quot;</span> : <span class="hljs-string">&quot;Unknown&quot;</span>,<br>      <span class="hljs-string">&quot;count&quot;</span> : 1,<br>      <span class="hljs-string">&quot;artwork&quot;</span> : [<br>        &#123;<br>          <span class="hljs-string">&quot;title&quot;</span> : <span class="hljs-string">&quot;The Great Wave off Kanagawa&quot;</span><br>        &#125;<br>      ]<br>    &#125;<br>  ],<br>      <span class="hljs-string">&quot;price&quot;</span> : [<br>    &#123;<br>      <span class="hljs-string">&quot;_id&quot;</span> : 0,<br>      <span class="hljs-string">&quot;count&quot;</span> : 4,<br>      <span class="hljs-string">&quot;artwork&quot;</span> : [<br>        &#123;<br>          <span class="hljs-string">&quot;title&quot;</span> : <span class="hljs-string">&quot;The Pillars of Society&quot;</span>,<br>          <span class="hljs-string">&quot;price&quot;</span> : NumberDecimal(<span class="hljs-string">&quot;199.99&quot;</span>)<br>        &#125;,<br>        &#123;<br>          <span class="hljs-string">&quot;title&quot;</span> : <span class="hljs-string">&quot;Dancer&quot;</span>,<br>          <span class="hljs-string">&quot;price&quot;</span> : NumberDecimal(<span class="hljs-string">&quot;76.04&quot;</span>)<br>        &#125;,<br>        &#123;<br>          <span class="hljs-string">&quot;title&quot;</span> : <span class="hljs-string">&quot;The Great Wave off Kanagawa&quot;</span>,<br>          <span class="hljs-string">&quot;price&quot;</span> : NumberDecimal(<span class="hljs-string">&quot;167.30&quot;</span>)<br>        &#125;,<br>        &#123;<br>          <span class="hljs-string">&quot;title&quot;</span> : <span class="hljs-string">&quot;Blue Flower&quot;</span>,<br>          <span class="hljs-string">&quot;price&quot;</span> : NumberDecimal(<span class="hljs-string">&quot;118.42&quot;</span>)<br>        &#125;<br>      ]<br>    &#125;,<br>    &#123;<br>      <span class="hljs-string">&quot;_id&quot;</span> : 200,<br>      <span class="hljs-string">&quot;count&quot;</span> : 2,<br>      <span class="hljs-string">&quot;artwork&quot;</span> : [<br>        &#123;<br>          <span class="hljs-string">&quot;title&quot;</span> : <span class="hljs-string">&quot;Melancholy III&quot;</span>,<br>          <span class="hljs-string">&quot;price&quot;</span> : NumberDecimal(<span class="hljs-string">&quot;280.00&quot;</span>)<br>        &#125;,<br>        &#123;<br>          <span class="hljs-string">&quot;title&quot;</span> : <span class="hljs-string">&quot;Composition VII&quot;</span>,<br>          <span class="hljs-string">&quot;price&quot;</span> : NumberDecimal(<span class="hljs-string">&quot;385.00&quot;</span>)<br>        &#125;<br>      ]<br>    &#125;,<br>    &#123;<br>      // Includes the document without a price, e.g., _id: 7<br>      <span class="hljs-string">&quot;_id&quot;</span> : <span class="hljs-string">&quot;Other&quot;</span>,<br>      <span class="hljs-string">&quot;count&quot;</span> : 2,<br>      <span class="hljs-string">&quot;artwork&quot;</span> : [<br>        &#123;<br>          <span class="hljs-string">&quot;title&quot;</span> : <span class="hljs-string">&quot;The Persistence of Memory&quot;</span>,<br>          <span class="hljs-string">&quot;price&quot;</span> : NumberDecimal(<span class="hljs-string">&quot;483.00&quot;</span>)<br>        &#125;,<br>        &#123;<br>          <span class="hljs-string">&quot;title&quot;</span> : <span class="hljs-string">&quot;The Scream&quot;</span><br>        &#125;<br>      ]<br>    &#125;<br>  ]<br>&#125;<br><br></code></pre></td></tr></table></figure>
+
+
+
+<blockquote>
+<p>聚合操作使用的比较频繁，在实际的工作中可以参考<a target="_blank" rel="noopener" href="https://docs.mongodb.com/v3.6/reference/operator/aggregation-pipeline/">官方文档 - Aggregation Pipeline Stages  (opens new window)</a>。</p>
+</blockquote>
+<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20260116212100037.png" srcset="/img/loading.gif" lazyload alt="img"></p>
+<h3 id="Aggregation-Options参数"><a href="#Aggregation-Options参数" class="headerlink" title="Aggregation Options参数"></a>Aggregation Options参数</h3><blockquote>
+<p>举一个explain参数为例，更多的相关Options可以参考官方文档，<a target="_blank" rel="noopener" href="https://docs.mongodb.com/v3.6/reference/method/db.collection.aggregate/">Aggregrate相关配置  (opens new window)</a></p>
+</blockquote>
+<ul>
+<li>explain</li>
+</ul>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br></pre></td><td class="code"><pre><code class="hljs sh">&gt; db.orders.aggregate(<br>                      [<br>                        &#123; <span class="hljs-variable">$match</span>: &#123; status: <span class="hljs-string">&quot;A&quot;</span> &#125; &#125;,<br>                        &#123; <span class="hljs-variable">$group</span>: &#123; _id: <span class="hljs-string">&quot;<span class="hljs-variable">$cust_id</span>&quot;</span>, total: &#123; <span class="hljs-variable">$sum</span>: <span class="hljs-string">&quot;<span class="hljs-variable">$amount</span>&quot;</span> &#125; &#125; &#125;,<br>                        &#123; <span class="hljs-variable">$sort</span>: &#123; total: -1 &#125; &#125;<br>                      ],<br>                      &#123;<br>                        explain: <span class="hljs-literal">true</span><br>                      &#125;<br>)<br>&#123;<br>        <span class="hljs-string">&quot;serverInfo&quot;</span> : &#123;<br>                <span class="hljs-string">&quot;host&quot;</span> : <span class="hljs-string">&quot;localhost&quot;</span>,<br>                <span class="hljs-string">&quot;port&quot;</span> : 27017,<br>                <span class="hljs-string">&quot;version&quot;</span> : <span class="hljs-string">&quot;3.6.19&quot;</span>,<br>                <span class="hljs-string">&quot;gitVersion&quot;</span> : <span class="hljs-string">&quot;41b289ff734a926e784d6ab42c3129f59f40d5b4&quot;</span><br>        &#125;,<br>        <span class="hljs-string">&quot;stages&quot;</span> : [<br>                &#123;<br>                        <span class="hljs-string">&quot;<span class="hljs-variable">$cursor</span>&quot;</span> : &#123;<br>                                <span class="hljs-string">&quot;query&quot;</span> : &#123;<br>                                        <span class="hljs-string">&quot;status&quot;</span> : <span class="hljs-string">&quot;A&quot;</span><br>                                &#125;,<br>                                <span class="hljs-string">&quot;fields&quot;</span> : &#123;<br>                                        <span class="hljs-string">&quot;amount&quot;</span> : 1,<br>                                        <span class="hljs-string">&quot;cust_id&quot;</span> : 1,<br>                                        <span class="hljs-string">&quot;_id&quot;</span> : 0<br>                                &#125;,<br>                                <span class="hljs-string">&quot;queryPlanner&quot;</span> : &#123;<br>                                        <span class="hljs-string">&quot;plannerVersion&quot;</span> : 1,<br>                                        <span class="hljs-string">&quot;namespace&quot;</span> : <span class="hljs-string">&quot;testdb.orders&quot;</span>,<br>                                        <span class="hljs-string">&quot;indexFilterSet&quot;</span> : <span class="hljs-literal">false</span>,<br>                                        <span class="hljs-string">&quot;parsedQuery&quot;</span> : &#123;<br>                                                <span class="hljs-string">&quot;status&quot;</span> : &#123;<br>                                                        <span class="hljs-string">&quot;<span class="hljs-variable">$eq</span>&quot;</span> : <span class="hljs-string">&quot;A&quot;</span><br>                                                &#125;<br>                                        &#125;,<br>                                        <span class="hljs-string">&quot;winningPlan&quot;</span> : &#123;<br>                                                <span class="hljs-string">&quot;stage&quot;</span> : <span class="hljs-string">&quot;COLLSCAN&quot;</span>,<br>                                                <span class="hljs-string">&quot;filter&quot;</span> : &#123;<br>                                                        <span class="hljs-string">&quot;status&quot;</span> : &#123;<br>                                                                <span class="hljs-string">&quot;<span class="hljs-variable">$eq</span>&quot;</span> : <span class="hljs-string">&quot;A&quot;</span><br>                                                        &#125;<br>                                                &#125;,<br>                                                <span class="hljs-string">&quot;direction&quot;</span> : <span class="hljs-string">&quot;forward&quot;</span><br>                                        &#125;,<br>                                        <span class="hljs-string">&quot;rejectedPlans&quot;</span> : [ ]<br>                                &#125;<br>                        &#125;<br>                &#125;,<br>                &#123;<br>                        <span class="hljs-string">&quot;<span class="hljs-variable">$group</span>&quot;</span> : &#123;<br>                                <span class="hljs-string">&quot;_id&quot;</span> : <span class="hljs-string">&quot;<span class="hljs-variable">$cust_id</span>&quot;</span>,<br>                                <span class="hljs-string">&quot;total&quot;</span> : &#123;<br>                                        <span class="hljs-string">&quot;<span class="hljs-variable">$sum</span>&quot;</span> : <span class="hljs-string">&quot;<span class="hljs-variable">$amount</span>&quot;</span><br>                                &#125;<br>                        &#125;<br>                &#125;,<br>                &#123;<br>                        <span class="hljs-string">&quot;<span class="hljs-variable">$sort</span>&quot;</span> : &#123;<br>                                <span class="hljs-string">&quot;sortKey&quot;</span> : &#123;<br>                                        <span class="hljs-string">&quot;total&quot;</span> : -1<br>                                &#125;<br>                        &#125;<br>                &#125;<br>        ],<br>        <span class="hljs-string">&quot;ok&quot;</span> : 1<br>&#125;<br>    <br></code></pre></td></tr></table></figure>
+
+
+
+<h2 id="聚合-Map-Reduce"><a href="#聚合-Map-Reduce" class="headerlink" title="聚合 - Map Reduce"></a>聚合 - Map Reduce</h2><ul>
+<li>图例理解</li>
+</ul>
+<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20260116212112247.png" srcset="/img/loading.gif" lazyload alt="img"></p>
+<h3 id="官网给了个例子"><a href="#官网给了个例子" class="headerlink" title="官网给了个例子"></a>官网给了个例子</h3><ul>
+<li>准备数据</li>
+</ul>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs sh">&#123;<br>     _id: ObjectId(<span class="hljs-string">&quot;50a8240b927d5d8b5891743c&quot;</span>),<br>     cust_id: <span class="hljs-string">&quot;abc123&quot;</span>,<br>     ord_date: new Date(<span class="hljs-string">&quot;Oct 04, 2012&quot;</span>),<br>     status: <span class="hljs-string">&#x27;A&#x27;</span>,<br>     price: 25,<br>     items: [ &#123; sku: <span class="hljs-string">&quot;mmm&quot;</span>, qty: 5, price: 2.5 &#125;,<br>              &#123; sku: <span class="hljs-string">&quot;nnn&quot;</span>, qty: 5, price: 2.5 &#125; ]<br>&#125;<br></code></pre></td></tr></table></figure>
+
+
+
+<ul>
+<li>计算每个顾客总花费：</li>
+</ul>
+<p>map</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs sh">var mapFunction1 = <span class="hljs-function"><span class="hljs-title">function</span></span>() &#123;<br>                       emit(this.cust_id, this.price);<br>                   &#125;;<br>    <br></code></pre></td></tr></table></figure>
+
+
+
+<p>reduce</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs sh">var reduceFunction1 = <span class="hljs-keyword">function</span>(keyCustId, valuesPrices) &#123;<br>                          <span class="hljs-built_in">return</span> Array.<span class="hljs-built_in">sum</span>(valuesPrices);<br>                      &#125;;<br><br></code></pre></td></tr></table></figure>
+
+
+
+<p>out</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs sh">db.orders.mapReduce(<br>                     mapFunction1,<br>                     reduceFunction1,<br>                     &#123; out: <span class="hljs-string">&quot;map_reduce_example&quot;</span> &#125;<br>                   )<br><br></code></pre></td></tr></table></figure>
+
+
+
+<ul>
+<li>计算每个订单中Items的均价</li>
+</ul>
+<p>map</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs sh">var mapFunction2 = <span class="hljs-function"><span class="hljs-title">function</span></span>() &#123;<br>                       <span class="hljs-keyword">for</span> (var idx = 0; idx &lt; this.items.length; idx++) &#123;<br>                           var key = this.items[idx].sku;<br>                           var value = &#123;<br>                                         count: 1,<br>                                         qty: this.items[idx].qty<br>                                       &#125;;<br>                           emit(key, value);<br>                       &#125;<br>                    &#125;;<br>    <br></code></pre></td></tr></table></figure>
+
+
+
+<p>reduce</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs sh">var reduceFunction2 = <span class="hljs-keyword">function</span>(keySKU, countObjVals) &#123;<br>                     reducedVal = &#123; count: 0, qty: 0 &#125;;<br><br>                     <span class="hljs-keyword">for</span> (var idx = 0; idx &lt; countObjVals.length; idx++) &#123;<br>                         reducedVal.count += countObjVals[idx].count;<br>                         reducedVal.qty += countObjVals[idx].qty;<br>                     &#125;<br><br>                     <span class="hljs-built_in">return</span> reducedVal;<br>                  &#125;;<br>    <br></code></pre></td></tr></table></figure>
+
+
+
+<p>finalize</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs sh">var finalizeFunction2 = <span class="hljs-keyword">function</span> (key, reducedVal) &#123;<br><br>                       reducedVal.avg = reducedVal.qty/reducedVal.count;<br><br>                       <span class="hljs-built_in">return</span> reducedVal;<br><br>                    &#125;;<br>    <br></code></pre></td></tr></table></figure>
+
+
+
+<h2 id="索引"><a href="#索引" class="headerlink" title="索引"></a>索引</h2><p>索引即为提升查询等的效率，默认是对_id进行索引的。</p>
+<h3 id="图例理解"><a href="#图例理解" class="headerlink" title="图例理解"></a>图例理解</h3><p>以对users中score进行索引时查询的效果</p>
+<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20260116212127821.png" srcset="/img/loading.gif" lazyload alt="img"></p>
+<h3 id="索引的类型"><a href="#索引的类型" class="headerlink" title="索引的类型"></a>索引的类型</h3><p>对于索引，这里简单介绍下常用的类型，其它类型和例子可以参考<a target="_blank" rel="noopener" href="https://docs.mongodb.com/v3.6/indexes/">官网文档 - 索引  (opens new window)</a></p>
+<ul>
+<li>单一索引</li>
+</ul>
+<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20260116212138962.png" srcset="/img/loading.gif" lazyload alt="img"></p>
+<ul>
+<li>复合索引</li>
+</ul>
+<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20260116212145914.png" srcset="/img/loading.gif" lazyload alt="img"></p>
+<ul>
+<li>多键索引</li>
+</ul>
+<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20260116212156225.png" srcset="/img/loading.gif" lazyload alt="img"></p>
+<h3 id="对索引的操作"><a href="#对索引的操作" class="headerlink" title="对索引的操作"></a>对索引的操作</h3><ul>
+<li>查看集合索引</li>
+</ul>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs sh">db.col.getIndexes()<br></code></pre></td></tr></table></figure>
+
+
+
+<ul>
+<li>查看集合索引大小</li>
+</ul>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs sh">db.col.totalIndexSize()<br></code></pre></td></tr></table></figure>
+
+
+
+<ul>
+<li>删除集合所有索引</li>
+</ul>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs sh">db.col.dropIndexes()<br></code></pre></td></tr></table></figure>
+
+
+
+<ul>
+<li>删除集合指定索引</li>
+</ul>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs sh">db.col.dropIndex(<span class="hljs-string">&quot;索引名称&quot;</span>)<br></code></pre></td></tr></table></figure>
+              
+            </div>
+            <hr/>
+            <div>
+              <div>
+  <img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20241112163319.png" srcset="/img/loading.gif" lazyload>
+</div>
+<div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/05-%E6%95%B0%E6%8D%AE%E5%BA%93/" class="category-chain-item">05_数据库</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/05-%E6%95%B0%E6%8D%AE%E5%BA%93/05-MongoDB/" class="category-chain-item">05_MongoDB</a>
+  
+  
+
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/%E6%95%B0%E6%8D%AE%E5%BA%93/">#数据库</a>
+      
+        <a href="/tags/MongoDB/">#MongoDB</a>
+      
+        <a href="/tags/NoSQL/">#NoSQL</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>03-MongoDB索引和聚合</div>
+      <div>https://janycode.github.io/2022/08/14/05_数据库/05_MongoDB/03-MongoDB索引和聚合/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Jerry(姜源)</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2022年8月14日</div>
+        </div>
+      
+      
+      <div class="license-meta-item">
+        <div>许可协议</div>
+        <div>
+          
+            
+            
+              <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+              <span class="hint--top hint--rounded" aria-label="BY - 姜源">
+                <i class="iconfont icon-by"></i>
+              </span>
+              </a>
+            
+          
+        </div>
+      </div>
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2022/08/14/05_%E6%95%B0%E6%8D%AE%E5%BA%93/05_MongoDB/04-MongoDB%E4%BD%BF%E7%94%A8Java%20API/" title="04-MongoDB使用Java API">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">04-MongoDB使用Java API</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2022/08/13/05_%E6%95%B0%E6%8D%AE%E5%BA%93/05_MongoDB/01-MongoDB%E5%AE%89%E8%A3%85%E4%B8%8E%E9%85%8D%E7%BD%AE/" title="01-MongoDB安装与配置">
+                        <span class="hidden-mobile">01-MongoDB安装与配置</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+  <article id="comments" lazyload>
+    
+  <div id="SOHUCS" sid='https://janycode.github.io/2022/08/14/05_%E6%95%B0%E6%8D%AE%E5%BA%93/05_MongoDB/03-MongoDB%E7%B4%A2%E5%BC%95%E5%92%8C%E8%81%9A%E5%90%88/'></div>
+  <script type="text/javascript">
+    Fluid.utils.loadComments('#SOHUCS', function() {
+      Fluid.utils.createScript("https://changyan.sohu.com/upload/changyan.js", function() {
+        window.changyan.api.config({"appid":"cyw5OHIcO","appkey":"fea3446b3df4b3f129f34da4cbc87e51"})
+      });
+    });
+  </script>
+  <noscript>Please enable JavaScript to view the comments</noscript>
+
+
+  </article>
+
+
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://simple.blog.csdn.net" target="_blank" rel="nofollow noopener"><span>CSDN</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/janycode" target="_blank" rel="nofollow noopener"><span>GitHub</span></a> <i class="iconfont icon-love"></i> <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="busuanzi_container_site_pv" style="display: none">
+        总访问量(PV) 
+        <span id="busuanzi_value_site_pv"></span>
+         次，
+      </span>
+    
+    
+      <span id="busuanzi_container_site_uv" style="display: none">
+        总访客数(UV) 
+        <span id="busuanzi_value_site_uv"></span>
+         人
+      </span>
+    
+    
+  
+</div>
+
+  
+  
+  
+</div>
+
+<!-- live2d 动画 -->
+<script src="https://eqcn.ajz.miesnfu.com/wp-content/plugins/wp-3d-pony/live2dw/lib/L2Dwidget.min.js"></script>
+<script>
+    L2Dwidget.init({
+        "model": {
+            jsonPath: "https://unpkg.com/live2d-widget-model-haruto@1.0.5/assets/haruto.model.json",
+            "scale": 1
+        },
+        "display": {
+            "position": "right",
+            "width": 100,
+            "height": 200,
+            "hOffset": 35,
+            "vOffset": -85
+        },
+        "mobile": {
+            "show": false,
+            "scale": 0.1
+        },
+        "react": {
+            "opacityDefault": 0.75,
+            "opacityOnHover": 0.2
+        }
+    });
+</script>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <!-- Baidu Analytics -->
+    <script defer>
+      if (!Fluid.ctx.dnt) {
+        var _hmt = _hmt || [];
+        (function() {
+          var hm = document.createElement("script");
+          hm.src = "https://hm.baidu.com/hm.js?bfff735c897eb60ea49b735096b20e47";
+          var s = document.getElementsByTagName("script")[0];
+          s.parentNode.insertBefore(hm, s);
+        })();
+      }
+    </script>
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.0/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      headingSelector : CONFIG.toc.headingSelector || 'h1,h2,h3,h4,h5,h6',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      collapseDepth   : CONFIG.toc.collapseDepth || 0,
+      scrollSmooth    : true,
+      headingsOffset  : -boardTop
+    });
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+  });
+</script>
+
+
+  <script>
+  (function() {
+    var enableLang = CONFIG.code_language.enable && CONFIG.code_language.default;
+    var enableCopy = CONFIG.copy_btn;
+    if (!enableLang && !enableCopy) {
+      return;
+    }
+
+    function getBgClass(ele) {
+      return Fluid.utils.getBackgroundLightness(ele) >= 0 ? 'code-widget-light' : 'code-widget-dark';
+    }
+
+    var copyTmpl = '';
+    copyTmpl += '<div class="code-widget">';
+    copyTmpl += 'LANG';
+    copyTmpl += '</div>';
+    jQuery('.markdown-body pre').each(function() {
+      var $pre = jQuery(this);
+      if ($pre.find('code.mermaid').length > 0) {
+        return;
+      }
+      if ($pre.find('span.line').length > 0) {
+        return;
+      }
+
+      var lang = '';
+
+      if (enableLang) {
+        lang = CONFIG.code_language.default;
+        if ($pre[0].children.length > 0 && $pre[0].children[0].classList.length >= 2 && $pre.children().hasClass('hljs')) {
+          lang = $pre[0].children[0].classList[1];
+        } else if ($pre[0].getAttribute('data-language')) {
+          lang = $pre[0].getAttribute('data-language');
+        } else if ($pre.parent().hasClass('sourceCode') && $pre[0].children.length > 0 && $pre[0].children[0].classList.length >= 2) {
+          lang = $pre[0].children[0].classList[1];
+          $pre.parent().addClass('code-wrapper');
+        } else if ($pre.parent().hasClass('markdown-body') && $pre[0].classList.length === 0) {
+          $pre.wrap('<div class="code-wrapper"></div>');
+        }
+        lang = lang.toUpperCase().replace('NONE', CONFIG.code_language.default);
+      }
+      $pre.append(copyTmpl.replace('LANG', lang).replace('code-widget">',
+        getBgClass($pre[0]) + (enableCopy ? ' code-widget copy-btn" data-clipboard-snippet><i class="iconfont icon-copy"></i>' : ' code-widget">')));
+
+      if (enableCopy) {
+        Fluid.utils.createScript('https://lib.baomitu.com/clipboard.js/2.0.10/clipboard.min.js', function() {
+          var clipboard = new window.ClipboardJS('.copy-btn', {
+            target: function(trigger) {
+              var nodes = trigger.parentNode.childNodes;
+              for (var i = 0; i < nodes.length; i++) {
+                if (nodes[i].tagName === 'CODE') {
+                  return nodes[i];
+                }
+              }
+            }
+          });
+          clipboard.on('success', function(e) {
+            e.clearSelection();
+            e.trigger.innerHTML = e.trigger.innerHTML.replace('icon-copy', 'icon-success');
+            setTimeout(function() {
+              e.trigger.innerHTML = e.trigger.innerHTML.replace('icon-success', 'icon-copy');
+            }, 2000);
+          });
+        });
+      }
+    });
+  })();
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>
