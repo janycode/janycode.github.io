@@ -1,0 +1,898 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=light>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Jerry(姜源)">
+  <meta name="keywords" content="Java,Html,CSS,JavaScript,Python,C,Linux,shell编程经验分享、技术总结、心得体会">
+  
+    <meta name="description" content="参考资料：Spring Boot 官网文档 《37. Validation》 参考资料：@Valid 与 @Validated 注解用法详解  Spring官方在SpringBoot文档中，关于参数校验（Validation）给出的解决方案是这样的： 使用 JSR-303 规范，直接利用注解进行参数校验。 JSR-303 是 JAVA EE 6 中的一项子规范，叫做 Bean Validatio">
+<meta property="og:type" content="article">
+<meta property="og:title" content="01-Spring Validation注解参数校验">
+<meta property="og:url" content="https://janycode.github.io/2021/01/28/08_%E6%A1%86%E6%9E%B6%E6%8A%80%E6%9C%AF/02_Spring/05_Validation/01-Spring%20Validation%E6%B3%A8%E8%A7%A3%E5%8F%82%E6%95%B0%E6%A0%A1%E9%AA%8C/index.html">
+<meta property="og:site_name" content="姜源の云笔记">
+<meta property="og:description" content="参考资料：Spring Boot 官网文档 《37. Validation》 参考资料：@Valid 与 @Validated 注解用法详解  Spring官方在SpringBoot文档中，关于参数校验（Validation）给出的解决方案是这样的： 使用 JSR-303 规范，直接利用注解进行参数校验。 JSR-303 是 JAVA EE 6 中的一项子规范，叫做 Bean Validatio">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20200708160946.png">
+<meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230505171003.png">
+<meta property="article:published_time" content="2021-01-28T08:08:21.000Z">
+<meta property="article:modified_time" content="2026-02-10T09:28:24.956Z">
+<meta property="article:author" content="Jerry(姜源)">
+<meta property="article:tag" content="Spring">
+<meta property="article:tag" content="注解">
+<meta property="article:tag" content="参数校验">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20200708160946.png">
+  
+  
+    <meta name="referrer" content="no-referrer-when-downgrade">
+  
+  
+  <title>01-Spring Validation注解参数校验 - 姜源の云笔记</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"janycode.github.io","root":"/","version":"1.9.0","typing":{"enable":true,"typeSpeed":50,"cursorChar":"|","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":false},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":"bfff735c897eb60ea49b735096b20e47","google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+
+  
+<meta name="generator" content="Hexo 6.2.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 50vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>姜源の云笔记</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tools/">
+                <i class="iconfont icon-slack-fill"></i>
+                工具
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" target="_blank" rel="noopener" href="https://yuancodes.github.io/">
+                <i class="iconfont icon-notebook"></i>
+                Docsify
+              </a>
+            </li>
+          
+        
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="01-Spring Validation注解参数校验"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-author" aria-hidden="true"></i>
+        Jerry(姜源)
+      </span>
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2021-01-28 16:08" pubdate>
+          星期四, 2021/01/28 16:08:21
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          <!-- compatible with older versions-->
+          5.2k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          <!-- compatible with older versions-->
+          44 分钟
+        
+      </span>
+    
+
+    
+    
+      
+        <span id="busuanzi_container_page_pv" style="display: none">
+          <i class="iconfont icon-eye" aria-hidden="true"></i>
+          <span id="busuanzi_value_page_pv"></span> 次
+        </span>
+        
+      
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">01-Spring Validation注解参数校验</h1>
+            
+            <div class="markdown-body">
+              
+              <p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20200708160946.png" srcset="/img/loading.gif" lazyload alt="image-20200708160944615"></p>
+<p>参考资料：<a target="_blank" rel="noopener" href="https://docs.spring.io/spring-boot/docs/2.1.7.RELEASE/reference/htmlsingle/#boot-features-validation">Spring Boot 官网文档 《37. Validation》</a></p>
+<p>参考资料：<a target="_blank" rel="noopener" href="https://www.cnblogs.com/Marydon20170307/p/15707793.html">@Valid 与 @Validated 注解用法详解</a></p>
+<blockquote>
+<p>Spring官方在SpringBoot文档中，关于参数校验（Validation）给出的解决方案是这样的：</p>
+<p>使用 JSR-303 规范，直接利用注解进行参数校验。</p>
+<p>JSR-303 是 JAVA EE 6 中的一项子规范，叫做 Bean Validation，官方参考实现是 Hibernate Validator。</p>
+</blockquote>
+<h3 id="1-依赖"><a href="#1-依赖" class="headerlink" title="1. 依赖"></a>1. 依赖</h3><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs xml"><span class="hljs-comment">&lt;!--【推荐】基于SpringBoot项目时推荐此方式导入依赖--&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">dependency</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">groupId</span>&gt;</span>org.springframework.boot<span class="hljs-tag">&lt;/<span class="hljs-name">groupId</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">artifactId</span>&gt;</span>spring-boot-starter-validation<span class="hljs-tag">&lt;/<span class="hljs-name">artifactId</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">dependency</span>&gt;</span><br></code></pre></td></tr></table></figure>
+
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs xml"><span class="hljs-comment">&lt;!--可选方式1：导入校验依赖--&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">dependency</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">groupId</span>&gt;</span>javax.validation<span class="hljs-tag">&lt;/<span class="hljs-name">groupId</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">artifactId</span>&gt;</span>validation-api<span class="hljs-tag">&lt;/<span class="hljs-name">artifactId</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">version</span>&gt;</span>2.0.1.Final<span class="hljs-tag">&lt;/<span class="hljs-name">version</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">dependency</span>&gt;</span><br><span class="hljs-comment">&lt;!--可选方式2：导入校验依赖--&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">dependency</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">groupId</span>&gt;</span>org.hibernate.validator<span class="hljs-tag">&lt;/<span class="hljs-name">groupId</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">artifactId</span>&gt;</span>hibernate-validator<span class="hljs-tag">&lt;/<span class="hljs-name">artifactId</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">dependency</span>&gt;</span><br></code></pre></td></tr></table></figure>
+
+<h3 id="2-注解用法"><a href="#2-注解用法" class="headerlink" title="2. 注解用法"></a>2. 注解用法</h3><ol>
+<li>对于简单类型参数（非Bean），直接在参数前，使用注解添加约束规则。比如 @NotNull @Length 等（参看上面的官网示例）</li>
+<li>在类名前追加 @Validated 注解，否则添加的约束规则不生效。</li>
+<li>方法被调用时，如果传入的实际参数与约束规则不符，会直接抛出 ConstraintViolationException ，表明参数校验失败</li>
+<li>对于Bean类型的参数，在Bean内部的各个字段上面追加约束注解，然后在方法的参数前面添加 @Valid 注解即可。示例：</li>
+</ol>
+<figure class="highlight tsx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs tsx"><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">CreateProjectReqVO</span> <span class="hljs-keyword">extends</span> <span class="hljs-title class_ inherited__">BaseVO</span> &#123;<br>    <span class="hljs-comment">/**</span><br><span class="hljs-comment">     * 请求序列号</span><br><span class="hljs-comment">     */</span><br>    <span class="hljs-meta">@NotNull</span>(message = <span class="hljs-string">&quot;请求序列号不可为空&quot;</span>)<br>    <span class="hljs-keyword">private</span> <span class="hljs-title class_">Integer</span> requestNo;<br>    <span class="hljs-comment">/**</span><br><span class="hljs-comment">     * 项目名称</span><br><span class="hljs-comment">     */</span><br>    <span class="hljs-meta">@NotNull</span>(message = <span class="hljs-string">&quot;项目名称不可为空&quot;</span>)<br>    <span class="hljs-keyword">private</span> <span class="hljs-title class_">String</span> projectName;<br>    ...<br>&#125;    <br></code></pre></td></tr></table></figure>
+
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-function"><span class="hljs-keyword">public</span> CreateProjectRespVO <span class="hljs-title">createProject</span><span class="hljs-params">(@Valid CreateProjectReqVO reqVO)</span> </span>&#123;<br>    ...<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>对于Bean里面套Bean的，同样在外层Bean里面写 @Valid 即可。</p>
+<h3 id="3-常用校验注解"><a href="#3-常用校验注解" class="headerlink" title="3. 常用校验注解"></a>3. 常用校验注解</h3><h4 id="AssertTrue-x2F-AssertFalse"><a href="#AssertTrue-x2F-AssertFalse" class="headerlink" title="@AssertTrue &#x2F; @AssertFalse"></a>@AssertTrue &#x2F; @AssertFalse</h4><p>验证适用字段：boolean<br>注解说明：验证值是否为 true &#x2F; false</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@AssertTrue(message = &quot;必须为true&quot;)</span><br><span class="hljs-keyword">private</span> <span class="hljs-type">boolean</span> status;<br><br><span class="hljs-meta">@AssertFalse(message = &quot;必须为false&quot;)</span><br><span class="hljs-keyword">private</span> <span class="hljs-type">boolean</span> status;<br></code></pre></td></tr></table></figure>
+
+<h4 id="DecimalMax-x2F-DecimalMin"><a href="#DecimalMax-x2F-DecimalMin" class="headerlink" title="@DecimalMax &#x2F; @DecimalMin"></a>@DecimalMax &#x2F; @DecimalMin</h4><p>验证适用字段：BigDecimal,BigInteger,String,byte,short,int,long<br>注解说明：验证值是否小于或者等于指定的小数值，要注意小数存在精度问题</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@DecimalMax(value = &quot;300&quot;, message = &quot;必须大于等于300&quot;)</span><br><span class="hljs-keyword">private</span> BigDecimal height;<br><br><span class="hljs-meta">@DecimalMin(value = &quot;150&quot;, message = &quot;必须大于等于150&quot;)</span><br><span class="hljs-keyword">private</span> BigDecimal height;<br></code></pre></td></tr></table></figure>
+
+<h4 id="Digits"><a href="#Digits" class="headerlink" title="@Digits"></a>@Digits</h4><p>验证适用字段：BigDecimal,BigInteger,String,byte,short,int,long<br>注解说明：验证值的数字构成是否合法<br>属性说明：integer:指定整数部分的数字的位数。fraction: 指定小数部分的数字的位数。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@Digits(integer=3,fraction = 2,message = &quot;整数位上限为3位，小数位上限为2位&quot;)</span><br><span class="hljs-keyword">private</span> BigDecimal height;<br></code></pre></td></tr></table></figure>
+
+<h4 id="Future-x2F-Past"><a href="#Future-x2F-Past" class="headerlink" title="@Future &#x2F; @Past"></a>@Future &#x2F; @Past</h4><p>验证适用字段：Date,Calendar<br>注解说明：验证值是否在当前时间之后 &#x2F; 之前<br>属性说明：公共</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@DateTimeFormat(pattern = &quot;yyyy-MM-dd HH:mm:ss&quot;)</span><br><span class="hljs-meta">@Future(message = &quot;必须为未来的时间&quot;)</span><br><span class="hljs-keyword">private</span> Date createDate;<br><br><span class="hljs-meta">@DateTimeFormat(pattern = &quot;yyyy-MM-dd HH:mm:ss&quot;)</span><br><span class="hljs-meta">@Past(message = &quot;必须为过去的时间&quot;)</span><br><span class="hljs-keyword">private</span> Date createDate;<br></code></pre></td></tr></table></figure>
+
+<h4 id="Max-x2F-Min"><a href="#Max-x2F-Min" class="headerlink" title="@Max &#x2F; @Min"></a>@Max &#x2F; @Min</h4><p>验证适用字段：BigDecimal,BigInteger,String,byte,short,int,long<br>注解说明：验证值是否小于或者等于指定的整数值<br>属性说明：公共<br>注意事项：建议使用在Stirng,Integer类型，不建议使用在int类型上，因为表单提交的值为””时无法转换为int</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@Max(value = 18, message = &quot;必须小于等于18&quot;)</span><br><span class="hljs-keyword">private</span> <span class="hljs-type">int</span> age;<br><br><span class="hljs-meta">@Min(value = 18, message = &quot;必须大于等于18&quot;)</span><br><span class="hljs-keyword">private</span> <span class="hljs-type">int</span> age;<br></code></pre></td></tr></table></figure>
+
+<h4 id="NotNull-x2F-Null"><a href="#NotNull-x2F-Null" class="headerlink" title="@NotNull &#x2F; @Null"></a>@NotNull &#x2F; @Null</h4><p>验证适用字段：引用数据类型<br>注解说明：验证值是否 不为null &#x2F; null<br>属性说明：公共</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@Null(message = &quot;必须为null&quot;)</span><br><span class="hljs-keyword">private</span> String username;<br><br><span class="hljs-meta">@NotNull(message = &quot;必须不为null&quot;)</span><br><span class="hljs-keyword">private</span> String username;<br></code></pre></td></tr></table></figure>
+
+<h4 id="NotBlank-x2F-NotEmpty"><a href="#NotBlank-x2F-NotEmpty" class="headerlink" title="@NotBlank &#x2F; @NotEmpty"></a>@NotBlank &#x2F; @NotEmpty</h4><p>@NotBlank 检查约束字符串是不是Null还有被Trim的长度是否大于0,只对字符串,且会去掉前后空格<br>@NotEmpty 检查约束元素是否为Null或者是EMPTY<br>@NotBlank 与 @NotEmpty 的区别：空格（” “）对于 NotEmpty 是合法的，而 NotBlank 会抛出校验异常</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@NotBlank(message = &quot;必须不为空&quot;)</span><br><span class="hljs-keyword">private</span> String username;<br><br><span class="hljs-meta">@NotEmpty(message = &quot;必须不为null且不为空&quot;)</span><br><span class="hljs-keyword">private</span> String username;<br></code></pre></td></tr></table></figure>
+
+<h4 id="Size"><a href="#Size" class="headerlink" title="@Size"></a>@Size</h4><p>验证适用字段：String,Collection,Map,数组<br>注解说明：验证值是否满足长度要求<br>属性说明：max:指定最大长度，min:指定最小长度。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@Size(max = 11, min = 7, message = &quot;长度必须大于等于7或小于等于11&quot;)</span><br><span class="hljs-keyword">private</span> String mobile;<br></code></pre></td></tr></table></figure>
+
+<h4 id="Length"><a href="#Length" class="headerlink" title="@Length"></a>@Length</h4><p>@Length(min&#x3D;, max&#x3D;)：专门应用于String类型</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@Length(max = 11, min = 7, message = &quot;长度必须大于等于7或小于等于11&quot;)</span><br><span class="hljs-keyword">private</span> String mobile;<br></code></pre></td></tr></table></figure>
+
+<h4 id="Range"><a href="#Range" class="headerlink" title="@Range"></a>@Range</h4><p>@Range(min&#x3D;, max&#x3D;) 被指定的元素必须在合适的范围内。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@Range(max = 80, min = 18, message = &quot;必须大于等于18或小于等于80&quot;)</span><br><span class="hljs-keyword">private</span> <span class="hljs-type">int</span> age;<br></code></pre></td></tr></table></figure>
+
+<h4 id="Email"><a href="#Email" class="headerlink" title="@Email"></a>@Email</h4><p>@Email 验证是否是邮件地址，如果为null,不进行验证，算通过验证。 </p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@Email(message = &quot;必须是邮箱&quot;)</span><br><span class="hljs-keyword">private</span> String email;<br></code></pre></td></tr></table></figure>
+
+<h4 id="Pattern"><a href="#Pattern" class="headerlink" title="@Pattern"></a>@Pattern</h4><p>验证适用字段：String<br>注解说明：验证值是否配备正则表达式<br>属性说明：regexp:正则表达式flags: 指定Pattern.Flag 的数组，表示正则表达式的相关选项。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@Pattern(regexp = &quot;\\d&#123;11&#125;&quot;,message = &quot;必须为数字，并且长度为11&quot;)</span><br><span class="hljs-keyword">private</span> String mobile;<br></code></pre></td></tr></table></figure>
+
+<h4 id="Valid"><a href="#Valid" class="headerlink" title="@Valid"></a>@Valid</h4><p>验证适用字段：递归的对关联对象进行校验<br>注解说明：如果关联对象是个集合或者数组,那么对其中的元素进行递归校验,如果是一个map,则对其中的值部分进行校验(是否进行递归验证)<br>参考：<a target="_blank" rel="noopener" href="https://www.cnblogs.com/Marydon20170307/p/15707793.html">@Valid 与 @Validated 注解用法详解</a></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> CreateProjectRespVO <span class="hljs-title function_">createProject</span><span class="hljs-params">(<span class="hljs-meta">@Valid</span> CreateProjectReqVO reqVO)</span> &#123;&#125;<br></code></pre></td></tr></table></figure>
+
+<h4 id="CreditCardNumber"><a href="#CreditCardNumber" class="headerlink" title="@CreditCardNumber"></a>@CreditCardNumber</h4><p>信用卡验证。</p>
+<h4 id="URL"><a href="#URL" class="headerlink" title="@URL"></a>@URL</h4><p>校验必须为链接地址，即url。<br>@URL(protocol&#x3D;,host&#x3D;, port&#x3D;,regexp&#x3D;, flags&#x3D;)</p>
+<h3 id="4-进阶用法提示"><a href="#4-进阶用法提示" class="headerlink" title="4. 进阶用法提示"></a>4. 进阶用法提示</h3><ol>
+<li><p>校验规则是可以自己定义的，也就是说可以自己写注解类。<br>具体写法参考：<a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/261020040">Java Bean Validation 2.0 (二): 自定义校验规则</a></p>
+</li>
+<li><p>约束规则可以“分组”（group），比如在A场景下只需要一部分规则生效，B场景下需要全部生效，那么直接在注解上指定生效范围即可。<br>具体写法参考：<a target="_blank" rel="noopener" href="https://www.cnblogs.com/pengyifeng/p/15215939.html">@Valid分组校验</a></p>
+</li>
+<li><p>方法的返回值也是可以校验的，在方法前面追加约束规则即可：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-meta">@NotNull</span> CreateProjectRespVO <span class="hljs-title function_">createProject</span><span class="hljs-params">(CreateProjectReqVO reqVO)</span> &#123;<br></code></pre></td></tr></table></figure>
+</li>
+<li><p>约束用的注解，一般需要带上message参数，方便自定义错误信息，比如前面例子中的“@NotNull(message &#x3D; “项目名称不可为空”)”。而这个message参数是支持EL表达式的</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@NotNull(message = &quot;$&#123;member.id.null&#125;&quot;)</span> <br></code></pre></td></tr></table></figure>
+
+<p>再定义一个比如叫做 messages.properties 的配置文件来统一管理错误信息</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs java">member.id.<span class="hljs-literal">null</span>=用户编号不能为空<br></code></pre></td></tr></table></figure>
+</li>
+<li><p>约束规则支持正则表达式。</p>
+</li>
+<li><p>支持跨参数校验（即通过直接写注解的方式验证多个参数之间的逻辑关系）</p>
+</li>
+</ol>
+<h3 id="5-需要注意的坑"><a href="#5-需要注意的坑" class="headerlink" title="5. 需要注意的坑"></a>5. 需要注意的坑</h3><p><code>注解不能（只）放在实现类上</code>，还是之前举的例子，如果是这么写的话:</p>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs csharp"><span class="hljs-keyword">public</span> <span class="hljs-keyword">interface</span> <span class="hljs-title">IProjectService</span> &#123;<br>    <span class="hljs-comment">/**</span><br><span class="hljs-comment">     * 项目创建</span><br><span class="hljs-comment">     */</span><br>    <span class="hljs-function">CreateProjectRespVO <span class="hljs-title">createProject</span>(<span class="hljs-params">CreateProjectReqVO reqVO</span>)</span>;<br></code></pre></td></tr></table></figure>
+
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@Service</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">ProjectServiceImpl</span> <span class="hljs-keyword">implements</span> <span class="hljs-title class_">IProjectService</span> &#123;<br><br>    <span class="hljs-comment">/**</span><br><span class="hljs-comment">     * 项目创建</span><br><span class="hljs-comment">     */</span><br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-keyword">public</span> CreateProjectRespVO <span class="hljs-title function_">createProject</span><span class="hljs-params">(<span class="hljs-meta">@Valid</span> CreateProjectReqVO reqVO)</span> &#123;<br>    ……<br>    <br></code></pre></td></tr></table></figure>
+
+<p>在进行校验时会发生“javax.validation.ConstraintDeclarationException”异常（注意跟校验不通过发生的异常不是一个）</p>
+<blockquote>
+<p>解决方法：</p>
+<p>@Override父类&#x2F;接口的方法，入参约束只能写在父类&#x2F;接口上面。</p>
+<p>或者两边都写上也可（但是这样维护时容易出问题，不推荐）。</p>
+<p>另外 @Validated 这个注解写在哪边都可以。</p>
+</blockquote>
+<h3 id="6-Valid与-Validated区别"><a href="#6-Valid与-Validated区别" class="headerlink" title="6. @Valid与@Validated区别"></a>6. @Valid与@Validated区别</h3><p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230505171003.png" srcset="/img/loading.gif" lazyload alt="image-20230505171001717"></p>
+
+              
+            </div>
+            <hr/>
+            <div>
+              <div>
+  <img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20241112163319.png" srcset="/img/loading.gif" lazyload>
+</div>
+<div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/08-%E6%A1%86%E6%9E%B6%E6%8A%80%E6%9C%AF/" class="category-chain-item">08_框架技术</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/08-%E6%A1%86%E6%9E%B6%E6%8A%80%E6%9C%AF/02-Spring/" class="category-chain-item">02_Spring</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/08-%E6%A1%86%E6%9E%B6%E6%8A%80%E6%9C%AF/02-Spring/05-Validation/" class="category-chain-item">05_Validation</a>
+  
+  
+
+  
+
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/Spring/">#Spring</a>
+      
+        <a href="/tags/%E6%B3%A8%E8%A7%A3/">#注解</a>
+      
+        <a href="/tags/%E5%8F%82%E6%95%B0%E6%A0%A1%E9%AA%8C/">#参数校验</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>01-Spring Validation注解参数校验</div>
+      <div>https://janycode.github.io/2021/01/28/08_框架技术/02_Spring/05_Validation/01-Spring Validation注解参数校验/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Jerry(姜源)</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2021年1月28日</div>
+        </div>
+      
+      
+      <div class="license-meta-item">
+        <div>许可协议</div>
+        <div>
+          
+            
+            
+              <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+              <span class="hint--top hint--rounded" aria-label="BY - 姜源">
+                <i class="iconfont icon-by"></i>
+              </span>
+              </a>
+            
+          
+        </div>
+      </div>
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2021/02/04/21_%E4%BB%A3%E7%A0%81%E7%89%87%E6%AE%B5/01_%E5%B7%A5%E5%85%B7%E7%B1%BB/12-BaseController/" title="12-BaseController">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">12-BaseController</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2021/01/22/08_%E6%A1%86%E6%9E%B6%E6%8A%80%E6%9C%AF/02_Spring/04_Data/03-Spring%20%E4%BA%8B%E5%8A%A1%E5%B5%8C%E5%A5%97+%E5%BC%82%E5%B8%B8+%E4%BC%A0%E6%92%AD%E8%A1%8C%E4%B8%BA%E5%88%86%E6%9E%90/" title="03-Spring 事务嵌套+异常+传播行为分析">
+                        <span class="hidden-mobile">03-Spring 事务嵌套+异常+传播行为分析</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+  <article id="comments" lazyload>
+    
+  <div id="SOHUCS" sid='https://janycode.github.io/2021/01/28/08_%E6%A1%86%E6%9E%B6%E6%8A%80%E6%9C%AF/02_Spring/05_Validation/01-Spring%20Validation%E6%B3%A8%E8%A7%A3%E5%8F%82%E6%95%B0%E6%A0%A1%E9%AA%8C/'></div>
+  <script type="text/javascript">
+    Fluid.utils.loadComments('#SOHUCS', function() {
+      Fluid.utils.createScript("https://changyan.sohu.com/upload/changyan.js", function() {
+        window.changyan.api.config({"appid":"cyw5OHIcO","appkey":"fea3446b3df4b3f129f34da4cbc87e51"})
+      });
+    });
+  </script>
+  <noscript>Please enable JavaScript to view the comments</noscript>
+
+
+  </article>
+
+
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://simple.blog.csdn.net" target="_blank" rel="nofollow noopener"><span>CSDN</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/janycode" target="_blank" rel="nofollow noopener"><span>GitHub</span></a> <i class="iconfont icon-love"></i> <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="busuanzi_container_site_pv" style="display: none">
+        总访问量(PV) 
+        <span id="busuanzi_value_site_pv"></span>
+         次，
+      </span>
+    
+    
+      <span id="busuanzi_container_site_uv" style="display: none">
+        总访客数(UV) 
+        <span id="busuanzi_value_site_uv"></span>
+         人
+      </span>
+    
+    
+  
+</div>
+
+  
+  
+  
+</div>
+
+<!-- live2d 动画 -->
+<script src="https://eqcn.ajz.miesnfu.com/wp-content/plugins/wp-3d-pony/live2dw/lib/L2Dwidget.min.js"></script>
+<script>
+    L2Dwidget.init({
+        "model": {
+            jsonPath: "https://unpkg.com/live2d-widget-model-haruto@1.0.5/assets/haruto.model.json",
+            "scale": 1
+        },
+        "display": {
+            "position": "right",
+            "width": 100,
+            "height": 200,
+            "hOffset": 35,
+            "vOffset": -85
+        },
+        "mobile": {
+            "show": false,
+            "scale": 0.1
+        },
+        "react": {
+            "opacityDefault": 0.75,
+            "opacityOnHover": 0.2
+        }
+    });
+</script>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <!-- Baidu Analytics -->
+    <script defer>
+      if (!Fluid.ctx.dnt) {
+        var _hmt = _hmt || [];
+        (function() {
+          var hm = document.createElement("script");
+          hm.src = "https://hm.baidu.com/hm.js?bfff735c897eb60ea49b735096b20e47";
+          var s = document.getElementsByTagName("script")[0];
+          s.parentNode.insertBefore(hm, s);
+        })();
+      }
+    </script>
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.0/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      headingSelector : CONFIG.toc.headingSelector || 'h1,h2,h3,h4,h5,h6',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      collapseDepth   : CONFIG.toc.collapseDepth || 0,
+      scrollSmooth    : true,
+      headingsOffset  : -boardTop
+    });
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+  });
+</script>
+
+
+  <script>
+  (function() {
+    var enableLang = CONFIG.code_language.enable && CONFIG.code_language.default;
+    var enableCopy = CONFIG.copy_btn;
+    if (!enableLang && !enableCopy) {
+      return;
+    }
+
+    function getBgClass(ele) {
+      return Fluid.utils.getBackgroundLightness(ele) >= 0 ? 'code-widget-light' : 'code-widget-dark';
+    }
+
+    var copyTmpl = '';
+    copyTmpl += '<div class="code-widget">';
+    copyTmpl += 'LANG';
+    copyTmpl += '</div>';
+    jQuery('.markdown-body pre').each(function() {
+      var $pre = jQuery(this);
+      if ($pre.find('code.mermaid').length > 0) {
+        return;
+      }
+      if ($pre.find('span.line').length > 0) {
+        return;
+      }
+
+      var lang = '';
+
+      if (enableLang) {
+        lang = CONFIG.code_language.default;
+        if ($pre[0].children.length > 0 && $pre[0].children[0].classList.length >= 2 && $pre.children().hasClass('hljs')) {
+          lang = $pre[0].children[0].classList[1];
+        } else if ($pre[0].getAttribute('data-language')) {
+          lang = $pre[0].getAttribute('data-language');
+        } else if ($pre.parent().hasClass('sourceCode') && $pre[0].children.length > 0 && $pre[0].children[0].classList.length >= 2) {
+          lang = $pre[0].children[0].classList[1];
+          $pre.parent().addClass('code-wrapper');
+        } else if ($pre.parent().hasClass('markdown-body') && $pre[0].classList.length === 0) {
+          $pre.wrap('<div class="code-wrapper"></div>');
+        }
+        lang = lang.toUpperCase().replace('NONE', CONFIG.code_language.default);
+      }
+      $pre.append(copyTmpl.replace('LANG', lang).replace('code-widget">',
+        getBgClass($pre[0]) + (enableCopy ? ' code-widget copy-btn" data-clipboard-snippet><i class="iconfont icon-copy"></i>' : ' code-widget">')));
+
+      if (enableCopy) {
+        Fluid.utils.createScript('https://lib.baomitu.com/clipboard.js/2.0.10/clipboard.min.js', function() {
+          var clipboard = new window.ClipboardJS('.copy-btn', {
+            target: function(trigger) {
+              var nodes = trigger.parentNode.childNodes;
+              for (var i = 0; i < nodes.length; i++) {
+                if (nodes[i].tagName === 'CODE') {
+                  return nodes[i];
+                }
+              }
+            }
+          });
+          clipboard.on('success', function(e) {
+            e.clearSelection();
+            e.trigger.innerHTML = e.trigger.innerHTML.replace('icon-copy', 'icon-success');
+            setTimeout(function() {
+              e.trigger.innerHTML = e.trigger.innerHTML.replace('icon-success', 'icon-copy');
+            }, 2000);
+          });
+        });
+      }
+    });
+  })();
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

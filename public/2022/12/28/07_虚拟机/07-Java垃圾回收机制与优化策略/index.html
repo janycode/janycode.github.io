@@ -1,0 +1,919 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=light>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Jerry(姜源)">
+  <meta name="keywords" content="Java,Html,CSS,JavaScript,Python,C,Linux,shell编程经验分享、技术总结、心得体会">
+  
+    <meta name="description" content="Java语言以其跨平台性和内存管理自动化而闻名，其中垃圾回收机制（Garbage Collection, GC）是其内存管理的重要组成部分。深入剖析Java内存管理的核心概念、垃圾回收机制及其优化策略，并通过代码实例演示如何分析和调优垃圾回收性能。 Java内存管理概述Java运行时的内存分为以下几个区域：  堆内存（Heap Memory）： ○ 存储对象实例及其对应的属性。 ○ 由垃圾回收器管">
+<meta property="og:type" content="article">
+<meta property="og:title" content="07-Java垃圾回收机制与优化策略">
+<meta property="og:url" content="https://janycode.github.io/2022/12/28/07_%E8%99%9A%E6%8B%9F%E6%9C%BA/07-Java%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6%E6%9C%BA%E5%88%B6%E4%B8%8E%E4%BC%98%E5%8C%96%E7%AD%96%E7%95%A5/index.html">
+<meta property="og:site_name" content="姜源の云笔记">
+<meta property="og:description" content="Java语言以其跨平台性和内存管理自动化而闻名，其中垃圾回收机制（Garbage Collection, GC）是其内存管理的重要组成部分。深入剖析Java内存管理的核心概念、垃圾回收机制及其优化策略，并通过代码实例演示如何分析和调优垃圾回收性能。 Java内存管理概述Java运行时的内存分为以下几个区域：  堆内存（Heap Memory）： ○ 存储对象实例及其对应的属性。 ○ 由垃圾回收器管">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2022-12-28T15:07:15.000Z">
+<meta property="article:modified_time" content="2026-02-10T09:28:24.937Z">
+<meta property="article:author" content="Jerry(姜源)">
+<meta property="article:tag" content="JVM">
+<meta property="article:tag" content="GC">
+<meta property="article:tag" content="垃圾回收">
+<meta name="twitter:card" content="summary_large_image">
+  
+  
+    <meta name="referrer" content="no-referrer-when-downgrade">
+  
+  
+  <title>07-Java垃圾回收机制与优化策略 - 姜源の云笔记</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"janycode.github.io","root":"/","version":"1.9.0","typing":{"enable":true,"typeSpeed":50,"cursorChar":"|","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":false},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":"bfff735c897eb60ea49b735096b20e47","google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+
+  
+<meta name="generator" content="Hexo 6.2.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 50vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>姜源の云笔记</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tools/">
+                <i class="iconfont icon-slack-fill"></i>
+                工具
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" target="_blank" rel="noopener" href="https://yuancodes.github.io/">
+                <i class="iconfont icon-notebook"></i>
+                Docsify
+              </a>
+            </li>
+          
+        
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="07-Java垃圾回收机制与优化策略"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-author" aria-hidden="true"></i>
+        Jerry(姜源)
+      </span>
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2022-12-28 23:07" pubdate>
+          星期三, 2022/12/28 23:07:15
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          <!-- compatible with older versions-->
+          5.2k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          <!-- compatible with older versions-->
+          44 分钟
+        
+      </span>
+    
+
+    
+    
+      
+        <span id="busuanzi_container_page_pv" style="display: none">
+          <i class="iconfont icon-eye" aria-hidden="true"></i>
+          <span id="busuanzi_value_page_pv"></span> 次
+        </span>
+        
+      
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">07-Java垃圾回收机制与优化策略</h1>
+            
+            <div class="markdown-body">
+              
+              <p>Java语言以其跨平台性和内存管理自动化而闻名，其中垃圾回收机制（Garbage Collection, GC）是其内存管理的重要组成部分。深入剖析Java内存管理的核心概念、垃圾回收机制及其优化策略，并通过代码实例演示如何分析和调优垃圾回收性能。</p>
+<h2 id="Java内存管理概述"><a href="#Java内存管理概述" class="headerlink" title="Java内存管理概述"></a>Java内存管理概述</h2><p>Java运行时的内存分为以下几个区域：</p>
+<ol>
+<li><strong>堆内存（Heap Memory）：</strong><br> ○ 存储对象实例及其对应的属性。<br> ○ 由垃圾回收器管理。</li>
+<li><strong>栈内存（Stack Memory）：</strong><br> ○ 用于存储方法的局部变量。<br> ○ 生命周期短，仅在方法调用期间有效。</li>
+<li><strong>方法区（Method Area）：</strong><br> ○ 存储类元信息、常量、静态变量等。<br> ○ 在Java 8及之后，称为“元空间”（Metaspace）。</li>
+<li><strong>程序计数器（Program Counter, PC）：</strong><br> ○ 用于记录当前线程执行的字节码指令地址。</li>
+<li><strong>本地方法栈（Native Method Stack）：</strong><br> ○ 为本地方法（Native Method）服务。</li>
+</ol>
+<h2 id="垃圾回收机制深入解析"><a href="#垃圾回收机制深入解析" class="headerlink" title="垃圾回收机制深入解析"></a>垃圾回收机制深入解析</h2><ol>
+<li><h3 id="垃圾回收的基本原理"><a href="#垃圾回收的基本原理" class="headerlink" title="垃圾回收的基本原理"></a>垃圾回收的基本原理</h3></li>
+</ol>
+<p>垃圾回收的核心目标是清理堆中无用的对象，释放内存空间。Java的垃圾回收基于以下原则：<br>  ● 引用计数法：通过计数器记录对象的引用次数。但Java主要使用以下两种技术：<br>    ○ 可达性分析算法（Reachability Analysis Algorithm）：通过GC Root对象作为起点，检测对象是否可达。<br>    ○ 分代回收策略（Generational Collection）：将堆分为年轻代（Young Generation）、老年代（Old Generation）和永久代（Permenant Generation）&#x2F;元空间。<br>2. ### 垃圾回收器种类</p>
+<ol>
+<li>Serial GC：单线程，适用于单核CPU和小型内存。</li>
+<li>Parallel GC：多线程回收，适用于多核CPU和高吞吐量需求。</li>
+<li>CMS（Concurrent Mark-Sweep）GC：低延迟回收，适用于交互式应用。</li>
+<li>G1 GC：分区回收，适用于大堆内存场景。</li>
+</ol>
+<h2 id="垃圾回收流程剖析"><a href="#垃圾回收流程剖析" class="headerlink" title="垃圾回收流程剖析"></a>垃圾回收流程剖析</h2><ol>
+<li><h3 id="Minor-GC-和-Major-GC"><a href="#Minor-GC-和-Major-GC" class="headerlink" title="Minor GC 和 Major GC"></a>Minor GC 和 Major GC</h3><ol>
+<li>Minor GC：<br> ○ 清理年轻代。<br>○ 触发频繁，但时间较短。</li>
+<li>Major GC &#x2F; Full GC：<br>  ○ 清理老年代和整个堆。<br>  ○ 触发较少，但时间较长。</li>
+</ol>
+</li>
+<li><h3 id="GC触发机制"><a href="#GC触发机制" class="headerlink" title="GC触发机制"></a>GC触发机制</h3></li>
+</ol>
+<p>  ● 年轻代满时触发Minor GC。<br>  ● 老年代满时或空间不足时触发Major GC或Full GC。</p>
+<h2 id="优化垃圾回收的策略"><a href="#优化垃圾回收的策略" class="headerlink" title="优化垃圾回收的策略"></a>优化垃圾回收的策略</h2><ol>
+<li><h3 id="优化堆大小"><a href="#优化堆大小" class="headerlink" title="优化堆大小"></a>优化堆大小</h3></li>
+</ol>
+<p>  通过JVM参数配置堆的初始和最大大小：</p>
+  <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">java -Xms512m -Xmx1024m MyApplication<br></code></pre></td></tr></table></figure>
+
+<ol start="2">
+<li><h3 id="选择合适的垃圾回收器"><a href="#选择合适的垃圾回收器" class="headerlink" title="选择合适的垃圾回收器"></a>选择合适的垃圾回收器</h3></li>
+</ol>
+<p>  根据应用特性选择垃圾回收器。例如，低延迟应用可使用G1 GC：</p>
+  <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">java -XX:+UseG1GC MyApplication<br></code></pre></td></tr></table></figure>
+
+<ol start="3">
+<li><h3 id="调整分代比例"><a href="#调整分代比例" class="headerlink" title="调整分代比例"></a>调整分代比例</h3></li>
+</ol>
+<p>  设置年轻代与老年代的比例：</p>
+  <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">java -XX:NewRatio=2 MyApplication<br></code></pre></td></tr></table></figure>
+
+<ol start="4">
+<li><h3 id="设置GC日志以监控性能"><a href="#设置GC日志以监控性能" class="headerlink" title="设置GC日志以监控性能"></a>设置GC日志以监控性能</h3></li>
+</ol>
+<p>  通过GC日志分析应用的内存使用和垃圾回收频率：</p>
+  <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">java -XX:+PrintGCDetails -XX:+PrintGCDateStamps MyApplication<br></code></pre></td></tr></table></figure>
+
+<h2 id="实战：垃圾回收调优实例"><a href="#实战：垃圾回收调优实例" class="headerlink" title="实战：垃圾回收调优实例"></a>实战：垃圾回收调优实例</h2><p>以下代码模拟内存压力以观察GC行为，并通过调整参数优化性能。<br>示例代码</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">import</span> java.util.ArrayList;<br><span class="hljs-keyword">import</span> java.util.List;<br><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">GCDemo</span> &#123;<br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">main</span><span class="hljs-params">(String[] args)</span> &#123;<br>        List&lt;<span class="hljs-type">byte</span>[]&gt; memoryHog = <span class="hljs-keyword">new</span> <span class="hljs-title class_">ArrayList</span>&lt;&gt;();<br>        <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> <span class="hljs-variable">i</span> <span class="hljs-operator">=</span> <span class="hljs-number">0</span>; i &lt; <span class="hljs-number">1000</span>; i++) &#123;<br>            <span class="hljs-keyword">try</span> &#123;<br>                <span class="hljs-comment">// 模拟大对象分配</span><br>                memoryHog.add(<span class="hljs-keyword">new</span> <span class="hljs-title class_">byte</span>[<span class="hljs-number">1</span> * <span class="hljs-number">1024</span> * <span class="hljs-number">1024</span>]);<br>                Thread.sleep(<span class="hljs-number">50</span>); <span class="hljs-comment">// 模拟延时</span><br>            &#125; <span class="hljs-keyword">catch</span> (OutOfMemoryError e) &#123;<br>                System.out.println(<span class="hljs-string">&quot;Out of memory!&quot;</span>);<br>                <span class="hljs-keyword">break</span>;<br>            &#125;<br>        &#125;<br>        System.out.println(<span class="hljs-string">&quot;Simulation complete.&quot;</span>);<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<h3 id="执行与观察"><a href="#执行与观察" class="headerlink" title="执行与观察"></a>执行与观察</h3><h4 id="默认配置运行"><a href="#默认配置运行" class="headerlink" title="默认配置运行"></a>默认配置运行</h4><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">java GCDemo<br></code></pre></td></tr></table></figure>
+
+<p>可能触发OutOfMemoryError，并观察到GC频繁发生。</p>
+<h4 id="优化后的运行"><a href="#优化后的运行" class="headerlink" title="优化后的运行"></a>优化后的运行</h4><p>使用以下参数：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">java -Xms512m -Xmx1024m -XX:+UseG1GC -XX:+PrintGCDetails GCDemo<br></code></pre></td></tr></table></figure>
+
+<p>观察GC日志输出，确认GC频率和延迟是否优化。</p>
+<h2 id="内存泄漏与垃圾回收"><a href="#内存泄漏与垃圾回收" class="headerlink" title="内存泄漏与垃圾回收"></a>内存泄漏与垃圾回收</h2><ol>
+<li><h3 id="内存泄漏概念"><a href="#内存泄漏概念" class="headerlink" title="内存泄漏概念"></a>内存泄漏概念</h3></li>
+</ol>
+<p>  内存泄漏是指程序在运行过程中分配了内存但未能释放的情况，导致内存被长期占用，最终可能导致应用崩溃。垃圾回收器无法回收这些内存，因为它们仍然被应用程序的某些引用所持有，即使这些引用并不再使用这些对象。</p>
+<ol start="2">
+<li><h3 id="引起内存泄漏的原因"><a href="#引起内存泄漏的原因" class="headerlink" title="引起内存泄漏的原因"></a>引起内存泄漏的原因</h3></li>
+</ol>
+<p>  ● 强引用链：当一个对象被长期引用，垃圾回收器无法释放它，即使这个对象不再需要。<br>  ● 静态集合容器：如果对象被加入到静态集合中且没有及时移除，可能会导致对象无法被回收。<br>  ● 监听器和回调：未注销的监听器或回调函数会持有对对象的引用，导致内存泄漏。<br>  ● 线程泄漏：如果线程未正确终止或没有被回收，线程所占用的内存无法释放。</p>
+<ol start="3">
+<li><h3 id="检测和避免内存泄漏"><a href="#检测和避免内存泄漏" class="headerlink" title="检测和避免内存泄漏"></a>检测和避免内存泄漏</h3></li>
+</ol>
+<p>  为了避免内存泄漏，开发人员需要注意以下几点：<br>  ● 定期审查代码中对对象的引用。<br>  ● 在不再需要时显式地移除对对象的引用。<br>  ● 使用弱引用（WeakReference）或软引用（SoftReference）来处理缓存或临时对象。<br>  代码示例：静态集合中的内存泄漏</p>
+  <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">import</span> java.util.*;<br><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">MemoryLeakDemo</span> &#123;<br>    <span class="hljs-keyword">private</span> <span class="hljs-keyword">static</span> List&lt;Object&gt; objects = <span class="hljs-keyword">new</span> <span class="hljs-title class_">ArrayList</span>&lt;&gt;();<br><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">createLeak</span><span class="hljs-params">()</span> &#123;<br>        <span class="hljs-keyword">while</span> (<span class="hljs-literal">true</span>) &#123;<br>            objects.add(<span class="hljs-keyword">new</span> <span class="hljs-title class_">Object</span>()); <span class="hljs-comment">// 不断向静态列表中添加对象</span><br>        &#125;<br>    &#125;<br><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">main</span><span class="hljs-params">(String[] args)</span> &#123;<br>        createLeak();<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>  在上述示例中，objects是一个静态集合，不会被垃圾回收器回收，即使这些对象已经不再被使用，导致内存泄漏。</p>
+<h2 id="垃圾回收日志分析与调优"><a href="#垃圾回收日志分析与调优" class="headerlink" title="垃圾回收日志分析与调优"></a>垃圾回收日志分析与调优</h2><ol>
+<li><h3 id="GC日志输出解析"><a href="#GC日志输出解析" class="headerlink" title="GC日志输出解析"></a>GC日志输出解析</h3></li>
+</ol>
+<p>  使用GC日志可以帮助我们分析垃圾回收的过程，进而识别潜在的性能问题。通过以下JVM参数启用GC日志：</p>
+  <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">java -Xlog:gc* MyApplication<br></code></pre></td></tr></table></figure>
+
+<p>  GC日志会输出详细的垃圾回收信息，包括回收的对象数量、停顿时间以及垃圾回收器使用的类型等信息。</p>
+<ol start="2">
+<li><h3 id="GC日志分析工具"><a href="#GC日志分析工具" class="headerlink" title="GC日志分析工具"></a>GC日志分析工具</h3></li>
+</ol>
+<p>  ● GCViewer：一个开源的工具，用于分析和可视化GC日志。<br>  ● JVisualVM：一个JVM监控工具，可以实时查看GC活动、内存使用情况等。<br>  ● JProfiler：商业级工具，提供详细的性能分析，包括内存泄漏、GC、CPU等监控。</p>
+<ol start="3">
+<li><h3 id="调优案例：优化垃圾回收策略"><a href="#调优案例：优化垃圾回收策略" class="headerlink" title="调优案例：优化垃圾回收策略"></a>调优案例：优化垃圾回收策略</h3></li>
+</ol>
+<p>  假设在日志中我们发现一个频繁的Full GC，并且堆空间不足导致频繁的垃圾回收停顿。这时，我们可以通过以下策略进行优化：<br>  <code>优化1：增加堆空间</code></p>
+  <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">java -Xms2g -Xmx4g -XX:+UseG1GC MyApplication<br></code></pre></td></tr></table></figure>
+
+<p>  <code>优化2：调整年轻代大小</code><br>  通过设置年轻代的大小，减少Minor GC的次数：</p>
+  <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">java -XX:NewSize=2g -XX:MaxNewSize=2g MyApplication<br></code></pre></td></tr></table></figure>
+
+<p>  <code>优化3：开启并发标记清除（CMS）垃圾回收器</code></p>
+  <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">java -XX:+UseConcMarkSweepGC -XX:+UseCMSInitiatingOccupancyOnly -XX:CMSInitiatingOccupancyFraction=75 MyApplication<br></code></pre></td></tr></table></figure>
+
+<h2 id="内存管理与性能调优工具"><a href="#内存管理与性能调优工具" class="headerlink" title="内存管理与性能调优工具"></a>内存管理与性能调优工具</h2><ol>
+<li><h3 id="使用JVM监控工具"><a href="#使用JVM监控工具" class="headerlink" title="使用JVM监控工具"></a>使用JVM监控工具</h3></li>
+</ol>
+<p>  <strong>JVisualVM</strong><br>  JVisualVM是一个强大的JVM监控工具，可以用来监控堆使用情况、GC行为、线程状态等。在JVisualVM中，你可以查看堆的实时状态、对象的分配情况、垃圾回收的详细日志等。<br>  ● 内存监控：查看堆内存的使用情况，包括年轻代、老年代的内存使用情况。<br>  ● GC监控：查看GC的频率和停顿时间，分析GC停顿是否会影响系统响应时间。<br>  示例：使用JVisualVM监控堆内存</p>
+<ol>
+<li>启动Java应用程序：</li>
+</ol>
+<pre><code class="hljs"><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">java -Dcom.sun.management.jmxremote MyApplication<br></code></pre></td></tr></table></figure>
+</code></pre>
+<ol start="2">
+<li><p>使用JVisualVM连接到JVM实例。</p>
+</li>
+<li><p>选择“内存”标签查看堆内存使用情况，分析GC的行为。<br>其他监控工具<br>● JProfiler：强大的性能分析工具，可以帮助你识别内存泄漏和性能瓶颈。<br>● YourKit：另一款商业级性能分析工具，提供内存分析、线程分析等功能。</p>
+</li>
+</ol>
+<h2 id="高效垃圾回收实践"><a href="#高效垃圾回收实践" class="headerlink" title="高效垃圾回收实践"></a>高效垃圾回收实践</h2><ol>
+<li><h3 id="小对象的频繁创建与销毁"><a href="#小对象的频繁创建与销毁" class="headerlink" title="小对象的频繁创建与销毁"></a>小对象的频繁创建与销毁</h3></li>
+</ol>
+<p>  小对象的频繁创建和销毁会导致垃圾回收器频繁进行Minor GC。为减少这种情况的发生，可以采用对象池技术（Object Pooling），复用对象而不是频繁创建新的对象。<br>  代码示例：对象池实现</p>
+  <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><code class="hljs bash">import java.util.*;<br><br>public class ObjectPool&lt;T&gt; &#123;<br>    private Queue&lt;T&gt; pool;<br><br>    public ObjectPool(int size, Class&lt;T&gt; clazz) throws Exception &#123;<br>        pool = new LinkedList&lt;&gt;();<br>        <span class="hljs-keyword">for</span> (int i = 0; i &lt; size; i++) &#123;<br>            pool.add(clazz.getDeclaredConstructor().newInstance());<br>        &#125;<br>    &#125;<br><br>    public T <span class="hljs-function"><span class="hljs-title">borrowObject</span></span>() &#123;<br>        <span class="hljs-built_in">return</span> pool.poll();<br>    &#125;<br><br>    public void returnObject(T obj) &#123;<br>        pool.offer(obj);<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>  在这个示例中，ObjectPool类通过维护一个对象队列来复用对象，避免了频繁的垃圾回收。</p>
+<ol start="2">
+<li><h3 id="避免大对象的频繁分配"><a href="#避免大对象的频繁分配" class="headerlink" title="避免大对象的频繁分配"></a>避免大对象的频繁分配</h3></li>
+</ol>
+<p>  大对象的频繁分配会直接影响垃圾回收的效率。为了提高性能，可以将大对象分配到老年代，减少年轻代的GC压力。</p>
+  <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">java -XX:PretenureSizeThreshold=10m MyApplication<br></code></pre></td></tr></table></figure>
+
+<p>  通过设置PretenureSizeThreshold参数，将大于10MB的对象直接分配到老年代。</p>
+<h2 id="异常处理与内存管理"><a href="#异常处理与内存管理" class="headerlink" title="异常处理与内存管理"></a>异常处理与内存管理</h2><p>在复杂的Java应用中，异常处理可能导致内存管理上的问题。异常可能会导致某些资源没有及时释放，或者对象没有被正确垃圾回收。为了避免这些问题，我们应注意以下几点：<br>● 在finally块中关闭资源（如数据库连接、文件流等），确保资源及时释放。<br>● 使用try-with-resources语句，自动关闭实现了AutoCloseable接口的资源。<br>代码示例：使用try-with-resources</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">import</span> java.io.*;<br><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">ResourceManagement</span> &#123;<br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">main</span><span class="hljs-params">(String[] args)</span> &#123;<br>        <span class="hljs-keyword">try</span> (<span class="hljs-type">BufferedReader</span> <span class="hljs-variable">reader</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">BufferedReader</span>(<span class="hljs-keyword">new</span> <span class="hljs-title class_">FileReader</span>(<span class="hljs-string">&quot;file.txt&quot;</span>))) &#123;<br>            <span class="hljs-type">String</span> <span class="hljs-variable">line</span> <span class="hljs-operator">=</span> reader.readLine();<br>            System.out.println(line);<br>        &#125; <span class="hljs-keyword">catch</span> (IOException e) &#123;<br>            e.printStackTrace();<br>        &#125;<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>通过这种方式，BufferedReader会在使用完毕后自动关闭，避免了内存泄漏问题。</p>
+<h2 id="结论与未来展望"><a href="#结论与未来展望" class="headerlink" title="结论与未来展望"></a>结论与未来展望</h2><p>通过深入理解和优化Java的垃圾回收机制，开发者能够有效管理内存，提高应用程序的性能。垃圾回收不仅仅是一个技术问题，还涉及到合理的资源管理和性能优化策略。掌握内存管理与GC优化的技巧，对于开发高效、稳定的Java应用至关重要。<br>垃圾回收机制是Java性能优化的重要环节。通过分析GC日志、合理选择垃圾回收器和调整JVM参数，可以显著提升应用的性能。然而，垃圾回收机制并非万能，结合代码优化和算法改进，同样是提升性能的关键。<br>未来方向：<br>● 引入新的GC算法（如ZGC、Shenandoah GC）以降低停顿时间。<br>● 利用性能监控工具（如JVisualVM、GCViewer）实现更精准的优化。</p>
+
+              
+            </div>
+            <hr/>
+            <div>
+              <div>
+  <img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20241112163319.png" srcset="/img/loading.gif" lazyload>
+</div>
+<div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/07-%E8%99%9A%E6%8B%9F%E6%9C%BA/" class="category-chain-item">07_虚拟机</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/JVM/">#JVM</a>
+      
+        <a href="/tags/GC/">#GC</a>
+      
+        <a href="/tags/%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6/">#垃圾回收</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>07-Java垃圾回收机制与优化策略</div>
+      <div>https://janycode.github.io/2022/12/28/07_虚拟机/07-Java垃圾回收机制与优化策略/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Jerry(姜源)</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2022年12月28日</div>
+        </div>
+      
+      
+      <div class="license-meta-item">
+        <div>许可协议</div>
+        <div>
+          
+            
+            
+              <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+              <span class="hint--top hint--rounded" aria-label="BY - 姜源">
+                <i class="iconfont icon-by"></i>
+              </span>
+              </a>
+            
+          
+        </div>
+      </div>
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2023/01/06/08_%E6%A1%86%E6%9E%B6%E6%8A%80%E6%9C%AF/04_SpringBoot/17-SpringBoot+MyBatis%E5%A4%9A%E6%95%B0%E6%8D%AE%E6%BA%90%E5%AE%9E%E7%8E%B0/" title="17_SpringBoot+MyBatis多数据源实现">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">17_SpringBoot+MyBatis多数据源实现</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2022/12/24/07_%E8%99%9A%E6%8B%9F%E6%9C%BA/06-4Cpu8G%E7%9A%84JVM%E5%8F%82%E6%95%B0%E8%AE%BE%E7%BD%AE%E6%96%B9%E6%A1%88/" title="06-4Cpu8G的JVM参数设置方案">
+                        <span class="hidden-mobile">06-4Cpu8G的JVM参数设置方案</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+  <article id="comments" lazyload>
+    
+  <div id="SOHUCS" sid='https://janycode.github.io/2022/12/28/07_%E8%99%9A%E6%8B%9F%E6%9C%BA/07-Java%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6%E6%9C%BA%E5%88%B6%E4%B8%8E%E4%BC%98%E5%8C%96%E7%AD%96%E7%95%A5/'></div>
+  <script type="text/javascript">
+    Fluid.utils.loadComments('#SOHUCS', function() {
+      Fluid.utils.createScript("https://changyan.sohu.com/upload/changyan.js", function() {
+        window.changyan.api.config({"appid":"cyw5OHIcO","appkey":"fea3446b3df4b3f129f34da4cbc87e51"})
+      });
+    });
+  </script>
+  <noscript>Please enable JavaScript to view the comments</noscript>
+
+
+  </article>
+
+
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://simple.blog.csdn.net" target="_blank" rel="nofollow noopener"><span>CSDN</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/janycode" target="_blank" rel="nofollow noopener"><span>GitHub</span></a> <i class="iconfont icon-love"></i> <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="busuanzi_container_site_pv" style="display: none">
+        总访问量(PV) 
+        <span id="busuanzi_value_site_pv"></span>
+         次，
+      </span>
+    
+    
+      <span id="busuanzi_container_site_uv" style="display: none">
+        总访客数(UV) 
+        <span id="busuanzi_value_site_uv"></span>
+         人
+      </span>
+    
+    
+  
+</div>
+
+  
+  
+  
+</div>
+
+<!-- live2d 动画 -->
+<script src="https://eqcn.ajz.miesnfu.com/wp-content/plugins/wp-3d-pony/live2dw/lib/L2Dwidget.min.js"></script>
+<script>
+    L2Dwidget.init({
+        "model": {
+            jsonPath: "https://unpkg.com/live2d-widget-model-haruto@1.0.5/assets/haruto.model.json",
+            "scale": 1
+        },
+        "display": {
+            "position": "right",
+            "width": 100,
+            "height": 200,
+            "hOffset": 35,
+            "vOffset": -85
+        },
+        "mobile": {
+            "show": false,
+            "scale": 0.1
+        },
+        "react": {
+            "opacityDefault": 0.75,
+            "opacityOnHover": 0.2
+        }
+    });
+</script>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <!-- Baidu Analytics -->
+    <script defer>
+      if (!Fluid.ctx.dnt) {
+        var _hmt = _hmt || [];
+        (function() {
+          var hm = document.createElement("script");
+          hm.src = "https://hm.baidu.com/hm.js?bfff735c897eb60ea49b735096b20e47";
+          var s = document.getElementsByTagName("script")[0];
+          s.parentNode.insertBefore(hm, s);
+        })();
+      }
+    </script>
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.0/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      headingSelector : CONFIG.toc.headingSelector || 'h1,h2,h3,h4,h5,h6',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      collapseDepth   : CONFIG.toc.collapseDepth || 0,
+      scrollSmooth    : true,
+      headingsOffset  : -boardTop
+    });
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+  });
+</script>
+
+
+  <script>
+  (function() {
+    var enableLang = CONFIG.code_language.enable && CONFIG.code_language.default;
+    var enableCopy = CONFIG.copy_btn;
+    if (!enableLang && !enableCopy) {
+      return;
+    }
+
+    function getBgClass(ele) {
+      return Fluid.utils.getBackgroundLightness(ele) >= 0 ? 'code-widget-light' : 'code-widget-dark';
+    }
+
+    var copyTmpl = '';
+    copyTmpl += '<div class="code-widget">';
+    copyTmpl += 'LANG';
+    copyTmpl += '</div>';
+    jQuery('.markdown-body pre').each(function() {
+      var $pre = jQuery(this);
+      if ($pre.find('code.mermaid').length > 0) {
+        return;
+      }
+      if ($pre.find('span.line').length > 0) {
+        return;
+      }
+
+      var lang = '';
+
+      if (enableLang) {
+        lang = CONFIG.code_language.default;
+        if ($pre[0].children.length > 0 && $pre[0].children[0].classList.length >= 2 && $pre.children().hasClass('hljs')) {
+          lang = $pre[0].children[0].classList[1];
+        } else if ($pre[0].getAttribute('data-language')) {
+          lang = $pre[0].getAttribute('data-language');
+        } else if ($pre.parent().hasClass('sourceCode') && $pre[0].children.length > 0 && $pre[0].children[0].classList.length >= 2) {
+          lang = $pre[0].children[0].classList[1];
+          $pre.parent().addClass('code-wrapper');
+        } else if ($pre.parent().hasClass('markdown-body') && $pre[0].classList.length === 0) {
+          $pre.wrap('<div class="code-wrapper"></div>');
+        }
+        lang = lang.toUpperCase().replace('NONE', CONFIG.code_language.default);
+      }
+      $pre.append(copyTmpl.replace('LANG', lang).replace('code-widget">',
+        getBgClass($pre[0]) + (enableCopy ? ' code-widget copy-btn" data-clipboard-snippet><i class="iconfont icon-copy"></i>' : ' code-widget">')));
+
+      if (enableCopy) {
+        Fluid.utils.createScript('https://lib.baomitu.com/clipboard.js/2.0.10/clipboard.min.js', function() {
+          var clipboard = new window.ClipboardJS('.copy-btn', {
+            target: function(trigger) {
+              var nodes = trigger.parentNode.childNodes;
+              for (var i = 0; i < nodes.length; i++) {
+                if (nodes[i].tagName === 'CODE') {
+                  return nodes[i];
+                }
+              }
+            }
+          });
+          clipboard.on('success', function(e) {
+            e.clearSelection();
+            e.trigger.innerHTML = e.trigger.innerHTML.replace('icon-copy', 'icon-success');
+            setTimeout(function() {
+              e.trigger.innerHTML = e.trigger.innerHTML.replace('icon-success', 'icon-copy');
+            }, 2000);
+          });
+        });
+      }
+    });
+  })();
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>
