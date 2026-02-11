@@ -1,0 +1,841 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=light>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Jerry(姜源)">
+  <meta name="keywords" content="Java,Html,CSS,JavaScript,Python,C,Linux,shell编程经验分享、技术总结、心得体会">
+  
+    <meta name="description" content="欲速则不达，欲达则欲速！ —— 佚名  一、背景针对老项目，做了许多降本增效的事情，其中发现最多的就是接口耗时过长的问题，就集中搞了一次接口性能优化。 二、接口优化方案总结1.批处理批量思想：批量操作数据库，这个很好理解，我们在循环插入场景的接口中，可以在批处理执行完成后一次性插入或更新数据库，避免多次IO。 12&#x2F;&#x2F;批量入库batchInsert();  2.异步处理异步思想：针对耗时比较长且不">
+<meta property="og:type" content="article">
+<meta property="og:title" content="03-12种优雅的接口优化方案">
+<meta property="og:url" content="https://janycode.github.io/2023/04/07/16_%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96/01_Java%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96/03-12%E7%A7%8D%E4%BC%98%E9%9B%85%E7%9A%84%E6%8E%A5%E5%8F%A3%E4%BC%98%E5%8C%96%E6%96%B9%E6%A1%88/index.html">
+<meta property="og:site_name" content="姜源の云笔记">
+<meta property="og:description" content="欲速则不达，欲达则欲速！ —— 佚名  一、背景针对老项目，做了许多降本增效的事情，其中发现最多的就是接口耗时过长的问题，就集中搞了一次接口性能优化。 二、接口优化方案总结1.批处理批量思想：批量操作数据库，这个很好理解，我们在循环插入场景的接口中，可以在批处理执行完成后一次性插入或更新数据库，避免多次IO。 12&#x2F;&#x2F;批量入库batchInsert();  2.异步处理异步思想：针对耗时比较长且不">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230420143101.png">
+<meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230420143224.png">
+<meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230420143313.png">
+<meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230420143435.png">
+<meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230420143532.png">
+<meta property="article:published_time" content="2023-04-07T14:30:26.000Z">
+<meta property="article:modified_time" content="2026-02-10T09:28:25.073Z">
+<meta property="article:author" content="Jerry(姜源)">
+<meta property="article:tag" content="性能优化">
+<meta property="article:tag" content="JavaSE">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230420143101.png">
+  
+  
+    <meta name="referrer" content="no-referrer-when-downgrade">
+  
+  
+  <title>03-12种优雅的接口优化方案 - 姜源の云笔记</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"janycode.github.io","root":"/","version":"1.9.0","typing":{"enable":true,"typeSpeed":50,"cursorChar":"|","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":false},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":"bfff735c897eb60ea49b735096b20e47","google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+
+  
+<meta name="generator" content="Hexo 6.2.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 50vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>姜源の云笔记</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tools/">
+                <i class="iconfont icon-slack-fill"></i>
+                工具
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" target="_blank" rel="noopener" href="https://yuancodes.github.io/">
+                <i class="iconfont icon-notebook"></i>
+                Docsify
+              </a>
+            </li>
+          
+        
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="03-12种优雅的接口优化方案"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-author" aria-hidden="true"></i>
+        Jerry(姜源)
+      </span>
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2023-04-07 22:30" pubdate>
+          星期五, 2023/04/07 22:30:26
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          <!-- compatible with older versions-->
+          2.5k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          <!-- compatible with older versions-->
+          21 分钟
+        
+      </span>
+    
+
+    
+    
+      
+        <span id="busuanzi_container_page_pv" style="display: none">
+          <i class="iconfont icon-eye" aria-hidden="true"></i>
+          <span id="busuanzi_value_page_pv"></span> 次
+        </span>
+        
+      
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">03-12种优雅的接口优化方案</h1>
+            
+            <div class="markdown-body">
+              
+              <p><code>欲速则不达，欲达则欲速！</code> —— 佚名</p>
+<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230420143101.png" srcset="/img/loading.gif" lazyload alt="image-20230420143059806"></p>
+<h2 id="一、背景"><a href="#一、背景" class="headerlink" title="一、背景"></a>一、背景</h2><p>针对老项目，做了许多降本增效的事情，其中发现最多的就是接口耗时过长的问题，就集中搞了一次接口性能优化。</p>
+<h2 id="二、接口优化方案总结"><a href="#二、接口优化方案总结" class="headerlink" title="二、接口优化方案总结"></a>二、接口优化方案总结</h2><h3 id="1-批处理"><a href="#1-批处理" class="headerlink" title="1.批处理"></a>1.批处理</h3><p>批量思想：<code>批量操作</code>数据库，这个很好理解，我们在循环插入场景的接口中，可以在批处理执行完成后一次性插入或更新数据库，避免多次IO。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-comment">//批量入库</span><br>batchInsert();<br></code></pre></td></tr></table></figure>
+
+<h3 id="2-异步处理"><a href="#2-异步处理" class="headerlink" title="2.异步处理"></a>2.异步处理</h3><p>异步思想：针对耗时比较长且不是结果必须的逻辑，我们可以考虑放到<code>异步执行</code>，这样能降低接口耗时。</p>
+<p>例如一个理财的申购接口，入账和写入申购文件是同步执行的，因为是T+1交易，后面这两个逻辑其实不是结果必须的，我们并不需要关注它的实时结果，所以我们考虑把入账和写入申购文件改为异步处理。如图所示：</p>
+<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230420143224.png" srcset="/img/loading.gif" lazyload alt="image-20230420143223625"></p>
+<p>至于异步的实现方式，可以用线程池，也可以用消息队列，还可以用一些调度任务框架。</p>
+<h3 id="3-空间换时间"><a href="#3-空间换时间" class="headerlink" title="3.空间换时间"></a>3.空间换时间</h3><p>一个很好理解的空间换时间的例子是<code>合理使用缓存</code>，针对一些频繁使用且不频繁变更的数据，可以提前缓存起来，需要时直接查缓存，避免频繁地查询数据库或者重复计算。</p>
+<p>需要注意的事，这里用了合理二字，因为空间换时间也是一把双刃剑，需要综合考虑你的使用场景，毕竟缓存带来的数据一致性问题也挺令人头疼。</p>
+<p>这里的缓存可以是R2M，也可以是本地缓存、memcached，或者Map。</p>
+<p>举一个股票工具的查询例子：</p>
+<p>因为策略轮动的调仓信息，每周只更新一次，所以原来的调接口就去查库的逻辑并不合理，而且拿到调仓信息后，需要经过复杂计算，最终得出回测收益和跑赢沪深指数这些我们想要的结果。如果我们把查库操作和计算结果放入缓存，可以节省很多的执行时间。如图：</p>
+<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230420143313.png" srcset="/img/loading.gif" lazyload alt="image-20230420143312003"></p>
+<h3 id="4-预处理"><a href="#4-预处理" class="headerlink" title="4.预处理"></a>4.预处理</h3><p>也就是预取思想，就是提前要把查询的数据，提前计算好，放入缓存即<code>预热</code>或者表中的某个字段，用的时候会大幅提高接口性能。跟上面那个例子很像，但是关注点不同。</p>
+<p>举个简单的例子：理财产品，会有根据净值计算年化收益率的数据展示需求，利用净值去套用年化收益率计算公式计算的逻辑我们可以采用预处理，这样每一次接口调用直接取对应字段就可以了。</p>
+<h3 id="5-池化思想"><a href="#5-池化思想" class="headerlink" title="5.池化思想"></a>5.池化思想</h3><p>我们都用过数据库连接池，线程池等，这就是<code>池思想</code>的体现，它们解决的问题就是避免重复创建对象或创建连接，可以重复利用，避免不必要的损耗，毕竟创建销毁也会占用时间。</p>
+<p>池化思想包含但并不局限于以上两种，总的来说池化思想的本质是预分配与循环使用，明白这个原理后，我们即使是在做一些业务场景的需求时，也可以利用起来。</p>
+<p>比如：对象池</p>
+<h3 id="6-串行改并行"><a href="#6-串行改并行" class="headerlink" title="6.串行改并行"></a>6.串行改并行</h3><p>串行就是，当前执行逻辑必须等上一个执行逻辑结束之后才执行，并行就是两个执行逻辑互不干扰，所以<code>并行</code>相对来说就比较节省时间，当然是建立在没有结果参数依赖的前提下。</p>
+<p>比如，理财的持仓信息展示接口，我们既需要查询用户的账户信息，也需要查询商品信息和banner位信息等等来渲染持仓页，如果是串行，基本上接口耗时就是累加的。如果是并行，接口耗时将大大降低。</p>
+<p>如图：</p>
+<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230420143435.png" srcset="/img/loading.gif" lazyload alt="image-20230420143434575"></p>
+<h3 id="7-索引"><a href="#7-索引" class="headerlink" title="7.索引"></a>7.索引</h3><p>加索引能大大提高数据查询效率，这个在接口设计之初也会考虑到，随着需求的迭代，索引不生效的一些场景举例：</p>
+<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230420143532.png" srcset="/img/loading.gif" lazyload alt="image-20230420143531607"></p>
+<h3 id="8-避免大事务"><a href="#8-避免大事务" class="headerlink" title="8.避免大事务"></a>8.避免大事务</h3><p>所谓大事务问题，就是运行时间较长的事务，由于事务一致不提交，会导致数据库连接被占用，影响到别的请求访问数据库，影响别的接口性能。</p>
+<p>举个例子：</p>
+<figure class="highlight reasonml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs reasonml">@<span class="hljs-constructor">Transactional(<span class="hljs-params">value</span> = <span class="hljs-string">&quot;taskTransactionManager&quot;</span>, <span class="hljs-params">propagation</span> = Propagation.REQUIRED, <span class="hljs-params">isolation</span> = Isolation.READ_COMMITTED, <span class="hljs-params">rollbackFor</span> = &#123;RuntimeException.<span class="hljs-params">class</span>, Exception.<span class="hljs-params">class</span>&#125;)</span><br> public BasicResult purchase<span class="hljs-constructor">Request(PurchaseRecord <span class="hljs-params">record</span>)</span> &#123;<br>     BasicResult result = <span class="hljs-keyword">new</span> <span class="hljs-constructor">BasicResult()</span>;<span class="hljs-operator"></span><br><span class="hljs-operator">     ...</span><br><span class="hljs-operator">     </span>pushRpc.<span class="hljs-keyword">do</span><span class="hljs-constructor">Push(<span class="hljs-params">record</span>)</span>;        <br>     result.set<span class="hljs-constructor">Info(ResultInfoEnum.SUCCESS)</span>;<br>     return result;<br> &#125;<br></code></pre></td></tr></table></figure>
+
+<p>所以为<code>避免大事务</code>问题，我们可以通过以下方案规避：</p>
+<p>1，RPC调用不放到事务里面</p>
+<p>2，查询操作尽量放到事务之外</p>
+<p>3，事务中避免处理太多数据</p>
+<h3 id="9-优化程序结构"><a href="#9-优化程序结构" class="headerlink" title="9.优化程序结构"></a>9.优化程序结构</h3><p>程序结构问题一般出现在多次需求迭代后，代码叠加形成。会造成一些重复查询、多次创建对象等耗时问题。在多人维护一个项目时比较多见。解决起来也比较简单，我们需要针对<code>接口整体做重构</code>，评估每个代码块的作用和用途，调整执行顺序。</p>
+<h3 id="10-深分页问题"><a href="#10-深分页问题" class="headerlink" title="10.深分页问题"></a>10.深分页问题</h3><p>深分页问题比较常见，分页我们一般最先想到的就是 limit ，为什么会慢，我们可以看下这个SQL：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-keyword">select</span> <span class="hljs-operator">*</span> <span class="hljs-keyword">from</span> purchase_record<br><span class="hljs-keyword">where</span> productCode <span class="hljs-operator">=</span> <span class="hljs-string">&#x27;PA9044&#x27;</span><br>  <span class="hljs-keyword">and</span> status<span class="hljs-operator">=</span><span class="hljs-number">4</span><br>  <span class="hljs-keyword">and</span> id <span class="hljs-operator">&gt;</span> <span class="hljs-number">100000</span><br>limit <span class="hljs-number">200</span><br></code></pre></td></tr></table></figure>
+
+<p>这样优化的好处是<code>命中了主键索引</code>，无论多少页，性能都还不错，但是局限性是需要一个连续自增的字段。</p>
+<h3 id="11-SQL优化"><a href="#11-SQL优化" class="headerlink" title="11.SQL优化"></a>11.SQL优化</h3><p><code>sql优化</code>能大幅提高接口的查询性能，结合索引、分页、等关注点考虑优化方案。</p>
+<h3 id="12-锁粒度避免过粗"><a href="#12-锁粒度避免过粗" class="headerlink" title="12.锁粒度避免过粗"></a>12.锁粒度避免过粗</h3><p>锁一般是为了在高并发场景下保护共享资源采用的一种手段，但是如果<code>锁的粒度太粗，会很影响接口性能</code>。</p>
+<p>关于锁粒度：就是你要锁的范围有多大，不管是synchronized还是redis分布式锁，只需要在临界资源处加锁即可，不涉及共享资源的，不必要加锁，就好比你要上卫生间，只需要把卫生间的门锁上就可以，不需要把客厅的门也锁上。</p>
+<p>错误的加锁方式：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-comment">//非共享资源</span><br><span class="hljs-keyword">private</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">notShare</span><span class="hljs-params">()</span>&#123;&#125;<br><span class="hljs-comment">//共享资源</span><br><span class="hljs-keyword">private</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">share</span><span class="hljs-params">()</span>&#123;&#125;<br><span class="hljs-keyword">private</span> <span class="hljs-type">int</span> <span class="hljs-title function_">right</span><span class="hljs-params">()</span>&#123;<br>    notShare();<br>    <span class="hljs-keyword">synchronized</span> (<span class="hljs-built_in">this</span>) &#123;<br>        share();<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+
+              
+            </div>
+            <hr/>
+            <div>
+              <div>
+  <img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20241112163319.png" srcset="/img/loading.gif" lazyload>
+</div>
+<div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/16-%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96/" class="category-chain-item">16_性能优化</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/16-%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96/01-Java%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96/" class="category-chain-item">01_Java性能优化</a>
+  
+  
+
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96/">#性能优化</a>
+      
+        <a href="/tags/JavaSE/">#JavaSE</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>03-12种优雅的接口优化方案</div>
+      <div>https://janycode.github.io/2023/04/07/16_性能优化/01_Java性能优化/03-12种优雅的接口优化方案/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Jerry(姜源)</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2023年4月7日</div>
+        </div>
+      
+      
+      <div class="license-meta-item">
+        <div>许可协议</div>
+        <div>
+          
+            
+            
+              <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+              <span class="hint--top hint--rounded" aria-label="BY - 姜源">
+                <i class="iconfont icon-by"></i>
+              </span>
+              </a>
+            
+          
+        </div>
+      </div>
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2023/04/15/16_%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96/01_Java%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96/04-Java%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E5%AE%9E%E6%88%98/" title="04-Java性能优化实战">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">04-Java性能优化实战</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2023/04/05/02_%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/01_Java/01_JavaSE/05_%E5%B9%B6%E5%8F%91%E5%92%8C%E9%94%81/09-%E7%BA%BF%E7%A8%8B%E6%B1%A0%E6%8F%90%E9%AB%98%E7%99%BE%E4%B8%87%E7%BA%A7%E6%95%B0%E6%8D%AE%E6%8F%92%E5%85%A5%E6%95%88%E7%8E%87/" title="09-线程池提高百万级数据插入效率">
+                        <span class="hidden-mobile">09-线程池提高百万级数据插入效率</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+  <article id="comments" lazyload>
+    
+  <div id="SOHUCS" sid='https://janycode.github.io/2023/04/07/16_%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96/01_Java%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96/03-12%E7%A7%8D%E4%BC%98%E9%9B%85%E7%9A%84%E6%8E%A5%E5%8F%A3%E4%BC%98%E5%8C%96%E6%96%B9%E6%A1%88/'></div>
+  <script type="text/javascript">
+    Fluid.utils.loadComments('#SOHUCS', function() {
+      Fluid.utils.createScript("https://changyan.sohu.com/upload/changyan.js", function() {
+        window.changyan.api.config({"appid":"cyw5OHIcO","appkey":"fea3446b3df4b3f129f34da4cbc87e51"})
+      });
+    });
+  </script>
+  <noscript>Please enable JavaScript to view the comments</noscript>
+
+
+  </article>
+
+
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://simple.blog.csdn.net" target="_blank" rel="nofollow noopener"><span>CSDN</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/janycode" target="_blank" rel="nofollow noopener"><span>GitHub</span></a> <i class="iconfont icon-love"></i> <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="busuanzi_container_site_pv" style="display: none">
+        总访问量(PV) 
+        <span id="busuanzi_value_site_pv"></span>
+         次，
+      </span>
+    
+    
+      <span id="busuanzi_container_site_uv" style="display: none">
+        总访客数(UV) 
+        <span id="busuanzi_value_site_uv"></span>
+         人
+      </span>
+    
+    
+  
+</div>
+
+  
+  
+  
+</div>
+
+<!-- live2d 动画 -->
+<script src="https://eqcn.ajz.miesnfu.com/wp-content/plugins/wp-3d-pony/live2dw/lib/L2Dwidget.min.js"></script>
+<script>
+    L2Dwidget.init({
+        "model": {
+            jsonPath: "https://unpkg.com/live2d-widget-model-haruto@1.0.5/assets/haruto.model.json",
+            "scale": 1
+        },
+        "display": {
+            "position": "right",
+            "width": 100,
+            "height": 200,
+            "hOffset": 35,
+            "vOffset": -85
+        },
+        "mobile": {
+            "show": false,
+            "scale": 0.1
+        },
+        "react": {
+            "opacityDefault": 0.75,
+            "opacityOnHover": 0.2
+        }
+    });
+</script>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <!-- Baidu Analytics -->
+    <script defer>
+      if (!Fluid.ctx.dnt) {
+        var _hmt = _hmt || [];
+        (function() {
+          var hm = document.createElement("script");
+          hm.src = "https://hm.baidu.com/hm.js?bfff735c897eb60ea49b735096b20e47";
+          var s = document.getElementsByTagName("script")[0];
+          s.parentNode.insertBefore(hm, s);
+        })();
+      }
+    </script>
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.0/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      headingSelector : CONFIG.toc.headingSelector || 'h1,h2,h3,h4,h5,h6',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      collapseDepth   : CONFIG.toc.collapseDepth || 0,
+      scrollSmooth    : true,
+      headingsOffset  : -boardTop
+    });
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+  });
+</script>
+
+
+  <script>
+  (function() {
+    var enableLang = CONFIG.code_language.enable && CONFIG.code_language.default;
+    var enableCopy = CONFIG.copy_btn;
+    if (!enableLang && !enableCopy) {
+      return;
+    }
+
+    function getBgClass(ele) {
+      return Fluid.utils.getBackgroundLightness(ele) >= 0 ? 'code-widget-light' : 'code-widget-dark';
+    }
+
+    var copyTmpl = '';
+    copyTmpl += '<div class="code-widget">';
+    copyTmpl += 'LANG';
+    copyTmpl += '</div>';
+    jQuery('.markdown-body pre').each(function() {
+      var $pre = jQuery(this);
+      if ($pre.find('code.mermaid').length > 0) {
+        return;
+      }
+      if ($pre.find('span.line').length > 0) {
+        return;
+      }
+
+      var lang = '';
+
+      if (enableLang) {
+        lang = CONFIG.code_language.default;
+        if ($pre[0].children.length > 0 && $pre[0].children[0].classList.length >= 2 && $pre.children().hasClass('hljs')) {
+          lang = $pre[0].children[0].classList[1];
+        } else if ($pre[0].getAttribute('data-language')) {
+          lang = $pre[0].getAttribute('data-language');
+        } else if ($pre.parent().hasClass('sourceCode') && $pre[0].children.length > 0 && $pre[0].children[0].classList.length >= 2) {
+          lang = $pre[0].children[0].classList[1];
+          $pre.parent().addClass('code-wrapper');
+        } else if ($pre.parent().hasClass('markdown-body') && $pre[0].classList.length === 0) {
+          $pre.wrap('<div class="code-wrapper"></div>');
+        }
+        lang = lang.toUpperCase().replace('NONE', CONFIG.code_language.default);
+      }
+      $pre.append(copyTmpl.replace('LANG', lang).replace('code-widget">',
+        getBgClass($pre[0]) + (enableCopy ? ' code-widget copy-btn" data-clipboard-snippet><i class="iconfont icon-copy"></i>' : ' code-widget">')));
+
+      if (enableCopy) {
+        Fluid.utils.createScript('https://lib.baomitu.com/clipboard.js/2.0.10/clipboard.min.js', function() {
+          var clipboard = new window.ClipboardJS('.copy-btn', {
+            target: function(trigger) {
+              var nodes = trigger.parentNode.childNodes;
+              for (var i = 0; i < nodes.length; i++) {
+                if (nodes[i].tagName === 'CODE') {
+                  return nodes[i];
+                }
+              }
+            }
+          });
+          clipboard.on('success', function(e) {
+            e.clearSelection();
+            e.trigger.innerHTML = e.trigger.innerHTML.replace('icon-copy', 'icon-success');
+            setTimeout(function() {
+              e.trigger.innerHTML = e.trigger.innerHTML.replace('icon-success', 'icon-copy');
+            }, 2000);
+          });
+        });
+      }
+    });
+  })();
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>
