@@ -1,0 +1,826 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=light>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Jerry(姜源)">
+  <meta name="keywords" content="Java,Html,CSS,JavaScript,Python,C,Linux,shell编程经验分享、技术总结、心得体会">
+  
+    <meta name="description" content="参考资料-后端：https:&#x2F;&#x2F;developer.ibm.com&#x2F;zh&#x2F;articles&#x2F;j-lo-WebSocket&#x2F; 参考资料-前端：https:&#x2F;&#x2F;www.runoob.com&#x2F;html&#x2F;html5-websocket.html 在线测试-地址：http:&#x2F;&#x2F;www.websocket-test.com&#x2F; 1. 简介WebSocket 是 HTML5 开始提供的一种在单个 TCP 连接上">
+<meta property="og:type" content="article">
+<meta property="og:title" content="WebSocket聊天室实战">
+<meta property="og:url" content="https://janycode.github.io/2019/03/02/08_%E6%A1%86%E6%9E%B6%E6%8A%80%E6%9C%AF/12_WebSocket/WebSocket%E8%81%8A%E5%A4%A9%E5%AE%A4%E5%AE%9E%E6%88%98/index.html">
+<meta property="og:site_name" content="姜源の云笔记">
+<meta property="og:description" content="参考资料-后端：https:&#x2F;&#x2F;developer.ibm.com&#x2F;zh&#x2F;articles&#x2F;j-lo-WebSocket&#x2F; 参考资料-前端：https:&#x2F;&#x2F;www.runoob.com&#x2F;html&#x2F;html5-websocket.html 在线测试-地址：http:&#x2F;&#x2F;www.websocket-test.com&#x2F; 1. 简介WebSocket 是 HTML5 开始提供的一种在单个 TCP 连接上">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20200830123224.png">
+<meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20200830123431.png">
+<meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20200830125012.png">
+<meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20200830130355.png">
+<meta property="article:published_time" content="2019-03-02T09:59:44.000Z">
+<meta property="article:modified_time" content="2026-02-10T09:28:24.985Z">
+<meta property="article:author" content="Jerry(姜源)">
+<meta property="article:tag" content="WebSocket">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20200830123224.png">
+  
+  
+    <meta name="referrer" content="no-referrer-when-downgrade">
+  
+  
+  <title>WebSocket聊天室实战 - 姜源の云笔记</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"janycode.github.io","root":"/","version":"1.9.0","typing":{"enable":true,"typeSpeed":50,"cursorChar":"|","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":false},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":"bfff735c897eb60ea49b735096b20e47","google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+
+  
+<meta name="generator" content="Hexo 6.2.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 50vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>姜源の云笔记</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tools/">
+                <i class="iconfont icon-slack-fill"></i>
+                工具
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" target="_blank" rel="noopener" href="https://yuancodes.github.io/">
+                <i class="iconfont icon-notebook"></i>
+                Docsify
+              </a>
+            </li>
+          
+        
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="WebSocket聊天室实战"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-author" aria-hidden="true"></i>
+        Jerry(姜源)
+      </span>
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2019-03-02 17:59" pubdate>
+          星期六, 2019/03/02 17:59:44
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          <!-- compatible with older versions-->
+          6.8k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          <!-- compatible with older versions-->
+          57 分钟
+        
+      </span>
+    
+
+    
+    
+      
+        <span id="busuanzi_container_page_pv" style="display: none">
+          <i class="iconfont icon-eye" aria-hidden="true"></i>
+          <span id="busuanzi_value_page_pv"></span> 次
+        </span>
+        
+      
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">WebSocket聊天室实战</h1>
+            
+            <div class="markdown-body">
+              
+              <p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20200830123224.png" srcset="/img/loading.gif" lazyload alt="image-20200830123223268"></p>
+<p>参考资料-后端：<a target="_blank" rel="noopener" href="https://developer.ibm.com/zh/articles/j-lo-WebSocket/">https://developer.ibm.com/zh/articles/j-lo-WebSocket/</a></p>
+<p>参考资料-前端：<a target="_blank" rel="noopener" href="https://www.runoob.com/html/html5-websocket.html">https://www.runoob.com/html/html5-websocket.html</a></p>
+<p>在线测试-地址：<a target="_blank" rel="noopener" href="http://www.websocket-test.com/">http://www.websocket-test.com/</a></p>
+<h3 id="1-简介"><a href="#1-简介" class="headerlink" title="1. 简介"></a>1. 简介</h3><p>WebSocket 是 HTML5 开始提供的一种在单个 TCP 连接上进行全双工通讯的协议。</p>
+<p>WebSocket 使得客户端和服务器之间的数据交换变得更加简单，允许服务端主动向客户端推送数据。在WebSocket API 中，浏览器和服务器只需要完成一次握手，两者之间就直接可以创建持久性的连接，并进行双向数据传输。</p>
+<p>经典对比图示：</p>
+<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20200830123431.png" srcset="/img/loading.gif" lazyload alt="image-20200830123430614"></p>
+<p>效果图：</p>
+<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20200830125012.png" srcset="/img/loading.gif" lazyload alt="image-20200830125011497"></p>
+<h3 id="2-服务端实现"><a href="#2-服务端实现" class="headerlink" title="2. 服务端实现"></a>2. 服务端实现</h3><h4 id="2-1-依赖-jar"><a href="#2-1-依赖-jar" class="headerlink" title="2.1 依赖 jar"></a>2.1 依赖 jar</h4><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs xml"><span class="hljs-tag">&lt;<span class="hljs-name">dependency</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">groupId</span>&gt;</span>org.springframework.boot<span class="hljs-tag">&lt;/<span class="hljs-name">groupId</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">artifactId</span>&gt;</span>spring-boot-starter-websocket<span class="hljs-tag">&lt;/<span class="hljs-name">artifactId</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">dependency</span>&gt;</span><br></code></pre></td></tr></table></figure>
+
+<h4 id="2-2-配置类"><a href="#2-2-配置类" class="headerlink" title="2.2 配置类"></a>2.2 配置类</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">import</span> org.springframework.context.annotation.Bean;<br><span class="hljs-keyword">import</span> org.springframework.context.annotation.Configuration;<br><span class="hljs-keyword">import</span> org.springframework.web.socket.server.standard.ServerEndpointExporter;<br><br><span class="hljs-meta">@Configuration</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">WebSocketConfig</span> &#123;<br>    <span class="hljs-comment">/**</span><br><span class="hljs-comment">     * WebSocket服务端解析器对象</span><br><span class="hljs-comment">     */</span><br>    <span class="hljs-meta">@Bean</span><br>    <span class="hljs-keyword">public</span> ServerEndpointExporter <span class="hljs-title function_">createSEE</span><span class="hljs-params">()</span> &#123;<br>        <span class="hljs-keyword">return</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">ServerEndpointExporter</span>();<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+
+
+<h4 id="2-3-服务端"><a href="#2-3-服务端" class="headerlink" title="2.3 服务端"></a>2.3 服务端</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">import</span> org.springframework.context.annotation.Scope;<br><span class="hljs-keyword">import</span> org.springframework.stereotype.Component;<br><br><span class="hljs-keyword">import</span> javax.websocket.*;<br><span class="hljs-keyword">import</span> javax.websocket.server.PathParam;<br><span class="hljs-keyword">import</span> javax.websocket.server.ServerEndpoint;<br><span class="hljs-keyword">import</span> java.io.IOException;<br><span class="hljs-keyword">import</span> java.util.concurrent.ConcurrentHashMap;<br><br><span class="hljs-meta">@Component</span><br><span class="hljs-meta">@Scope(scopeName = &quot;prototype&quot;)</span> <span class="hljs-comment">//注意要配置为多例模式，供多人聊天提供实例创建</span><br><span class="hljs-meta">@ServerEndpoint(&quot;/chatserver/&#123;nickname&#125;&quot;)</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">ChatServer</span> &#123;<br>    <span class="hljs-comment">/**</span><br><span class="hljs-comment">     * 昵称</span><br><span class="hljs-comment">     */</span><br>    <span class="hljs-keyword">private</span> String nickname;<br>    <span class="hljs-comment">/**</span><br><span class="hljs-comment">     * 当前的会话对象</span><br><span class="hljs-comment">     */</span><br>    <span class="hljs-keyword">private</span> Session session;<br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> ConcurrentHashMap&lt;String, ChatServer&gt; clients;<br><br>    <span class="hljs-keyword">static</span> &#123;<br>        clients = <span class="hljs-keyword">new</span> <span class="hljs-title class_">ConcurrentHashMap</span>&lt;&gt;();<br>    &#125;<br><br>    <span class="hljs-comment">/**</span><br><span class="hljs-comment">     * 连接  客户端连接</span><br><span class="hljs-comment">     *</span><br><span class="hljs-comment">     * <span class="hljs-doctag">@param</span> name</span><br><span class="hljs-comment">     * <span class="hljs-doctag">@param</span> session</span><br><span class="hljs-comment">     * <span class="hljs-doctag">@throws</span> IOException</span><br><span class="hljs-comment">     */</span><br>    <span class="hljs-meta">@OnOpen</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">open</span><span class="hljs-params">(<span class="hljs-meta">@PathParam(&quot;nickname&quot;)</span> String name, Session session)</span> <span class="hljs-keyword">throws</span> IOException &#123;<br>        <span class="hljs-keyword">if</span> (clients.containsKey(name)) &#123;<br>            <span class="hljs-comment">//昵称存在</span><br>            session.getBasicRemote().sendText(<span class="hljs-string">&quot;亲，昵称与存在，请重新命名&quot;</span>);<br>        &#125; <span class="hljs-keyword">else</span> &#123;<br>            clients.put(name, <span class="hljs-built_in">this</span>);<br>            nickname = name;<br>            <span class="hljs-built_in">this</span>.session = session;<br>            <span class="hljs-comment">//发送 群发消息 欢迎xx</span><br>            sendAlMsg(<span class="hljs-string">&quot;欢迎-&quot;</span> + name + <span class="hljs-string">&quot;- 加入聊天室，鲜花走起来！&quot;</span>, <span class="hljs-literal">true</span>);<br>        &#125;<br>    &#125;<br><br>    <span class="hljs-comment">/**</span><br><span class="hljs-comment">     * 发送消息</span><br><span class="hljs-comment">     *</span><br><span class="hljs-comment">     * <span class="hljs-doctag">@param</span> msg</span><br><span class="hljs-comment">     */</span><br>    <span class="hljs-meta">@OnMessage</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">message</span><span class="hljs-params">(String msg)</span> &#123;<br>        System.err.println(nickname + <span class="hljs-string">&quot;-----&gt;&quot;</span> + msg);<br>        sendAlMsg(msg, <span class="hljs-literal">false</span>);<br>    &#125;<br><br>    <span class="hljs-comment">/**</span><br><span class="hljs-comment">     * 错误</span><br><span class="hljs-comment">     *</span><br><span class="hljs-comment">     * <span class="hljs-doctag">@param</span> error</span><br><span class="hljs-comment">     */</span><br>    <span class="hljs-meta">@OnError</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">error</span><span class="hljs-params">(Throwable error)</span> &#123;<br>        error.printStackTrace();<br>    &#125;<br><br>    <span class="hljs-comment">/**</span><br><span class="hljs-comment">     * 关闭</span><br><span class="hljs-comment">     *</span><br><span class="hljs-comment">     * <span class="hljs-doctag">@param</span> session</span><br><span class="hljs-comment">     * <span class="hljs-doctag">@throws</span> IOException</span><br><span class="hljs-comment">     */</span><br>    <span class="hljs-meta">@OnClose</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">close</span><span class="hljs-params">(Session session)</span> <span class="hljs-keyword">throws</span> IOException &#123;<br>        <span class="hljs-comment">//移除</span><br>        clients.remove(nickname);<br>        <span class="hljs-comment">//群发消息 告诉其他人 xxx 离开了聊天室，他错失了100万</span><br>        sendAlMsg(nickname + <span class="hljs-string">&quot;-离开了聊天室，他错失了100万&quot;</span>, <span class="hljs-literal">true</span>);<br>        <span class="hljs-comment">//关闭会话</span><br>        session.close();<br>    &#125;<br><br><br>    <span class="hljs-comment">/**</span><br><span class="hljs-comment">     * 群发消息</span><br><span class="hljs-comment">     *</span><br><span class="hljs-comment">     * <span class="hljs-doctag">@param</span> msg    发送的消息</span><br><span class="hljs-comment">     * <span class="hljs-doctag">@param</span> isself 是否包含自己</span><br><span class="hljs-comment">     */</span><br>    <span class="hljs-keyword">private</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">sendAlMsg</span><span class="hljs-params">(String msg, <span class="hljs-type">boolean</span> isself)</span> &#123;<br>        <span class="hljs-keyword">for</span> (String s : clients.keySet()) &#123;<br>            <span class="hljs-keyword">if</span> (!isself) &#123;<br>                <span class="hljs-keyword">if</span> (s.equals(nickname)) &#123;<br>                    <span class="hljs-keyword">continue</span>;<br>                &#125;<br>            &#125;<br>            <span class="hljs-keyword">try</span> &#123;<br>                clients.get(s).session.getBasicRemote().sendText(msg);<br>            &#125; <span class="hljs-keyword">catch</span> (IOException e) &#123;<br>                e.printStackTrace();<br>            &#125;<br>        &#125;<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+
+
+<h3 id="3-前端实现"><a href="#3-前端实现" class="headerlink" title="3. 前端实现"></a>3. 前端实现</h3><p>核心：</p>
+<ul>
+<li>ws &#x3D; <code>new WebSocket(&quot;ws://ip:port/chatserver/&quot; + name)</code>;  创建 webSocket 连接</li>
+<li>style&#x3D;”<code>scroll-snap-type-y: unset;</code>“ 界面滚动样式</li>
+<li>ws.onopen &#x2F; ws.onmessage &#x2F; ws.send &#x2F; ws.close 相关事件</li>
+</ul>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br></pre></td><td class="code"><pre><code class="hljs html"><span class="hljs-meta">&lt;!DOCTYPE <span class="hljs-keyword">html</span>&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">html</span>&gt;</span><br>	<span class="hljs-tag">&lt;<span class="hljs-name">head</span>&gt;</span><br>		<span class="hljs-tag">&lt;<span class="hljs-name">meta</span> <span class="hljs-attr">charset</span>=<span class="hljs-string">&quot;utf-8&quot;</span>&gt;</span><br>		<span class="hljs-tag">&lt;<span class="hljs-name">title</span>&gt;</span>WebSocket 聊天室实战 Jerry<span class="hljs-tag">&lt;/<span class="hljs-name">title</span>&gt;</span><br>		<span class="hljs-tag">&lt;<span class="hljs-name">link</span> <span class="hljs-attr">rel</span>=<span class="hljs-string">&quot;stylesheet&quot;</span> <span class="hljs-attr">href</span>=<span class="hljs-string">&quot;https://cdn.jsdelivr.net/npm/bootstrap@4.5.0/dist/css/bootstrap.min.css&quot;</span> <span class="hljs-attr">integrity</span>=<span class="hljs-string">&quot;sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk&quot;</span></span><br><span class="hljs-tag">		 <span class="hljs-attr">crossorigin</span>=<span class="hljs-string">&quot;anonymous&quot;</span>&gt;</span><br>		<span class="hljs-tag">&lt;<span class="hljs-name">script</span> <span class="hljs-attr">type</span>=<span class="hljs-string">&quot;application/javascript&quot;</span> <span class="hljs-attr">src</span>=<span class="hljs-string">&quot;https://cdn.bootcdn.net/ajax/libs/jquery/1.10.0/jquery.js&quot;</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span><br><br>		<span class="hljs-tag">&lt;<span class="hljs-name">style</span> <span class="hljs-attr">type</span>=<span class="hljs-string">&quot;text/css&quot;</span>&gt;</span><span class="language-css"></span><br><span class="language-css">			<span class="hljs-selector-tag">div</span> &#123;</span><br><span class="language-css">				<span class="hljs-attribute">text-align</span>: center;</span><br><span class="language-css">			&#125;</span><br><span class="language-css">			<span class="hljs-selector-class">.inputmsg</span> &#123;</span><br><span class="language-css">				<span class="hljs-attribute">padding</span>: <span class="hljs-number">5px</span>;</span><br><span class="language-css">				<span class="hljs-attribute">border-radius</span>: <span class="hljs-number">10px</span>;</span><br><span class="language-css">				<span class="hljs-attribute">width</span>: <span class="hljs-number">60%</span>;</span><br><span class="language-css">			&#125;</span><br><span class="language-css">			<span class="hljs-selector-class">.dvleft</span> &#123;</span><br><span class="language-css">				<span class="hljs-comment">/* clear: all; */</span></span><br><span class="language-css">				<span class="hljs-attribute">float</span>: left;</span><br><span class="language-css">				<span class="hljs-attribute">text-align</span>: left;</span><br><span class="language-css">				<span class="hljs-attribute">margin-left</span>: <span class="hljs-number">10px</span>;</span><br><span class="language-css">				<span class="hljs-attribute">width</span>: <span class="hljs-number">100%</span>;</span><br><span class="language-css">			&#125;</span><br><span class="language-css">			<span class="hljs-selector-class">.dvright</span> &#123;</span><br><span class="language-css">				<span class="hljs-attribute">float</span>: right;</span><br><span class="language-css">				<span class="hljs-attribute">width</span>: <span class="hljs-number">100%</span>;</span><br><span class="language-css">				<span class="hljs-attribute">text-align</span>: right;</span><br><span class="language-css">				<span class="hljs-attribute">margin-right</span>: <span class="hljs-number">10px</span>;</span><br><span class="language-css">			&#125;</span><br><span class="language-css">		</span><span class="hljs-tag">&lt;/<span class="hljs-name">style</span>&gt;</span><br>	<span class="hljs-tag">&lt;/<span class="hljs-name">head</span>&gt;</span><br>	<span class="hljs-tag">&lt;<span class="hljs-name">body</span>&gt;</span><br>		<span class="hljs-tag">&lt;<span class="hljs-name">div</span> <span class="hljs-attr">class</span>=<span class="hljs-string">&quot;container&quot;</span>&gt;</span><br>			<span class="hljs-comment">&lt;!-- 命名 连接 退出 --&gt;</span><br>			<span class="hljs-tag">&lt;<span class="hljs-name">div</span> <span class="hljs-attr">class</span>=<span class="hljs-string">&quot;row&quot;</span>&gt;</span><br>				<span class="hljs-tag">&lt;<span class="hljs-name">div</span> <span class="hljs-attr">class</span>=<span class="hljs-string">&quot;col&quot;</span>&gt;</span><br>					<span class="hljs-tag">&lt;<span class="hljs-name">input</span> <span class="hljs-attr">class</span>=<span class="hljs-string">&quot;inputmsg&quot;</span> <span class="hljs-attr">id</span>=<span class="hljs-string">&quot;nickname&quot;</span> <span class="hljs-attr">style</span>=<span class="hljs-string">&quot;width: 30%;&quot;</span> /&gt;</span><br>					<span class="hljs-tag">&lt;<span class="hljs-name">button</span> <span class="hljs-attr">class</span>=<span class="hljs-string">&quot;btn btn-primary&quot;</span> <span class="hljs-attr">id</span>=<span class="hljs-string">&quot;btnjoin&quot;</span>&gt;</span>加入聊天室<span class="hljs-tag">&lt;/<span class="hljs-name">button</span>&gt;</span><br>					<span class="hljs-tag">&lt;<span class="hljs-name">button</span> <span class="hljs-attr">class</span>=<span class="hljs-string">&quot;btn btn-primary&quot;</span> <span class="hljs-attr">id</span>=<span class="hljs-string">&quot;btnexit&quot;</span> <span class="hljs-attr">disabled</span>&gt;</span>退出聊天室<span class="hljs-tag">&lt;/<span class="hljs-name">button</span>&gt;</span><br>				<span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span><br>			<span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span><br>			<span class="hljs-comment">&lt;!-- 聊天区域 别人在左边，自己的在右边。核心属性：scroll-snap-type-y 代表滚动样式 --&gt;</span><br>			<span class="hljs-tag">&lt;<span class="hljs-name">div</span> <span class="hljs-attr">class</span>=<span class="hljs-string">&quot;row&quot;</span> <span class="hljs-attr">id</span>=<span class="hljs-string">&quot;dvchat&quot;</span> <span class="hljs-attr">style</span>=<span class="hljs-string">&quot;scroll-snap-type-y: unset;margin-top: 10px;border: 1px solid red;height: 600px;&quot;</span>&gt;</span><br><br>				<span class="hljs-tag">&lt;<span class="hljs-name">p</span> <span class="hljs-attr">class</span>=<span class="hljs-string">&quot;dvleft&quot;</span>&gt;</span>哈哈哈哈<span class="hljs-tag">&lt;/<span class="hljs-name">p</span>&gt;</span><br>				<span class="hljs-tag">&lt;<span class="hljs-name">p</span> <span class="hljs-attr">class</span>=<span class="hljs-string">&quot;dvright&quot;</span>&gt;</span>哦的<span class="hljs-tag">&lt;/<span class="hljs-name">p</span>&gt;</span><br>			<span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span><br>			<span class="hljs-comment">&lt;!-- 发送聊天内容 --&gt;</span><br>			<span class="hljs-tag">&lt;<span class="hljs-name">div</span> <span class="hljs-attr">class</span>=<span class="hljs-string">&quot;row&quot;</span> <span class="hljs-attr">style</span>=<span class="hljs-string">&quot;position: absolute;bottom: 10px; width: 100%;&quot;</span>&gt;</span><br>				<span class="hljs-tag">&lt;<span class="hljs-name">div</span> <span class="hljs-attr">class</span>=<span class="hljs-string">&quot;col-sm-offset-1 col-sm-10&quot;</span>&gt;</span><br>					<span class="hljs-tag">&lt;<span class="hljs-name">input</span> <span class="hljs-attr">class</span>=<span class="hljs-string">&quot;inputmsg&quot;</span> <span class="hljs-attr">id</span>=<span class="hljs-string">&quot;chatmsg&quot;</span> /&gt;</span><br>					<span class="hljs-tag">&lt;<span class="hljs-name">button</span> <span class="hljs-attr">class</span>=<span class="hljs-string">&quot;btn btn-primary&quot;</span> <span class="hljs-attr">id</span>=<span class="hljs-string">&quot;btnsend&quot;</span>&gt;</span>发送消息<span class="hljs-tag">&lt;/<span class="hljs-name">button</span>&gt;</span><br>				<span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span><br>			<span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span><br>		<span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span><br>		<span class="hljs-tag">&lt;<span class="hljs-name">script</span> <span class="hljs-attr">type</span>=<span class="hljs-string">&quot;application/javascript&quot;</span>&gt;</span><span class="language-javascript"></span><br><span class="language-javascript">			<span class="hljs-keyword">var</span> ws;</span><br><span class="language-javascript">			$(<span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) &#123;</span><br><span class="language-javascript">				<span class="hljs-comment">//打开连接</span></span><br><span class="language-javascript">				$(<span class="hljs-string">&quot;#btnjoin&quot;</span>).<span class="hljs-title function_">click</span>(<span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) &#123;</span><br><span class="language-javascript">					<span class="hljs-keyword">var</span> n = $(<span class="hljs-string">&quot;#nickname&quot;</span>).<span class="hljs-title function_">val</span>();</span><br><span class="language-javascript">					<span class="hljs-keyword">if</span> (n) &#123;</span><br><span class="language-javascript">						ws = <span class="hljs-keyword">new</span> <span class="hljs-title class_">WebSocket</span>(<span class="hljs-string">&quot;ws://localhost:8085/chatserver/&quot;</span> + n);</span><br><span class="language-javascript">						ws.<span class="hljs-property">onopen</span> = <span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) &#123;</span><br><span class="language-javascript">							$(<span class="hljs-string">&quot;#btnjoin&quot;</span>).<span class="hljs-title function_">attr</span>(<span class="hljs-string">&quot;disabled&quot;</span>, <span class="hljs-string">&quot;&quot;</span>);</span><br><span class="language-javascript">							$(<span class="hljs-string">&quot;#btnexit&quot;</span>).<span class="hljs-title function_">removeAttr</span>(<span class="hljs-string">&quot;disabled&quot;</span>);</span><br><span class="language-javascript">						&#125;</span><br><span class="language-javascript">						<span class="hljs-comment">//接收消息</span></span><br><span class="language-javascript">						ws.<span class="hljs-property">onmessage</span> = <span class="hljs-keyword">function</span>(<span class="hljs-params">evt</span>) &#123;</span><br><span class="language-javascript">							<span class="hljs-title function_">receiveMsg</span>(evt);</span><br><span class="language-javascript">						&#125;;</span><br><span class="language-javascript">						ws.<span class="hljs-property">onclose</span> = <span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) &#123;</span><br><span class="language-javascript">							<span class="hljs-comment">// 关闭 websocket</span></span><br><span class="language-javascript">							<span class="hljs-title function_">alert</span>(<span class="hljs-string">&quot;连接已关闭...&quot;</span>);</span><br><span class="language-javascript">							<span class="hljs-variable language_">window</span>.<span class="hljs-title function_">close</span>();</span><br><span class="language-javascript">						&#125;;</span><br><span class="language-javascript"></span><br><span class="language-javascript">					&#125; <span class="hljs-keyword">else</span> &#123;</span><br><span class="language-javascript">						<span class="hljs-title function_">alert</span>(<span class="hljs-string">&quot;亲，请输入昵称&quot;</span>);</span><br><span class="language-javascript">					&#125;</span><br><span class="language-javascript">				&#125;)</span><br><span class="language-javascript">				<span class="hljs-comment">//发送消息</span></span><br><span class="language-javascript">				$(<span class="hljs-string">&quot;#btnsend&quot;</span>).<span class="hljs-title function_">click</span>(<span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) &#123;</span><br><span class="language-javascript">					<span class="hljs-title function_">sendMsg</span>();</span><br><span class="language-javascript">				&#125;);</span><br><span class="language-javascript">				<span class="hljs-comment">//退出</span></span><br><span class="language-javascript">				$(<span class="hljs-string">&quot;#btnexit&quot;</span>).<span class="hljs-title function_">click</span>(<span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) &#123;</span><br><span class="language-javascript">					ws.<span class="hljs-title function_">close</span>();</span><br><span class="language-javascript">				&#125;)</span><br><span class="language-javascript">			&#125;)</span><br><span class="language-javascript"></span><br><span class="language-javascript">			<span class="hljs-comment">//发送消息</span></span><br><span class="language-javascript">			<span class="hljs-keyword">function</span> <span class="hljs-title function_">sendMsg</span>(<span class="hljs-params"></span>) &#123;</span><br><span class="language-javascript">				<span class="hljs-comment">// Web Socket 已连接上，使用 send() 方法发送数据</span></span><br><span class="language-javascript">				<span class="hljs-keyword">var</span> m = $(<span class="hljs-string">&quot;#chatmsg&quot;</span>).<span class="hljs-title function_">val</span>();</span><br><span class="language-javascript">				<span class="hljs-keyword">if</span> (m) &#123;</span><br><span class="language-javascript">					ws.<span class="hljs-title function_">send</span>(m);</span><br><span class="language-javascript">					$(<span class="hljs-string">&quot;#dvchat&quot;</span>).<span class="hljs-title function_">append</span>(<span class="hljs-string">&quot;&lt;p class=\&quot;dvright\&quot;&gt;&quot;</span> + m + <span class="hljs-string">&quot;&lt;/p&gt;&quot;</span>);</span><br><span class="language-javascript">					$(<span class="hljs-string">&quot;#chatmsg&quot;</span>).<span class="hljs-title function_">val</span>(<span class="hljs-string">&quot;&quot;</span>);</span><br><span class="language-javascript">				&#125; <span class="hljs-keyword">else</span> &#123;</span><br><span class="language-javascript">					<span class="hljs-title function_">alert</span>(<span class="hljs-string">&quot;请输入聊天消息&quot;</span>);</span><br><span class="language-javascript">				&#125;</span><br><span class="language-javascript">			&#125;;</span><br><span class="language-javascript">			</span><br><span class="language-javascript">			<span class="hljs-comment">//接收消息</span></span><br><span class="language-javascript">			<span class="hljs-keyword">function</span> <span class="hljs-title function_">receiveMsg</span>(<span class="hljs-params">evt</span>) &#123;</span><br><span class="language-javascript">				<span class="hljs-keyword">var</span> rmsg = evt.<span class="hljs-property">data</span>;</span><br><span class="language-javascript">				$(<span class="hljs-string">&quot;#dvchat&quot;</span>).<span class="hljs-title function_">append</span>(<span class="hljs-string">&quot;&lt;p class=\&quot;dvleft\&quot;&gt;&quot;</span> + rmsg + <span class="hljs-string">&quot;&lt;/p&gt;&quot;</span>);</span><br><span class="language-javascript">			&#125;</span><br><span class="language-javascript">		</span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span><br>	<span class="hljs-tag">&lt;/<span class="hljs-name">body</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">html</span>&gt;</span><br></code></pre></td></tr></table></figure>
+
+
+
+<h3 id="4-在线测试"><a href="#4-在线测试" class="headerlink" title="4. 在线测试"></a>4. 在线测试</h3><p>在线测试-地址：<a target="_blank" rel="noopener" href="http://www.websocket-test.com/">http://www.websocket-test.com/</a></p>
+<p>接口地址：<code>ws://192.168.31.244:8085/chatserver/jerry</code></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-comment">// ws://本机内网ip:端口号/资源路径</span><br><span class="hljs-meta">@ServerEndpoint(&quot;/chatserver/&#123;nickname&#125;&quot;)</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">ChatServer</span> &#123;<br>	...<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20200830130355.png" srcset="/img/loading.gif" lazyload alt="image-20200830130354226"></p>
+
+              
+            </div>
+            <hr/>
+            <div>
+              <div>
+  <img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20241112163319.png" srcset="/img/loading.gif" lazyload>
+</div>
+<div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/08-%E6%A1%86%E6%9E%B6%E6%8A%80%E6%9C%AF/" class="category-chain-item">08_框架技术</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/08-%E6%A1%86%E6%9E%B6%E6%8A%80%E6%9C%AF/12-WebSocket/" class="category-chain-item">12_WebSocket</a>
+  
+  
+
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/WebSocket/">#WebSocket</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>WebSocket聊天室实战</div>
+      <div>https://janycode.github.io/2019/03/02/08_框架技术/12_WebSocket/WebSocket聊天室实战/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Jerry(姜源)</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2019年3月2日</div>
+        </div>
+      
+      
+      <div class="license-meta-item">
+        <div>许可协议</div>
+        <div>
+          
+            
+            
+              <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+              <span class="hint--top hint--rounded" aria-label="BY - 姜源">
+                <i class="iconfont icon-by"></i>
+              </span>
+              </a>
+            
+          
+        </div>
+      </div>
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2019/03/02/08_%E6%A1%86%E6%9E%B6%E6%8A%80%E6%9C%AF/11_Dubbo/4H%E6%90%9E%E5%AE%9ADubbo/" title="4H搞定Dubbo">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">4H搞定Dubbo</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2018/09/24/08_%E6%A1%86%E6%9E%B6%E6%8A%80%E6%9C%AF/07_RabbitMQ/03-RabbitMQ%20%E5%88%9B%E5%BB%BA%E4%BA%A4%E6%8D%A2%E5%99%A8+%E9%98%9F%E5%88%97+%E8%B7%AF%E7%94%B1/" title="03-RabbitMQ 创建交换器+队列+路由">
+                        <span class="hidden-mobile">03-RabbitMQ 创建交换器+队列+路由</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+  <article id="comments" lazyload>
+    
+  <div id="SOHUCS" sid='https://janycode.github.io/2019/03/02/08_%E6%A1%86%E6%9E%B6%E6%8A%80%E6%9C%AF/12_WebSocket/WebSocket%E8%81%8A%E5%A4%A9%E5%AE%A4%E5%AE%9E%E6%88%98/'></div>
+  <script type="text/javascript">
+    Fluid.utils.loadComments('#SOHUCS', function() {
+      Fluid.utils.createScript("https://changyan.sohu.com/upload/changyan.js", function() {
+        window.changyan.api.config({"appid":"cyw5OHIcO","appkey":"fea3446b3df4b3f129f34da4cbc87e51"})
+      });
+    });
+  </script>
+  <noscript>Please enable JavaScript to view the comments</noscript>
+
+
+  </article>
+
+
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://simple.blog.csdn.net" target="_blank" rel="nofollow noopener"><span>CSDN</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/janycode" target="_blank" rel="nofollow noopener"><span>GitHub</span></a> <i class="iconfont icon-love"></i> <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="busuanzi_container_site_pv" style="display: none">
+        总访问量(PV) 
+        <span id="busuanzi_value_site_pv"></span>
+         次，
+      </span>
+    
+    
+      <span id="busuanzi_container_site_uv" style="display: none">
+        总访客数(UV) 
+        <span id="busuanzi_value_site_uv"></span>
+         人
+      </span>
+    
+    
+  
+</div>
+
+  
+  
+  
+</div>
+
+<!-- live2d 动画 -->
+<script src="https://eqcn.ajz.miesnfu.com/wp-content/plugins/wp-3d-pony/live2dw/lib/L2Dwidget.min.js"></script>
+<script>
+    L2Dwidget.init({
+        "model": {
+            jsonPath: "https://unpkg.com/live2d-widget-model-haruto@1.0.5/assets/haruto.model.json",
+            "scale": 1
+        },
+        "display": {
+            "position": "right",
+            "width": 100,
+            "height": 200,
+            "hOffset": 35,
+            "vOffset": -85
+        },
+        "mobile": {
+            "show": false,
+            "scale": 0.1
+        },
+        "react": {
+            "opacityDefault": 0.75,
+            "opacityOnHover": 0.2
+        }
+    });
+</script>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <!-- Baidu Analytics -->
+    <script defer>
+      if (!Fluid.ctx.dnt) {
+        var _hmt = _hmt || [];
+        (function() {
+          var hm = document.createElement("script");
+          hm.src = "https://hm.baidu.com/hm.js?bfff735c897eb60ea49b735096b20e47";
+          var s = document.getElementsByTagName("script")[0];
+          s.parentNode.insertBefore(hm, s);
+        })();
+      }
+    </script>
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.0/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      headingSelector : CONFIG.toc.headingSelector || 'h1,h2,h3,h4,h5,h6',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      collapseDepth   : CONFIG.toc.collapseDepth || 0,
+      scrollSmooth    : true,
+      headingsOffset  : -boardTop
+    });
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+  });
+</script>
+
+
+  <script>
+  (function() {
+    var enableLang = CONFIG.code_language.enable && CONFIG.code_language.default;
+    var enableCopy = CONFIG.copy_btn;
+    if (!enableLang && !enableCopy) {
+      return;
+    }
+
+    function getBgClass(ele) {
+      return Fluid.utils.getBackgroundLightness(ele) >= 0 ? 'code-widget-light' : 'code-widget-dark';
+    }
+
+    var copyTmpl = '';
+    copyTmpl += '<div class="code-widget">';
+    copyTmpl += 'LANG';
+    copyTmpl += '</div>';
+    jQuery('.markdown-body pre').each(function() {
+      var $pre = jQuery(this);
+      if ($pre.find('code.mermaid').length > 0) {
+        return;
+      }
+      if ($pre.find('span.line').length > 0) {
+        return;
+      }
+
+      var lang = '';
+
+      if (enableLang) {
+        lang = CONFIG.code_language.default;
+        if ($pre[0].children.length > 0 && $pre[0].children[0].classList.length >= 2 && $pre.children().hasClass('hljs')) {
+          lang = $pre[0].children[0].classList[1];
+        } else if ($pre[0].getAttribute('data-language')) {
+          lang = $pre[0].getAttribute('data-language');
+        } else if ($pre.parent().hasClass('sourceCode') && $pre[0].children.length > 0 && $pre[0].children[0].classList.length >= 2) {
+          lang = $pre[0].children[0].classList[1];
+          $pre.parent().addClass('code-wrapper');
+        } else if ($pre.parent().hasClass('markdown-body') && $pre[0].classList.length === 0) {
+          $pre.wrap('<div class="code-wrapper"></div>');
+        }
+        lang = lang.toUpperCase().replace('NONE', CONFIG.code_language.default);
+      }
+      $pre.append(copyTmpl.replace('LANG', lang).replace('code-widget">',
+        getBgClass($pre[0]) + (enableCopy ? ' code-widget copy-btn" data-clipboard-snippet><i class="iconfont icon-copy"></i>' : ' code-widget">')));
+
+      if (enableCopy) {
+        Fluid.utils.createScript('https://lib.baomitu.com/clipboard.js/2.0.10/clipboard.min.js', function() {
+          var clipboard = new window.ClipboardJS('.copy-btn', {
+            target: function(trigger) {
+              var nodes = trigger.parentNode.childNodes;
+              for (var i = 0; i < nodes.length; i++) {
+                if (nodes[i].tagName === 'CODE') {
+                  return nodes[i];
+                }
+              }
+            }
+          });
+          clipboard.on('success', function(e) {
+            e.clearSelection();
+            e.trigger.innerHTML = e.trigger.innerHTML.replace('icon-copy', 'icon-success');
+            setTimeout(function() {
+              e.trigger.innerHTML = e.trigger.innerHTML.replace('icon-success', 'icon-copy');
+            }, 2000);
+          });
+        });
+      }
+    });
+  })();
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>
