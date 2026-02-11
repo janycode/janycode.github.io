@@ -1,0 +1,1004 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=light>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Jerry(姜源)">
+  <meta name="keywords" content="Java,Html,CSS,JavaScript,Python,C,Linux,shell编程经验分享、技术总结、心得体会">
+  
+    <meta name="description" content="前言：Annotation中文释义注解之意, Java注解用于为Java代码提供元数据。 一、如何创建注解？JDK5.0出来后，Java语言中就有了四种类型，即类class、枚举enum、接口interface、注解@interface，它们处于同一级别，Java就是通过注解来表示元数据的。 1234567public @interface MyAnnotation &amp;#123;    &#x2F;&#x2F; 定">
+<meta property="og:type" content="article">
+<meta property="og:title" content="01-Java注解开发详解">
+<meta property="og:url" content="https://janycode.github.io/2017/09/28/02_%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/01_Java/01_JavaSE/09_%E6%B3%A8%E8%A7%A3%E5%BC%80%E5%8F%91/01-Java%E6%B3%A8%E8%A7%A3%E5%BC%80%E5%8F%91%E8%AF%A6%E8%A7%A3/index.html">
+<meta property="og:site_name" content="姜源の云笔记">
+<meta property="og:description" content="前言：Annotation中文释义注解之意, Java注解用于为Java代码提供元数据。 一、如何创建注解？JDK5.0出来后，Java语言中就有了四种类型，即类class、枚举enum、接口interface、注解@interface，它们处于同一级别，Java就是通过注解来表示元数据的。 1234567public @interface MyAnnotation &amp;#123;    &#x2F;&#x2F; 定">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20210218161046.png">
+<meta property="og:image" content="https://oscimg.oschina.net/oscnet/0b01226f07eb84fe2900ea5396e4e5b0352.jpg">
+<meta property="og:image" content="https://oscimg.oschina.net/oscnet/04619c177c777d34a126866fe87da51b194.jpg">
+<meta property="og:image" content="https://oscimg.oschina.net/oscnet/2a24de094d4921716193df5e77ea48ebeaa.jpg">
+<meta property="og:image" content="https://oscimg.oschina.net/oscnet/fc68df7f0c4a34b8b171a88935b629286ff.jpg">
+<meta property="og:image" content="https://oscimg.oschina.net/oscnet/b8f1bd87a92c0274c55da1bf961d0e9b883.jpg">
+<meta property="og:image" content="https://oscimg.oschina.net/oscnet/c5738752559329466758b7025dfcbe42935.jpg">
+<meta property="og:image" content="https://oscimg.oschina.net/oscnet/d684fc84462444ed585655164952f38d782.jpg">
+<meta property="og:image" content="https://oscimg.oschina.net/oscnet/6af56fc8f5ccef20686ffcbb134175f50bb.jpg">
+<meta property="og:image" content="https://oscimg.oschina.net/oscnet/94815e142cd6ce6281214427e3650c8d78f.jpg">
+<meta property="og:image" content="https://oscimg.oschina.net/oscnet/66f973e517fa53b4c7a6b9c1e874044f748.jpg">
+<meta property="og:image" content="https://oscimg.oschina.net/oscnet/3fb20b6a829873096273cc7f99f74d085a4.jpg">
+<meta property="article:published_time" content="2017-09-28T14:09:30.000Z">
+<meta property="article:modified_time" content="2026-02-10T09:28:24.783Z">
+<meta property="article:author" content="Jerry(姜源)">
+<meta property="article:tag" content="注解">
+<meta property="article:tag" content="JavaSE">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20210218161046.png">
+  
+  
+    <meta name="referrer" content="no-referrer-when-downgrade">
+  
+  
+  <title>01-Java注解开发详解 - 姜源の云笔记</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"janycode.github.io","root":"/","version":"1.9.0","typing":{"enable":true,"typeSpeed":50,"cursorChar":"|","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":false},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":"bfff735c897eb60ea49b735096b20e47","google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+
+  
+<meta name="generator" content="Hexo 6.2.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 50vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>姜源の云笔记</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tools/">
+                <i class="iconfont icon-slack-fill"></i>
+                工具
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" target="_blank" rel="noopener" href="https://yuancodes.github.io/">
+                <i class="iconfont icon-notebook"></i>
+                Docsify
+              </a>
+            </li>
+          
+        
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="01-Java注解开发详解"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-author" aria-hidden="true"></i>
+        Jerry(姜源)
+      </span>
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2017-09-28 22:09" pubdate>
+          星期四, 2017/09/28 22:09:30
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          <!-- compatible with older versions-->
+          12k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          <!-- compatible with older versions-->
+          103 分钟
+        
+      </span>
+    
+
+    
+    
+      
+        <span id="busuanzi_container_page_pv" style="display: none">
+          <i class="iconfont icon-eye" aria-hidden="true"></i>
+          <span id="busuanzi_value_page_pv"></span> 次
+        </span>
+        
+      
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">01-Java注解开发详解</h1>
+            
+            <div class="markdown-body">
+              
+              <p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20210218161046.png" srcset="/img/loading.gif" lazyload alt="image-20210218161045094"></p>
+<p>前言：Annotation中文释义注解之意, Java注解用于为Java代码提供元数据。</p>
+<h3 id="一、如何创建注解？"><a href="#一、如何创建注解？" class="headerlink" title="一、如何创建注解？"></a><strong>一、如何创建注解？</strong></h3><p>JDK5.0出来后，Java语言中就有了四种类型，即类class、枚举enum、接口interface、注解<code>@interface</code>，它们处于同一级别，Java就是通过注解来表示元数据的。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-meta">@interface</span> MyAnnotation &#123;<br>    <span class="hljs-comment">// 定义公共的final静态属性</span><br>    <span class="hljs-type">int</span> <span class="hljs-variable">age</span> <span class="hljs-operator">=</span> <span class="hljs-number">25</span>;<br><br>    <span class="hljs-comment">// 定义公共的抽象方法</span><br>    String <span class="hljs-title function_">name</span><span class="hljs-params">()</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>Java注解本质上就是接口，是继承了Annotation接口的接口。</p>
+<h3 id="二、元注解"><a href="#二、元注解" class="headerlink" title="二、元注解"></a><strong>二、元注解</strong></h3><p>元注解是可以注解到注解上的注解，或者说元注解是一种基本注解，它能够应用到其它的注解上面。</p>
+<p>元标签有 @Retention、@Documented、@Target、@Inherited、@Repeatable 5 种。</p>
+<p>1、@Retention</p>
+<p>Retention，中文释义保留期的意思</p>
+<p>当@Retention应用到注解上的时候，它解释说明了这个注解的生命周期。</p>
+<ul>
+<li>RetentionPolicy.SOURCE 注解只在源码阶段保留，在编译器进行编译时它将被丢弃忽视。</li>
+<li>RetentionPolicy.CLASS 注解只被保留到编译进行的时候，它并不会被加载到JVM中。</li>
+<li>RetentionPolicy.RUNTIME 注解可以保留到程序运行的时候，它会被加载到JVM中。</li>
+</ul>
+<p>2、@Documented</p>
+<p>顾名思义，这个元注解肯定和文档有关。它的作用是能够将注解中的元素包含到Javadoc中去。</p>
+<p>3、@Target</p>
+<p>标明注解运用的地方。</p>
+<ul>
+<li>ElementType.ANNOTATION_TYPE 可以给一个注解进行注解</li>
+<li>ElementType.CONSTRUCTOR 可以给构造方法进行注解</li>
+<li>ElementType.FIELD 可以给属性进行注解</li>
+<li>ElementType.LOCAL_VARIABLE 可以给局部变量进行注解</li>
+<li>ElementType.METHOD 可以给方法进行注解</li>
+<li>ElementType.PACKAGE 可以给一个包进行注解</li>
+<li>ElementType.PARAMETER 可以给一个方法内的参数进行注解</li>
+<li>ElementType.TYPE 可以给一个类型进行注解，比如类、接口、枚举</li>
+</ul>
+<p>4、@Inherited</p>
+<p>lnherited是继承的意思。</p>
+<p>如果一个超类被@Inherited注解过的注解进行注解的话，那么如果它的子类没有被任何注解应用的话，那么这个子类就继承了超类的注解。</p>
+<p>代码实例</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">import</span> java.lang.annotation.ElementType;<br><span class="hljs-keyword">import</span> java.lang.annotation.Inherited;<br><span class="hljs-keyword">import</span> java.lang.annotation.Retention;<br><span class="hljs-keyword">import</span> java.lang.annotation.RetentionPolicy;<br><span class="hljs-keyword">import</span> java.lang.annotation.Target;<br><br><span class="hljs-meta">@Retention(RetentionPolicy.RUNTIME)</span><span class="hljs-comment">//注解可以保留到程序运行时，加载到JVM中</span><br><span class="hljs-meta">@Target(ElementType.TYPE)</span><span class="hljs-comment">//给一个类型进行注解，比如类、接口、枚举</span><br><span class="hljs-meta">@Inherited</span> <span class="hljs-comment">//子类继承父类时，注解会起作用</span><br><span class="hljs-keyword">public</span> <span class="hljs-meta">@interface</span> Desc &#123;<br>    <span class="hljs-keyword">enum</span> <span class="hljs-title class_">Color</span> &#123;<br>        White, Grayish, Yellow<br>    &#125;<br><br>    <span class="hljs-comment">// 默认颜色是白色的</span><br>    Color <span class="hljs-title function_">c</span><span class="hljs-params">()</span> <span class="hljs-keyword">default</span> Color.White;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>5、@Repeatable</p>
+<p>Repeatable 自然是可重复的意思。@Repeatable 是 Java 1.8 才加进来的，所以算是一个新的特性。</p>
+<p>什么样的注解会多次应用呢？通常是注解的值可以同时取多个。</p>
+<p>在生活中一个人往往是具有多种身份，如果我把每种身份当成一种注解该如何使用？？？</p>
+<p>先声明一个Persons类用来包含所有的身份</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@Target(ElementType.TYPE)</span>  <br><span class="hljs-meta">@Retention(RetentionPolicy.RUNTIME)</span><br><span class="hljs-keyword">public</span> <span class="hljs-meta">@interface</span> Persons &#123;<br>	Person[] value();<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>这里@Target是声明Persons注解的作用范围，参数ElementType.Type代表可以给一个类型进行注解，比如类，接口，枚举。</p>
+<p>@Retention是注解的有效时间，RetentionPolicy.RUNTIME是指程序运行的时候。</p>
+<p>Person注解：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@Repeatable(Persons.class)</span><br><span class="hljs-keyword">public</span> <span class="hljs-meta">@interface</span> Person&#123;<br>	String <span class="hljs-title function_">role</span><span class="hljs-params">()</span> <span class="hljs-keyword">default</span> <span class="hljs-string">&quot;&quot;</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>@Repeatable括号内的就相当于用来保存该注解内容的容器。</p>
+<p>声明一个Man类，给该类加上一些身份。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@Person(role=&quot;CEO&quot;)</span><br><span class="hljs-meta">@Person(role=&quot;husband&quot;)</span><br><span class="hljs-meta">@Person(role=&quot;father&quot;)</span><br><span class="hljs-meta">@Person(role=&quot;son&quot;)</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">Man</span> &#123;<br>	String name=<span class="hljs-string">&quot;&quot;</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>在主方法中访问该注解：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">main</span><span class="hljs-params">(String[] args)</span> &#123;<br>    Annotation[] annotations = Man.class.getAnnotations();  <br>    System.out.println(annotations.length);<br>    Persons p1=(Persons) annotations[<span class="hljs-number">0</span>];<br>    <span class="hljs-keyword">for</span>(Person t:p1.value())&#123;<br>        System.out.println(t.role());<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>下面的代码结果输出相同，但是可以先判断是否是相应的注解，比较严谨。 </p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">if</span>(Man.class.isAnnotationPresent(Persons.class)) &#123;<br>    Persons p2=Man.class.getAnnotation(Persons.class);<br>    <span class="hljs-keyword">for</span>(Person t:p2.value())&#123;<br>        System.out.println(t.role());<br>    &#125;<br> &#125;<br></code></pre></td></tr></table></figure>
+
+<p>运行结果：</p>
+<p><img src="https://oscimg.oschina.net/oscnet/0b01226f07eb84fe2900ea5396e4e5b0352.jpg" srcset="/img/loading.gif" lazyload alt="img"></p>
+<h3 id="三、注解的属性"><a href="#三、注解的属性" class="headerlink" title="三、注解的属性"></a><strong>三、注解的属性</strong></h3><p>注解的属性也叫做成员变量，注解只有成员变量，没有方法。注解的成员变量在注解的定义中以“无参的方法”形式来声明，其方法名定义了该成员变量的名字，其返回值定义了该成员变量的类型。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@Target(ElementType.TYPE)</span><br><span class="hljs-meta">@Retention(RetentionPolicy.RUNTIME)</span><br><span class="hljs-keyword">public</span> <span class="hljs-meta">@interface</span> TestAnnotation &#123;<br>    <span class="hljs-type">int</span> <span class="hljs-title function_">id</span><span class="hljs-params">()</span>;<br>    String <span class="hljs-title function_">msg</span><span class="hljs-params">()</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>上面代码中定义了TestAnnotation这个注解中拥有id和msg两个属性。在使用的时候，我们应该给他们进行赋值。</p>
+<p>赋值的方式是在注解的括号内以value&#x3D;“”形式，多个属性之前用，隔开。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@TestAnnotation(id=3,msg=&quot;hello annotation&quot;)</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">Test</span> &#123;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>需要注意的是，在注解中定义属性时它的类型必须是 8 种基本数据类型外加 类、接口、注解及它们的数组。</p>
+<p>注解中属性可以有默认值，默认值需要用 default 关键值指定。比如：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@Target(ElementType.TYPE)</span><br><span class="hljs-meta">@Retention(RetentionPolicy.RUNTIME)</span><br><span class="hljs-keyword">public</span> <span class="hljs-meta">@interface</span> TestAnnotation &#123;<br>    <span class="hljs-keyword">public</span> <span class="hljs-type">int</span> <span class="hljs-title function_">id</span><span class="hljs-params">()</span> <span class="hljs-keyword">default</span> -<span class="hljs-number">1</span>;<br>    <span class="hljs-keyword">public</span> String <span class="hljs-title function_">msg</span><span class="hljs-params">()</span> <span class="hljs-keyword">default</span> <span class="hljs-string">&quot;江疏影&quot;</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>TestAnnotation 中 id 属性默认值为 -1，msg 属性默认值为 江疏影。 </p>
+<p>它可以这样应用。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@TestAnnotation()</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">Test</span> &#123;&#125;<br></code></pre></td></tr></table></figure>
+
+<p>因为有默认值，所以无需要再在 @TestAnnotation 后面的括号里面进行赋值了，这一步可以省略。</p>
+<p>另外，还有一种情况。如果一个注解内仅仅只有一个名字为 value 的属性时，应用这个注解时可以直接接属性值填写到括号内。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-meta">@interface</span> Check &#123;<br>    String <span class="hljs-title function_">value</span><span class="hljs-params">()</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>上面代码中，Check 这个注解只有 value 这个属性。所以可以这样应用。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@Check(&quot;hi&quot;)</span><br><span class="hljs-type">int</span> a;<br></code></pre></td></tr></table></figure>
+
+<p>这和下面的效果是一样的</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@Check(value=&quot;hi&quot;)</span><br><span class="hljs-type">int</span> a;<br></code></pre></td></tr></table></figure>
+
+<p>最后，还需要注意的一种情况是一个注解没有任何属性。比如</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-meta">@interface</span> Perform &#123;&#125;<br></code></pre></td></tr></table></figure>
+
+<p>那么在应用这个注解的时候，括号都可以省略。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@Perform</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">testMethod</span><span class="hljs-params">()</span>&#123;&#125;<br></code></pre></td></tr></table></figure>
+
+<h3 id="四、Java预置的注解"><a href="#四、Java预置的注解" class="headerlink" title="四、Java预置的注解"></a><strong>四、Java预置的注解</strong></h3><p>学习了上面相关的知识，我们已经可以自己定义一个注解了。其实 Java 语言本身已经提供了几个现成的注解。</p>
+<p>1、@Override</p>
+<p>这个大家应该很熟悉了，提示子类要复写父类中被 @Override 修饰的方法</p>
+<p>2、@Deprecated</p>
+<p>加上这个注解之后，表示此方法或类不再建议使用，调用时会出现删除线，但不代表不能用，只是说，不推荐使用，因为有更好的方法可以调用。</p>
+<p>那么直接删掉不就完了？</p>
+<p>因为在一个项目中，工程比较大，代码比较多，而在后续的开发过程中，可能之前的某个方法实现的并不是很合理，这个时候要重新写一个方法，而之前的方法还不能随便删，因为别的地方可能在调用它，所以加上这个注解，就OK啦！</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">import</span> java.util.ArrayList;<br><span class="hljs-keyword">import</span> java.util.List;<br><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">Hero</span> &#123;<br>    <span class="hljs-meta">@Deprecated</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">say</span><span class="hljs-params">()</span>&#123;<br>        System.out.println(<span class="hljs-string">&quot;nothing has to say!&quot;</span>);<br>    &#125;<br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">speak</span><span class="hljs-params">()</span>&#123;<br>        System.out.println(<span class="hljs-string">&quot;i have a dream!&quot;</span>);<br>    &#125;<br><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span>  <span class="hljs-title function_">addItems</span><span class="hljs-params">(String item)</span>&#123;<br>        <span class="hljs-type">List</span> <span class="hljs-variable">items</span> <span class="hljs-operator">=</span>  <span class="hljs-keyword">new</span>  <span class="hljs-title class_">ArrayList</span>();<br>        items.add(item);<br>        System.out.println(<span class="hljs-string">&quot;i am &quot;</span>+items);<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p><img src="https://oscimg.oschina.net/oscnet/04619c177c777d34a126866fe87da51b194.jpg" srcset="/img/loading.gif" lazyload alt="img"></p>
+<p><img src="https://oscimg.oschina.net/oscnet/2a24de094d4921716193df5e77ea48ebeaa.jpg" srcset="/img/loading.gif" lazyload alt="img"></p>
+<p>3、@SuppressWarnings</p>
+<p>阻止警告的意思。</p>
+<p>该批注的作用是给编译器一条指令，告诉它对被批注的代码元素内部的某些警告保持静默。</p>
+<p><img src="https://oscimg.oschina.net/oscnet/fc68df7f0c4a34b8b171a88935b629286ff.jpg" srcset="/img/loading.gif" lazyload alt="img"></p>
+<p>注：这个注解有很多参数，这里就不多做赘述了，如有需要，请自行百度！</p>
+<p>4、@SafeVarargs</p>
+<p>参数安全类型注解。</p>
+<p>它的目的是提醒开发者不要用参数做一些不安全的操作，它的存在会阻止编译器产生unchecked这样的警告。</p>
+<p>在声明具有模糊类型（比如：泛型）的可变参数的构造函数或方法时，Java编译器会报unchecked警告。鉴于这种情况，如果程序猿断定声明的构造函数和方法的主体no problem，可使用@SafeVarargs进行标记，这样Java编译器就不会报unchecked警告了！</p>
+<p>先看看@SafeVarargs在Java SE中的声明：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">import</span> java.lang.annotation.*;<br><br><span class="hljs-meta">@Documented</span><br><span class="hljs-meta">@Retention(RetentionPolicy.RUNTIME)</span><br><span class="hljs-meta">@Target(&#123;ElementType.CONSTRUCTOR, ElementType.METHOD&#125;)</span><br><span class="hljs-keyword">public</span> <span class="hljs-meta">@interface</span> SafeVarargs &#123;&#125;<br></code></pre></td></tr></table></figure>
+
+<p>由Java源代码声明我们了解到：@SafeVarargs注解，只能用于标记构造函数和方法，由于保留策略声明为RUNTIME，所以此注解可以在运行时生效。</p>
+<p>@SafeVarargs注解，只能用于static或final的方法。</p>
+<p>代码实例：</p>
+<p>泛型参数的方法，不加注解的情况：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">SafeVarargsAnnotation</span>&lt;S&gt; &#123;<br>    <span class="hljs-keyword">private</span> S[] args;<br>    <span class="hljs-keyword">public</span> <span class="hljs-title function_">SafeVarargsAnnotation</span><span class="hljs-params">(S... args)</span>&#123;<br>        <span class="hljs-built_in">this</span>.args = args;<br>    &#125;<br>    <br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">loopPrintArgs</span><span class="hljs-params">(S... args)</span>&#123;<br>        <span class="hljs-keyword">for</span> (S arg : args)&#123;<br>            System.out.println(arg);<br>        &#125;<br>    &#125;<br>    <br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">final</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">printSelfArgs</span><span class="hljs-params">(S... args)</span>&#123;<br>        <span class="hljs-keyword">for</span> (S arg : <span class="hljs-built_in">this</span>.args) &#123;<br>            System.out.println(arg);<br>        &#125;<br>    &#125;<br>    <br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> &lt;T&gt; <span class="hljs-keyword">void</span> <span class="hljs-title function_">loopPrintInfo</span><span class="hljs-params">(T... infos)</span>&#123;<br>        <span class="hljs-keyword">for</span>(T info:infos)&#123;<br>            System.out.println(info);<br>        &#125;<br>    &#125;<br><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">main</span><span class="hljs-params">(String[] args)</span> &#123;<br>        SafeVarargsAnnotation.loopPrintInfo(<span class="hljs-string">&quot;A&quot;</span>,<span class="hljs-string">&quot;B&quot;</span>,<span class="hljs-string">&quot;C&quot;</span>);<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p><img src="https://oscimg.oschina.net/oscnet/b8f1bd87a92c0274c55da1bf961d0e9b883.jpg" srcset="/img/loading.gif" lazyload alt="img"></p>
+<p>注解的正确使用方式：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">SafeVarargsAnnotation</span>&lt;S&gt; &#123;<br>    <span class="hljs-keyword">private</span> S[] args;<br>    <span class="hljs-comment">//构造函数可以使用@SafeVarargs标记</span><br>    <span class="hljs-meta">@SafeVarargs</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-title function_">SafeVarargsAnnotation</span><span class="hljs-params">(S... args)</span>&#123;<br>        <span class="hljs-built_in">this</span>.args = args;<br>    &#125;<br><br>    <span class="hljs-comment">//此处不能使用@SafeVarargs，因为此方法未声明为static或final方法，</span><br>    <span class="hljs-comment">// 如果要抑制unchecked警告，可以使用@SuppressWarnings注解</span><br>    <span class="hljs-meta">@SuppressWarnings(&quot;unchecked&quot;)</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">loopPrintArgs</span><span class="hljs-params">(S... args)</span>&#123;<br>        <span class="hljs-keyword">for</span> (S arg : args)&#123;<br>            System.out.println(arg);<br>        &#125;<br>    &#125;<br>    <span class="hljs-comment">//final方法可以使用@SafeVarargs标记</span><br>    <span class="hljs-meta">@SafeVarargs</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">final</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">printSelfArgs</span><span class="hljs-params">(S... args)</span>&#123;<br>        <span class="hljs-keyword">for</span> (S arg : <span class="hljs-built_in">this</span>.args) &#123;<br>            System.out.println(arg);<br>        &#125;<br>    &#125;<br>    <span class="hljs-comment">//static方法可以使用@SafeVarargs标记</span><br>    <span class="hljs-meta">@SafeVarargs</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> &lt;T&gt; <span class="hljs-keyword">void</span> <span class="hljs-title function_">loopPrintInfo</span><span class="hljs-params">(T... infos)</span>&#123;<br>        <span class="hljs-keyword">for</span>(T info:infos)&#123;<br>            System.out.println(info);<br>        &#125;<br>    &#125;<br><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">main</span><span class="hljs-params">(String[] args)</span> &#123;<br>        SafeVarargsAnnotation.loopPrintInfo(<span class="hljs-string">&quot;A&quot;</span>,<span class="hljs-string">&quot;B&quot;</span>,<span class="hljs-string">&quot;C&quot;</span>);<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p><img src="https://oscimg.oschina.net/oscnet/c5738752559329466758b7025dfcbe42935.jpg" srcset="/img/loading.gif" lazyload alt="img"></p>
+<p><img src="https://oscimg.oschina.net/oscnet/d684fc84462444ed585655164952f38d782.jpg" srcset="/img/loading.gif" lazyload alt="img"></p>
+<p>5、@FunctionalInterface</p>
+<p>Java 8为函数式接口引入了一个新注解@FunctionalInterface，主要用于编译级错误检查，加上该注解，当你写的接口不符合函数式接口定义的时候，编译器会报错。</p>
+<p>它们主要用在Lambda表达式和方法引用（实际上也可认为是Lambda表达式）上。</p>
+<p>如定义了一个函数式接口如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@FunctionalInterface</span><br><span class="hljs-keyword">interface</span> <span class="hljs-title class_">GreetingService</span> <br>&#123;<br>    <span class="hljs-keyword">void</span> <span class="hljs-title function_">sayMessage</span><span class="hljs-params">(String message)</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>那么就可以使用Lambda表达式来表示该接口的一个实现(注：JAVA 8 之前一般是用匿名类实现的)：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-type">GreetingService</span> <span class="hljs-variable">greetService1</span> <span class="hljs-operator">=</span> message -&gt; System.out.println(<span class="hljs-string">&quot;Hello &quot;</span> + message);<br></code></pre></td></tr></table></figure>
+
+<h3 id="五、注解与反射"><a href="#五、注解与反射" class="headerlink" title="五、注解与反射"></a><strong>五、注解与反射</strong></h3><p>1、注解通过反射获取。首先可以通过 Class 对象的 isAnnotationPresent() 方法判断它是否应用了某个注解。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-type">boolean</span> <span class="hljs-title function_">isAnnotationPresent</span><span class="hljs-params">(Class&lt;? extends Annotation&gt; annotationClass)</span> &#123;&#125;<br></code></pre></td></tr></table></figure>
+
+<p>2、或者是 getAnnotations() 方法。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> Annotation[] getAnnotations() &#123;&#125;<br></code></pre></td></tr></table></figure>
+
+<p>前一种方法返回指定类型的注解，后一种方法返回注解到这个元素上的所有注解。</p>
+<p>3、代码实例：</p>
+<p>① 没加注解的时候：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">package</span> OSChina.ClinetNew1.Annotation;<br><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">Test</span> &#123;<br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">main</span><span class="hljs-params">(String[] args)</span> &#123;<br>        <span class="hljs-type">boolean</span> <span class="hljs-variable">hasAnnotation</span> <span class="hljs-operator">=</span> Test.class.isAnnotationPresent(TestAnnotation.class);<br>        <span class="hljs-keyword">if</span>(hasAnnotation)&#123;<br>            <span class="hljs-type">TestAnnotation</span> <span class="hljs-variable">testAnnotation</span> <span class="hljs-operator">=</span> Test.class.getAnnotation(TestAnnotation.class);<br>            System.out.println(<span class="hljs-string">&quot;id:&quot;</span>+testAnnotation.id());<br>            System.out.println(<span class="hljs-string">&quot;msg:&quot;</span>+testAnnotation.msg());<br>        &#125;<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>屁都没有！</p>
+<p><img src="https://oscimg.oschina.net/oscnet/6af56fc8f5ccef20686ffcbb134175f50bb.jpg" srcset="/img/loading.gif" lazyload alt="img"></p>
+<p>② 加上注解</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@TestAnnotation</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">Test</span> &#123;<br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">main</span><span class="hljs-params">(String[] args)</span> &#123;<br>        <span class="hljs-type">boolean</span> <span class="hljs-variable">hasAnnotation</span> <span class="hljs-operator">=</span> Test.class.isAnnotationPresent(TestAnnotation.class);<br>        <span class="hljs-keyword">if</span>(hasAnnotation)&#123;<br>            <span class="hljs-type">TestAnnotation</span> <span class="hljs-variable">testAnnotation</span> <span class="hljs-operator">=</span> Test.class.getAnnotation(TestAnnotation.class);<br>            System.out.println(<span class="hljs-string">&quot;id:&quot;</span>+testAnnotation.id());<br>            System.out.println(<span class="hljs-string">&quot;msg:&quot;</span>+testAnnotation.msg());<br>        &#125;<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p><img src="https://oscimg.oschina.net/oscnet/94815e142cd6ce6281214427e3650c8d78f.jpg" srcset="/img/loading.gif" lazyload alt="img"></p>
+<p>这个正是 TestAnnotation 中 id 和 msg 的默认值。</p>
+<p>上面的例子只是检阅出了注解在类上的注解，其实属性、方法上的注解也是一样的。同样还是要假手与反射。</p>
+<p>③ 属性和方法上的注解：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-meta">@interface</span> Check &#123;<br>    String <span class="hljs-title function_">value</span><span class="hljs-params">()</span>;<br>&#125;<br><span class="hljs-keyword">package</span> OSChina.ClinetNew1.Annotation;<br><br><span class="hljs-keyword">public</span> <span class="hljs-meta">@interface</span> Perform &#123;<br>&#125;<br><br><span class="hljs-keyword">import</span> java.lang.annotation.Annotation;<br><span class="hljs-keyword">import</span> java.lang.reflect.Field;<br><span class="hljs-keyword">import</span> java.lang.reflect.Method;<br><br><span class="hljs-meta">@TestAnnotation(msg=&quot;hello&quot;)</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">Test</span> &#123;<br>    <span class="hljs-meta">@Check(value=&quot;hi&quot;)</span><br>    <span class="hljs-type">int</span> a;<br>    <span class="hljs-meta">@Perform</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">testMethod</span><span class="hljs-params">()</span>&#123;&#125;<br>    <span class="hljs-meta">@SuppressWarnings(&quot;deprecation&quot;)</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">test1</span><span class="hljs-params">()</span>&#123;<br>        <span class="hljs-type">Hero</span> <span class="hljs-variable">hero</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">Hero</span>();<br>        hero.say();<br>        hero.speak();<br>    &#125;<br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">main</span><span class="hljs-params">(String[] args)</span> &#123;<br>        <span class="hljs-type">boolean</span> <span class="hljs-variable">hasAnnotation</span> <span class="hljs-operator">=</span> Test.class.isAnnotationPresent(TestAnnotation.class);<br>        <span class="hljs-keyword">if</span> ( hasAnnotation ) &#123;<br>            <span class="hljs-type">TestAnnotation</span> <span class="hljs-variable">testAnnotation</span> <span class="hljs-operator">=</span> Test.class.getAnnotation(TestAnnotation.class);<br>            <span class="hljs-comment">//获取类的注解</span><br>            System.out.println(<span class="hljs-string">&quot;id:&quot;</span>+testAnnotation.id());<br>            System.out.println(<span class="hljs-string">&quot;msg:&quot;</span>+testAnnotation.msg());<br>        &#125;<br>        <span class="hljs-keyword">try</span> &#123;<br>            <span class="hljs-type">Field</span> <span class="hljs-variable">a</span> <span class="hljs-operator">=</span> Test.class.getDeclaredField(<span class="hljs-string">&quot;a&quot;</span>);<br>            a.setAccessible(<span class="hljs-literal">true</span>);<br>            <span class="hljs-comment">//获取一个成员变量上的注解</span><br>            <span class="hljs-type">Check</span> <span class="hljs-variable">check</span> <span class="hljs-operator">=</span> a.getAnnotation(Check.class);<br>            <span class="hljs-keyword">if</span> ( check != <span class="hljs-literal">null</span> ) &#123;<br>                System.out.println(<span class="hljs-string">&quot;check value:&quot;</span>+check.value());<br>            &#125;<br>            <span class="hljs-type">Method</span> <span class="hljs-variable">testMethod</span> <span class="hljs-operator">=</span> Test.class.getDeclaredMethod(<span class="hljs-string">&quot;testMethod&quot;</span>);<br>            <span class="hljs-keyword">if</span> ( testMethod != <span class="hljs-literal">null</span> ) &#123;<br>                <span class="hljs-comment">// 获取方法中的注解</span><br>                Annotation[] ans = testMethod.getAnnotations();<br>                <span class="hljs-keyword">for</span>( <span class="hljs-type">int</span> <span class="hljs-variable">i</span> <span class="hljs-operator">=</span> <span class="hljs-number">0</span>;i &lt; ans.length;i++) &#123;<br>                    System.out.println(<span class="hljs-string">&quot;method testMethod annotation:&quot;</span>+ans[i].annotationType().getSimpleName());<br>                &#125;<br>            &#125;<br>        &#125; <span class="hljs-keyword">catch</span> (NoSuchFieldException e) &#123;<br>            <span class="hljs-comment">// TODO Auto-generated catch block</span><br>            e.printStackTrace();<br>            System.out.println(e.getMessage());<br>        &#125; <span class="hljs-keyword">catch</span> (SecurityException e) &#123;<br>            <span class="hljs-comment">// TODO Auto-generated catch block</span><br>            e.printStackTrace();<br>            System.out.println(e.getMessage());<br>        &#125; <span class="hljs-keyword">catch</span> (NoSuchMethodException e) &#123;<br>            <span class="hljs-comment">// TODO Auto-generated catch block</span><br>            e.printStackTrace();<br>            System.out.println(e.getMessage());<br>        &#125;<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p><img src="https://oscimg.oschina.net/oscnet/66f973e517fa53b4c7a6b9c1e874044f748.jpg" srcset="/img/loading.gif" lazyload alt="img"></p>
+<p>需要注意的是，如果一个注解要在运行时被成功提取，那么 @Retention(RetentionPolicy.RUNTIME) 是必须的。</p>
+<h3 id="六、注解的使用场景"><a href="#六、注解的使用场景" class="headerlink" title="六、注解的使用场景"></a><strong>六、注解的使用场景</strong></h3><p>1、注解的官方释义：</p>
+<p>注解是一系列元数据，它提供数据用来解释程序代码，但是注解并非是所解释的代码本身的一部分。注解对于代码的运行效果没有直接影响。</p>
+<p>2、注解有许多用处：</p>
+<p>① 提供信息给编译器：编译器可以利用注解来探测错误或警告信息</p>
+<p>② 编译阶段时的处理：软件工具可以利用注解信息来生成代码、HTML文档或其它响应处理。</p>
+<p>③ 运行时的处理：某些注解可以在程序运行时接受代码的提取。</p>
+<p>值得注意的是，注解不是代码本身的一部分。</p>
+<p>3、注解运用的地方太多了，比如JUnit测试框架，典型的使用方法：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">ExampleUnitTest</span> &#123;<br>    <span class="hljs-meta">@Test</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">addition_isCorrect</span><span class="hljs-params">()</span> <span class="hljs-keyword">throws</span> Exception &#123;<br>        assertEquals(<span class="hljs-number">4</span>, <span class="hljs-number">2</span> + <span class="hljs-number">2</span>);<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>@Test 标记了要进行测试的方法 addition_isCorrect().</p>
+<p>还有例如ssm框架等运用了大量的注解。</p>
+<h3 id="七、注解的应用实例"><a href="#七、注解的应用实例" class="headerlink" title="七、注解的应用实例"></a><strong>七、注解的应用实例</strong></h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">import</span> java.lang.annotation.ElementType;<br><span class="hljs-keyword">import</span> java.lang.annotation.Inherited;<br><span class="hljs-keyword">import</span> java.lang.annotation.Retention;<br><span class="hljs-keyword">import</span> java.lang.annotation.RetentionPolicy;<br><span class="hljs-keyword">import</span> java.lang.annotation.Target;<br><br><span class="hljs-meta">@Retention(RetentionPolicy.RUNTIME)</span><br><span class="hljs-meta">@Target(ElementType.TYPE)</span><br><span class="hljs-meta">@Inherited</span><br><span class="hljs-keyword">public</span> <span class="hljs-meta">@interface</span> Desc &#123;<br>    <span class="hljs-keyword">enum</span> <span class="hljs-title class_">Color</span> &#123;<br>        White, Grayish, Yellow<br>    &#125;<br><br>    <span class="hljs-comment">// 默认颜色是白色的</span><br>    Color <span class="hljs-title function_">c</span><span class="hljs-params">()</span> <span class="hljs-keyword">default</span> Color.White;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>该注解Desc前增加了三个注解：Retention表示的是该注解的保留级别，Target表示的是注解可以标注在什么地方，@Inherited表示该注解会被自动继承。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@Desc(c = Desc.Color.White)</span><br><span class="hljs-keyword">abstract</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">Bird</span> &#123;<br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">abstract</span> Desc.Color <span class="hljs-title function_">getColor</span><span class="hljs-params">()</span>;<br>&#125;<br><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">enum</span> <span class="hljs-title class_">BirdNest</span> &#123;<br>    Sparrow;<br>    <span class="hljs-comment">// 鸟类繁殖</span><br>    <span class="hljs-keyword">public</span> Bird <span class="hljs-title function_">reproduce</span><span class="hljs-params">()</span> &#123;<br>        <span class="hljs-type">Desc</span> <span class="hljs-variable">bd</span> <span class="hljs-operator">=</span> Sparrow.class.getAnnotation(Desc.class);<br>        <span class="hljs-type">return</span> <span class="hljs-variable">bd</span> <span class="hljs-operator">=</span>= <span class="hljs-literal">null</span> ? <span class="hljs-keyword">new</span> <span class="hljs-title class_">Sparrow</span>() : <span class="hljs-keyword">new</span> <span class="hljs-title class_">Sparrow</span>(bd.c());<br>    &#125;<br>&#125;<br><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">Sparrow</span> <span class="hljs-keyword">extends</span> <span class="hljs-title class_">Bird</span> &#123;<br>    <span class="hljs-keyword">private</span> Desc.Color color;<br>    <span class="hljs-comment">// 默认是浅灰色</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-title function_">Sparrow</span><span class="hljs-params">()</span> &#123;<br>        color = Desc.Color.Grayish;<br>    &#125;<br><br>    <span class="hljs-comment">// 构造函数定义鸟的颜色</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-title function_">Sparrow</span><span class="hljs-params">(Desc.Color _color)</span> &#123;<br>        color = _color;<br>    &#125;<br><br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-keyword">public</span> Desc.Color <span class="hljs-title function_">getColor</span><span class="hljs-params">()</span> &#123;<br>        <span class="hljs-keyword">return</span> color;<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>上面程序声明了一个Bird抽象类，并且标注了Desc注解，描述鸟类的颜色是白色，然后编写一个麻雀Sparrow类，它有两个构造函数，一个是默认的构造函数，也就是我们经常看到的麻雀是浅灰色的，另外一个构造函数是自定义麻雀的颜色，之后又定义了一个鸟巢(工厂方法模式)，它是专门负责鸟类繁殖的，它的生产方法reproduce会根据实现类注解信息生成不同颜色的麻雀。我们编写一个客户端调用，代码如下：　　　</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">main</span><span class="hljs-params">(String[] args)</span> &#123;<br>    <span class="hljs-type">Bird</span> <span class="hljs-variable">bird</span> <span class="hljs-operator">=</span> BirdNest.Sparrow.reproduce();<br>    Desc.<span class="hljs-type">Color</span> <span class="hljs-variable">color</span> <span class="hljs-operator">=</span> bird.getColor();<br>    System.out.println(<span class="hljs-string">&quot;Bird&#x27;s color is :&quot;</span> + color);<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>会打印出什么呢？因为采用了工厂方法模式，它主要的问题是bird比那里到底采用了哪个构造函数来生成，如果单独看子类Sparrow，它没有任何注释，那工厂方法中bd变量应该就是null了，应该调用无参构造！</p>
+<p><img src="https://oscimg.oschina.net/oscnet/3fb20b6a829873096273cc7f99f74d085a4.jpg" srcset="/img/loading.gif" lazyload alt="img"></p>
+<p>输出为什么会是白色呢？这是我们添加到父类的颜色，why？这是因为我们在注解上加了@Inherited注解，它表示的意思是我们只要把注解@Desc加到父类Bird上，它的所有子类都会从父类继承@Desc注解。</p>
+<h3 id="八、总结"><a href="#八、总结" class="headerlink" title="八、总结"></a><strong>八、总结</strong></h3><p>1、注解就是标签，注解为了解释代码</p>
+<p>2、注解的基本语法@interface</p>
+<p>3、注解的元注解</p>
+<p>4、注解的属性</p>
+<p>5、注解主要给编译器及工具类型的软件用的</p>
+<p>6、注解的提取要借助于Java的反射技术，反射比较慢，所以注解使用时也需要谨慎计较时间成本</p>
+
+              
+            </div>
+            <hr/>
+            <div>
+              <div>
+  <img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20241112163319.png" srcset="/img/loading.gif" lazyload>
+</div>
+<div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/02-%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/" class="category-chain-item">02_编程语言</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/02-%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/01-Java/" class="category-chain-item">01_Java</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/02-%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/01-Java/01-JavaSE/" class="category-chain-item">01_JavaSE</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/02-%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/01-Java/01-JavaSE/08-%E5%8F%8D%E5%B0%84%E6%9C%BA%E5%88%B6/" class="category-chain-item">08_反射机制</a>
+  
+  
+
+  
+
+  
+
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/%E6%B3%A8%E8%A7%A3/">#注解</a>
+      
+        <a href="/tags/JavaSE/">#JavaSE</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>01-Java注解开发详解</div>
+      <div>https://janycode.github.io/2017/09/28/02_编程语言/01_Java/01_JavaSE/09_注解开发/01-Java注解开发详解/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Jerry(姜源)</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2017年9月28日</div>
+        </div>
+      
+      
+      <div class="license-meta-item">
+        <div>许可协议</div>
+        <div>
+          
+            
+            
+              <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+              <span class="hint--top hint--rounded" aria-label="BY - 姜源">
+                <i class="iconfont icon-by"></i>
+              </span>
+              </a>
+            
+          
+        </div>
+      </div>
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2017/10/18/00_%E5%85%88%E5%88%A9%E5%85%B6%E5%99%A8/04_PowerDesigner/02-UML%E7%B1%BB%E5%9B%BE%E8%AE%BE%E8%AE%A1/" title="02-UML类图设计">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">02-UML类图设计</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2017/09/09/02_%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/02_Python/01-Python%E5%9F%BA%E7%A1%80%E8%AF%AD%E6%B3%95%E5%A4%A7%E5%85%A8/" title="01-Python基础语法大全">
+                        <span class="hidden-mobile">01-Python基础语法大全</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+  <article id="comments" lazyload>
+    
+  <div id="SOHUCS" sid='https://janycode.github.io/2017/09/28/02_%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/01_Java/01_JavaSE/09_%E6%B3%A8%E8%A7%A3%E5%BC%80%E5%8F%91/01-Java%E6%B3%A8%E8%A7%A3%E5%BC%80%E5%8F%91%E8%AF%A6%E8%A7%A3/'></div>
+  <script type="text/javascript">
+    Fluid.utils.loadComments('#SOHUCS', function() {
+      Fluid.utils.createScript("https://changyan.sohu.com/upload/changyan.js", function() {
+        window.changyan.api.config({"appid":"cyw5OHIcO","appkey":"fea3446b3df4b3f129f34da4cbc87e51"})
+      });
+    });
+  </script>
+  <noscript>Please enable JavaScript to view the comments</noscript>
+
+
+  </article>
+
+
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://simple.blog.csdn.net" target="_blank" rel="nofollow noopener"><span>CSDN</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/janycode" target="_blank" rel="nofollow noopener"><span>GitHub</span></a> <i class="iconfont icon-love"></i> <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="busuanzi_container_site_pv" style="display: none">
+        总访问量(PV) 
+        <span id="busuanzi_value_site_pv"></span>
+         次，
+      </span>
+    
+    
+      <span id="busuanzi_container_site_uv" style="display: none">
+        总访客数(UV) 
+        <span id="busuanzi_value_site_uv"></span>
+         人
+      </span>
+    
+    
+  
+</div>
+
+  
+  
+  
+</div>
+
+<!-- live2d 动画 -->
+<script src="https://eqcn.ajz.miesnfu.com/wp-content/plugins/wp-3d-pony/live2dw/lib/L2Dwidget.min.js"></script>
+<script>
+    L2Dwidget.init({
+        "model": {
+            jsonPath: "https://unpkg.com/live2d-widget-model-haruto@1.0.5/assets/haruto.model.json",
+            "scale": 1
+        },
+        "display": {
+            "position": "right",
+            "width": 100,
+            "height": 200,
+            "hOffset": 35,
+            "vOffset": -85
+        },
+        "mobile": {
+            "show": false,
+            "scale": 0.1
+        },
+        "react": {
+            "opacityDefault": 0.75,
+            "opacityOnHover": 0.2
+        }
+    });
+</script>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <!-- Baidu Analytics -->
+    <script defer>
+      if (!Fluid.ctx.dnt) {
+        var _hmt = _hmt || [];
+        (function() {
+          var hm = document.createElement("script");
+          hm.src = "https://hm.baidu.com/hm.js?bfff735c897eb60ea49b735096b20e47";
+          var s = document.getElementsByTagName("script")[0];
+          s.parentNode.insertBefore(hm, s);
+        })();
+      }
+    </script>
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.0/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      headingSelector : CONFIG.toc.headingSelector || 'h1,h2,h3,h4,h5,h6',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      collapseDepth   : CONFIG.toc.collapseDepth || 0,
+      scrollSmooth    : true,
+      headingsOffset  : -boardTop
+    });
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+  });
+</script>
+
+
+  <script>
+  (function() {
+    var enableLang = CONFIG.code_language.enable && CONFIG.code_language.default;
+    var enableCopy = CONFIG.copy_btn;
+    if (!enableLang && !enableCopy) {
+      return;
+    }
+
+    function getBgClass(ele) {
+      return Fluid.utils.getBackgroundLightness(ele) >= 0 ? 'code-widget-light' : 'code-widget-dark';
+    }
+
+    var copyTmpl = '';
+    copyTmpl += '<div class="code-widget">';
+    copyTmpl += 'LANG';
+    copyTmpl += '</div>';
+    jQuery('.markdown-body pre').each(function() {
+      var $pre = jQuery(this);
+      if ($pre.find('code.mermaid').length > 0) {
+        return;
+      }
+      if ($pre.find('span.line').length > 0) {
+        return;
+      }
+
+      var lang = '';
+
+      if (enableLang) {
+        lang = CONFIG.code_language.default;
+        if ($pre[0].children.length > 0 && $pre[0].children[0].classList.length >= 2 && $pre.children().hasClass('hljs')) {
+          lang = $pre[0].children[0].classList[1];
+        } else if ($pre[0].getAttribute('data-language')) {
+          lang = $pre[0].getAttribute('data-language');
+        } else if ($pre.parent().hasClass('sourceCode') && $pre[0].children.length > 0 && $pre[0].children[0].classList.length >= 2) {
+          lang = $pre[0].children[0].classList[1];
+          $pre.parent().addClass('code-wrapper');
+        } else if ($pre.parent().hasClass('markdown-body') && $pre[0].classList.length === 0) {
+          $pre.wrap('<div class="code-wrapper"></div>');
+        }
+        lang = lang.toUpperCase().replace('NONE', CONFIG.code_language.default);
+      }
+      $pre.append(copyTmpl.replace('LANG', lang).replace('code-widget">',
+        getBgClass($pre[0]) + (enableCopy ? ' code-widget copy-btn" data-clipboard-snippet><i class="iconfont icon-copy"></i>' : ' code-widget">')));
+
+      if (enableCopy) {
+        Fluid.utils.createScript('https://lib.baomitu.com/clipboard.js/2.0.10/clipboard.min.js', function() {
+          var clipboard = new window.ClipboardJS('.copy-btn', {
+            target: function(trigger) {
+              var nodes = trigger.parentNode.childNodes;
+              for (var i = 0; i < nodes.length; i++) {
+                if (nodes[i].tagName === 'CODE') {
+                  return nodes[i];
+                }
+              }
+            }
+          });
+          clipboard.on('success', function(e) {
+            e.clearSelection();
+            e.trigger.innerHTML = e.trigger.innerHTML.replace('icon-copy', 'icon-success');
+            setTimeout(function() {
+              e.trigger.innerHTML = e.trigger.innerHTML.replace('icon-success', 'icon-copy');
+            }, 2000);
+          });
+        });
+      }
+    });
+  })();
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>
