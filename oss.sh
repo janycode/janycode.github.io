@@ -3,8 +3,8 @@
 
 readonly host="oss-cn-beijing.aliyuncs.com"
 readonly bucket="jy-imgs"
-readonly Id="LTAI4FyyynygqrNZYZdWfynN"
-readonly Key="BGHgPN0hfEQYBJiqurvXM9tq8BQcYo"
+readonly Id="xxx"
+readonly Key="yyy"
 
 readonly source=$1  #本地文件路径+名称，如 test.xml
 readonly dest=$2    #OSS中的文件名称，如 test.xml
