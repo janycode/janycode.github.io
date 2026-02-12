@@ -14,13 +14,13 @@
   
   <meta name="theme-color" content="#2f4154">
   <meta name="author" content="Jerry(姜源)">
-  <meta name="keywords" content="Java,Html,CSS,JavaScript,Python,C,Linux,shell编程经验分享、技术总结、心得体会">
+  <meta name="keywords" content="Java,Html,CSS,JavaScript,Vue,React,SpringBoot,Linux,shell编程经验分享、技术总结、心得体会">
   
     <meta name="description" content="1. 缓存穿透 概念  查不到，缓存层+持久层都压力增大  当用户去查询数据的时候，发现 redis 内存数据库中没有，于是向持久层数据库查询，发现也没有，于是查询失败，当用户过多时，缓存都没有查到，于是都去查持久层数据库，这会给持久层数据库造成很大的压力，此时相当于出现了缓存穿透。   解决方案 × 2   布隆过滤器(★)：是一种数据结构，将所有可能存在的数据哈希到一个足够大的 bitmap">
 <meta property="og:type" content="article">
 <meta property="og:title" content="07-Redis 穿透,击穿,雪崩,倾斜,淘汰,删除">
 <meta property="og:url" content="https://janycode.github.io/2017/06/20/05_%E6%95%B0%E6%8D%AE%E5%BA%93/04_Redis/07-Redis%20%E7%A9%BF%E9%80%8F,%E5%87%BB%E7%A9%BF,%E9%9B%AA%E5%B4%A9,%E5%80%BE%E6%96%9C,%E6%B7%98%E6%B1%B0,%E5%88%A0%E9%99%A4/index.html">
-<meta property="og:site_name" content="姜源の云笔记">
+<meta property="og:site_name" content="姜源の全栈云笔记">
 <meta property="og:description" content="1. 缓存穿透 概念  查不到，缓存层+持久层都压力增大  当用户去查询数据的时候，发现 redis 内存数据库中没有，于是向持久层数据库查询，发现也没有，于是查询失败，当用户过多时，缓存都没有查到，于是都去查持久层数据库，这会给持久层数据库造成很大的压力，此时相当于出现了缓存穿透。   解决方案 × 2   布隆过滤器(★)：是一种数据结构，将所有可能存在的数据哈希到一个足够大的 bitmap">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20200815230440.png">
@@ -32,7 +32,7 @@
 <meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20200708131804.png">
 <meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20200708131955.png">
 <meta property="article:published_time" content="2017-06-20T15:04:05.000Z">
-<meta property="article:modified_time" content="2026-02-11T08:08:01.700Z">
+<meta property="article:modified_time" content="2026-02-12T13:44:29.560Z">
 <meta property="article:author" content="Jerry(姜源)">
 <meta property="article:tag" content="Redis">
 <meta property="article:tag" content="穿透">
@@ -47,7 +47,7 @@
     <meta name="referrer" content="no-referrer-when-downgrade">
   
   
-  <title>07-Redis 穿透,击穿,雪崩,倾斜,淘汰,删除 - 姜源の云笔记</title>
+  <title>07-Redis 穿透,击穿,雪崩,倾斜,淘汰,删除 - 姜源の全栈云笔记</title>
 
   <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
 
@@ -583,9 +583,9 @@
                   <article class="post-prev col-6">
                     
                     
-                      <a href="/2017/06/20/05_%E6%95%B0%E6%8D%AE%E5%BA%93/04_Redis/04-Redis%20%E4%BA%8B%E5%8A%A1+%E6%8C%81%E4%B9%85%E5%8C%96+%E8%AE%A2%E9%98%85/" title="04-Redis 事务+持久化+订阅">
+                      <a href="/2017/06/20/05_%E6%95%B0%E6%8D%AE%E5%BA%93/04_Redis/05-Redis%20%E4%B8%BB%E4%BB%8E%E5%A4%8D%E5%88%B6+%E5%93%A8%E5%85%B5%E6%A8%A1%E5%BC%8F/" title="05-Redis 主从复制+哨兵模式">
                         <i class="iconfont icon-arrowleft"></i>
-                        <span class="hidden-mobile">04-Redis 事务+持久化+订阅</span>
+                        <span class="hidden-mobile">05-Redis 主从复制+哨兵模式</span>
                         <span class="visible-mobile">上一篇</span>
                       </a>
                     
@@ -593,8 +593,8 @@
                   <article class="post-next col-6">
                     
                     
-                      <a href="/2017/06/20/05_%E6%95%B0%E6%8D%AE%E5%BA%93/04_Redis/05-Redis%20%E4%B8%BB%E4%BB%8E%E5%A4%8D%E5%88%B6+%E5%93%A8%E5%85%B5%E6%A8%A1%E5%BC%8F/" title="05-Redis 主从复制+哨兵模式">
-                        <span class="hidden-mobile">05-Redis 主从复制+哨兵模式</span>
+                      <a href="/2017/06/20/05_%E6%95%B0%E6%8D%AE%E5%BA%93/04_Redis/08-Redis%20SortedSet%20%E6%8E%92%E8%A1%8C%E6%A6%9C/" title="08-Redis SortedSet 排行榜">
+                        <span class="hidden-mobile">08-Redis SortedSet 排行榜</span>
                         <span class="visible-mobile">下一篇</span>
                         <i class="iconfont icon-arrowright"></i>
                       </a>
