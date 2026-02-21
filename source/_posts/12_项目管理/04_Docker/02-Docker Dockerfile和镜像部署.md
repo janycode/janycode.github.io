@@ -1,8 +1,9 @@
 ---
-title: 02-Docker 基操+部署
+title: 02-Docker Dockerfile和镜像部署
 date: 2018-5-23 22:18:03
 tags:
 - Docker
+- Dockerfile
 categories: 
 - 12_项目管理
 - 04_Docker
@@ -12,7 +13,53 @@ categories:
 
 参考资料：http://c.biancheng.net/docker/
 
+## 一、Dockerfile
 
+容器化：将应用打包成容器，再容器中运行应用程序的过程。
+
+`Dockerfile`：是一个文本文件
+
+步骤：
+
+1. `创建`一个 Dockerfile
+2. 使用 Dockerfile `构建`镜像
+3. 使用镜像创建和`运行`容器
+
+最简单的例子：
+
+index.js 
+
+```js
+console.log("这是docker中运行js的输出内容")
+```
+
+Dockerfile - 文件无扩展名（vscode可以安装 `Docker` 扩展）
+
+```dockerfile
+FROM node:16-alpine        #使用node版本，如16版本，也可以使用其他版本，改数字即可
+COPY index.js /index.js    #复制 index.js 文件到镜像的根目录下
+CMD node /index.js         #执行命令
+```
+
+```sh
+#[前置]docker中安装 node 对应版本
+docker pull node:16-alpine
+#镜像构建，基于 . 当前目录
+docker build -t hello-docker .
+#查看镜像，默认版本是 latest
+docker images
+#运行镜像
+docker run hello-docker
+#可以将镜像上传到 dockerhub 上，任何人都可以 docker pull
+```
+
+![image-20260221112026685](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20260221112028118.png)
+
+![image-20260221112045821](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20260221112047058.png)
+
+
+
+## 二、镜像部署
 
 ### 1. 镜像操作命令
 
@@ -226,20 +273,24 @@ docker run -d -p 3306:3306 --name mysql -e MYSQL_ROOT_PASSWORD=123456 aa5364eb3d
 
 
 
-### 4. Tomcat+Mysql+Redis
+### 4. Tomcat+Mysql+Redis+Nginx
 
 ```sh
 # 通过 名称:版本号 拉取
 docker pull tomcat:9.0
 docker pull mysql:5.7.4
 docker pull redis:5.0.4
+docker pull nginx:latest
 
 docker images
 # REPOSITORY          TAG                 IMAGE ID            CREATED             SIZE
 # tomcat              9.0                 6055d4d564e1        8 days ago          647MB
 # redis               5.0.4               a4fe14ff1981        14 months ago       95MB
 # mysql               5.7.4               aa5364eb3d85        5 years ago         252MB
+# nginx               latest              5cdef4ac3335        2 weeks ago         161MB
 
+# 启动 nginx
+docker run --name nginx -p 80:80 -d nginx
 # 启动 tomcat
 docker run -d -p 8080:8080 --name tomcat tomcat:9.0
 # 启动 mysql

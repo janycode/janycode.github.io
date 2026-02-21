@@ -23,7 +23,20 @@ categories:
 * 淘宝双11用户量暴增：需要很多的运维人员增加部署的服务器，运维成本过高的问题
 * 一门技术的环境要先安装搭建啊：安装软件，安装依赖环境，繁琐的操作
 
-
+```
+比如 前端：Vue | 后端：SpringBoot | DB：MySQL
+开发环境：
+    step1 - 安装 nodejs 环境
+    step2 - 安装各种 npm 依赖
+    step3 - 安装 java 运行时环境
+    step4 - 安装各种第三方依赖
+    step5 - 安装 mysql 数据库
+    step6 - 环境变量、启动脚本
+    step7 - 安装配置 redis
+    step8 - 安装配置 nginx
+    ...
+测试/预发布/生产环境等 还需要再来一遍。有了 Docker 只需要打包一份，各个环境都可以正常运行无需关心环境。
+```
 
 Docker 作者：所罗门
 
@@ -36,11 +49,11 @@ Docker 的思想：
 * 集装箱：会将所有需要的内容放到不同的集装箱中，谁需要这些环境就直接拿到集装箱即可
 * 标准化：运输标准化、命令标准化、提供 rest 的 API
 * 隔离性：运行集装箱中的内容时，会在 linux 内核中单独开辟一片空间，不影响其他程序
-* **仓库（Repository）**：仓库可看成一个代码控制中心，用来保存镜像。
-* **镜像（Image）**：Docker 镜像（Image），就相当于是一个 root 文件系统。比如官方镜像 ubuntu:16.04 就包含了完整的一套 Ubuntu16.04 最小系统的 root 文件系统。
-* **容器（Container）**：镜像（Image）和容器（Container）的关系，就像是面向对象程序设计中的类和实例一样，镜像是静态的定义，容器是镜像运行时的实体。容器可以被创建、启动、停止、删除、暂停等。
+* **仓库（Repository）- eg: 分享Java实例/分享菜肴**：仓库可看成一个代码控制中心，用来保存镜像。
+* **镜像（Image）- eg: Java类模版/菜谱**：Docker 镜像（Image），就相当于是一个 root 文件系统。比如官方镜像 ubuntu:16.04 就包含了完整的一套 Ubuntu16.04 最小系统的 root 文件系统。
+* **容器（Container）- eg: Java类实例/菜肴**：镜像（Image）和容器（Container）的关系，就像是面向对象程序设计中的类和实例一样，镜像是静态的定义，容器是镜像运行时的实体。容器可以被创建、启动、停止、删除、暂停等。
 
-
+![image-20260221100330147](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20260221100331414.png)
 
 ### 2. Docker 安装
 
@@ -134,10 +147,26 @@ sudo service docker start
 ```sh
 #创建目录
 mkdir -p /etc/docker
-#配置镜像加速
+#配置镜像加速：镜像可能会失效，网上找新的即可
 tee /etc/docker/daemon.json <<-'EOF'
 {
-  "registry-mirrors": ["https://7cptp8wl.mirror.aliyuncs.com"]
+  "registry-mirrors": [
+    "https://docker.registry.cyou",
+    "https://docker-cf.registry.cyou",
+    "https://dockercf.jsdelivr.fyi",
+    "https://docker.jsdelivr.fyi",
+    "https://dockertest.jsdelivr.fyi",
+    "https://mirror.aliyuncs.com",
+    "https://dockerproxy.com",
+    "https://mirror.baidubce.com",
+    "https://docker.m.daocloud.io",
+    "https://docker.nju.edu.cn",
+    "https://docker.mirrors.sjtug.sjtu.edu.cn",
+    "https://docker.mirrors.ustc.edu.cn",
+    "https://mirror.iscas.ac.cn",
+    "https://docker.rainbond.cc",
+    "https://7cptp8wl.mirror.aliyuncs.com"
+  ]
 }
 EOF
 #重新加载所有systemctl接管服务的配置文件
