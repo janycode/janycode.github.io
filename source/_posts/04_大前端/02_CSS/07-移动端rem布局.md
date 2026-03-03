@@ -12,7 +12,7 @@ categories:
 
 ![image-20251125100829463](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20251128131801.png)
 
-
+## 1. rem等比例缩放
 
 背景：设备缩放比 `window.devicePixelRatio` ，比如拿到设计稿是750px，设备缩放比是2.0，那么设备像素设置就应该为 375px。
 
@@ -20,9 +20,7 @@ categories:
 
 
 
-## 1. rem等比例缩放
-
-* **px**： 50px，固定像素值
+* **px**： 如 50px，固定像素值
 
 * **em**：相对单位，相对于父元素的字体大小的倍数。width: 2em;
 
@@ -90,6 +88,11 @@ html{
     font-size: 100px;
 }
 ```
+
+> 如 以 iphone6 为基准，设备像素宽度是 750px，缩放比是2（因浏览器中仿真模拟为 375px 或 用 `window.devicePixelRatio` 查看结果）
+>
+> * 因为`缩放比`是2，所以计算 font-size 使用 750/2 = 375px
+> * 因为前提使用`750px设计稿`，所以可以量取多少就写多少px -> `转 rem` 即可适配移动端不同设备
 
 ```js
 <script>
