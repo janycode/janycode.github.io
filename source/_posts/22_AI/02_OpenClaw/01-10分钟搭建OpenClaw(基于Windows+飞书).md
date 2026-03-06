@@ -1,7 +1,7 @@
 ---
 title: 01-10分钟搭建OpenClaw(基于Windows+飞书)
 date: 2026-02-10 16:53:16
-index_img: 
+index_img: https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20260306194755883.png
 tags:
 - ai
 - 大模型
@@ -39,6 +39,7 @@ categories:
 
 ```powershell
 nvm install 22
+nvm use 22
 ```
 
 ![image-20260306210333632](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20260306210335131.png)
@@ -263,7 +264,7 @@ openclaw config
 
 ### 7. 配置 飞书接收消息事件回调
 
-输入命令启动 openclaw `网关`：
+输入命令启动 openclaw `网关` （注意：后续启动 openclaw 也是该命令，如果是 linux 系统可以添加开机启动）：
 
 ```powershell
 openclaw gateway
