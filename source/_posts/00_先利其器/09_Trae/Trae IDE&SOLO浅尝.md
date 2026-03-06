@@ -1,6 +1,6 @@
 ---
 title: Trae IDE&SOLO浅尝
-date: 2026-2-10 16:05:43
+date: 2026-01-22 21:05:43
 index_img: https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20260210171959188.png
 tags: 
 - ai
