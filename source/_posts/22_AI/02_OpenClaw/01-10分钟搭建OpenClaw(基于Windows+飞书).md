@@ -1,6 +1,6 @@
 ---
 title: 01-10分钟搭建OpenClaw(基于Windows+飞书)
-date: 2026-02-10 16:53:16
+date: 2026-03-07 23:45:14
 index_img: https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20260306194755883.png
 tags:
 - ai
@@ -23,9 +23,7 @@ categories:
 
 真正能做事的 AI 智能体：清理收件箱、发送邮件、管理日历。支持企业微信、飞书、钉钉与微信生态对话接入。
 
-（截止 2026.03 月）`OpenClaw登顶 Github 星标榜首！`
-
-<img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20260306195503118.png" alt="image-20260306195501932" style="zoom:50%;" />
+`OpenClaw登顶 Github 星标榜首！`（截止 2026.03 月）
 
 ## 安装步骤
 
