@@ -25,7 +25,7 @@ categories:
 
 `OpenClaw登顶 Github 星标榜首！`（截止 2026.03 月）
 
-## 安装步骤
+## Win+飞书 安装步骤
 
 > 基于 Windows11 + 飞书 搭建。
 
@@ -266,6 +266,8 @@ openclaw config
 
 ```powershell
 openclaw gateway
+# or
+openclaw gateway restart
 ```
 
 然后回到飞书开放平台的【`开发者后台`】的自建应用（eg: 小龙不虾）中选择【`事件与回调`】配置`长连接`接收事件。
@@ -348,6 +350,51 @@ openclaw gateway
 2. 手动安装：下载技能包（通常是文件夹），放到 `~/.openclaw/extensions/` 目录下，重启 OpenClaw 或重新加载
 
 3. 使用 skill-creator 创建自定义技能，使用龙虾也可以创建新技能
+
+
+
+## 附：开机自启关闭与卸载
+
+### windows
+
+OpenClaw 默认开机启动的，比如 windows 上利用的是计划任务在后台运行，开机就会启动。
+
+方法1: 使用命令行 cmd
+
+```cmd
+REM 1. 删除计划任务
+schtasks /Delete /F /TN "OpenClaw Gateway"
+ 
+REM 2. 删除配置文件夹（不卸载的话，不需要执行此命令）
+rmdir /s /q "%USERPROFILE%\.openclaw"
+```
+
+方法2: 使用 powershell
+
+```powershell
+# 1. 注销计划任务
+Unregister-ScheduledTask -TaskName "OpenClaw Gateway" -Confirm:$false
+
+# 2. 强制删除配置目录（不卸载的话，不需要执行此命令）
+Remove-Item -Path "$env:USERPROFILE\.openclaw" -Recurse -Force
+```
+
+如果全局安装了 CLI 也可以将其移除：
+
+```powershell
+# 移除全局命令
+pnpm remove -g @openclaw/cli
+# 或者
+npm uninstall -g @openclaw/cli
+```
+
+
+
+
+
+
+
+
 
 
 
