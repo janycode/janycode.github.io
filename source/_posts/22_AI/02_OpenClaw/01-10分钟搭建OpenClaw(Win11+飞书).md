@@ -93,6 +93,8 @@ iwr -useb https://openclaw.ai/install.ps1 | iex
 > 用量限制: 并发数3，RPM 20（每分钟限制调用20次 api）否则就会报警：
 >
 > ⚠️ API rate limit reached. Please try again later.
+>
+> 参考：[Kimi开放平台充值与限速](https://platform.moonshot.cn/docs/pricing/limits#%E9%99%90%E9%80%9F%E6%A6%82%E5%BF%B5%E8%A7%A3%E9%87%8A)
 
 ![image-20260306213424946](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20260306213426182.png)
 
