@@ -1,5 +1,5 @@
 ---
-title: 01-10分钟搭建OpenClaw(基于Windows+飞书)
+title: 01-10分钟搭建OpenClaw(Win11+飞书)
 date: 2026-03-07 23:45:14
 index_img: https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20260306194755883.png
 tags:
@@ -35,7 +35,7 @@ categories:
 
 作为一个合格的程序员，安装的步骤略过，傻瓜式的简单。比如我用 nvm 去管理 node 版本，当前使用版本 v22（`OpenClaw 最低要求 node v22+`）
 
-```powershell
+```sh
 nvm install 22
 nvm use 22
 ```
@@ -56,7 +56,7 @@ nvm use 22
 
 为了防止 powershell 策略太严格，安装会报错，所以需要先执行如下命令：
 
-```powershell
+```sh
 Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
 ```
 
@@ -66,13 +66,13 @@ Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
 
 根据官方提示 Windows 系统对应的安装命令：
 
-```powershell
+```sh
 iwr -useb https://openclaw.ai/install.ps1 | iex
 ```
 
 ### 4. 配置 OpenClaw
 
-![image-20260306210958979](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20260306211000325.png)
+![image-20260308091014930](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20260308091016432.png)
 
 步骤1：提醒安装使用它可能存在风险，选择 `Yes`
 
@@ -87,6 +87,12 @@ iwr -useb https://openclaw.ai/install.ps1 | iex
 > 同时到 [Kimi开发平台](https://platform.moonshot.cn/) 中创建一个大模型密钥：
 >
 > ![image-20260306213150600](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20260306213151777.png)
+>
+> 注意事项：
+>
+> 用量限制: 并发数3，RPM 20（每分钟限制调用20次 api）否则就会报警：
+>
+> ⚠️ API rate limit reached. Please try again later.
 
 ![image-20260306213424946](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20260306213426182.png)
 
@@ -117,6 +123,8 @@ iwr -useb https://openclaw.ai/install.ps1 | iex
 ![image-20260306215340368](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20260306215341894.png)
 
 步骤10：此时会自动打开一个命令窗口 openclaw-gateway 启动了网关，先不要关闭该窗口，选择你想以什么方式打开小龙虾，选择 `Web UI` 更直观和操作友好。
+
+> **特别注意**：如果笔记本没有`插电`，则不会弹出来 gateway 启动的命令窗口，害得我一顿排查原因。电插上，好了！
 
 ![image-20260306215604732](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20260306215606385.png)
 
@@ -193,7 +201,7 @@ eg：
 
 回到 powershell，输入命令 `openclaw config` 再次进行配置
 
-```powershell
+```sh
 openclaw config
 ```
 
@@ -264,7 +272,7 @@ openclaw config
 
 输入命令启动 openclaw `网关` （注意：后续启动 openclaw 也是该命令，如果是 linux 系统可以添加开机启动）：
 
-```powershell
+```sh
 openclaw gateway
 # or
 openclaw gateway restart
@@ -353,42 +361,44 @@ openclaw gateway restart
 
 
 
+## 常用命令
+
+命令列表：https://docs.openclaw.ai/cli/index#command-tree
+
+```sh
+openclaw gateway          # 启动网关，可以访问 http://127.0.0.1:18789
+openclaw gateway restart  # 网关重启
+openclaw dashboard        # 打开浏览器界面
+openclaw doctor           # 检查配置问题
+openclaw health           # 检查正在运行状态
+openclaw status           # 网关状态
+openclaw update           # 更新openclaw
+```
+
+
+
 ## 附：开机自启关闭与卸载
 
 ### windows
 
 OpenClaw 默认开机启动的，比如 windows 上利用的是计划任务在后台运行，开机就会启动。
 
-方法1: 使用命令行 cmd
+按下 Win + R，输入 `taskschd.msc` 打开 “任务计划程序”；
 
-```cmd
-REM 1. 删除计划任务
-schtasks /Delete /F /TN "OpenClaw Gateway"
- 
-REM 2. 删除配置文件夹（不卸载的话，不需要执行此命令）
-rmdir /s /q "%USERPROFILE%\.openclaw"
-```
+找到 **OpenClaw Gateway** 任务（默认是只在windows用户登录时运行），右键 - 禁用，需要时手动启动即可。
 
-方法2: 使用 powershell
-
-```powershell
+```sh
 # 1. 注销计划任务
 Unregister-ScheduledTask -TaskName "OpenClaw Gateway" -Confirm:$false
-
-# 2. 强制删除配置目录（不卸载的话，不需要执行此命令）
+# 2. 强制删除配置目录（注意：不卸载的话，不需要执行此命令）
 Remove-Item -Path "$env:USERPROFILE\.openclaw" -Recurse -Force
+# 3. 命令卸载(每个模块都卸载一遍)
+openclaw uninstall
+# 4. 如果全局安装了 CLI 也可以将其移除
+npm rm -g openclaw
 ```
 
-如果全局安装了 CLI 也可以将其移除：
-
-```powershell
-# 移除全局命令
-pnpm remove -g @openclaw/cli
-# 或者
-npm uninstall -g @openclaw/cli
-```
-
-
+> 然后就可以重装 openclaw 了。
 
 
 
