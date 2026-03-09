@@ -19,6 +19,7 @@ categories:
 
 * Trae 官网：https://www.trae.cn/
 * Trae 官方教程：https://docs.trae.cn/ide/what-is-trae?_lang=zh
+* Trae Skills 实用技巧：https://forum.trae.cn/t/topic/157
 
 ## 主流 AI Agent Skill 网站
 

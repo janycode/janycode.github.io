@@ -19,6 +19,8 @@ categories:
 
 * Trae 官网：https://www.trae.cn/
 * Trae 官方教程：https://docs.trae.cn/ide/what-is-trae?_lang=zh
+* Trae 官方中文社区：https://forum.trae.cn/
+* Trae SOLO 功能详解：https://forum.trae.cn/t/topic/225
 * AI Short（多种 AI 提示词搜索、管理、共享）：https://www.aishort.top/
 
 ## 1. Trae 安装
