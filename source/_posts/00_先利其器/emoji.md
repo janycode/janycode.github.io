@@ -1,3 +1,13 @@
+---
+title: emoji.md
+date: 2024-01-22 23:05:43
+index_img: https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20260210171959188.png
+tags: 
+- emoji
+categories:
+- 00_先利其器
+---
+
 # emoji-cheat-sheet
 
 GitHub Emoji 列表：https://github.com/ikatyang/emoji-cheat-sheet/blob/master/README.md（适配性最好）

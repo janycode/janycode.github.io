@@ -69,21 +69,21 @@ public @interface Data {
 }
 ```
 
-#### 2.1 注解组合×3
+#### 2.1 注解组合×4
 `@Data`
+
 `@NoArgsConstructor`
+
 `@AllArgsConstructor`
+
+`@EqualsAndHashCode(callSuper = true)`
 
 demo - 生成 get / set / equals / canEqual / hashCode / toString / 无参构造 / 有参构造
 ```java
-//@Getter // 生成类中所有属性的 get 方法
-//@Setter // 生成类中所有属性的 set 方法
-//@ToString // 生成类中所有属性的1个 toString 方法
-//@ToString(exclude = {"email", "password"}) // 生成排除指定属性的 toString 方法(排除一部分)
-//@ToString(of = {"id", "username"}) // 生成包含指定属性的 toString 方法(包含一部分)
 @Data // 生成 get/set/equals/canEqual/hashCode/toString
 @NoArgsConstructor // 生成类的无参构造
 @AllArgsConstructor // 生成类的所有参数的有参构造
+@EqualsAndHashCode(callSuper = true) //有继承父类时，关联父类的equals/hashCode方法生成自己的对应方法
 public class User {
     private Integer id;
     private String username;
@@ -93,6 +93,16 @@ public class User {
 ```
 
 ![image-20230316133958878](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230316133959.png)
+
+自然包含如下注解效果：
+
+```
+//@Getter // 生成类中所有属性的 get 方法
+//@Setter // 生成类中所有属性的 set 方法
+//@ToString // 生成类中所有属性的1个 toString 方法
+//@ToString(exclude = {"email", "password"}) // 生成排除指定属性的 toString 方法(排除一部分)
+//@ToString(of = {"id", "username"}) // 生成包含指定属性的 toString 方法(包含一部分)
+```
 
 
 
