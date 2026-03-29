@@ -12,7 +12,44 @@ categories:
 
 
 
-### 1. IDEA2023.1
+## 三件套
+
+JetBrains 产品专属激活码：http://jets.idejihuo.com/v3/
+
+### IDEA 2025.1
+
+链接：https://pan.xunlei.com/s/VOordkT6-D3CLvgGwgT8jchlA1?pwd=zurz#
+
+激活步骤：https://juejin.cn/post/7530105407845220402
+
+
+
+### DataGrip 2025.1
+
+链接: https://pan.baidu.com/s/12qQugBNHF-aQD6ph-MqDaw?pwd=7en8 提取码: 7en8
+
+激活步骤：https://mopsite.github.io/posts/activation-for-datagrip-2005-1/
+
+激活码在：https://blog.idejihuo.com/jetbrains/the-latest-activation-tutorial-for-datagrip-2025-1-permanent-activation-code.html
+
+
+
+### WebStorm 2025.1
+
+链接: https://pan.baidu.com/s/19-dnDXvY9bHmtdssastPRQ?pwd=4c3d 提取码: 4c3d
+
+激活步骤：https://zhuanlan.zhihu.com/p/1928176692561712608
+
+> 激活步骤核心2步：
+>
+> 1. 运行激活 .vbs 脚本，看到 Done 即可
+> 2. 打开软件输入激活码，激活完成！
+
+
+
+## Old
+
+### 1. IDEA 2023.1
 
 #### 1.1 IDEA获取
 
@@ -125,7 +162,7 @@ IDEA2023.1仍然支持服务器激活和激活码激活两种方式，任选其�
 
 
 
-### 2. IDEA2020.1
+### 2. IDEA 2020.1
 
 #### 2.1 IDEA获取
 官网获取：
