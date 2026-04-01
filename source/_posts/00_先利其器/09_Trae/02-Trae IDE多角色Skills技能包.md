@@ -1,6 +1,6 @@
 ---
 title: 02-Trae IDE多角色Skills技能包
-date: 2026-01-22 23:05:43
+date: 2025-12-01 22:39:57
 index_img: https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20260210171959188.png
 tags: 
 - ai

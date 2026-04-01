@@ -1,6 +1,6 @@
 ---
 title: 01-Trae IDE&SOLO浅尝
-date: 2026-01-22 21:05:43
+date: 2025-11-12 20:57:30
 index_img: https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20260210171959188.png
 tags: 
 - ai
@@ -29,6 +29,14 @@ categories:
 ### 1.1 下载
 
 官网下载安装即可。
+
+--> 同时需要了解因为 TRAE 的影响力，重新定义了编程的几个阶段：
+
+![851a3d477d7263d708857e5f5b220f7b](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20260401210018880.png)
+
+TRAE 自带模型的能力对比：
+
+![fa2f33fdea7b1bfc9c8b962840e4b1c0](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20260401210108450.png)
 
 
 
