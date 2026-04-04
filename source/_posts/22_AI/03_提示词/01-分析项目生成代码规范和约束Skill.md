@@ -1,9 +1,11 @@
 ---
 title: 01-分析项目生成代码规范和约束Skill
 date: 2026-01-22 23:05:43
+index_img: https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20260210171726358.png
 tags:
 - ai
 - 大模型
+- Skill
 categories: 
 - 13_第三方
 - 03_提示词
