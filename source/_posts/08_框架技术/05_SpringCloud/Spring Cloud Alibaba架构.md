@@ -107,3 +107,109 @@ SOA（Service-Oriented Architecture）-面向服务的体系架构
 
 
 
+## SpringCloud Alibaba微服务父子工程搭建
+
+### 1、搭建父工程
+
+![image-20260406191928466](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20260406191929749.png)
+
+我们给项目起个名字就叫做’mdx-shop’ 迷迭香的商店
+
+![image-20260406191945070](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20260406191946072.png)
+
+接下来配置下maven
+
+![image-20260406192001056](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20260406192002275.png)
+
+删除掉src目录（父目录不需要）
+
+![image-20260406192036613](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20260406192038042.png)
+
+### 2、引入依赖
+
+先看下springcloud和springcloud alibaba 和各个组件之间的版本对应关系
+
+![image-20260406192106545](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20260406192107762.png)
+
+![image-20260406192132585](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20260406192134552.png)
+
+![image-20260406192149225](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20260406192150161.png)
+
+引入springboot springcloud spingcloud alibaba 依赖，如下
+
+版本选取：
+
+springboot – 2.6.4
+
+springcloud – 2021.0.1
+
+springcloud alibaba – 2021.0.1.0
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>2.6.4</version>
+    </parent>
+    <groupId>com.mdx</groupId>
+    <artifactId>mdx-shop</artifactId>
+    <version>1.0.0</version>
+    <properties>
+        <maven.compiler.source>8</maven.compiler.source>
+        <maven.compiler.target>8</maven.compiler.target>
+        <spring-cloud.version>2021.0.1</spring-cloud.version>
+        <spring-cloud-alibaba.version>2021.0.1.0</spring-cloud-alibaba.version>
+    </properties>
+    <dependencies>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-dependencies</artifactId>
+            <version>${spring-cloud.version}</version>
+            <type>pom</type>
+            <scope>import</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.alibaba.cloud</groupId>
+            <artifactId>spring-cloud-alibaba-dependencies</artifactId>
+            <version>${spring-cloud-alibaba.version}</version>
+            <type>pom</type>
+            <scope>import</scope>
+        </dependency>
+    </dependencies>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+            </plugin>
+        </plugins>
+    </build>
+</project>
+```
+
+### 3、创建子模块
+
+我们模拟创建一个用户模块
+
+![image-20260406192207108](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20260406192208281.png)
+
+![image-20260406192238558](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20260406192239982.png)
+
