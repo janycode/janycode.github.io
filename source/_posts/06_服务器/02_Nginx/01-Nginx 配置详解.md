@@ -17,8 +17,9 @@ categories:
 
 * 官网：http://www.nginx.org/
 * 源码：https://trac.nginx.org/nginx/browser
-* 在线配置：https://nginxconfig.io/
-* 在线格式化：https://nginxbeautifier.github.io/  （设置使用4个空格：Use Space 4 和 Don't join curly bracket）
+* Nginx 中文手册：https://nginx.mosong.cc/guide/
+* Nginx 在线配置：https://nginxconfig.io/
+* Nginx 在线格式化：https://nginxbeautifier.github.io/  （设置使用4个空格：Use Space 4 和 Don't join curly bracket）
 
 > Nginx (engine x) 是一个轻量级高性能的HTTP和反向代理服务器，同时也是一个通用 代理服务器 （TCP/UDP/IMAP/POP3/SMTP），最初由俄罗斯人Igor Sysoev编写。
 
