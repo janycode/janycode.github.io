@@ -1,5 +1,5 @@
 ---
-title: 04-Harness Engineering驾驭工程
+title: 14-Harness Engineering驾驭工程
 date: 2026-02-28 21:32:13
 index_img: https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20260412093600700.png
 tags:
@@ -153,7 +153,7 @@ categories:
 
 Agent 本质就是一个 `for` 循环。
 
-但循环一长，上下文必然膨胀，即便上下文工程做得再好，也可能**`腐化`**：
+但循环一长，上下文必然膨胀，即便上下文工程做得再好，也可能`腐化`：
 
 - 看过文件越来越多
 - 信息越来越杂
@@ -282,7 +282,7 @@ Agent 本质就是一个 `for` 循环。
 
 ## 七、对程序员的影响
 
-有了 Harness Engineering，程序员的工作重心会逐渐从：**`写代码 → 写规则、写 Skill`**
+有了 Harness Engineering，程序员的工作重心会逐渐从：`写代码 → 写规则、写 Skill`
 
 一句很形象的话：
 

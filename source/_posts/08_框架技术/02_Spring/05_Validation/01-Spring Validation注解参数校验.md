@@ -316,3 +316,71 @@ public class ProjectServiceImpl implements IProjectService {
 ### 6. @Valid与@Validated区别
 
 ![image-20230505171001717](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20230505171003.png)
+
+
+
+### 7. groups 分组校验
+
+核心：给校验注解标记分组 → 控制新增 / 修改时，哪些字段需要校验、哪些不需要。
+
+#### 1. 先定义分组接口（空接口即可）
+
+```java
+// 新增分组
+public interface AddGroup {}
+// 修改分组
+public interface UpdateGroup {}
+```
+
+#### 2. 给字段指定校验分组
+
+```java
+@Data
+public class UserDTO {
+    // 只在【修改】时校验
+    @NotNull(message = "ID不能为空", groups = UpdateGroup.class)
+    private Long id;
+
+    // 新增、修改都校验
+    @NotBlank(message = "姓名不能为空", groups = {AddGroup.class, UpdateGroup.class})
+    private String name;
+
+    // 只在【新增】时校验
+    @NotBlank(message = "密码不能为空", groups = AddGroup.class)
+    private String password;
+}
+```
+
+#### 3. 接口上开启分组校验
+
+```java
+@RestController
+@RequestMapping("/user")
+public class UserController {
+
+    // 新增：使用 AddGroup 分组
+    @PostMapping("/add")
+    public Result add(@Validated(AddGroup.class) @RequestBody UserDTO dto) {
+        return Result.ok();
+    }
+
+    // 修改：使用 UpdateGroup 分组
+    @PostMapping("/update")
+    public Result update(@Validated(UpdateGroup.class) @RequestBody UserDTO dto) {
+        return Result.ok();
+    }
+}
+```
+
+效果（最关键）：
+
+- **新增**：校验 `name + password`，**不校验 id**
+- **修改**：校验 `id + name`，**不校验 password**
+
+
+
+#### 极简总结
+
+1. 建**空接口**当分组
+2. 校验注解加 `groups = 分组.class`
+3. 接口用 `@Validated(分组.class)`
