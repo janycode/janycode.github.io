@@ -1,6 +1,6 @@
 ---
 title: 03-Java+Vue技术栈前端后端项目提示词工程范例
-date: 2026-01-22 23:05:43
+date: 2026-01-22 23:35:05
 index_img: https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20260210171726358.png
 tags:
 - ai
