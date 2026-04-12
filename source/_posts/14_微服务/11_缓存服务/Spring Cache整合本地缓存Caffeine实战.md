@@ -1,5 +1,5 @@
 ---
-title: 本地缓存Caffeine实战
+title: Spring Cache整合本地缓存Caffeine实战
 date: 2020-03-02 17:59:44
 tags:
 - 微服务
@@ -306,7 +306,7 @@ System.out.println(cache.stats());
 - 设置 `maxSize`、`refreshAfterWrite`，不设置 `expireAfterWrite/expireAfterAccess`，设置`expireAfterWrite`当缓存过期时会同步加锁获取缓存，所以设置`expireAfterWrite`时性能较好，但是某些时候会取旧数据,适合允许取到旧数据的场景
 - 设置 `maxSize`、`expireAfterWrite/expireAfterAccess`，不设置 refreshAfterWrite 数据一致性好，不会获取到旧数据，但是性能没那么好（对比起来），适合获取数据时不耗时的场景
 
-## 三、SpringBoot整合Caffeine
+## 三、SpringBoot整合Caffeine(★)
 
 ### 1、@Cacheable相关注解
 
@@ -323,10 +323,10 @@ System.out.println(cache.stats());
 
 #### 1.2 常用注解
 
-- **@Cacheable**：表示该方法支持缓存。当调用被注解的方法时，如果对应的键已经存在缓存，则不再执行方法体，而从缓存中直接返回。当方法返回null时，将不进行缓存操作。
-- **@CachePut**：表示执行该方法后，其值将作为最新结果更新到缓存中，每次都会执行该方法。
-- **@CacheEvict**：表示执行该方法后，将触发缓存清除操作。
-- **@Caching**：用于组合前三个注解，例如：
+- `@Cacheable`：表示该方法支持缓存。当调用被注解的方法时，如果对应的键已经存在缓存，则不再执行方法体，而从缓存中直接返回。当方法返回null时，将不进行缓存操作。
+- `@CachePut`：表示执行该方法后，其值将作为最新结果更新到缓存中，每次都会执行该方法。
+- `@CacheEvict`：表示执行该方法后，将触发缓存清除操作。
+- `@Caching`：用于组合前三个注解，例如：
 
 ```java
 @Caching(cacheable = @Cacheable('CacheConstants.GET_USER'),
@@ -336,9 +336,104 @@ public User find(Integer id) {
 }
 ```
 
+##### 1.2.1 通用规范
+
+1. **查询**：`@Cacheable`
+2. **更新**：`@CachePut`（同步更新缓存）
+3. **删除 / 批量清理**：`@CacheEvict`
+4. **多操作组合**：`@Caching`
+5. 缓存 `value` 统一按**业务模块**命名：`userCache、orderCache、productCache`
+6. **key 统一用 SpEL**：`key = "#id"`、`key = "#entity.id"`
+
+------
+
+##### 1.2.2 一套标准示例（User 模块）
+
+###### 1. 根据 ID 查询（最常用）
+
+```java
+@Cacheable(value = "userCache", key = "#userId")
+public User getUserById(Long userId) {
+    return userMapper.selectById(userId);
+}
+```
+
+###### 2. 更新数据（同步更新缓存，不查缓存）
+
+```java
+@CachePut(value = "userCache", key = "#user.id")
+public User updateUser(User user) {
+    userMapper.updateById(user);
+    return user;
+}
+```
+
+###### 3. 删除数据（删除对应缓存）
+
+```java
+@CacheEvict(value = "userCache", key = "#userId")
+public void deleteUser(Long userId) {
+    userMapper.deleteById(userId);
+}
+```
+
+###### 4. 批量清理整个模块缓存（刷新用）
+
+```java
+@CacheEvict(value = "userCache", allEntries = true)
+public void refreshAllUserCache() {
+}
+```
+
+###### 5. 组合操作（同时清理多个缓存）
+
+```java
+@Caching(evict = {
+    @CacheEvict(value = "userCache", key = "#userId"),
+    @CacheEvict(value = "userOrderCache", key = "#userId")
+})
+public void deleteUserAndRelatedData(Long userId) {
+    // 删除用户 + 关联数据
+}
+```
+
+------
+
+##### 1.2.3 最实用高级配置（生产推荐）
+
+###### 条件缓存：满足条件才缓存
+
+```java
+@Cacheable(value = "userCache", key = "#id", condition = "#id > 0")
+public User getUser(Long id) { ... }
+```
+
+###### 方法执行成功才清除（默认就是）
+
+```java
+@CacheEvict(value = "userCache", key = "#id", beforeInvocation = false)
+```
+
+###### 空值也缓存（避免缓存穿透）
+
+```java
+@Cacheable(value = "userCache", key = "#id", cacheNullValues = true)
+```
+
+------
+
+##### 1.2.4 最强记忆口诀
+
+- 查数据：`@Cacheable`  不执行方法，直接走缓存
+- 改数据：`@CachePut`   必执行方法，结果覆盖缓存
+- 删数据：`@CacheEvict` 删库同步删缓存
+- 多操作：`@Caching`    组合多个缓存注解
+
+
+
 #### 1.3 常用注解属性
 
-- **cacheNames/value**：缓存组件的名字，即cacheManager中缓存的名称。
+- **value**：缓存组件的名字，即cacheManager中缓存的名称。
 - **key**：缓存数据时使用的key。默认使用方法参数值，也可以使用SpEL表达式进行编写。
 - **keyGenerator**：和key二选一使用。
 - **cacheManager**：指定使用的缓存管理器。
