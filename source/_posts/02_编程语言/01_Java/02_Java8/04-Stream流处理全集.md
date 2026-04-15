@@ -34,7 +34,7 @@ for (String name : names) {
 List<String> result2 = names.stream()
     .filter(name -> name.startsWith("A"))
     .map(String::toUpperCase)
-    .collect(Collectors.toList());
+    .toList();
 ```
 
 #### 1.2 Stream 的主要特性
@@ -201,20 +201,20 @@ List<Integer> numbers = Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
 // 过滤偶数
 List<Integer> evenNumbers = numbers.stream()
     .filter(n -> n % 2 == 0)
-    .collect(Collectors.toList()); // [2, 4, 6, 8, 10]
+    .toList(); // [2, 4, 6, 8, 10]
 
 // 多重条件过滤
 List<Integer> filtered = numbers.stream()
     .filter(n -> n > 3)
     .filter(n -> n < 8)
     .filter(n -> n % 2 == 1)
-    .collect(Collectors.toList()); // [5, 7]
+    .toList(); // [5, 7]
 
 // 过滤null值
 List<String> listWithNulls = Arrays.asList("a", null, "b", null, "c");
 List<String> withoutNulls = listWithNulls.stream()
     .filter(Objects::nonNull)
-    .collect(Collectors.toList()); // ["a", "b", "c"]
+    .toList(); // ["a", "b", "c"]
 ```
 
 #### 3.2 map() - 映射转换
@@ -225,12 +225,12 @@ List<String> words = Arrays.asList("hello", "world", "java", "stream");
 // 转换为大写
 List<String> upperCase = words.stream()
     .map(String::toUpperCase)
-    .collect(Collectors.toList()); // ["HELLO", "WORLD", "JAVA", "STREAM"]
+    .toList(); // ["HELLO", "WORLD", "JAVA", "STREAM"]
 
 // 获取字符串长度
 List<Integer> lengths = words.stream()
     .map(String::length)
-    .collect(Collectors.toList()); // [5, 5, 4, 6]
+    .toList(); // [5, 5, 4, 6]
 
 // 复杂对象映射
 List<Person> people = Arrays.asList(
@@ -239,7 +239,7 @@ List<Person> people = Arrays.asList(
 );
 List<String> names = people.stream()
     .map(Person::getName)
-    .collect(Collectors.toList()); // ["Alice", "Bob"]
+    .toList(); // ["Alice", "Bob"]
 
 // 多重映射
 List<List<String>> nestedList = Arrays.asList(
@@ -248,7 +248,7 @@ List<List<String>> nestedList = Arrays.asList(
 );
 List<String> flatList = nestedList.stream()
     .map(list -> String.join("-", list))
-    .collect(Collectors.toList()); // ["a-b", "c-d"]
+    .toList(); // ["a-b", "c-d"]
 ```
 
 #### 3.3 flatMap() - 扁平化映射
@@ -263,13 +263,13 @@ List<List<String>> nestedList = Arrays.asList(
 
 List<String> flatList = nestedList.stream()
     .flatMap(List::stream)
-    .collect(Collectors.toList()); // ["a", "b", "c", "d", "e", "f", "g", "h", "i"]
+    .toList(); // ["a", "b", "c", "d", "e", "f", "g", "h", "i"]
 
 // 拆分字符串为字符
 List<String> words = Arrays.asList("Hello", "World");
 List<String> characters = words.stream()
     .flatMap(word -> Arrays.stream(word.split("")))
-    .collect(Collectors.toList()); // ["H", "e", "l", "l", "o", "W", "o", "r", "l", "d"]
+    .toList(); // ["H", "e", "l", "l", "o", "W", "o", "r", "l", "d"]
 
 // 处理Optional
 List<Optional<String>> optionals = Arrays.asList(
@@ -279,7 +279,7 @@ List<Optional<String>> optionals = Arrays.asList(
 );
 List<String> values = optionals.stream()
     .flatMap(Optional::stream)
-    .collect(Collectors.toList()); // ["A", "B"]
+    .toList(); // ["A", "B"]
 
 // 复杂扁平化示例
 List<Order> orders = Arrays.asList(
@@ -288,7 +288,7 @@ List<Order> orders = Arrays.asList(
 );
 List<String> allItems = orders.stream()
     .flatMap(order -> order.getItems().stream())
-    .collect(Collectors.toList()); // ["item1", "item2", "item3", "item4"]
+    .toList(); // ["item1", "item2", "item3", "item4"]
 ```
 
 #### 3.4 distinct() - 去重
@@ -299,7 +299,7 @@ List<Integer> numbers = Arrays.asList(1, 2, 2, 3, 3, 3, 4, 4, 4, 4);
 // 基本去重
 List<Integer> distinctNumbers = numbers.stream()
     .distinct()
-    .collect(Collectors.toList()); // [1, 2, 3, 4]
+    .toList(); // [1, 2, 3, 4]
 
 // 对象去重（需要正确实现equals和hashCode）
 List<Person> people = Arrays.asList(
@@ -309,12 +309,12 @@ List<Person> people = Arrays.asList(
 );
 List<Person> distinctPeople = people.stream()
     .distinct()
-    .collect(Collectors.toList()); // 两个Alice只会保留一个
+    .toList(); // 两个Alice只会保留一个
 
 // 基于特定属性去重（使用自定义逻辑）
 List<Person> distinctByName = people.stream()
     .filter(distinctByKey(Person::getName))
-    .collect(Collectors.toList());
+    .toList();
 
 // 辅助方法：基于属性去重
 public static <T> Predicate<T> distinctByKey(Function<? super T, ?> keyExtractor) {
@@ -331,17 +331,17 @@ List<String> words = Arrays.asList("banana", "apple", "cherry", "date");
 // 自然排序
 List<String> naturalSorted = words.stream()
     .sorted()
-    .collect(Collectors.toList()); // ["apple", "banana", "cherry", "date"]
+    .toList(); // ["apple", "banana", "cherry", "date"]
 
 // 逆序排序
 List<String> reverseSorted = words.stream()
     .sorted(Comparator.reverseOrder())
-    .collect(Collectors.toList()); // ["date", "cherry", "banana", "apple"]
+    .toList(); // ["date", "cherry", "banana", "apple"]
 
 // 自定义排序：字符串长度
 List<String> lengthSorted = words.stream()
     .sorted(Comparator.comparing(String::length))
-    .collect(Collectors.toList()); // ["date", "apple", "banana", "cherry"]
+    .toList(); // ["date", "apple", "banana", "cherry"]
 
 // 多级排序
 List<Person> people = Arrays.asList(
@@ -355,7 +355,8 @@ List<Person> people = Arrays.asList(
 List<Person> multiSorted = people.stream()
     .sorted(Comparator.comparing(Person::getAge)
         .thenComparing(Comparator.comparing(Person::getName).reversed()))
-    .collect(Collectors.toList());
+    .toList();
+// [Person{name='Charlie', age=25}, Person{name='Alice', age=25}, Person{name='David', age=30}, Person{name='Bob', age=30}]
 
 // 使用自定义比较器
 List<String> customSorted = words.stream()
@@ -365,7 +366,7 @@ List<String> customSorted = words.stream()
         }
         return s1.compareTo(s2);
     })
-    .collect(Collectors.toList());
+    .toList();
 ```
 
 #### 3.6 peek() - 查看元素（调试）
@@ -377,7 +378,7 @@ List<String> result = Arrays.asList("a", "b", "c", "d").stream()
     .peek(element -> System.out.println("转换后: " + element))
     .filter(s -> s.length() == 1)
     .peek(element -> System.out.println("过滤后: " + element))
-    .collect(Collectors.toList());
+    .toList();
 
 // 修改元素状态（谨慎使用）
 List<Person> people = Arrays.asList(
@@ -386,7 +387,7 @@ List<Person> people = Arrays.asList(
 );
 List<Person> processed = people.stream()
     .peek(person -> person.setName(person.getName().toUpperCase()))
-    .collect(Collectors.toList());
+    .toList();
 ```
 
 #### 3.7 limit() 和 skip() - 限制和跳过
@@ -397,12 +398,12 @@ List<Integer> numbers = Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
 // 限制数量
 List<Integer> limited = numbers.stream()
     .limit(5)
-    .collect(Collectors.toList()); // [1, 2, 3, 4, 5]
+    .toList(); // [1, 2, 3, 4, 5]
 
 // 跳过元素
 List<Integer> skipped = numbers.stream()
     .skip(3)
-    .collect(Collectors.toList()); // [4, 5, 6, 7, 8, 9, 10]
+    .toList(); // [4, 5, 6, 7, 8, 9, 10]
 
 // 组合使用：分页实现
 int pageSize = 3;
@@ -410,7 +411,7 @@ int pageNumber = 2; // 第二页（从0开始）
 List<Integer> page = numbers.stream()
     .skip(pageNumber * pageSize)
     .limit(pageSize)
-    .collect(Collectors.toList()); // [4, 5, 6]
+    .toList(); // [7, 8, 9]
 
 // 无限流的分页
 Stream.iterate(0, n -> n + 1)
@@ -427,19 +428,19 @@ List<Integer> numbers = Arrays.asList(1, 2, 3, 4, 5, 1, 2, 3);
 // takeWhile: 从开始获取元素，直到条件不满足
 List<Integer> taken = numbers.stream()
     .takeWhile(n -> n < 4)
-    .collect(Collectors.toList()); // [1, 2, 3]
+    .toList(); // [1, 2, 3]
 
 // dropWhile: 从开始丢弃元素，直到条件不满足
 List<Integer> dropped = numbers.stream()
     .dropWhile(n -> n < 4)
-    .collect(Collectors.toList()); // [4, 5, 1, 2, 3]
+    .toList(); // [4, 5, 1, 2, 3]
 
 // 实际应用：处理有序数据
 List<String> lines = Arrays.asList("# Header", "Content line 1", "Content line 2", "# Footer");
 List<String> content = lines.stream()
     .dropWhile(line -> line.startsWith("#"))
     .takeWhile(line -> !line.startsWith("#"))
-    .collect(Collectors.toList()); // ["Content line 1", "Content line 2"]
+    .toList(); // ["Content line 1", "Content line 2"]
 ```
 
 #### 3.9 mapToXXX() - 转换为基本类型流
@@ -545,7 +546,7 @@ String longest = Arrays.asList("apple", "banana", "cherry").stream()
 
 #### 4.4 collect() - 收集操作（最强大的终端操作）
 
-##### 4.4.1 基本收集操作
+##### 4.4.1 基本收集 Collectors.toXxx()
 
 ```java
 List<String> words = Arrays.asList("apple", "banana", "cherry", "apple");
@@ -567,7 +568,7 @@ TreeSet<String> treeSet = words.stream()
 String[] array = words.stream().toArray(String[]::new);
 ```
 
-##### 4.4.2 连接字符串
+##### 4.4.2 连接字符串 Collectors.joining(',')
 
 ```java
 List<String> words = Arrays.asList("Hello", "World", "Java", "Stream");
@@ -592,7 +593,9 @@ String complexJoin = words.stream()
 // ">>> HELLO | WORLD | STREAM <<<"
 ```
 
-##### 4.4.3 汇总统计
+##### 4.4.3 汇总统计 Collectors.summarizingInt(C:M)
+
+> C - Class, M - Method
 
 ```java
 List<Integer> numbers = Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
@@ -616,7 +619,9 @@ IntSummaryStatistics ageStats = people.stream()
     .collect(Collectors.summarizingInt(Person::getAge));
 ```
 
-##### 4.4.4 分组操作
+##### 4.4.4 分组操作 Collectors.groupingBy(C:M)
+
+> C - Class, M - Method
 
 ```java
 List<Person> people = Arrays.asList(
@@ -630,7 +635,7 @@ List<Person> people = Arrays.asList(
 // 简单分组：按城市分组
 Map<String, List<Person>> peopleByCity = people.stream()
     .collect(Collectors.groupingBy(Person::getCity));
-// {New York=[Alice, Charlie], London=[Bob, Eve], Paris=[Diana]}
+// {New York=[P{Alice}, P{Charlie}], London=[P{Bob}, P{Eve}], Paris=[P{Diana}]}
 
 // 分组后对值进行转换
 Map<String, List<String>> namesByCity = people.stream()
@@ -638,13 +643,23 @@ Map<String, List<String>> namesByCity = people.stream()
         Person::getCity,
         Collectors.mapping(Person::getName, Collectors.toList())
     ));
+// {New York=[Alice, Charlie], London=[Bob, Eve], Paris=[Diana]}
 
-// 多级分组：先按城市，再按年龄
+// 多级分组：先按城市，再按年龄（最小颗粒度是 Person 对象）
 Map<String, Map<Integer, List<Person>>> peopleByCityAndAge = people.stream()
     .collect(Collectors.groupingBy(
         Person::getCity,
         Collectors.groupingBy(Person::getAge)
     ));
+// {New York={25=[P{'Alice'}, P{'Charlie'}]}, London={35=[P{'Eve'}], 30=[P{'Bob'}]}, Paris={30=[P{'Diana'}]}}
+
+// 多级分组：先按城市，再按年龄（最小颗粒度是 String 对象）
+Map<String, Map<Integer, List<String>>> nameByCityAndAge = people.stream()
+    .collect(Collectors.groupingBy(
+        Person::getCity,
+        Collectors.groupingBy(Person::getAge, Collectors.mapping(Person::getName, Collectors.toList()))
+    ));
+// {New York={25=[Alice, Charlie]}, London={35=[Eve], 30=[Bob]}, Paris={30=[Diana]}}
 
 // 分组并计数
 Map<String, Long> countByCity = people.stream()
@@ -657,6 +672,7 @@ Map<String, Integer> sumAgeByCity = people.stream()
         Person::getCity,
         Collectors.summingInt(Person::getAge)
     ));
+// {New York=50, London=65, Paris=30}
 
 // 分组并获取最大值
 Map<String, Optional<Person>> oldestByCity = people.stream()
@@ -664,9 +680,10 @@ Map<String, Optional<Person>> oldestByCity = people.stream()
         Person::getCity,
         Collectors.maxBy(Comparator.comparingInt(Person::getAge))
     ));
+// {New York=Optional[Person{name='Alice', age=25, city='New York'}], London=Optional[Person{name='Eve', age=35, city='London'}], Paris=Optional[Person{name='Diana', age=30, city='Paris'}]}
 ```
 
-##### 4.4.5 分区操作
+##### 4.4.5 分区操作 Collectors.partitioningBy(func)
 
 ```java
 List<Person> people = Arrays.asList(
@@ -679,7 +696,7 @@ List<Person> people = Arrays.asList(
 // 简单分区：年龄是否大于30
 Map<Boolean, List<Person>> partitioned = people.stream()
     .collect(Collectors.partitioningBy(p -> p.getAge() > 30));
-// {false=[Alice, Bob, Diana], true=[Charlie]}
+// {false=[P{Alice}, P{Bob}, P{Diana}], true=[P{Charlie}]}
 
 // 分区后统计
 Map<Boolean, Long> countByPartition = people.stream()
@@ -695,9 +712,10 @@ Map<Boolean, Map<String, List<Person>>> complexPartition = people.stream()
         p -> p.getAge() > 30,
         Collectors.groupingBy(Person::getName)
     ));
+// {false={Diana=[Person{name='Diana', age=20}], Bob=[Person{name='Bob', age=30}], Alice=[Person{name='Alice', age=25}]}, true={Charlie=[Person{name='Charlie', age=35}]}}
 ```
 
-##### 4.4.6 自定义收集器
+##### 4.4.6 自定义收集器 Collector.of(func)
 
 ```java
 // 自定义收集器：计算平均值
@@ -724,7 +742,7 @@ Collector<String, ?, String> joiningWithStats = Collector.of(
 String result = words.stream().collect(joiningWithStats);
 ```
 
-#### 4.5 min() 和 max() - 最小值和最大值
+#### 4.5 min() 和 max() 和 sum() - 最小值和最大值和求和
 
 ```java
 List<Integer> numbers = Arrays.asList(3, 1, 4, 1, 5, 9, 2, 6);
@@ -751,6 +769,8 @@ youngest.ifPresent(p -> System.out.println("最年轻: " + p.getName())); // Cha
 Optional<Person> oldest = people.stream()
     .max(Comparator.comparingInt(Person::getAge));
 oldest.ifPresent(p -> System.out.println("最年长: " + p.getName())); // Bob
+
+int sum = people.stream().mapToInt(Person::getAge).sum(); // 75
 ```
 
 #### 4.6 count() - 计数
@@ -768,8 +788,7 @@ long longWords = words.stream()
 
 // 分组计数
 Map<Integer, Long> countByLength = words.stream()
-    .collect(Collectors.groupingBy(String::length, Collectors.counting()));
-// {5=2, 6=1, 4=1}
+    .collect(Collectors.groupingBy(String::length, Collectors.counting())); // {5=2, 6=1, 4=1}
 ```
 
 #### 4.7 anyMatch(), allMatch(), noneMatch() - 匹配检查
@@ -806,25 +825,30 @@ boolean hasMinor = people.stream()
 List<String> words = Arrays.asList("apple", "banana", "cherry", "date");
 
 // findFirst: 查找第一个元素
-Optional<String> first = words.stream().findFirst();
-first.ifPresent(System.out::println); // apple
+words.stream().findFirst().ifPresent(System.out::println); // apple
 
 // findAny: 查找任意元素（在并行流中更有用）
-Optional<String> any = words.stream().findAny();
-any.ifPresent(System.out::println); // 可能是任意元素
+words.stream().findAny().ifPresent(System.out::println); // 默认找到第一个 apple
 
 // 条件查找
-Optional<String> firstLongWord = words.stream()
+words.stream()
     .filter(word -> word.length() > 5)
-    .findFirst(); // banana
+    .findFirst()
+    .ifPresent(System.out::println); // banana
 
 // 并行流中的findAny
-Optional<String> parallelAny = words.parallelStream()
-    .filter(word -> word.length() > 5)
-    .findAny();
+words.parallelStream()
+    .filter(word -> word.length() < 5)
+    .findAny()
+    .ifPresent(System.out::println); // date
 ```
 
-### 5. 并行流详解
+### 5. parallelStream 并行流详解
+
+> * `parallelStream()` = **并行流**，底层用 **ForkJoinPool** `多线程`同时处理集合元素
+>
+> * 普通 `stream()` = **串行流**，单线程按顺序处理
+> * **数据量大、纯计算、无依赖 → parallelStream 提速**  ；小数据、IO、要顺序、改共享变量 → 别用
 
 #### 5.1 创建并行流
 
@@ -855,7 +879,7 @@ long result = LongStream.range(1, 10_000_000)
 // 不适合并行处理的情况：有状态操作或I/O密集型
 List<String> processed = words.parallelStream()
     .map(String::toUpperCase) // 无状态操作，适合并行
-    .collect(Collectors.toList());
+    .toList();
 
 // 注意：并行流不保证顺序
 List<Integer> numbers = Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
@@ -864,7 +888,7 @@ List<Integer> parallelProcessed = numbers.parallelStream()
         System.out.println(Thread.currentThread().getName() + " processing: " + n);
         return n * 2;
     })
-    .collect(Collectors.toList());
+    .toList();
 ```
 
 #### 5.3 并行流的注意事项
@@ -877,19 +901,19 @@ words.parallelStream()
 
 // 正确的做法
 List<String> goodExample = words.parallelStream()
-    .collect(Collectors.toList());
+    .toList();
 
 // 2. 注意顺序敏感性
 List<Integer> numbers = Arrays.asList(1, 2, 3, 4, 5);
 // 顺序流保证顺序
 List<Integer> sequential = numbers.stream()
     .map(n -> n * 2)
-    .collect(Collectors.toList()); // [2, 4, 6, 8, 10]
+    .toList(); // [2, 4, 6, 8, 10]
 
 // 并行流不保证顺序（除非使用forEachOrdered）
 List<Integer> parallel = numbers.parallelStream()
     .map(n -> n * 2)
-    .collect(Collectors.toList()); // 顺序可能变化
+    .toList(); // 顺序可能变化
 
 // 3. 合理使用并行流
 boolean shouldUseParallel = numbers.size() > 1000; // 根据数据量决定
@@ -934,7 +958,7 @@ List<Integer> numbers = numberStrings.stream()
         }
     })
     .filter(Objects::nonNull)
-    .collect(Collectors.toList());
+    .toList();
 
 // 方法2：使用Optional包装
 List<Integer> numbers2 = numberStrings.stream()
@@ -946,7 +970,7 @@ List<Integer> numbers2 = numberStrings.stream()
         }
     })
     .flatMap(Optional::stream)
-    .collect(Collectors.toList());
+    .toList();
 
 // 方法3：使用工具方法
 public static Optional<Integer> parseInteger(String s) {
@@ -960,7 +984,7 @@ public static Optional<Integer> parseInteger(String s) {
 List<Integer> numbers3 = numberStrings.stream()
     .map(StreamAdvancedExamples::parseInteger)
     .flatMap(Optional::stream)
-    .collect(Collectors.toList());
+    .toList();
 ```
 
 #### 6.3 性能优化技巧
@@ -980,12 +1004,12 @@ List<Person> top3 = people.stream()
     .filter(p -> p.getAge() > 30)
     .limit(3)  // 先限制再排序可以提高性能
     .sorted(Comparator.comparing(Person::getAge).reversed())
-    .collect(Collectors.toList());
+    .toList();
 
 // 4. 重用Stream（使用Supplier）
 Supplier<Stream<String>> streamSupplier = () -> words.stream();
 streamSupplier.get().filter(s -> s.length() > 3).count();
-streamSupplier.get().map(String::toUpperCase).collect(Collectors.toList());
+streamSupplier.get().map(String::toUpperCase).toList();
 ```
 
 #### 6.4 调试和日志
@@ -998,7 +1022,7 @@ List<String> result = words.stream()
     .peek(word -> System.out.println("大写: " + word))
     .filter(word -> word.length() > 4)
     .peek(word -> System.out.println("过滤后: " + word))
-    .collect(Collectors.toList());
+    .toList();
 
 // 自定义调试工具
 public static <T> Consumer<T> debug(String message) {
@@ -1009,7 +1033,7 @@ List<String> debugResult = words.stream()
     .peek(debug("原始"))
     .map(String::toUpperCase)
     .peek(debug("转换后"))
-    .collect(Collectors.toList());
+    .toList();
 ```
 
 ### 7. 实际应用案例
@@ -1085,7 +1109,7 @@ public class FileProcessor {
             })
             .map(Path::toString)
             .sorted()
-            .collect(Collectors.toList());
+            .toList();
     }
 }
 ```
@@ -1141,7 +1165,7 @@ public class UserController {
 List<String> names = people.stream()
     .map(Person::getName)          // 而不是 p -> p.getName()
     .filter(Objects::nonNull)      // 而不是 s -> s != null
-    .collect(Collectors.toList());
+    .toList();
 
 // 2. 避免不必要的装箱拆箱
 IntSummaryStatistics stats = people.stream()
@@ -1176,7 +1200,7 @@ List<Person> people = new ArrayList<>(originalPeople);
 // 错误做法：在peek中修改外部状态
 people.stream()
     .peek(p -> people.remove(p))  // 并发修改异常
-    .collect(Collectors.toList());
+    .toList();
 
 // 3. 注意并行流中的线程安全
 List<String> result = Collections.synchronizedList(new ArrayList<>());
@@ -1185,7 +1209,7 @@ words.parallelStream()
 
 // 正确做法
 List<String> goodResult = words.parallelStream()
-    .collect(Collectors.toList());
+    .toList();
 
 // 4. 避免过度使用流
 // 简单的循环用传统方式可能更清晰

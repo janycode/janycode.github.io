@@ -16,7 +16,6 @@ categories:
 * 可以执行非常复杂的**查找、过滤、映射等**操作。
 
 
-
 ```java
 public interface Stream<T>
     extends BaseStream<T,Stream<T>>
