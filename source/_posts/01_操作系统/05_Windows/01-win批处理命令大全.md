@@ -1114,3 +1114,15 @@ CMD命令锦集
 
 
 
+### 端口占用解决
+
+```sh
+# 1. 查找占用端口的进程                                                                                                                 
+netstat -ano | grep 8080                                                                                                                                                                                                                
+# 2. 查看进程名
+tasklist | grep <PID>
+
+# 3. 终止进程
+taskkill //F //PID <PID>
+```
+

@@ -70,7 +70,7 @@ Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
 iwr -useb https://openclaw.ai/install.ps1 | iex
 ```
 
-### 4. 配置 OpenClaw
+### 4. 配置 OpenClaw 大模型
 
 ![image-20260308091014930](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20260308091016432.png)
 
@@ -403,6 +403,128 @@ npm rm -g openclaw
 > 然后就可以重装 openclaw 了。
 
 
+
+
+
+## 附：Nas中安装OpenClaw
+
+### 单独配置模型
+
+如 longcat - 每日刷新免费额度，模型质量.... 额，你懂得
+
+参考：https://mp.weixin.qq.com/s/g11cARkyCNARXtGnGeDDlQ
+
+模型配置：
+
+./openclaw/openclaw.json
+
+```json
+{
+  "meta": {
+    "lastTouchedVersion": "2026.3.8",
+    "lastTouchedAt": "2026-04-25T16:03:19.199Z"
+  },
+  "wizard": {
+    "lastRunAt": "2026-04-25T14:59:40.266Z",
+    "lastRunVersion": "2026.3.8",
+    "lastRunCommand": "onboard",
+    "lastRunMode": "local"
+  },
+  "models": {  // models 替换位置
+    "mode": "merge",
+    "providers": {
+      "longCat": {
+        "baseUrl": "https://api.longcat.chat/openai",
+        "apiKey": "YOUR_API_KEY", //此处需要替换
+        "api": "openai-completions",
+        "authHeader": true,
+        "models": [
+          {
+            "id": "LongCat-Flash-Thinking-2601",
+            "name": "LongCat-Flash-Thinking-2601",
+            "api": "openai-completions",
+            "reasoning": false,
+            "input": [
+              "text"
+            ],
+            "cost": {
+              "input": 0,
+              "output": 0,
+              "cacheRead": 0,
+              "cacheWrite": 0
+            },
+            "contextWindow": 200000,
+            "maxTokens": 8192,
+            "compat": {
+              "maxTokensField": "max_tokens"
+            }
+          },
+          {
+            "id": "LongCat-Flash-Lite",
+            "name": "LongCat-Flash-Lite",
+            "api": "openai-completions",
+            "reasoning": true,
+            "input": [
+              "text"
+            ],
+            "cost": {
+              "input": 0,
+              "output": 0,
+              "cacheRead": 0,
+              "cacheWrite": 0
+            },
+            "contextWindow": 256000,
+            "maxTokens": 4096,
+            "compat": {
+              "maxTokensField": "max_tokens"
+            }
+          }
+        ]
+      }
+    }
+  },
+  "agents": {
+    "defaults": {
+      "model": {  // 默认模型替换位置
+        "primary": "longCat/LongCat-Flash-Lite"
+      },
+      "workspace": "/home/node/.openclaw/workspace",
+      "compaction": {
+        "mode": "safeguard"
+      }
+    }
+  },
+  "tools": {
+    "profile": "coding"
+  },
+  "commands": {
+    "native": "auto",
+    "nativeSkills": "auto",
+    "restart": true,
+    "ownerDisplay": "raw"
+  },
+  "session": {
+    "dmScope": "per-channel-peer"
+  },
+  "gateway": {
+    "port": 18789,
+    "mode": "local",
+    "bind": "loopback",
+    "controlUi": {
+      "dangerouslyAllowHostHeaderOriginFallback": true,
+      "allowInsecureAuth": true
+    },
+    "auth": {
+      "mode": "token",
+      "token": "7e5405f131bf3dc5bbd4213e0e7a662cd6daef4d7d012d7e"
+    },
+    "tailscale": {
+      "mode": "off",
+      "resetOnExit": false
+    }
+  }
+}
+```
 
 
 

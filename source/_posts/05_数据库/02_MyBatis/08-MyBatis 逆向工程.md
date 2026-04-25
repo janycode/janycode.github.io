@@ -14,7 +14,7 @@ categories:
 
 
 
-> 【躲坑】：
+> 【避坑】：
 >
 > * 注意数据库中字段名（列名）要与实体类中的字段名（属性名）完全一致
 > * 解决办法：在逆向工程生成 pojo 后，`手动将 实体类的属性名+Mapper.xml的属性名 修改为完全一致`，避免 N 多映射问题。
@@ -28,6 +28,8 @@ categories:
 > 2. 数据库中使用下划线命名时，如 class_name，逆向工程生成 pojo 实体类属性名会变成 className；
 
 
+
+## 一、原生代码生成
 
 ### 1. 概念
 
@@ -207,3 +209,37 @@ log4j.logger.java.sql.PreparedStatement=DEBUG
 如图：
 
 ![image-20200628134209165](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20200628134210.png)
+
+
+
+## 二、利用插件生成
+
+### 1. 生成
+
+1. superClass**:** 继承配置 extends `BaseEntityKey` 已经包含主键id、创建人、创建时间、更新人、更新时间
+
+![img](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20260417202312735.png)
+
+2. 类和xml中property都使用驼峰格式，@TableField 使用真实列注解
+
+![img](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20260417202318599.png)
+
+3. 生成结果，拷贝到代码规范的目录中
+
+![image-20260417202031912](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20260417202329364.png)
+
+### 2. 微改
+
+entity 的注解微改为最优：
+
+```java
+@Getter
+@Setter
+@SuperBuilder
+@NoArgsConstructor
+@AllArgsConstructor
+@TableName(value = "shipping_order_job")
+public class ShippingOrderJob extends BaseEntityKey { ... }
+```
+
+> `！！！不使用 @Data 注解`，因为它的风险和弊端比较多。
