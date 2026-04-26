@@ -94,6 +94,7 @@ claude
 - 或启动时用 `claude --model sonnet`
 
 * 确认模型配置无误：`/status`
+* 静默执行所有命令（不询问）⚠️危险慎用！：`claude --dangerously-skip-permissions`
 
 ### 常见命令汇总
 
@@ -111,3 +112,40 @@ claude
 
 > 真正的重心还是：`模型质量`、`提示词工程`、`skills`、`个人认知综合能力`。
 
+
+
+## 4. 项目结构
+
+设置 ClaudeCode 默认语言为中文。
+
+![image-20260426120153286](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20260426120156759.png)
+
+对 Claude 最友好的项目结构：
+
+```
+claude-code-project/
+├── .claude/                         # claude局部配置
+├── backend/                         # 后端项目
+│   ├── src/main/
+│   ├── .gitignore                   # Git忽略配置
+│   └── pom.xml                      # maven 依赖配置
+├── frontend/                        # 前端项目
+│   ├── src/
+│   ├── .gitignore                   # Git忽略配置
+│   └── package.json                 # pnpm 依赖配置
+└── README.md                        # 文档
+```
+
+只有在`同一个目录下打开前后端项目`，才能让 AI 更好的理解项目，进行前后端互通协作编码。
+
+
+
+## 5. IDEA 插件使用
+
+认准 `Claude Code [Beta]` 为官方插件。
+
+![image-20260426120951789](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20260426120953352.png)
+
+MCP 需要 IDEA 2026版本（注意同版本的 jetBrain 的产品都需要爆破）
+
+![image-20260426121631166](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20260426121633985.png)
