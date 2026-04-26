@@ -39,6 +39,8 @@ claude --version
 ```sh
 # 手动更新到最新版
 claude update
+# 如果是 winget 安装的，则使用如下命令更新最新版
+winget upgrade Anthropic.ClaudeCode
 ```
 
 ## 2. 启动
