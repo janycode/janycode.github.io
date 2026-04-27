@@ -83,7 +83,7 @@ groovyScript("def result = '';def params = \"${_1}\".replaceAll('[\\\\[|\\\\]|\\
 
 Method Template:
 
-```
+```java
 /**
  * $DOC$
  *
@@ -94,3 +94,14 @@ Method Template:
  */
 ```
 
+
+
+### IDEA git提交关联脚本运行
+
+可以关联任何支持的脚本。
+
+![65d3ffcae34fb92f2ecce15364683cf3](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20260427220328979.png)
+
+![8f5be980d4c4d5de9594e6ac598da3c8](https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20260427220340827.png)
+
+> spotless -> maven 支持的统一格式化插件，需 pom 中单独配置。
