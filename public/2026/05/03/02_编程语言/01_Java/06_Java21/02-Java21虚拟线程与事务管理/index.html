@@ -1,0 +1,1025 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=light>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Jerry(姜源)">
+  <meta name="keywords" content="Java,Html,CSS,JavaScript,Vue,React,SpringBoot,Linux,shell编程经验分享、技术总结、心得体会">
+  
+    <meta name="description" content="前言作为一名深耕Java后端多年的开发者，从Java 8一路用到Java 21，虚拟线程（Virtual Thread）无疑是JDK近年来最革命性的特性之一——它彻底解决了传统平台线程高内存占用、高上下文切换开销的痛点，让数万甚至数十万并发线程的实现变得轻而易举。 但在实际业务落地中，尤其是我们日常开发最核心的数据库事务管理场景，虚拟线程和Spring事务体系、MyBatis-Plus（以下简称">
+<meta property="og:type" content="article">
+<meta property="og:title" content="02-Java21虚拟线程与事务管理">
+<meta property="og:url" content="https://janycode.github.io/2026/05/03/02_%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/01_Java/06_Java21/02-Java21%E8%99%9A%E6%8B%9F%E7%BA%BF%E7%A8%8B%E4%B8%8E%E4%BA%8B%E5%8A%A1%E7%AE%A1%E7%90%86/index.html">
+<meta property="og:site_name" content="姜源の全栈云笔记">
+<meta property="og:description" content="前言作为一名深耕Java后端多年的开发者，从Java 8一路用到Java 21，虚拟线程（Virtual Thread）无疑是JDK近年来最革命性的特性之一——它彻底解决了传统平台线程高内存占用、高上下文切换开销的痛点，让数万甚至数十万并发线程的实现变得轻而易举。 但在实际业务落地中，尤其是我们日常开发最核心的数据库事务管理场景，虚拟线程和Spring事务体系、MyBatis-Plus（以下简称">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20260328142921455.png">
+<meta property="article:published_time" content="2026-05-03T00:36:51.000Z">
+<meta property="article:modified_time" content="2026-05-03T01:15:23.657Z">
+<meta property="article:author" content="Jerry(姜源)">
+<meta property="article:tag" content="Java21">
+<meta property="article:tag" content="虚拟线程">
+<meta property="article:tag" content="事务管理">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20260328142921455.png">
+  
+  
+    <meta name="referrer" content="no-referrer-when-downgrade">
+  
+  
+  <title>02-Java21虚拟线程与事务管理 - 姜源の全栈云笔记</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"janycode.github.io","root":"/","version":"1.9.0","typing":{"enable":true,"typeSpeed":50,"cursorChar":"|","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":false},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":"bfff735c897eb60ea49b735096b20e47","google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+
+  
+<meta name="generator" content="Hexo 6.2.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 50vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>姜源の全栈云笔记</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tools/">
+                <i class="iconfont icon-slack-fill"></i>
+                工具
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" target="_blank" rel="noopener" href="https://yuancodes.github.io/">
+                <i class="iconfont icon-notebook"></i>
+                Docsify
+              </a>
+            </li>
+          
+        
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="02-Java21虚拟线程与事务管理"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-author" aria-hidden="true"></i>
+        Jerry(姜源)
+      </span>
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2026-05-03 08:36" pubdate>
+          星期日, 2026/05/03 08:36:51
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          <!-- compatible with older versions-->
+          15k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          <!-- compatible with older versions-->
+          125 分钟
+        
+      </span>
+    
+
+    
+    
+      
+        <span id="busuanzi_container_page_pv" style="display: none">
+          <i class="iconfont icon-eye" aria-hidden="true"></i>
+          <span id="busuanzi_value_page_pv"></span> 次
+        </span>
+        
+      
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">02-Java21虚拟线程与事务管理</h1>
+            
+            <div class="markdown-body">
+              
+              <p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20260328142921455.png" srcset="/img/loading.gif" lazyload alt="java21"></p>
+<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>作为一名深耕Java后端多年的开发者，从Java 8一路用到Java 21，虚拟线程（Virtual Thread）无疑是JDK近年来最革命性的特性之一——它彻底解决了传统平台线程<code>高内存占用、高上下文切换开销</code>的痛点，让数万甚至数十万并发线程的实现变得轻而易举。</p>
+<p>但在实际业务落地中，尤其是我们日常开发最核心的<strong>数据库事务管理</strong>场景，虚拟线程和Spring事务体系、MyBatis-Plus（以下简称MP）的整合，藏着非常多的坑。</p>
+<h2 id="一、两个底层原理"><a href="#一、两个底层原理" class="headerlink" title="一、两个底层原理"></a>一、两个底层原理</h2><p>所有的坑，本质上都是对底层原理的误解。在整合之前，必须先搞懂两个核心体系的底层逻辑，尤其是和线程绑定相关的部分。</p>
+<h3 id="1-虚拟线程"><a href="#1-虚拟线程" class="headerlink" title="1. 虚拟线程"></a>1. 虚拟线程</h3><p>虚拟线程是JVM实现的<strong>轻量级用户态线程</strong>，和传统的平台线程（内核态线程）核心差异如下，重点关注和事务相关的特性：</p>
+<table>
+<thead>
+<tr>
+<th>特性</th>
+<th>平台线程</th>
+<th>虚拟线程</th>
+<th>事务相关影响</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>实现方式</td>
+<td>内核态线程，和OS线程1:1映射</td>
+<td>JVM用户态实现，和OS线程N:M映射</td>
+<td>无直接影响，核心看ThreadLocal行为</td>
+</tr>
+<tr>
+<td>内存占用</td>
+<td>栈空间固定1MB左右，创建成本高</td>
+<td>栈空间动态伸缩，最小仅几百字节，创建成本极低</td>
+<td>支持大量并发事务任务，无OOM风险</td>
+</tr>
+<tr>
+<td>阻塞处理</td>
+<td>阻塞时会占用整个内核线程，造成资源浪费</td>
+<td>阻塞时（如JDBC查询、网络IO）会自动<code>挂载</code>，让出载体线程给其他虚拟线程，阻塞结束后重新<code>挂载</code></td>
+<td>解决了传统JDBC阻塞占用线程的问题，大幅提升数据库操作的并发能力</td>
+</tr>
+<tr>
+<td>ThreadLocal绑定</td>
+<td>绑定到平台线程，生命周期和线程池一致</td>
+<td>完全绑定到<strong>虚拟线程本身</strong>，和载体线程无关，载体线程切换时不会丢失</td>
+<td>这是和Spring事务兼容的核心基础！</td>
+</tr>
+<tr>
+<td>生命周期</td>
+<td>通常和线程池绑定，长生命周期</td>
+<td><code>Per-Task</code>模式，一个任务对应一个虚拟线程，任务结束立即销毁</td>
+<td>事务生命周期和虚拟线程完全绑定，无线程复用带来的事务上下文污染问题</td>
+</tr>
+</tbody></table>
+<p><strong>关键纠正：很多人误以为虚拟线程的ThreadLocal会在载体线程切换时丢失，这是完全错误的</strong>。Java 21的虚拟线程，ThreadLocal是完全绑定在虚拟线程实例上的，无论载体线程怎么切换，只要是同一个虚拟线程，ThreadLocal的数据就不会丢失，这是Spring事务能在虚拟线程中正常工作的核心前提。</p>
+<h3 id="2-Spring事务-MyBatis-Plus"><a href="#2-Spring事务-MyBatis-Plus" class="headerlink" title="2. Spring事务 + MyBatis-Plus"></a>2. Spring事务 + MyBatis-Plus</h3><p>我们日常用的<code>@Transactional</code>注解，以及MP的CRUD操作，底层完全依赖两个核心组件，而它们的核心都是<strong>ThreadLocal</strong>：</p>
+<ol>
+<li><code>TransactionSynchronizationManager</code><strong>（事务同步管理器）</strong><ol>
+<li>Spring事务的核心，用<code>ThreadLocal</code>存储当前线程的事务上下文，包括：数据库连接<code>Connection</code>、事务隔离级别、是否只读、事务同步器等。</li>
+<li>同一个事务内的所有数据库操作，必须拿到同一个<code>Connection</code>，才能保证事务的原子性，而这个<code>Connection</code>就是从这个ThreadLocal里获取的。</li>
+</ol>
+</li>
+<li><strong>MyBatis-Plus的</strong><code>SqlSessionUtils</code><ol>
+<li>MP的CRUD操作，会通过<code>SqlSessionUtils</code>获取SqlSession，而SqlSession的获取逻辑，优先从<code>TransactionSynchronizationManager</code>的ThreadLocal中获取当前事务绑定的<code>Connection</code>。</li>
+<li>也就是说：<strong>只要是同一个线程内的MP操作，在</strong><code>@Transactional</code><strong>注解下，一定会拿到同一个数据库连接，保证在同一个事务中</strong>。</li>
+</ol>
+</li>
+</ol>
+<h2 id="二、环境版本"><a href="#二、环境版本" class="headerlink" title="二、环境版本"></a>二、环境版本</h2><p>虚拟线程是Java 21正式发布的稳定特性，而Spring、MP对虚拟线程的兼容，有严格的版本要求，版本不对，大概率会出现各种奇奇怪怪的问题：</p>
+<table>
+<thead>
+<tr>
+<th>组件</th>
+<th>最低版本要求</th>
+<th>推荐版本</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>JDK</td>
+<td>21</td>
+<td>21 LTS</td>
+<td>必须使用正式版，不支持预览版</td>
+</tr>
+<tr>
+<td>Spring Boot</td>
+<td>3.2.0</td>
+<td>3.2.x&#x2F;3.3.x</td>
+<td>3.2.0开始正式支持虚拟线程的自动配置，无需手动写Bean</td>
+</tr>
+<tr>
+<td>Spring Framework</td>
+<td>6.1.0</td>
+<td>6.1.x+</td>
+<td>6.1.0开始对虚拟线程做了全面适配，优化了ThreadLocal的传递</td>
+</tr>
+<tr>
+<td>MyBatis-Plus</td>
+<td>3.5.5</td>
+<td>3.5.6+</td>
+<td>3.5.5开始兼容Spring 6+，修复了ThreadLocal相关的兼容性问题</td>
+</tr>
+<tr>
+<td>数据库连接池</td>
+<td>HikariCP 5.0.0</td>
+<td>HikariCP 5.1.0</td>
+<td>Spring Boot 3.x默认自带，对虚拟线程的阻塞场景做了优化</td>
+</tr>
+</tbody></table>
+<p><strong>注意：绝对不要用Spring Boot 3.0&#x2F;3.1版本强行整合虚拟线程，这两个版本没有官方的自动配置支持，手动配置很容易出现事务上下文丢失的问题。</strong></p>
+<h2 id="三、整合步骤"><a href="#三、整合步骤" class="headerlink" title="三、整合步骤"></a>三、整合步骤</h2><p>Spring Boot 3.2+对虚拟线程的支持已经做到了极致，整合步骤非常简单，核心就是<code>开启虚拟线程自动配置 + 规范事务写法</code>。</p>
+<h3 id="1-第一步：pom-xml-依赖"><a href="#1-第一步：pom-xml-依赖" class="headerlink" title="1. 第一步：pom.xml 依赖"></a>1. 第一步：pom.xml 依赖</h3><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br></pre></td><td class="code"><pre><code class="hljs XML"><span class="hljs-comment">&lt;!-- 父工程必须是Spring Boot 3.2+ --&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">parent</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">groupId</span>&gt;</span>org.springframework.boot<span class="hljs-tag">&lt;/<span class="hljs-name">groupId</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">artifactId</span>&gt;</span>spring-boot-starter-parent<span class="hljs-tag">&lt;/<span class="hljs-name">artifactId</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">version</span>&gt;</span>3.2.5<span class="hljs-tag">&lt;/<span class="hljs-name">version</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">relativePath</span>/&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">parent</span>&gt;</span><br><br><span class="hljs-tag">&lt;<span class="hljs-name">dependencies</span>&gt;</span><br>    <span class="hljs-comment">&lt;!-- Spring Web 自动适配虚拟线程 --&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">dependency</span>&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">groupId</span>&gt;</span>org.springframework.boot<span class="hljs-tag">&lt;/<span class="hljs-name">groupId</span>&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">artifactId</span>&gt;</span>spring-boot-starter-web<span class="hljs-tag">&lt;/<span class="hljs-name">artifactId</span>&gt;</span><br>    <span class="hljs-tag">&lt;/<span class="hljs-name">dependency</span>&gt;</span><br><br>    <span class="hljs-comment">&lt;!-- Spring 事务核心 --&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">dependency</span>&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">groupId</span>&gt;</span>org.springframework.boot<span class="hljs-tag">&lt;/<span class="hljs-name">groupId</span>&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">artifactId</span>&gt;</span>spring-boot-starter-jdbc<span class="hljs-tag">&lt;/<span class="hljs-name">artifactId</span>&gt;</span><br>    <span class="hljs-tag">&lt;/<span class="hljs-name">dependency</span>&gt;</span><br><br>    <span class="hljs-comment">&lt;!-- MyBatis-Plus 最新版 --&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">dependency</span>&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">groupId</span>&gt;</span>com.baomidou<span class="hljs-tag">&lt;/<span class="hljs-name">groupId</span>&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">artifactId</span>&gt;</span>mybatis-plus-spring-boot3-starter<span class="hljs-tag">&lt;/<span class="hljs-name">artifactId</span>&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">version</span>&gt;</span>3.5.6<span class="hljs-tag">&lt;/<span class="hljs-name">version</span>&gt;</span><br>    <span class="hljs-tag">&lt;/<span class="hljs-name">dependency</span>&gt;</span><br><br>    <span class="hljs-comment">&lt;!-- 数据库驱动，以MySQL为例 --&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">dependency</span>&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">groupId</span>&gt;</span>com.mysql<span class="hljs-tag">&lt;/<span class="hljs-name">groupId</span>&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">artifactId</span>&gt;</span>mysql-connector-j<span class="hljs-tag">&lt;/<span class="hljs-name">artifactId</span>&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">scope</span>&gt;</span>runtime<span class="hljs-tag">&lt;/<span class="hljs-name">scope</span>&gt;</span><br>    <span class="hljs-tag">&lt;/<span class="hljs-name">dependency</span>&gt;</span><br><br>    <span class="hljs-comment">&lt;!-- Lombok 简化代码 --&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">dependency</span>&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">groupId</span>&gt;</span>org.projectlombok<span class="hljs-tag">&lt;/<span class="hljs-name">groupId</span>&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">artifactId</span>&gt;</span>lombok<span class="hljs-tag">&lt;/<span class="hljs-name">artifactId</span>&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">optional</span>&gt;</span>true<span class="hljs-tag">&lt;/<span class="hljs-name">optional</span>&gt;</span><br>    <span class="hljs-tag">&lt;/<span class="hljs-name">dependency</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">dependencies</span>&gt;</span><br><br><span class="hljs-comment">&lt;!-- 必须指定编译版本为Java 21 --&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">build</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">plugins</span>&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">plugin</span>&gt;</span><br>            <span class="hljs-tag">&lt;<span class="hljs-name">groupId</span>&gt;</span>org.springframework.boot<span class="hljs-tag">&lt;/<span class="hljs-name">groupId</span>&gt;</span><br>            <span class="hljs-tag">&lt;<span class="hljs-name">artifactId</span>&gt;</span>spring-boot-maven-plugin<span class="hljs-tag">&lt;/<span class="hljs-name">artifactId</span>&gt;</span><br>            <span class="hljs-tag">&lt;<span class="hljs-name">configuration</span>&gt;</span><br>                <span class="hljs-tag">&lt;<span class="hljs-name">source</span>&gt;</span>21<span class="hljs-tag">&lt;/<span class="hljs-name">source</span>&gt;</span><br>                <span class="hljs-tag">&lt;<span class="hljs-name">target</span>&gt;</span>21<span class="hljs-tag">&lt;/<span class="hljs-name">target</span>&gt;</span><br>            <span class="hljs-tag">&lt;/<span class="hljs-name">configuration</span>&gt;</span><br>        <span class="hljs-tag">&lt;/<span class="hljs-name">plugin</span>&gt;</span><br>    <span class="hljs-tag">&lt;/<span class="hljs-name">plugins</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">build</span>&gt;</span><br></code></pre></td></tr></table></figure>
+
+<h3 id="2-第二步：application-yml-配置"><a href="#2-第二步：application-yml-配置" class="headerlink" title="2. 第二步：application.yml 配置"></a>2. 第二步：application.yml 配置</h3><p>核心就一行：开启虚拟线程自动配置，其他都是常规的MP和连接池配置。</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><code class="hljs yaml"><span class="hljs-comment"># 核心：开启Spring Boot虚拟线程自动配置</span><br><span class="hljs-comment"># 开启后，@Async异步执行、Spring MVC控制器请求、TaskScheduler定时任务，全部自动使用虚拟线程</span><br><span class="hljs-attr">spring:</span><br>  <span class="hljs-attr">threads:</span><br>    <span class="hljs-attr">virtual:</span><br>      <span class="hljs-attr">enabled:</span> <span class="hljs-literal">true</span><br><br>  <span class="hljs-comment"># 数据源配置，HikariCP连接池</span><br>  <span class="hljs-attr">datasource:</span><br>    <span class="hljs-attr">driver-class-name:</span> <span class="hljs-string">com.mysql.cj.jdbc.Driver</span><br>    <span class="hljs-attr">url:</span> <span class="hljs-string">jdbc:mysql://127.0.0.1:3306/test_db?useUnicode=true&amp;characterEncoding=utf8&amp;serverTimezone=Asia/Shanghai</span><br>    <span class="hljs-attr">username:</span> <span class="hljs-string">root</span><br>    <span class="hljs-attr">password:</span> <span class="hljs-string">root</span><br>    <span class="hljs-comment"># HikariCP连接池配置（虚拟线程场景优化项）</span><br>    <span class="hljs-attr">hikari:</span><br>      <span class="hljs-attr">maximum-pool-size:</span> <span class="hljs-number">20</span><br>      <span class="hljs-attr">minimum-idle:</span> <span class="hljs-number">5</span><br>      <span class="hljs-attr">connection-timeout:</span> <span class="hljs-number">3000</span><br>      <span class="hljs-attr">idle-timeout:</span> <span class="hljs-number">600000</span><br>      <span class="hljs-attr">max-lifetime:</span> <span class="hljs-number">1800000</span><br><br><span class="hljs-comment"># MyBatis-Plus常规配置</span><br><span class="hljs-attr">mybatis-plus:</span><br>  <span class="hljs-attr">mapper-locations:</span> <span class="hljs-string">classpath*:/mapper/**/*.xml</span><br>  <span class="hljs-attr">configuration:</span><br>    <span class="hljs-attr">map-underscore-to-camel-case:</span> <span class="hljs-literal">true</span><br>    <span class="hljs-attr">log-impl:</span> <span class="hljs-string">org.apache.ibatis.logging.stdout.StdOutImpl</span><br>  <span class="hljs-attr">global-config:</span><br>    <span class="hljs-attr">db-config:</span><br>      <span class="hljs-attr">id-type:</span> <span class="hljs-string">auto</span><br>      <span class="hljs-attr">logic-delete-field:</span> <span class="hljs-string">deleted</span><br>      <span class="hljs-attr">logic-delete-value:</span> <span class="hljs-number">1</span><br>      <span class="hljs-attr">logic-not-delete-value:</span> <span class="hljs-number">0</span><br></code></pre></td></tr></table></figure>
+
+<p><strong>划重点：</strong><code>spring.threads.virtual.enabled=true</code> <strong>这一行，是Spring Boot官方提供的最稳定的虚拟线程开启方式</strong>，它会自动替换Spring内部的<code>TaskExecutor</code>为虚拟线程执行器，无需手动写任何Bean配置，避免了手动配置带来的事务兼容问题。</p>
+<h3 id="3-第三步：事务写法"><a href="#3-第三步：事务写法" class="headerlink" title="3. 第三步：事务写法"></a>3. 第三步：事务写法</h3><p>开启虚拟线程后，同步事务的写法和之前完全一致，没有任何变化；异步事务需要注意注解的位置，核心原则：<code>@Transactional</code>必须加在<strong>虚拟线程执行的方法</strong>上。</p>
+<h4 id="场景1：同步事务（MVC请求）"><a href="#场景1：同步事务（MVC请求）" class="headerlink" title="场景1：同步事务（MVC请求）"></a>场景1：同步事务（MVC请求）</h4><p>开启虚拟线程后，Spring MVC的<code>每个请求都会自动使用虚拟线程处理</code>，事务写法完全不变，开箱即用：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@RestController</span><br><span class="hljs-meta">@RequestMapping(&quot;/test&quot;)</span><br><span class="hljs-meta">@RequiredArgsConstructor</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">testController</span> &#123;<br>    <span class="hljs-keyword">private</span> <span class="hljs-keyword">final</span> testService testService;<br><br>    <span class="hljs-meta">@PostMapping(&quot;/weight/distribute&quot;)</span><br>    <span class="hljs-keyword">public</span> ResponseEntity&lt;Void&gt; <span class="hljs-title function_">distributeWeight</span><span class="hljs-params">(<span class="hljs-meta">@RequestBody</span> WeightDistributeDTO dto)</span> &#123;<br>        <span class="hljs-comment">// 这个方法的执行，已经在Spring自动分配的虚拟线程中</span><br>        testService.distributeWeight(dto.getInbdWoId(), dto.getGoodsWeight(), dto.getUserId());<br>        <span class="hljs-keyword">return</span> ResponseEntity.ok().build();<br>    &#125;<br>&#125;<br><br><span class="hljs-meta">@Service</span><br><span class="hljs-meta">@RequiredArgsConstructor</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">testService</span> &#123;<br>    <span class="hljs-keyword">private</span> <span class="hljs-keyword">final</span> InbdRecItemMapper recItemMapper;<br>    <span class="hljs-keyword">private</span> <span class="hljs-keyword">final</span> InvPalletMapper palletMapper;<br><br>    <span class="hljs-comment">// 同步事务，写法和之前完全一致，虚拟线程中完全生效</span><br>    <span class="hljs-meta">@Transactional(rollbackFor = Exception.class)</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">distributeWeight</span><span class="hljs-params">(Long inbdWoId, BigDecimal goodsWeight, Long userId)</span> &#123;<br>        <span class="hljs-comment">// 1. 查询明细</span><br>        List&lt;InbdRecItem&gt; recItems = recItemMapper.selectList(Wrappers.lambdaQuery(InbdRecItem.class)<br>                .eq(InbdRecItem::getInbdWoId, inbdWoId));<br>        <span class="hljs-comment">// 2. 重量分配</span><br>        doDistribute(recItems, goodsWeight);<br>        <span class="hljs-comment">// 3. MP更新操作，和事务绑定</span><br>        recItemMapper.updateBatchById(recItems);<br>        <span class="hljs-comment">// 4. 异常触发回滚</span><br>        <span class="hljs-keyword">if</span> (recItems.isEmpty()) &#123;<br>            <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">BusinessException</span>(<span class="hljs-string">&quot;明细不能为空&quot;</span>);<br>        &#125;<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<h4 id="场景2：异步事务（-Async）"><a href="#场景2：异步事务（-Async）" class="headerlink" title="场景2：异步事务（@Async）"></a>场景2：异步事务（@Async）</h4><p>这是最高频的使用场景，也是最容易出现事务失效的场景，核心规则：<code>@Async</code>和<code>@Transactional</code><strong>必须加在同一个方法上</strong>，让异步方法的执行（虚拟线程）和事务<strong>绑定</strong>。</p>
+<p>正确写法：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@Service</span><br><span class="hljs-meta">@RequiredArgsConstructor</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">AsynctestService</span> &#123;<br>    <span class="hljs-keyword">private</span> <span class="hljs-keyword">final</span> InbdRecItemMapper recItemMapper;<br><br>    <span class="hljs-comment">// 正确✅️：@Async和@Transactional加在同一个方法上</span><br>    <span class="hljs-comment">// 方法执行在虚拟线程中，事务上下文绑定到当前虚拟线程，完全生效</span><br>    <span class="hljs-meta">@Async</span><br>    <span class="hljs-meta">@Transactional(rollbackFor = Exception.class)</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">asyncBatchHandle</span><span class="hljs-params">(List&lt;InbdRecItem&gt; items)</span> &#123;<br>        <span class="hljs-comment">// 业务处理</span><br>        items.forEach(<span class="hljs-built_in">this</span>::handleItem);<br>        <span class="hljs-comment">// MP批量更新</span><br>        recItemMapper.updateBatchById(items);<br>        <span class="hljs-comment">// 异常触发回滚</span><br>        <span class="hljs-keyword">if</span> (items.stream().anyMatch(item -&gt; item.getActualWeight().compareTo(BigDecimal.ZERO) &lt; <span class="hljs-number">0</span>)) &#123;<br>            <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">BusinessException</span>(<span class="hljs-string">&quot;重量不能为负数&quot;</span>);<br>        &#125;<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>错误写法（事务完全失效）：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@Service</span><br><span class="hljs-meta">@RequiredArgsConstructor</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">ErrorAsyncService</span> &#123;<br>    <span class="hljs-keyword">private</span> <span class="hljs-keyword">final</span> AsynctestService asynctestService;<br><br>    <span class="hljs-comment">// 错误❌️：@Transactional加在主线程上，@Async方法执行在独立的虚拟线程中</span><br>    <span class="hljs-comment">// 主线程和虚拟线程的ThreadLocal不共享，事务完全不生效</span><br>    <span class="hljs-meta">@Transactional(rollbackFor = Exception.class)</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">errorAsyncHandle</span><span class="hljs-params">(List&lt;InbdRecItem&gt; items)</span> &#123;<br>        asynctestService.asyncBatchHandle(items);<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<h2 id="四、注意事项（★）"><a href="#四、注意事项（★）" class="headerlink" title="四、注意事项（★）"></a>四、注意事项（★）</h2><h3 id="坑1：异步事务失效"><a href="#坑1：异步事务失效" class="headerlink" title="坑1：异步事务失效"></a>坑1：异步事务失效</h3><p><strong>问题现象</strong>：<code>@Async</code>方法里的数据库操作异常，事务没有回滚。</p>
+<p><strong>根本原因</strong>：</p>
+<ul>
+<li>Spring的<code>@Transactional</code>是基于AOP实现的，事务上下文绑定到当前线程的ThreadLocal。</li>
+<li>主线程开启的事务，和<code>@Async</code>虚拟线程是两个完全独立的线程，ThreadLocal不共享，虚拟线程里的操作根本不在主线程的事务中。</li>
+<li>更严重的是：如果<code>@Async</code>方法上没有加<code>@Transactional</code>，MP会为每个CRUD操作单独获取连接、单独提交事务，完全没有原子性。</li>
+</ul>
+<p><strong>避坑方案</strong>：</p>
+<ol>
+<li>🔴必须在<code>@Async</code>注解的方法上，同时加上<code>@Transactional</code>注解，让事务绑定到虚拟线程。</li>
+<li>异步事务必须用<code>REQUIRED</code>传播级别（默认），不要用<code>REQUIRES_NEW</code>以外的其他传播级别，避免上下文错乱。</li>
+<li>必须抛出异步方法的异常，否则异常不会被事务切面捕获，无法触发回滚。</li>
+</ol>
+<h3 id="坑2：JDBC连接池阻塞"><a href="#坑2：JDBC连接池阻塞" class="headerlink" title="坑2：JDBC连接池阻塞"></a>坑2：JDBC连接池阻塞</h3><p><strong>问题现象</strong>：开启虚拟线程后，并发量上去了，但是系统吞吐量没有提升，大量虚拟线程处于阻塞状态。 </p>
+<p><strong>根本原因</strong>：</p>
+<ul>
+<li>虚拟线程的核心优势是解决IO阻塞的线程占用问题，但JDBC连接池的连接数是有限的。</li>
+<li>传统平台线程场景，我们通常把HikariCP的最大连接数设为<code>CPU核心数*2</code>，但虚拟线程场景下，大量并发请求会同时争抢连接，连接池满了之后，所有虚拟线程都会阻塞在<code>获取连接</code>的步骤，性能直接打折扣。</li>
+<li>更严重的是：如果连接数设置过大，数据库的性能会急剧下降，反而拖垮整个系统。</li>
+</ul>
+<p><strong>避坑方案</strong>：</p>
+<ol>
+<li>虚拟线程场景下，HikariCP的<code>maximum-pool-size</code>不要超过20-30，数据库的最大连接数也要对应调整。<ol>
+<li>核心逻辑：数据库的处理能力是有限的，过多的连接只会造成数据库的上下文切换开销，反而降低性能。</li>
+<li>业界最佳实践：MySQL的最佳连接数通常在20-50之间，和虚拟线程的数量无关。</li>
+</ol>
+</li>
+<li>必须设置合理的<code>connection-timeout</code>（建议3000ms），避免虚拟线程长时间阻塞等待连接。</li>
+<li>🔴绝对不要用无界的连接池，否则会直接把数据库打挂。</li>
+</ol>
+<h3 id="坑3：长事务占用连接，导致连接池耗尽"><a href="#坑3：长事务占用连接，导致连接池耗尽" class="headerlink" title="坑3：长事务占用连接，导致连接池耗尽"></a>坑3：长事务占用连接，导致连接池耗尽</h3><p><strong>问题现象</strong>：系统运行一段时间后，连接池满了，所有请求都超时，数据库连接全部处于占用状态。 </p>
+<p><strong>根本原因</strong>：</p>
+<ul>
+<li>虚拟线程适合执行<code>短平快</code>的任务，而长事务会长期占用数据库连接，导致连接池被快速耗尽。</li>
+<li>比如：在一个事务里，先做数据库查询，然后调用第三方接口（耗时5s），再做数据库更新，整个事务持续5s，连接被占用5s，高并发下连接池瞬间就满了。</li>
+<li>虚拟线程的并发量是平台线程的几十倍，长事务的危害被无限放大，之前平台线程场景下不明显的问题，在虚拟线程场景下会直接导致系统雪崩。</li>
+</ul>
+<p><strong>避坑方案</strong>：</p>
+<ol>
+<li>🔴<strong>绝对禁止在事务中执行非数据库操作</strong>：比如第三方接口调用、文件IO、本地耗时计算，必须把这些操作提到事务之外。</li>
+<li>大事务拆分成小事务：批量处理场景，拆分成多个小批次，每个批次用独立的事务，避免单个事务执行时间过长。</li>
+<li>严格控制事务的执行时间，单个事务的执行时间建议不超过<code>100ms</code>。</li>
+</ol>
+<h3 id="坑4：ThreadLocal传递错乱，事务上下文污染"><a href="#坑4：ThreadLocal传递错乱，事务上下文污染" class="headerlink" title="坑4：ThreadLocal传递错乱，事务上下文污染"></a>坑4：ThreadLocal传递错乱，事务上下文污染</h3><p><strong>问题现象</strong>：偶尔出现事务提交&#x2F;回滚异常，或者拿到了不属于当前事务的数据库连接，极难复现。 </p>
+<p><strong>根本原因</strong>：</p>
+<ul>
+<li>很多开发者习惯用<code>InheritableThreadLocal</code>传递上下文，比如用户信息、租户ID。</li>
+<li>虚拟线程场景下，<code>InheritableThreadLocal</code>会从父线程拷贝数据到子虚拟线程，但如果父线程是平台线程池中的线程，会出现线程复用导致的上下文错乱。</li>
+<li>更严重的是：如果不小心把事务上下文的ThreadLocal传递到了其他虚拟线程，会导致多个线程共用同一个数据库连接，直接造成事务错乱。</li>
+</ul>
+<p><strong>避坑方案</strong>：</p>
+<ol>
+<li>虚拟线程场景下，优先使用<code>ThreadLocal</code>，而不是<code>InheritableThreadLocal</code>。</li>
+<li>如果必须传递上下文，使用Spring 6.1+提供的<code>ContextSnapshot</code>来传递，而不是手动操作ThreadLocal，它会安全地把父线程的上下文传递到子虚拟线程，不会出现错乱。</li>
+<li>🔴绝对不要手动操作<code>TransactionSynchronizationManager</code>的ThreadLocal，避免事务上下文污染。</li>
+</ol>
+<h3 id="坑5：synchronized锁导致虚拟线程无法挂载，性能急剧下降"><a href="#坑5：synchronized锁导致虚拟线程无法挂载，性能急剧下降" class="headerlink" title="坑5：synchronized锁导致虚拟线程无法挂载，性能急剧下降"></a>坑5：synchronized锁导致虚拟线程无法挂载，性能急剧下降</h3><p><strong>问题现象</strong>：开启虚拟线程后，并发量上去了，CPU使用率飙升，但是吞吐量没有提升，大量虚拟线程处于RUNNABLE状态。 </p>
+<p><strong>根本原因</strong>：</p>
+<ul>
+<li>Java 21之前，虚拟线程遇到<code>synchronized</code>重量级锁时，会被固定在载体线程上，无法挂载，导致载体线程被占用，其他虚拟线程无法使用，完全失去了虚拟线程的优势。</li>
+<li>Java 21虽然已经优化了这个问题，但是在高并发场景下，<code>synchronized</code>锁依然会成为性能瓶颈，导致大量虚拟线程阻塞在锁上。</li>
+</ul>
+<p><strong>避坑方案</strong>：</p>
+<ol>
+<li>虚拟线程场景下，优先使用<code>java.util.concurrent.locks.ReentrantLock</code>替代<code>synchronized</code>，它完全兼容虚拟线程的挂载机制，阻塞时会让出载体线程。</li>
+<li>必须缩小锁的范围，只锁最核心的资源竞争代码，不要锁整个方法。</li>
+<li>🔴绝对不要在事务中加锁，否则会导致锁的持有时间过长，同时占用连接和锁，放大并发问题。</li>
+</ol>
+<h3 id="坑6：事务同步器在虚拟线程中的异常"><a href="#坑6：事务同步器在虚拟线程中的异常" class="headerlink" title="坑6：事务同步器在虚拟线程中的异常"></a>坑6：事务同步器在虚拟线程中的异常</h3><p><strong>问题现象</strong>：用<code>TransactionSynchronizationManager.registerSynchronization</code>注册的事务同步器，比如<code>afterCommit</code>回调，偶尔不执行，或者执行时报错。 </p>
+<p><strong>根本原因</strong>：</p>
+<ul>
+<li>事务同步器是绑定到当前事务的ThreadLocal中的，而如果在虚拟线程中注册同步器，虚拟线程在事务结束前就销毁了，会导致同步器丢失。</li>
+<li>更常见的是：在主线程中开启事务，然后在子虚拟线程中注册同步器，子虚拟线程的ThreadLocal和主线程不共享，同步器根本没有注册到当前事务中。</li>
+</ul>
+<p><strong>避坑方案</strong>：</p>
+<ol>
+<li>事务同步器必须在<strong>事务所在的同一个虚拟线程</strong>中注册，绝对不能跨线程注册。</li>
+<li>🔴异步场景下，优先使用<code>@TransactionalEventListener</code>，而不是手动注册事务同步器，它会安全地处理事务事件的监听，兼容虚拟线程。</li>
+</ol>
+<h3 id="坑7：MP分页插件、乐观锁插件的兼容性"><a href="#坑7：MP分页插件、乐观锁插件的兼容性" class="headerlink" title="坑7：MP分页插件、乐观锁插件的兼容性"></a>坑7：MP分页插件、乐观锁插件的兼容性</h3><p><strong>问题现象</strong>：分页查询偶尔出现分页参数错乱，或者乐观锁版本号更新失败。 </p>
+<p><strong>根本原因</strong>：</p>
+<ul>
+<li>MP的分页插件、乐观锁插件，底层是用ThreadLocal来传递分页参数、版本号的。</li>
+<li>如果在虚拟线程中，手动把分页参数设置到ThreadLocal中，然后异步执行，会出现参数传递错乱的问题。</li>
+</ul>
+<p><strong>避坑方案</strong>：</p>
+<ol>
+<li>升级MP到3.5.6+版本，官方已经修复了虚拟线程场景下的ThreadLocal兼容性问题。</li>
+<li>🔴分页参数必须在<strong>同一个虚拟线程</strong>中设置和使用，不要跨线程传递分页参数。</li>
+<li>🔴绝对不要在多个虚拟线程中共用同一个Page对象，避免线程安全问题。</li>
+</ol>
+<h2 id="五、最佳实践"><a href="#五、最佳实践" class="headerlink" title="五、最佳实践"></a>五、最佳实践</h2><h3 id="1-异步事务"><a href="#1-异步事务" class="headerlink" title="1. 异步事务"></a>1. 异步事务</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@Service</span><br><span class="hljs-meta">@RequiredArgsConstructor</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">StandardAsyncService</span> &#123;<br>    <span class="hljs-keyword">private</span> <span class="hljs-keyword">final</span> InbdRecItemMapper recItemMapper;<br>    <span class="hljs-keyword">private</span> <span class="hljs-keyword">final</span> ApplicationEventPublisher eventPublisher;<br><br>    <span class="hljs-comment">/**</span><br><span class="hljs-comment">     * 标准异步事务写法：</span><br><span class="hljs-comment">     * 1. <span class="hljs-doctag">@Async</span> + <span class="hljs-doctag">@Transactional</span> 同时加在方法上</span><br><span class="hljs-comment">     * 2. 严格控制事务范围，只在事务内做数据库操作</span><br><span class="hljs-comment">     * 3. 异常捕获与回滚</span><br><span class="hljs-comment">     * 4. 事务提交后发布事件</span><br><span class="hljs-comment">     */</span><br>    <span class="hljs-meta">@Async</span><br>    <span class="hljs-meta">@Transactional(rollbackFor = Exception.class)</span><br>    <span class="hljs-keyword">public</span> CompletableFuture&lt;Void&gt; <span class="hljs-title function_">standardAsyncHandle</span><span class="hljs-params">(List&lt;Long&gt; ids)</span> &#123;<br>        <span class="hljs-keyword">try</span> &#123;<br>            <span class="hljs-comment">// 1. 事务外：提前查询数据，避免事务内耗时操作</span><br>            List&lt;InbdRecItem&gt; items = recItemMapper.selectBatchIds(ids);<br>            <span class="hljs-keyword">if</span> (CollUtil.isEmpty(items)) &#123;<br>                <span class="hljs-keyword">return</span> CompletableFuture.completedFuture(<span class="hljs-literal">null</span>);<br>            &#125;<br><br>            <span class="hljs-comment">// 2. 事务内：仅做数据处理和数据库操作，无任何IO</span><br>            items.forEach(item -&gt; &#123;<br>                item.setActualWeight(calculateWeight(item));<br>                item.setUpdateTime(LocalDateTime.now());<br>            &#125;);<br>            recItemMapper.updateBatchById(items);<br><br>            <span class="hljs-comment">// 3. 事务提交后发布事件，用事务监听，避免事务内发布</span><br>            eventPublisher.publishEvent(<span class="hljs-keyword">new</span> <span class="hljs-title class_">WeightDistributeEvent</span>(ids));<br><br>            <span class="hljs-keyword">return</span> CompletableFuture.completedFuture(<span class="hljs-literal">null</span>);<br>        &#125; <span class="hljs-keyword">catch</span> (Exception e) &#123;<br>            log.error(<span class="hljs-string">&quot;异步处理失败&quot;</span>, e);<br>            <span class="hljs-comment">// 异常抛出，触发事务回滚</span><br>            <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">BusinessException</span>(<span class="hljs-string">&quot;异步处理失败&quot;</span>, e);<br>        &#125;<br>    &#125;<br><br>    <span class="hljs-comment">// 事务监听：事务提交后执行，兼容虚拟线程</span><br>    <span class="hljs-meta">@TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">handleWeightDistributeEvent</span><span class="hljs-params">(WeightDistributeEvent event)</span> &#123;<br>        <span class="hljs-comment">// 异步后续处理，比如通知、日志等</span><br>        log.info(<span class="hljs-string">&quot;重量分配完成，ids: &#123;&#125;&quot;</span>, event.getIds());<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<h3 id="2-批量数据处理"><a href="#2-批量数据处理" class="headerlink" title="2. 批量数据处理"></a>2. 批量数据处理</h3><p>虚拟线程非常适合批量数据处理，但必须避免长事务，正确的做法是<code>拆分小批次 + 虚拟线程并行处理 + 独立事务</code>：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@Service</span><br><span class="hljs-meta">@RequiredArgsConstructor</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">BatchHandleService</span> &#123;<br>    <span class="hljs-keyword">private</span> <span class="hljs-keyword">final</span> InbdRecItemMapper recItemMapper;<br>    <span class="hljs-keyword">private</span> <span class="hljs-keyword">final</span> AsyncHandleService asyncHandleService;<br><br>    <span class="hljs-comment">// 单次处理10万条数据，拆分批次并行处理</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">batchHandle</span><span class="hljs-params">()</span> &#123;<br>        <span class="hljs-comment">// 1. 全量查询数据</span><br>        List&lt;InbdRecItem&gt; allItems = recItemMapper.selectList(Wrappers.lambdaQuery(InbdRecItem.class)<br>                .eq(InbdRecItem::getStatus, <span class="hljs-number">0</span>));<br>        <span class="hljs-keyword">if</span> (CollUtil.isEmpty(allItems)) &#123;<br>            <span class="hljs-keyword">return</span>;<br>        &#125;<br><br>        <span class="hljs-comment">// 2. 拆分批次，每批次100条</span><br>        List&lt;List&lt;InbdRecItem&gt;&gt; batchList = ListUtil.split(allItems, <span class="hljs-number">100</span>);<br><br>        <span class="hljs-comment">// 3. 虚拟线程并行处理每个批次，每个批次独立事务</span><br>        List&lt;CompletableFuture&lt;Void&gt;&gt; futures = batchList.stream()<br>                .map(batch -&gt; asyncHandleService.handleBatch(batch))<br>                .toList();<br><br>        <span class="hljs-comment">// 4. 等待所有批次处理完成</span><br>        CompletableFuture.allOf(futures.toArray(<span class="hljs-keyword">new</span> <span class="hljs-title class_">CompletableFuture</span>[<span class="hljs-number">0</span>])).join();<br>        log.info(<span class="hljs-string">&quot;批量处理完成，总条数: &#123;&#125;&quot;</span>, allItems.size());<br>    &#125;<br>&#125;<br><br><span class="hljs-meta">@Service</span><br><span class="hljs-meta">@RequiredArgsConstructor</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">AsyncHandleService</span> &#123;<br>    <span class="hljs-keyword">private</span> <span class="hljs-keyword">final</span> InbdRecItemMapper recItemMapper;<br><br>    <span class="hljs-comment">// 每个批次独立的异步事务，失败仅回滚当前批次</span><br>    <span class="hljs-meta">@Async</span><br>    <span class="hljs-meta">@Transactional(rollbackFor = Exception.class)</span><br>    <span class="hljs-keyword">public</span> CompletableFuture&lt;Void&gt; <span class="hljs-title function_">handleBatch</span><span class="hljs-params">(List&lt;InbdRecItem&gt; batch)</span> &#123;<br>        <span class="hljs-keyword">try</span> &#123;<br>            <span class="hljs-comment">// 批次处理逻辑</span><br>            batch.forEach(item -&gt; item.setStatus(<span class="hljs-number">1</span>));<br>            recItemMapper.updateBatchById(batch);<br>            <span class="hljs-keyword">return</span> CompletableFuture.completedFuture(<span class="hljs-literal">null</span>);<br>        &#125; <span class="hljs-keyword">catch</span> (Exception e) &#123;<br>            log.error(<span class="hljs-string">&quot;批次处理失败&quot;</span>, e);<br>            <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">BusinessException</span>(<span class="hljs-string">&quot;批次处理失败&quot;</span>, e);<br>        &#125;<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<h3 id="3-连接池最佳配置"><a href="#3-连接池最佳配置" class="headerlink" title="3. 连接池最佳配置"></a>3. 连接池最佳配置</h3><figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><code class="hljs yaml"><span class="hljs-attr">spring:</span><br>  <span class="hljs-attr">datasource:</span><br>    <span class="hljs-attr">hikari:</span><br>      <span class="hljs-comment"># 核心：最大连接数不要超过30，和虚拟线程数量无关</span><br>      <span class="hljs-attr">maximum-pool-size:</span> <span class="hljs-number">20</span><br>      <span class="hljs-comment"># 最小空闲连接数，保持和核心数一致，避免频繁创建连接</span><br>      <span class="hljs-attr">minimum-idle:</span> <span class="hljs-number">10</span><br>      <span class="hljs-comment"># 连接超时时间3s，避免虚拟线程长时间阻塞</span><br>      <span class="hljs-attr">connection-timeout:</span> <span class="hljs-number">3000</span><br>      <span class="hljs-comment"># 空闲连接超时10分钟</span><br>      <span class="hljs-attr">idle-timeout:</span> <span class="hljs-number">600000</span><br>      <span class="hljs-comment"># 连接最大生命周期30分钟</span><br>      <span class="hljs-attr">max-lifetime:</span> <span class="hljs-number">1800000</span><br>      <span class="hljs-comment"># 连接测试查询，保证连接有效</span><br>      <span class="hljs-attr">connection-test-query:</span> <span class="hljs-string">SELECT</span> <span class="hljs-number">1</span><br></code></pre></td></tr></table></figure>
+
+<h3 id="4-监控与排查"><a href="#4-监控与排查" class="headerlink" title="4. 监控与排查"></a>4. 监控与排查</h3><ol>
+<li><strong>虚拟线程监控</strong>：Spring Boot 3.2+已经集成了虚拟线程的监控，可通过Actuator暴露<code>/actuator/threads</code>端点，查看虚拟线程的数量、状态、阻塞情况。</li>
+<li><strong>事务监控</strong>：开启Spring事务的debug日志，查看事务的创建、提交、回滚情况，定位事务失效问题：</li>
+</ol>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs yaml"><span class="hljs-attr">logging:</span><br>  <span class="hljs-attr">level:</span><br>    <span class="hljs-attr">org.springframework.transaction:</span> <span class="hljs-string">debug</span><br>    <span class="hljs-attr">com.baomidou.mybatisplus:</span> <span class="hljs-string">debug</span><br></code></pre></td></tr></table></figure>
+
+<ol start="3">
+<li><strong>连接池监控</strong>：通过HikariCP的Metrics，监控连接池的活跃连接数、等待线程数，及时发现连接池瓶颈。</li>
+</ol>
+<h2 id="六、测试验证"><a href="#六、测试验证" class="headerlink" title="六、测试验证"></a>六、测试验证</h2><h3 id="1-同步事务回滚测试"><a href="#1-同步事务回滚测试" class="headerlink" title="1. 同步事务回滚测试"></a>1. 同步事务回滚测试</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@SpringBootTest</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">VirtualThreadTransactionTest</span> &#123;<br>    <span class="hljs-meta">@Autowired</span><br>    <span class="hljs-keyword">private</span> testService testService;<br>    <span class="hljs-meta">@Autowired</span><br>    <span class="hljs-keyword">private</span> InbdRecItemMapper recItemMapper;<br><br>    <span class="hljs-meta">@Test</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">testSyncTransactionRollback</span><span class="hljs-params">()</span> &#123;<br>        <span class="hljs-comment">// 准备测试数据</span><br>        <span class="hljs-type">Long</span> <span class="hljs-variable">inbdWoId</span> <span class="hljs-operator">=</span> <span class="hljs-number">1L</span>;<br>        <span class="hljs-type">BigDecimal</span> <span class="hljs-variable">goodsWeight</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">BigDecimal</span>(<span class="hljs-string">&quot;100&quot;</span>);<br>        <span class="hljs-type">Long</span> <span class="hljs-variable">userId</span> <span class="hljs-operator">=</span> <span class="hljs-number">1L</span>;<br><br>        <span class="hljs-comment">// 执行方法，预期会抛出异常，事务回滚</span><br>        <span class="hljs-keyword">try</span> &#123;<br>            testService.distributeWeight(inbdWoId, goodsWeight, userId);<br>        &#125; <span class="hljs-keyword">catch</span> (BusinessException e) &#123;<br>            System.out.println(<span class="hljs-string">&quot;异常捕获成功&quot;</span>);<br>        &#125;<br><br>        <span class="hljs-comment">// 验证：数据库中没有更新的数据，事务回滚成功</span><br>        List&lt;InbdRecItem&gt; items = recItemMapper.selectList(Wrappers.lambdaQuery(InbdRecItem.class)<br>                .eq(InbdRecItem::getInbdWoId, inbdWoId));<br>        items.forEach(item -&gt; &#123;<br>            <span class="hljs-keyword">assert</span> item.getActualWeight() == <span class="hljs-literal">null</span>;<br>        &#125;);<br>        System.out.println(<span class="hljs-string">&quot;同步事务回滚测试通过&quot;</span>);<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<h3 id="2-异步事务回滚测试"><a href="#2-异步事务回滚测试" class="headerlink" title="2. 异步事务回滚测试"></a>2. 异步事务回滚测试</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@SpringBootTest</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">AsyncTransactionTest</span> &#123;<br>    <span class="hljs-meta">@Autowired</span><br>    <span class="hljs-keyword">private</span> AsynctestService asynctestService;<br>    <span class="hljs-meta">@Autowired</span><br>    <span class="hljs-keyword">private</span> InbdRecItemMapper recItemMapper;<br><br>    <span class="hljs-meta">@Test</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">testAsyncTransactionRollback</span><span class="hljs-params">()</span> <span class="hljs-keyword">throws</span> Exception &#123;<br>        <span class="hljs-comment">// 准备测试数据</span><br>        List&lt;InbdRecItem&gt; items = recItemMapper.selectList(Wrappers.lambdaQuery(InbdRecItem.class)<br>                .eq(InbdRecItem::getInbdWoId, <span class="hljs-number">1L</span>));<br>        <span class="hljs-comment">// 设置非法重量，预期会抛出异常，事务回滚</span><br>        items.forEach(item -&gt; item.setActualWeight(<span class="hljs-keyword">new</span> <span class="hljs-title class_">BigDecimal</span>(<span class="hljs-string">&quot;-1&quot;</span>)));<br><br>        <span class="hljs-comment">// 执行异步方法</span><br>        <span class="hljs-keyword">try</span> &#123;<br>            asynctestService.asyncBatchHandle(items).get();<br>        &#125; <span class="hljs-keyword">catch</span> (ExecutionException e) &#123;<br>            System.out.println(<span class="hljs-string">&quot;异步异常捕获成功&quot;</span>);<br>        &#125;<br><br>        <span class="hljs-comment">// 验证：数据库中数据没有被更新，事务回滚成功</span><br>        List&lt;InbdRecItem&gt; dbItems = recItemMapper.selectBatchIds(items.stream().map(InbdRecItem::getId).toList());<br>        dbItems.forEach(item -&gt; &#123;<br>            <span class="hljs-keyword">assert</span> item.getActualWeight().compareTo(<span class="hljs-keyword">new</span> <span class="hljs-title class_">BigDecimal</span>(<span class="hljs-string">&quot;-1&quot;</span>)) != <span class="hljs-number">0</span>;<br>        &#125;);<br>        System.out.println(<span class="hljs-string">&quot;异步事务回滚测试通过&quot;</span>);<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+
+              
+            </div>
+            <hr/>
+            <div>
+              <div>
+  <img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20241112163319.png" srcset="/img/loading.gif" lazyload>
+</div>
+<div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/02-%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/" class="category-chain-item">02_编程语言</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/02-%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/01-Java/" class="category-chain-item">01_Java</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/02-%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/01-Java/06-Java21/" class="category-chain-item">06_Java21</a>
+  
+  
+
+  
+
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/Java21/">#Java21</a>
+      
+        <a href="/tags/%E8%99%9A%E6%8B%9F%E7%BA%BF%E7%A8%8B/">#虚拟线程</a>
+      
+        <a href="/tags/%E4%BA%8B%E5%8A%A1%E7%AE%A1%E7%90%86/">#事务管理</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>02-Java21虚拟线程与事务管理</div>
+      <div>https://janycode.github.io/2026/05/03/02_编程语言/01_Java/06_Java21/02-Java21虚拟线程与事务管理/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Jerry(姜源)</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2026年5月3日</div>
+        </div>
+      
+      
+      <div class="license-meta-item">
+        <div>许可协议</div>
+        <div>
+          
+            
+            
+              <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+              <span class="hint--top hint--rounded" aria-label="BY - 姜源">
+                <i class="iconfont icon-by"></i>
+              </span>
+              </a>
+            
+          
+        </div>
+      </div>
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2026/04/07/02_%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/01_Java/06_Java21/01-Java21+Groovy%E5%8A%A8%E6%80%81%E8%84%9A%E6%9C%AC/" title="01-Java21+Groovy动态脚本">
+                        <span class="hidden-mobile">01-Java21+Groovy动态脚本</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+  <article id="comments" lazyload>
+    
+  <div id="SOHUCS" sid='https://janycode.github.io/2026/05/03/02_%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/01_Java/06_Java21/02-Java21%E8%99%9A%E6%8B%9F%E7%BA%BF%E7%A8%8B%E4%B8%8E%E4%BA%8B%E5%8A%A1%E7%AE%A1%E7%90%86/'></div>
+  <script type="text/javascript">
+    Fluid.utils.loadComments('#SOHUCS', function() {
+      Fluid.utils.createScript("https://changyan.sohu.com/upload/changyan.js", function() {
+        window.changyan.api.config({"appid":"cyw5OHIcO","appkey":"fea3446b3df4b3f129f34da4cbc87e51"})
+      });
+    });
+  </script>
+  <noscript>Please enable JavaScript to view the comments</noscript>
+
+
+  </article>
+
+
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://simple.blog.csdn.net" target="_blank" rel="nofollow noopener"><span>CSDN</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/janycode" target="_blank" rel="nofollow noopener"><span>GitHub</span></a> <i class="iconfont icon-love"></i> <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="busuanzi_container_site_pv" style="display: none">
+        总访问量(PV) 
+        <span id="busuanzi_value_site_pv"></span>
+         次，
+      </span>
+    
+    
+      <span id="busuanzi_container_site_uv" style="display: none">
+        总访客数(UV) 
+        <span id="busuanzi_value_site_uv"></span>
+         人
+      </span>
+    
+    
+  
+</div>
+
+  
+  
+  
+</div>
+
+<!-- live2d 动画 -->
+<script src="https://eqcn.ajz.miesnfu.com/wp-content/plugins/wp-3d-pony/live2dw/lib/L2Dwidget.min.js"></script>
+<script>
+    L2Dwidget.init({
+        "model": {
+            jsonPath: "https://unpkg.com/live2d-widget-model-haruto@1.0.5/assets/haruto.model.json",
+            "scale": 1
+        },
+        "display": {
+            "position": "right",
+            "width": 100,
+            "height": 200,
+            "hOffset": 35,
+            "vOffset": -85
+        },
+        "mobile": {
+            "show": false,
+            "scale": 0.1
+        },
+        "react": {
+            "opacityDefault": 0.75,
+            "opacityOnHover": 0.2
+        }
+    });
+</script>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <!-- Baidu Analytics -->
+    <script defer>
+      if (!Fluid.ctx.dnt) {
+        var _hmt = _hmt || [];
+        (function() {
+          var hm = document.createElement("script");
+          hm.src = "https://hm.baidu.com/hm.js?bfff735c897eb60ea49b735096b20e47";
+          var s = document.getElementsByTagName("script")[0];
+          s.parentNode.insertBefore(hm, s);
+        })();
+      }
+    </script>
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.0/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      headingSelector : CONFIG.toc.headingSelector || 'h1,h2,h3,h4,h5,h6',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      collapseDepth   : CONFIG.toc.collapseDepth || 0,
+      scrollSmooth    : true,
+      headingsOffset  : -boardTop
+    });
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+  });
+</script>
+
+
+  <script>
+  (function() {
+    var enableLang = CONFIG.code_language.enable && CONFIG.code_language.default;
+    var enableCopy = CONFIG.copy_btn;
+    if (!enableLang && !enableCopy) {
+      return;
+    }
+
+    function getBgClass(ele) {
+      return Fluid.utils.getBackgroundLightness(ele) >= 0 ? 'code-widget-light' : 'code-widget-dark';
+    }
+
+    var copyTmpl = '';
+    copyTmpl += '<div class="code-widget">';
+    copyTmpl += 'LANG';
+    copyTmpl += '</div>';
+    jQuery('.markdown-body pre').each(function() {
+      var $pre = jQuery(this);
+      if ($pre.find('code.mermaid').length > 0) {
+        return;
+      }
+      if ($pre.find('span.line').length > 0) {
+        return;
+      }
+
+      var lang = '';
+
+      if (enableLang) {
+        lang = CONFIG.code_language.default;
+        if ($pre[0].children.length > 0 && $pre[0].children[0].classList.length >= 2 && $pre.children().hasClass('hljs')) {
+          lang = $pre[0].children[0].classList[1];
+        } else if ($pre[0].getAttribute('data-language')) {
+          lang = $pre[0].getAttribute('data-language');
+        } else if ($pre.parent().hasClass('sourceCode') && $pre[0].children.length > 0 && $pre[0].children[0].classList.length >= 2) {
+          lang = $pre[0].children[0].classList[1];
+          $pre.parent().addClass('code-wrapper');
+        } else if ($pre.parent().hasClass('markdown-body') && $pre[0].classList.length === 0) {
+          $pre.wrap('<div class="code-wrapper"></div>');
+        }
+        lang = lang.toUpperCase().replace('NONE', CONFIG.code_language.default);
+      }
+      $pre.append(copyTmpl.replace('LANG', lang).replace('code-widget">',
+        getBgClass($pre[0]) + (enableCopy ? ' code-widget copy-btn" data-clipboard-snippet><i class="iconfont icon-copy"></i>' : ' code-widget">')));
+
+      if (enableCopy) {
+        Fluid.utils.createScript('https://lib.baomitu.com/clipboard.js/2.0.10/clipboard.min.js', function() {
+          var clipboard = new window.ClipboardJS('.copy-btn', {
+            target: function(trigger) {
+              var nodes = trigger.parentNode.childNodes;
+              for (var i = 0; i < nodes.length; i++) {
+                if (nodes[i].tagName === 'CODE') {
+                  return nodes[i];
+                }
+              }
+            }
+          });
+          clipboard.on('success', function(e) {
+            e.clearSelection();
+            e.trigger.innerHTML = e.trigger.innerHTML.replace('icon-copy', 'icon-success');
+            setTimeout(function() {
+              e.trigger.innerHTML = e.trigger.innerHTML.replace('icon-success', 'icon-copy');
+            }, 2000);
+          });
+        });
+      }
+    });
+  })();
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

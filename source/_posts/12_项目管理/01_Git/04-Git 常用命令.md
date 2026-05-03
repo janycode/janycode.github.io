@@ -21,8 +21,8 @@ categories:
 同步本地：git pull
 工作状态：git status [path]
 提交暂存：git add filename 或 git add dirname 或 git add .
-提交暂存：git add -f filename       #添加不存在的文件增加参数 -f
-删除暂存：git rm --cached filename  #不删除物理文件，仅将该文件从缓存中删除
+强制暂存：git add -f filename       #添加不存在的文件增加参数 -f
+删除暂存：git rm --cached filename  #停止跟踪，不删除物理文件，git status 不会再跟踪文件变更，也不会再提交，除非强制暂存
 提交修改：git commit -m "说明信息"
 推送仓库：git push
 ```
