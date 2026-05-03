@@ -1,0 +1,885 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=light>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Jerry(姜源)">
+  <meta name="keywords" content="Java,Html,CSS,JavaScript,Vue,React,SpringBoot,Linux,shell编程经验分享、技术总结、心得体会">
+  
+    <meta name="description" content="参考资料：  GitHub Actions 文档：https:&#x2F;&#x2F;docs.github.com&#x2F;zh&#x2F;actions  今天终于把 GitHub Actions 的 auto build 自动化构建跑成功了！现在把完整的从 0 到 1 上手流程整理出来。 一、什么是Workflow简单定义GitHub Actions是GitHub官方推出的自动化工具。 可以在GitHub仓库内，自动完成代码提">
+<meta property="og:type" content="article">
+<meta property="og:title" content="06-Github Workflow免费工作流">
+<meta property="og:url" content="https://janycode.github.io/2020/03/19/12_%E9%A1%B9%E7%9B%AE%E7%AE%A1%E7%90%86/01_Git/06-Github%20Workflow%E5%85%8D%E8%B4%B9%E5%B7%A5%E4%BD%9C%E6%B5%81/index.html">
+<meta property="og:site_name" content="姜源の全栈云笔记">
+<meta property="og:description" content="参考资料：  GitHub Actions 文档：https:&#x2F;&#x2F;docs.github.com&#x2F;zh&#x2F;actions  今天终于把 GitHub Actions 的 auto build 自动化构建跑成功了！现在把完整的从 0 到 1 上手流程整理出来。 一、什么是Workflow简单定义GitHub Actions是GitHub官方推出的自动化工具。 可以在GitHub仓库内，自动完成代码提">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20200616223339.png">
+<meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20260426205240025.png">
+<meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20260426205545445.png">
+<meta property="article:published_time" content="2020-03-19T13:59:54.000Z">
+<meta property="article:modified_time" content="2026-05-03T01:51:21.029Z">
+<meta property="article:author" content="Jerry(姜源)">
+<meta property="article:tag" content="github">
+<meta property="article:tag" content="Git">
+<meta property="article:tag" content="workflow">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20200616223339.png">
+  
+  
+    <meta name="referrer" content="no-referrer-when-downgrade">
+  
+  
+  <title>06-Github Workflow免费工作流 - 姜源の全栈云笔记</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"janycode.github.io","root":"/","version":"1.9.0","typing":{"enable":true,"typeSpeed":50,"cursorChar":"|","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":false},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":"bfff735c897eb60ea49b735096b20e47","google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+
+  
+<meta name="generator" content="Hexo 6.2.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 50vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>姜源の全栈云笔记</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tools/">
+                <i class="iconfont icon-slack-fill"></i>
+                工具
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" target="_blank" rel="noopener" href="https://yuancodes.github.io/">
+                <i class="iconfont icon-notebook"></i>
+                Docsify
+              </a>
+            </li>
+          
+        
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="06-Github Workflow免费工作流"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-author" aria-hidden="true"></i>
+        Jerry(姜源)
+      </span>
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2020-03-19 21:59" pubdate>
+          星期四, 2020/03/19 21:59:54
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          <!-- compatible with older versions-->
+          4.4k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          <!-- compatible with older versions-->
+          37 分钟
+        
+      </span>
+    
+
+    
+    
+      
+        <span id="busuanzi_container_page_pv" style="display: none">
+          <i class="iconfont icon-eye" aria-hidden="true"></i>
+          <span id="busuanzi_value_page_pv"></span> 次
+        </span>
+        
+      
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">06-Github Workflow免费工作流</h1>
+            
+            <div class="markdown-body">
+              
+              <p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20200616223339.png" srcset="/img/loading.gif" lazyload alt="image-20200616223337238"></p>
+<p>参考资料：</p>
+<ul>
+<li>GitHub Actions 文档：<a target="_blank" rel="noopener" href="https://docs.github.com/zh/actions">https://docs.github.com/zh/actions</a></li>
+</ul>
+<p>今天终于把 GitHub Actions 的 auto build 自动化构建跑成功了！现在把完整的<code>从 0 到 1 上手流程</code>整理出来。</p>
+<h2 id="一、什么是Workflow"><a href="#一、什么是Workflow" class="headerlink" title="一、什么是Workflow"></a>一、什么是Workflow</h2><p>简单定义<code>GitHub Actions是GitHub官方推出的自动化工具。 可以在GitHub仓库内，自动完成代码提交之后的自动化构建</code>自动化测试自动化部署等一系列重复操作，无需手动输入命令执行。</p>
+<p>本次部署的 auto build 核心作用<code> 只要向仓库推送新代码，GitHub云端就会自动完成项目编译</code>项目打包 ` 产物生成，全程无需本地操作，极大简化重复构建流程。</p>
+<p>核心文件规则<code>所有自动化执行逻辑，统一编写在</code>.github&#x2F;workflows&#x2F;<code>目录下的</code>.yml 配置文件内，例如本次用到的 auto_build.yml，GitHub 会自动识别并调度执行文件内所有指令。</p>
+<h2 id="二、前期准备工作"><a href="#二、前期准备工作" class="headerlink" title="二、前期准备工作"></a>二、前期准备工作</h2><p>配置工作流之前，提前确认两项基础条件，规避基础报错问题：</p>
+<h3 id="1-仓库基础要求"><a href="#1-仓库基础要求" class="headerlink" title="1. 仓库基础要求"></a>1. 仓库基础要求</h3><ul>
+<li>项目代码已正常推送至 GitHub 仓库，公开仓库 &#x2F; 私有仓库均完美适配 Actions 能力</li>
+</ul>
+<h3 id="2-核心名词认知"><a href="#2-核心名词认知" class="headerlink" title="2. 核心名词认知"></a>2. 核心名词认知</h3><p>无需死记硬背，简单了解即可：</p>
+<ul>
+<li><code>Workflow</code> 完整自动化工作流整体统称，例如本次搭建的 Auto Build</li>
+<li><code>Job</code> 工作流内独立任务单元，一个工作流可拆分多项不同任务</li>
+<li><code>Step</code> 单个任务下的细分执行步骤，按配置顺序逐行运行</li>
+<li><code>Runner</code>GitHub 免费提供的云端运行服务器，负责远程执行配置脚本，无需自建服务器</li>
+</ul>
+<h2 id="三、从零搭建工作流"><a href="#三、从零搭建工作流" class="headerlink" title="三、从零搭建工作流"></a>三、从零搭建工作流</h2><h3 id="1-创建固定目录与配置文件"><a href="#1-创建固定目录与配置文件" class="headerlink" title="1. 创建固定目录与配置文件"></a>1. 创建固定目录与配置文件</h3><p>在项目仓库根目录，严格按照固定路径新建文件：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs Plain">.github/workflows/auto_build.yml<br></code></pre></td></tr></table></figure>
+
+<p>若无 <code>.github</code> 文件夹<code>workflows</code>子目录，手动逐级新建即可，目录名称大小写不可修改。</p>
+<h3 id="2-编写基础通用配置文件"><a href="#2-编写基础通用配置文件" class="headerlink" title="2. 编写基础通用配置文件"></a>2. 编写基础通用配置文件</h3><p>下方为通用小白版本配置，适配多数前端 &#x2F; 后端项目，全程附带详细注释，可直接复制修改使用：</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><code class="hljs yaml"><span class="hljs-comment"># 工作流展示名称`GitHub Actions页面展示文案，自定义修改</span><br><span class="hljs-attr">name:</span> <span class="hljs-string">Auto</span> <span class="hljs-string">Build</span> <span class="hljs-string">Project</span><br><br><span class="hljs-comment"># 触发规则`定义工作流在何种场景自动运行</span><br><span class="hljs-attr">on:</span><br>  <span class="hljs-comment"># 推送代码触发`指定监听分支</span><br>  <span class="hljs-attr">push:</span><br>    <span class="hljs-attr">branches:</span> [ <span class="hljs-string">main</span> ]<br>  <span class="hljs-comment"># 手动触发入口`无需推送代码，页面点击即可测试运行</span><br>  <span class="hljs-attr">workflow_dispatch:</span><br><br><span class="hljs-comment"># 任务全局配置</span><br><span class="hljs-attr">jobs:</span><br>  <span class="hljs-attr">build:</span><br>    <span class="hljs-comment"># 云端运行系统`默认使用Ubuntu稳定版本</span><br>    <span class="hljs-attr">runs-on:</span> <span class="hljs-string">ubuntu-latest</span><br><br>    <span class="hljs-comment"># 分步执行流程</span><br>    <span class="hljs-attr">steps:</span><br>      <span class="hljs-comment"># 步骤1 拉取仓库完整代码`固定依赖，必须保留</span><br>      <span class="hljs-bullet">-</span> <span class="hljs-attr">name:</span> <span class="hljs-string">Checkout</span> <span class="hljs-string">code</span><br>        <span class="hljs-attr">uses:</span> <span class="hljs-string">actions/checkout@v4</span><br><br>      <span class="hljs-comment"># 步骤2 配置运行环境`根据自身项目切换对应环境</span><br>      <span class="hljs-bullet">-</span> <span class="hljs-attr">name:</span> <span class="hljs-string">Set</span> <span class="hljs-string">up</span> <span class="hljs-string">Node.js</span><br>        <span class="hljs-attr">uses:</span> <span class="hljs-string">actions/setup-node@v4</span><br>        <span class="hljs-attr">with:</span><br>          <span class="hljs-attr">node-version:</span> <span class="hljs-string">&#x27;18&#x27;</span><br>          <span class="hljs-attr">cache:</span> <span class="hljs-string">&#x27;npm&#x27;</span><br><br>      <span class="hljs-comment"># 步骤3 安装项目依赖</span><br>      <span class="hljs-bullet">-</span> <span class="hljs-attr">name:</span> <span class="hljs-string">Install</span> <span class="hljs-string">dependencies</span><br>        <span class="hljs-attr">run:</span> <span class="hljs-string">npm</span> <span class="hljs-string">install</span><br><br>      <span class="hljs-comment"># 步骤4 执行项目构建指令`替换为自身项目真实命令</span><br>      <span class="hljs-bullet">-</span> <span class="hljs-attr">name:</span> <span class="hljs-string">Build</span> <span class="hljs-string">project</span><br>        <span class="hljs-attr">run:</span> <span class="hljs-string">npm</span> <span class="hljs-string">run</span> <span class="hljs-string">build</span><br><br>      <span class="hljs-comment"># 步骤5 构建完成提示</span><br>      <span class="hljs-bullet">-</span> <span class="hljs-attr">name:</span> <span class="hljs-string">Build</span> <span class="hljs-string">success</span><br>        <span class="hljs-attr">run:</span> <span class="hljs-string">echo</span> <span class="hljs-string">&quot;✅ Auto build completed successfully!&quot;</span><br></code></pre></td></tr></table></figure>
+
+<h3 id="3-关键配置修改说明"><a href="#3-关键配置修改说明" class="headerlink" title="3. 关键配置修改说明"></a>3. 关键配置修改说明</h3><table>
+<thead>
+<tr>
+<th>配置字段</th>
+<th>核心作用</th>
+<th>新手修改建议</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>on.push.branches</td>
+<td>监听触发分支</td>
+<td>修改为自身开发分支，例如 dev&#x2F;test</td>
+</tr>
+<tr>
+<td>runs-on</td>
+<td>云端运行系统</td>
+<td>固定保留 ubuntu-latest，无需改动</td>
+</tr>
+<tr>
+<td>uses 引用指令</td>
+<td>复用官方封装动作</td>
+<td>稳定版本无需修改，保证兼容性</td>
+</tr>
+<tr>
+<td>run 执行命令</td>
+<td>自定义脚本指令</td>
+<td>替换为项目本地可正常运行的打包 &#96; 编译命令</td>
+</tr>
+</tbody></table>
+<h2 id="四、提交配置并验证工作流"><a href="#四、提交配置并验证工作流" class="headerlink" title="四、提交配置并验证工作流"></a>四、提交配置并验证工作流</h2><h3 id="1-推送配置文件至远程仓库"><a href="#1-推送配置文件至远程仓库" class="headerlink" title="1 推送配置文件至远程仓库"></a>1 推送配置文件至远程仓库</h3><p>执行常规 Git 命令，将新增的工作流配置提交推送：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs bash">git add .github/workflows/auto_build.yml<br>git commit -m <span class="hljs-string">&quot;feat: 新增auto build自动化构建工作流&quot;</span><br>git push<br></code></pre></td></tr></table></figure>
+
+<h3 id="2-查看云端运行状态"><a href="#2-查看云端运行状态" class="headerlink" title="2 查看云端运行状态"></a>2 查看云端运行状态</h3><p>1 打开对应 GitHub 仓库主页</p>
+<p>2 点击顶部导航栏 Actions 选项卡</p>
+<p>3 找到新建的工作流名称，实时查看运行进度</p>
+<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20260426205240025.png" srcset="/img/loading.gif" lazyload alt="image-20260426205238798"></p>
+<p>状态标识说明 </p>
+<ul>
+<li><code>绿色对勾 </code> 构建全部流程执行成功</li>
+<li><code>红色叉号 </code> 流程异常终止，点击进入页面查看日志排错</li>
+</ul>
+<h2 id="五、auto-build-yml-实例"><a href="#五、auto-build-yml-实例" class="headerlink" title="五、auto_build.yml 实例"></a>五、auto_build.yml 实例</h2><h3 id="5-1-示例"><a href="#5-1-示例" class="headerlink" title="5.1 示例"></a>5.1 示例</h3><p>以下为本人自己的<a target="_blank" rel="noopener" href="https://github.com/janycode/help-memory-system">开源项目</a>真实跑通的完整配置示例，可直接参考复用：</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br></pre></td><td class="code"><pre><code class="hljs yaml"><span class="hljs-attr">name:</span> <span class="hljs-string">action自动构建打包（前后端）</span><br><span class="hljs-attr">on:</span><br>  <span class="hljs-attr">push:</span><br>    <span class="hljs-attr">branches:</span> [ <span class="hljs-string">main</span>, <span class="hljs-string">master</span> ]<br><br><span class="hljs-attr">jobs:</span><br>  <span class="hljs-attr">build:</span><br>    <span class="hljs-attr">runs-on:</span> <span class="hljs-string">ubuntu-latest</span><br>    <span class="hljs-attr">steps:</span><br>      <span class="hljs-bullet">-</span> <span class="hljs-attr">name:</span> <span class="hljs-string">拉取代码</span><br>        <span class="hljs-attr">uses:</span> <span class="hljs-string">actions/checkout@v4</span><br><br>      <span class="hljs-comment"># ========== 第一步：构建后端（Java） ==========</span><br>      <span class="hljs-bullet">-</span> <span class="hljs-attr">name:</span> <span class="hljs-string">配置JDK</span> <span class="hljs-number">21</span><span class="hljs-string">（后端）</span><br>        <span class="hljs-attr">uses:</span> <span class="hljs-string">actions/setup-java@v4</span><br>        <span class="hljs-attr">with:</span><br>          <span class="hljs-attr">java-version:</span> <span class="hljs-string">&#x27;21&#x27;</span><br>          <span class="hljs-attr">distribution:</span> <span class="hljs-string">&#x27;temurin&#x27;</span><br>          <span class="hljs-attr">cache:</span> <span class="hljs-string">maven</span>  <span class="hljs-comment"># 后端Maven缓存（适配backend目录）</span><br>          <span class="hljs-attr">cache-dependency-path:</span> <span class="hljs-string">backend/pom.xml</span>  <span class="hljs-comment"># 指定后端pom.xml路径</span><br><br>      <span class="hljs-bullet">-</span> <span class="hljs-attr">name:</span> <span class="hljs-string">后端Maven构建打包</span><br>        <span class="hljs-attr">run:</span> <span class="hljs-string">mvn</span> <span class="hljs-string">clean</span> <span class="hljs-string">package</span> <span class="hljs-string">-DskipTests</span><br>        <span class="hljs-attr">working-directory:</span> <span class="hljs-string">./backend</span>  <span class="hljs-comment"># 进入后端目录执行构建</span><br><br>      <span class="hljs-comment"># ========== 第二步：构建前端 ==========</span><br>      <span class="hljs-bullet">-</span> <span class="hljs-attr">name:</span> <span class="hljs-string">配置Node.js</span> <span class="hljs-number">20</span><span class="hljs-string">（前端）</span><br>        <span class="hljs-attr">uses:</span> <span class="hljs-string">actions/setup-node@v4</span><br>        <span class="hljs-attr">with:</span><br>          <span class="hljs-attr">node-version:</span> <span class="hljs-string">&#x27;20&#x27;</span><br><br>      <span class="hljs-bullet">-</span> <span class="hljs-attr">name:</span> <span class="hljs-string">前端安装依赖并构建</span><br>        <span class="hljs-attr">run:</span> <span class="hljs-string">npm</span> <span class="hljs-string">i</span> <span class="hljs-string">&amp;&amp;</span> <span class="hljs-string">npm</span> <span class="hljs-string">run</span> <span class="hljs-string">build</span><br>        <span class="hljs-attr">working-directory:</span> <span class="hljs-string">./frontend</span>  <span class="hljs-comment"># 进入前端目录执行构建</span><br><br>      <span class="hljs-comment"># ========== 第三步：上传构建产物 ==========</span><br>      <span class="hljs-bullet">-</span> <span class="hljs-attr">name:</span> <span class="hljs-string">上传后端jar包</span><br>        <span class="hljs-attr">uses:</span> <span class="hljs-string">actions/upload-artifact@v4</span><br>        <span class="hljs-attr">with:</span><br>          <span class="hljs-attr">name:</span> <span class="hljs-string">后端构建包</span><br>          <span class="hljs-attr">path:</span> <span class="hljs-string">backend/target/*.jar</span>  <span class="hljs-comment"># 后端产物路径</span><br>          <span class="hljs-attr">retention-days:</span> <span class="hljs-number">30</span><br><br>      <span class="hljs-bullet">-</span> <span class="hljs-attr">name:</span> <span class="hljs-string">上传前端静态文件</span><br>        <span class="hljs-attr">uses:</span> <span class="hljs-string">actions/upload-artifact@v4</span><br>        <span class="hljs-attr">with:</span><br>          <span class="hljs-attr">name:</span> <span class="hljs-string">前端构建包</span><br>          <span class="hljs-attr">path:</span> <span class="hljs-string">frontend/dist</span>  <span class="hljs-comment"># 前端产物路径（通用dist目录，可根据你的项目调整）</span><br>          <span class="hljs-attr">retention-days:</span> <span class="hljs-number">30</span><br>      <span class="hljs-bullet">-</span> <span class="hljs-attr">name:</span> <span class="hljs-string">微信通知构建成功</span><br>        <span class="hljs-attr">if:</span> <span class="hljs-string">success()</span><br>        <span class="hljs-attr">run:</span> <span class="hljs-string">|</span><br><span class="hljs-string">          curl -X POST $&#123;&#123; secrets.QYWX_WEBHOOK_URL &#125;&#125; \</span><br><span class="hljs-string">          -H &quot;Content-Type: application/json&quot; \</span><br><span class="hljs-string">          -d &#x27;&#123;</span><br><span class="hljs-string">            &quot;msgtype&quot;: &quot;markdown&quot;,</span><br><span class="hljs-string">            &quot;markdown&quot;: &#123;</span><br><span class="hljs-string">              &quot;content&quot;: &quot;## ✅ GitHub自动构建完成\n**项目**：$&#123;&#123; github.repository &#125;&#125;\n**Commit**：$&#123;&#123; github.sha &#125;&#125;\n**构建产物下载**：[点击下载](https://github.com/$&#123;&#123; github.repository &#125;&#125;/actions/runs/$&#123;&#123; github.run_id &#125;&#125;)\n&quot;</span><br><span class="hljs-string">            &#125;</span><br><span class="hljs-string">          &#125;&#x27;</span><br><span class="hljs-string"></span><br>      <span class="hljs-bullet">-</span> <span class="hljs-attr">name:</span> <span class="hljs-string">微信通知构建失败</span><br>        <span class="hljs-attr">if:</span> <span class="hljs-string">failure()</span><br>        <span class="hljs-attr">run:</span> <span class="hljs-string">|</span><br><span class="hljs-string">          curl -X POST $&#123;&#123; secrets.QYWX_WEBHOOK_URL &#125;&#125; \</span><br><span class="hljs-string">          -H &quot;Content-Type: application/json&quot; \</span><br><span class="hljs-string">          -d &#x27;&#123;</span><br><span class="hljs-string">            &quot;msgtype&quot;: &quot;markdown&quot;,</span><br><span class="hljs-string">            &quot;markdown&quot;: &#123;</span><br><span class="hljs-string">              &quot;content&quot;: &quot;## ❌ GitHub自动构建失败\n**项目**：$&#123;&#123; github.repository &#125;&#125;\n**Commit**：$&#123;&#123; github.sha &#125;&#125;\n**查看日志**：[点击查看](https://github.com/$&#123;&#123; github.repository &#125;&#125;/actions/runs/$&#123;&#123; github.run_id &#125;&#125;)\n&quot;</span><br><span class="hljs-string">            &#125;</span><br><span class="hljs-string">          &#125;&#x27;</span><br></code></pre></td></tr></table></figure>
+
+<h3 id="5-2-仓库变量"><a href="#5-2-仓库变量" class="headerlink" title="5.2 仓库变量"></a>5.2 仓库变量</h3><p>其中涉及到了仓库加密变量的配置：</p>
+<p><strong>项目主页</strong> - <code>Settings</code> - <code>Secrets and variables</code> - <code>Repository secrets</code></p>
+<p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20260426205545445.png" srcset="/img/loading.gif" lazyload alt="image-20260426205543831"></p>
+<h3 id="5-3-区分环境"><a href="#5-3-区分环境" class="headerlink" title="5.3 区分环境"></a>5.3 区分环境</h3><p>也就是通过分支名区分环境，比如 test 分支 对应 test 环境，两种方式均可。</p>
+<p>方式一：</p>
+<figure class="highlight yml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs yml"><span class="hljs-attr">on:</span><br>  <span class="hljs-attr">push:</span><br>    <span class="hljs-attr">branches:</span> [ <span class="hljs-string">test</span>, <span class="hljs-string">uat</span> ]<br></code></pre></td></tr></table></figure>
+
+<p>方式二：</p>
+<figure class="highlight yml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs yml"><span class="hljs-attr">on:</span><br>  <span class="hljs-attr">push:</span><br>    <span class="hljs-attr">branches:</span> <br>      <span class="hljs-bullet">-</span> <span class="hljs-string">test</span><br>      <span class="hljs-bullet">-</span> <span class="hljs-string">uat</span><br></code></pre></td></tr></table></figure>
+
+
+
+<h2 id="六、实操踩坑避坑总结"><a href="#六、实操踩坑避坑总结" class="headerlink" title="六、实操踩坑避坑总结"></a>六、实操踩坑避坑总结</h2><ol>
+<li>项目存在子目录时，必须添加路径切换命令，否则会出现文件找不到的报错</li>
+<li>国外源下载依赖速度缓慢，统一配置国内镜像源，提升构建效率</li>
+<li>本地开发环境与云端运行环境版本保持统一，规避语法兼容类异常</li>
+<li>务必开启 workflow_dispatch 手动触发配置，日常调试无需频繁提交代码</li>
+</ol>
+
+              
+            </div>
+            <hr/>
+            <div>
+              <div>
+  <img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20241112163319.png" srcset="/img/loading.gif" lazyload>
+</div>
+<div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/12-%E9%A1%B9%E7%9B%AE%E7%AE%A1%E7%90%86/" class="category-chain-item">12_项目管理</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/12-%E9%A1%B9%E7%9B%AE%E7%AE%A1%E7%90%86/01-Git/" class="category-chain-item">01_Git</a>
+  
+  
+
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/github/">#github</a>
+      
+        <a href="/tags/Git/">#Git</a>
+      
+        <a href="/tags/workflow/">#workflow</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>06-Github Workflow免费工作流</div>
+      <div>https://janycode.github.io/2020/03/19/12_项目管理/01_Git/06-Github Workflow免费工作流/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Jerry(姜源)</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2020年3月19日</div>
+        </div>
+      
+      
+      <div class="license-meta-item">
+        <div>许可协议</div>
+        <div>
+          
+            
+            
+              <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+              <span class="hint--top hint--rounded" aria-label="BY - 姜源">
+                <i class="iconfont icon-by"></i>
+              </span>
+              </a>
+            
+          
+        </div>
+      </div>
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2020/03/19/12_%E9%A1%B9%E7%9B%AE%E7%AE%A1%E7%90%86/01_Git/05-czg%E7%AE%A1%E7%90%86%E4%BB%A3%E7%A0%81%E6%8F%90%E4%BA%A4%E8%A7%84%E8%8C%83/" title="05-czg管理代码提交规范">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">05-czg管理代码提交规范</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2020/03/17/21_%E4%BB%A3%E7%A0%81%E7%89%87%E6%AE%B5/02_%E9%85%8D%E7%BD%AE%E7%B1%BB/03-ThreadPoolConfig/" title="03-ThreadPoolTaskConfig">
+                        <span class="hidden-mobile">03-ThreadPoolTaskConfig</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+  <article id="comments" lazyload>
+    
+  <div id="SOHUCS" sid='https://janycode.github.io/2020/03/19/12_%E9%A1%B9%E7%9B%AE%E7%AE%A1%E7%90%86/01_Git/06-Github%20Workflow%E5%85%8D%E8%B4%B9%E5%B7%A5%E4%BD%9C%E6%B5%81/'></div>
+  <script type="text/javascript">
+    Fluid.utils.loadComments('#SOHUCS', function() {
+      Fluid.utils.createScript("https://changyan.sohu.com/upload/changyan.js", function() {
+        window.changyan.api.config({"appid":"cyw5OHIcO","appkey":"fea3446b3df4b3f129f34da4cbc87e51"})
+      });
+    });
+  </script>
+  <noscript>Please enable JavaScript to view the comments</noscript>
+
+
+  </article>
+
+
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://simple.blog.csdn.net" target="_blank" rel="nofollow noopener"><span>CSDN</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/janycode" target="_blank" rel="nofollow noopener"><span>GitHub</span></a> <i class="iconfont icon-love"></i> <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="busuanzi_container_site_pv" style="display: none">
+        总访问量(PV) 
+        <span id="busuanzi_value_site_pv"></span>
+         次，
+      </span>
+    
+    
+      <span id="busuanzi_container_site_uv" style="display: none">
+        总访客数(UV) 
+        <span id="busuanzi_value_site_uv"></span>
+         人
+      </span>
+    
+    
+  
+</div>
+
+  
+  
+  
+</div>
+
+<!-- live2d 动画 -->
+<script src="https://eqcn.ajz.miesnfu.com/wp-content/plugins/wp-3d-pony/live2dw/lib/L2Dwidget.min.js"></script>
+<script>
+    L2Dwidget.init({
+        "model": {
+            jsonPath: "https://unpkg.com/live2d-widget-model-haruto@1.0.5/assets/haruto.model.json",
+            "scale": 1
+        },
+        "display": {
+            "position": "right",
+            "width": 100,
+            "height": 200,
+            "hOffset": 35,
+            "vOffset": -85
+        },
+        "mobile": {
+            "show": false,
+            "scale": 0.1
+        },
+        "react": {
+            "opacityDefault": 0.75,
+            "opacityOnHover": 0.2
+        }
+    });
+</script>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <!-- Baidu Analytics -->
+    <script defer>
+      if (!Fluid.ctx.dnt) {
+        var _hmt = _hmt || [];
+        (function() {
+          var hm = document.createElement("script");
+          hm.src = "https://hm.baidu.com/hm.js?bfff735c897eb60ea49b735096b20e47";
+          var s = document.getElementsByTagName("script")[0];
+          s.parentNode.insertBefore(hm, s);
+        })();
+      }
+    </script>
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.0/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      headingSelector : CONFIG.toc.headingSelector || 'h1,h2,h3,h4,h5,h6',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      collapseDepth   : CONFIG.toc.collapseDepth || 0,
+      scrollSmooth    : true,
+      headingsOffset  : -boardTop
+    });
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+  });
+</script>
+
+
+  <script>
+  (function() {
+    var enableLang = CONFIG.code_language.enable && CONFIG.code_language.default;
+    var enableCopy = CONFIG.copy_btn;
+    if (!enableLang && !enableCopy) {
+      return;
+    }
+
+    function getBgClass(ele) {
+      return Fluid.utils.getBackgroundLightness(ele) >= 0 ? 'code-widget-light' : 'code-widget-dark';
+    }
+
+    var copyTmpl = '';
+    copyTmpl += '<div class="code-widget">';
+    copyTmpl += 'LANG';
+    copyTmpl += '</div>';
+    jQuery('.markdown-body pre').each(function() {
+      var $pre = jQuery(this);
+      if ($pre.find('code.mermaid').length > 0) {
+        return;
+      }
+      if ($pre.find('span.line').length > 0) {
+        return;
+      }
+
+      var lang = '';
+
+      if (enableLang) {
+        lang = CONFIG.code_language.default;
+        if ($pre[0].children.length > 0 && $pre[0].children[0].classList.length >= 2 && $pre.children().hasClass('hljs')) {
+          lang = $pre[0].children[0].classList[1];
+        } else if ($pre[0].getAttribute('data-language')) {
+          lang = $pre[0].getAttribute('data-language');
+        } else if ($pre.parent().hasClass('sourceCode') && $pre[0].children.length > 0 && $pre[0].children[0].classList.length >= 2) {
+          lang = $pre[0].children[0].classList[1];
+          $pre.parent().addClass('code-wrapper');
+        } else if ($pre.parent().hasClass('markdown-body') && $pre[0].classList.length === 0) {
+          $pre.wrap('<div class="code-wrapper"></div>');
+        }
+        lang = lang.toUpperCase().replace('NONE', CONFIG.code_language.default);
+      }
+      $pre.append(copyTmpl.replace('LANG', lang).replace('code-widget">',
+        getBgClass($pre[0]) + (enableCopy ? ' code-widget copy-btn" data-clipboard-snippet><i class="iconfont icon-copy"></i>' : ' code-widget">')));
+
+      if (enableCopy) {
+        Fluid.utils.createScript('https://lib.baomitu.com/clipboard.js/2.0.10/clipboard.min.js', function() {
+          var clipboard = new window.ClipboardJS('.copy-btn', {
+            target: function(trigger) {
+              var nodes = trigger.parentNode.childNodes;
+              for (var i = 0; i < nodes.length; i++) {
+                if (nodes[i].tagName === 'CODE') {
+                  return nodes[i];
+                }
+              }
+            }
+          });
+          clipboard.on('success', function(e) {
+            e.clearSelection();
+            e.trigger.innerHTML = e.trigger.innerHTML.replace('icon-copy', 'icon-success');
+            setTimeout(function() {
+              e.trigger.innerHTML = e.trigger.innerHTML.replace('icon-success', 'icon-copy');
+            }, 2000);
+          });
+        });
+      }
+    });
+  })();
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>
