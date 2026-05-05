@@ -25,7 +25,7 @@
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20260210171726358.png">
 <meta property="article:published_time" content="2026-01-22T15:35:05.000Z">
-<meta property="article:modified_time" content="2026-05-05T06:35:15.120Z">
+<meta property="article:modified_time" content="2026-05-05T13:41:33.090Z">
 <meta property="article:author" content="Jerry(姜源)">
 <meta property="article:tag" content="ai">
 <meta property="article:tag" content="大模型">
@@ -246,7 +246,7 @@
         <i class="iconfont icon-chart"></i>
         
           <!-- compatible with older versions-->
-          4.1k 字
+          11k 字
         
       </span>
     
@@ -258,7 +258,7 @@
         
         
           <!-- compatible with older versions-->
-          35 分钟
+          93 分钟
         
       </span>
     
@@ -449,6 +449,213 @@
 <p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20260426120953352.png" srcset="/img/loading.gif" lazyload alt="image-20260426120951789"></p>
 <p>MCP 需要 IDEA 2026版本（注意同版本的 jetBrain 的产品都需要爆破）</p>
 <p><img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20260426121633985.png" srcset="/img/loading.gif" lazyload alt="image-20260426121631166"></p>
+<h2 id="6-场景与命令"><a href="#6-场景与命令" class="headerlink" title="6. 场景与命令"></a>6. 场景与命令</h2><h3 id="6-1-打开终端，第一件事"><a href="#6-1-打开终端，第一件事" class="headerlink" title="6.1 打开终端，第一件事"></a>6.1 打开终端，第一件事</h3><h4 id="场景一：直接开干，进交互会话"><a href="#场景一：直接开干，进交互会话" class="headerlink" title="场景一：直接开干，进交互会话"></a>场景一：直接开干，进交互会话</h4><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs sh">claude<br></code></pre></td></tr></table></figure>
+
+<p>最朴素的用法，没什么好说的，进去之后就是一个对话界面，适合什么任务还没想好、先看看再说的时候</p>
+<h4 id="场景二：进去就想开始一个具体任务，别废话"><a href="#场景二：进去就想开始一个具体任务，别废话" class="headerlink" title="场景二：进去就想开始一个具体任务，别废话"></a>场景二：进去就想开始一个具体任务，别废话</h4><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs sh">claude <span class="hljs-string">&quot;帮我看看这个项目的整体结构，给我一个概览&quot;</span><br></code></pre></td></tr></table></figure>
+
+<p>带上初始 prompt 启动，进去直接干活，不用再手打一遍，节省那两秒进入状态的摩擦</p>
+<h4 id="场景三：昨天聊了一半，今天接着搞，不想重建上下文"><a href="#场景三：昨天聊了一半，今天接着搞，不想重建上下文" class="headerlink" title="场景三：昨天聊了一半，今天接着搞，不想重建上下文"></a>场景三：昨天聊了一半，今天接着搞，不想重建上下文</h4><p>你昨天花了半小时跟 Claude 交代清楚了背景、需求、限制条件，今天不想再说一遍</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs sh">claude -c<br></code></pre></td></tr></table></figure>
+
+<p><code>-c</code> 是 continue，继承上次这个目录里的对话，上下文全在，不用重新交代背景，接着聊</p>
+<p>如果你同时跑好几个任务，不同任务开了不同会话，想恢复某个具体的</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs sh">claude -r <span class="hljs-string">&quot;auth-refactor&quot;</span> <span class="hljs-string">&quot;继续，把单元测试也补上&quot;</span><br></code></pre></td></tr></table></figure>
+
+<p>按名字恢复，直接带上今天要干啥，非常顺，不用先进去再打指令</p>
+<h4 id="场景四：写脚本，或者-CI-里跑，压根不需要交互"><a href="#场景四：写脚本，或者-CI-里跑，压根不需要交互" class="headerlink" title="场景四：写脚本，或者 CI 里跑，压根不需要交互"></a>场景四：写脚本，或者 CI 里跑，压根不需要交互</h4><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs sh"><span class="hljs-built_in">cat</span> error.log | claude -p <span class="hljs-string">&quot;帮我分析这堆报错的根本原因，给出排查方向&quot;</span><br></code></pre></td></tr></table></figure>
+
+<p><code>-p</code> 是 print mode，执行完自动退出，不会等你输入，适合塞进 shell 脚本或者 CI 流水线</p>
+<p>这才是 Claude Code 在自动化场景里的正确用法，把它当成一个接受文本、输出分析的命令行工具来用</p>
+<h4 id="场景五：想在隔离环境里折腾，不影响主分支"><a href="#场景五：想在隔离环境里折腾，不影响主分支" class="headerlink" title="场景五：想在隔离环境里折腾，不影响主分支"></a>场景五：想在隔离环境里折腾，不影响主分支</h4><p>让 Claude 帮你做一个比较大的改动，但又怕改乱了，想在一个独立的地方跑</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs sh">claude -w feature-auth<br></code></pre></td></tr></table></figure>
+
+<p><code>-w</code> 是 worktree，Claude 会在一个独立的 git worktree 里工作，改啥都不影响你的主分支，做完了满意再合并</p>
+<p>加 <code>--tmux</code> 还可以开一个专属 tmux 窗口，多任务并行的时候特别好使</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs sh">claude -w feature-auth --tmux<br></code></pre></td></tr></table></figure>
+
+<h3 id="6-2-上下文快撑爆了，但任务还没做完"><a href="#6-2-上下文快撑爆了，但任务还没做完" class="headerlink" title="6.2 上下文快撑爆了，但任务还没做完"></a>6.2 上下文快撑爆了，但任务还没做完</h3><p>用 Claude Code 干活久了一定会遇到：对话越来越长，响应越来越慢，甚至出现截断</p>
+<p>这时候很多人直接 <code>/clear</code> 重开，其实是错的，上下文这么多是有积累价值的，不一定要全扔掉</p>
+<h4 id="想保留同一个对话，只是释放一下空间"><a href="#想保留同一个对话，只是释放一下空间" class="headerlink" title="想保留同一个对话，只是释放一下空间"></a>想保留同一个对话，只是释放一下空间</h4><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs sh">/compact<br></code></pre></td></tr></table></figure>
+
+<p>Claude 把前面的对话压缩成一个摘要，继续往下聊，上下文占用大幅下降，任务还在继续，不割裂</p>
+<p>可以加说明，告诉它哪些是重点</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs sh">/compact 重点保留认证模块的讨论细节，接口设计不要压缩，其他可以压<br></code></pre></td></tr></table></figure>
+
+<p>加了说明之后，Claude 会在摘要里优先保留你说的那部分，不会把重要决策给压没了</p>
+<h4 id="想彻底开一个新对话，不拖历史包袱"><a href="#想彻底开一个新对话，不拖历史包袱" class="headerlink" title="想彻底开一个新对话，不拖历史包袱"></a>想彻底开一个新对话，不拖历史包袱</h4><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs sh">/clear<br></code></pre></td></tr></table></figure>
+
+<p>上下文清空，全新开始，但原来的对话不是删了，随时可以 <code>/resume</code> 找回来</p>
+<p><code>/clear</code> 和 <code>/compact</code> 的核心区别：一个是新建，一个是压缩同一个，别用错</p>
+<h4 id="想知道现在上下文用了多少，哪块最占地方"><a href="#想知道现在上下文用了多少，哪块最占地方" class="headerlink" title="想知道现在上下文用了多少，哪块最占地方"></a>想知道现在上下文用了多少，哪块最占地方</h4><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs sh">/context<br></code></pre></td></tr></table></figure>
+
+<p>弹出一个彩色格子可视化图，一眼看出哪些工具、哪些文件在吃上下文，还会给优化建议，比如”这个工具输出太长了可以换一个”</p>
+<h3 id="6-3-想换模型，或者调整思考深度"><a href="#6-3-想换模型，或者调整思考深度" class="headerlink" title="6.3 想换模型，或者调整思考深度"></a>6.3 想换模型，或者调整思考深度</h3><p>有时候你就问个语法问题，没必要上 Opus 跑半天烧钱；有时候做架构分析，Sonnet 给的答案太浅根本不够用</p>
+<h4 id="会话里临时换模型"><a href="#会话里临时换模型" class="headerlink" title="会话里临时换模型"></a>会话里临时换模型</h4><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs sh">/model<br></code></pre></td></tr></table></figure>
+
+<p>不带参数弹出选择器，上下键选，回车确认，不用退出重进</p>
+<p>也可以直接指定</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs sh">/model opus<br>/model claude-sonnet-4-6<br></code></pre></td></tr></table></figure>
+
+<h4 id="启动时就指定模型"><a href="#启动时就指定模型" class="headerlink" title="启动时就指定模型"></a>启动时就指定模型</h4><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs sh">claude --model opus<br>claude --model claude-sonnet-4-6<br></code></pre></td></tr></table></figure>
+
+<h4 id="调整努力级别，控制思考深度和-Token-消耗"><a href="#调整努力级别，控制思考深度和-Token-消耗" class="headerlink" title="调整努力级别，控制思考深度和 Token 消耗"></a>调整努力级别，控制思考深度和 Token 消耗</h4><p>这个很多人不知道，<code>--effort</code> 可以控制 Claude 在这个任务上”花多大力气”</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs sh">claude --effort low      <span class="hljs-comment"># 快速回答，适合简单问题</span><br>claude --effort high     <span class="hljs-comment"># 深度分析，适合复杂架构问题</span><br>claude --effort xhigh    <span class="hljs-comment"># 更深，适合难搞的 bug 排查</span><br></code></pre></td></tr></table></figure>
+
+<p>会话里也可以随时调</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs sh">/effort high<br>/effort<br></code></pre></td></tr></table></figure>
+
+<p>不带参数弹交互滑块，左右键调，实时生效，不用等这一条回答完</p>
+<p>同一个任务，<code>low</code> 和 <code>xhigh</code> 的回答质量差距很明显，遇到搞不定的问题先试试调高 effort，不要上来就换模型</p>
+<h2 id="6-4-权限弹窗每次都要确认，烦透了"><a href="#6-4-权限弹窗每次都要确认，烦透了" class="headerlink" title="6.4 权限弹窗每次都要确认，烦透了"></a>6.4 权限弹窗每次都要确认，烦透了</h2><p>改个文件弹一次确认，创建一个新文件又弹，跑个命令再弹</p>
+<p>这个问题有三种解法，对应三种不同的场景</p>
+<h4 id="场景一：完全信任这个任务，让-Claude-放飞自我"><a href="#场景一：完全信任这个任务，让-Claude-放飞自我" class="headerlink" title="场景一：完全信任这个任务，让 Claude 放飞自我"></a>场景一：完全信任这个任务，让 Claude 放飞自我</h4><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs sh">claude --dangerously-skip-permissions<br></code></pre></td></tr></table></figure>
+
+<p>名字起得很直白，危险操作，会跳过所有权限确认，Claude 想改啥就改啥，想执行啥命令就执行</p>
+<p>在你完全清楚任务范围、完全信任 Claude 判断的时候用，别无脑开着跑不熟悉的任务</p>
+<h4 id="场景二：先只让它分析，不让它动文件"><a href="#场景二：先只让它分析，不让它动文件" class="headerlink" title="场景二：先只让它分析，不让它动文件"></a>场景二：先只让它分析，不让它动文件</h4><p>让 Claude 给方案，你看完没问题再让它动手</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs sh">claude --permission-mode plan<br></code></pre></td></tr></table></figure>
+
+<p>计划模式，Claude 只能读文件、思考、输出方案，不能执行任何修改，零风险</p>
+<p>会话里也可以随时进入</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs sh">/plan<br>/plan 重构这个认证流程，先给我看方案，我确认了再动<br></code></pre></td></tr></table></figure>
+
+<h4 id="场景三：指定哪些操作不用问，其他的还是要确认"><a href="#场景三：指定哪些操作不用问，其他的还是要确认" class="headerlink" title="场景三：指定哪些操作不用问，其他的还是要确认"></a>场景三：指定哪些操作不用问，其他的还是要确认</h4><p>比如你允许它自由读文件和跑 git 命令，但文件写入还是要确认</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs sh">claude --allowedTools <span class="hljs-string">&quot;Read&quot;</span> <span class="hljs-string">&quot;Bash(git log *)&quot;</span> <span class="hljs-string">&quot;Bash(git diff *)&quot;</span><br></code></pre></td></tr></table></figure>
+
+<p>也可以反过来，直接禁掉某些工具</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs sh">claude --disallowedTools <span class="hljs-string">&quot;Bash(rm *)&quot;</span><br></code></pre></td></tr></table></figure>
+
+<p>这种细粒度控制比”全开”或”全关”更实用，自动模式适合你日常开发</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs sh">claude --permission-mode auto<br></code></pre></td></tr></table></figure>
+
+<p>auto 模式会自动减少弹窗，只在真正有风险的操作上提示，不像 default 那么烦</p>
+<h3 id="6-5-想让-Claude-永远记住你的编码规范"><a href="#6-5-想让-Claude-永远记住你的编码规范" class="headerlink" title="6.5 想让 Claude 永远记住你的编码规范"></a>6.5 想让 Claude 永远记住你的编码规范</h3><p>每次开新会话都要重新交代”用 TypeScript、不要 any、接口用 interface 不用 type、注释写中文”，这事真的很烦</p>
+<h4 id="方法一：启动时追加规则到系统提示"><a href="#方法一：启动时追加规则到系统提示" class="headerlink" title="方法一：启动时追加规则到系统提示"></a>方法一：启动时追加规则到系统提示</h4><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs sh">claude --append-system-prompt <span class="hljs-string">&quot;所有代码用 TypeScript，禁止用 any，函数注释写中文&quot;</span><br></code></pre></td></tr></table></figure>
+
+<p>追加而不是替换，Claude 原本的能力不受影响，只是加了你的约束</p>
+<p>规则多了写成文件更好管理，跟项目放一起，团队共用</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs sh">claude --append-system-prompt-file ./team-coding-rules.txt<br></code></pre></td></tr></table></figure>
+
+<h4 id="方法二：彻底替换系统提示，完全自定义"><a href="#方法二：彻底替换系统提示，完全自定义" class="headerlink" title="方法二：彻底替换系统提示，完全自定义"></a>方法二：彻底替换系统提示，完全自定义</h4><figure class="highlight maxima"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs maxima">claude --<span class="hljs-built_in">system</span>-<span class="hljs-built_in">prompt</span> <span class="hljs-string">&quot;你是一个专注 Java 后端的技术专家，所有方案优先考虑性能和可维护性&quot;</span><br></code></pre></td></tr></table></figure>
+
+<p>这个是完全替换，Claude Code 原有的一些默认行为也会变，慎用，适合非常明确需要定制化角色的场景</p>
+<h4 id="方法三：初始化-CLAUDE-md，一劳永逸"><a href="#方法三：初始化-CLAUDE-md，一劳永逸" class="headerlink" title="方法三：初始化 CLAUDE.md，一劳永逸"></a>方法三：初始化 CLAUDE.md，一劳永逸</h4><p>这是我最推荐的做法</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs sh">/init<br></code></pre></td></tr></table></figure>
+
+<p>Claude 帮你生成一个 <code>CLAUDE.md</code> 文件，放在项目根目录，把项目背景、技术栈、编码规范、注意事项全写进去</p>
+<p>以后每次在这个项目里启动 Claude Code，它自动读取这个文件，再也不用重复交代背景</p>
+<p>这就是为啥团队里推行了 CLAUDE.md 之后，每个人用起来都更顺，新人入项也更快上手</p>
+<h4 id="方法四：管理个人记忆文件"><a href="#方法四：管理个人记忆文件" class="headerlink" title="方法四：管理个人记忆文件"></a>方法四：管理个人记忆文件</h4><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs sh">/memory<br></code></pre></td></tr></table></figure>
+
+<p>这个是管理你个人级别的 Claude 记忆，可以跨项目记住你的个人偏好，比如”我不喜欢过度注释”、”我习惯函数式风格”这类</p>
+<h3 id="6-6-想看-Claude-改了什么，不想瞎猜"><a href="#6-6-想看-Claude-改了什么，不想瞎猜" class="headerlink" title="6.6 想看 Claude 改了什么，不想瞎猜"></a>6.6 想看 Claude 改了什么，不想瞎猜</h3><p>Claude 一顿操作下来改了七八个文件，你不知道具体改了啥，这种感觉很不安全</p>
+<p><strong>交互式 diff 查看器</strong></p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs sh">/diff<br></code></pre></td></tr></table></figure>
+
+<p>弹出一个可视化的 diff 界面，左右箭头在”当前整体 git diff”和”Claude 每一轮的改动”之间切换，上下箭头翻文件，清清楚楚</p>
+<p>比你自己跑 <code>git diff</code> 可读性强多了，尤其是改了很多文件的时候</p>
+<p><strong>回退到某个节点，反悔了</strong></p>
+<p>Claude 这一轮改的方向你觉得不对，想撤回到之前的状态</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs sh">/rewind<br></code></pre></td></tr></table></figure>
+
+<p>弹出对话历史，选一个你想回到的节点，会话状态和代码改动都一起回退，是真正的”悔棋”，不只是对话层面</p>
+<h4 id="对话分叉，两条路都试试"><a href="#对话分叉，两条路都试试" class="headerlink" title="对话分叉，两条路都试试"></a>对话分叉，两条路都试试</h4><p>你想让 Claude 试试方案 A，同时也想保留主线去试方案 B，又不想开两个会话从头交代背景</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs sh">/branch 试试用缓存层解决这个问题<br></code></pre></td></tr></table></figure>
+
+<p>从当前对话的这个节点分叉出去，在分支里折腾，主线不动，两条路都可以走</p>
+<h3 id="6-7-代码改完怎么做质量把关"><a href="#6-7-代码改完怎么做质量把关" class="headerlink" title="6.7 代码改完怎么做质量把关"></a>6.7 代码改完怎么做质量把关</h3><h4 id="代码简化和重构"><a href="#代码简化和重构" class="headerlink" title="代码简化和重构"></a>代码简化和重构</h4><p>让 Claude 帮你改完之后，可以让它自己做一轮质量审查</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs sh">/simplify<br></code></pre></td></tr></table></figure>
+
+<p>会并行跑三个审查 Agent，分别从不同角度审，结果汇总之后直接帮你修，不只是给建议</p>
+<p>可以聚焦某个方向</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs sh">/simplify focus on reducing duplication<br>/simplify focus on memory efficiency<br></code></pre></td></tr></table></figure>
+
+<h4 id="安全审查"><a href="#安全审查" class="headerlink" title="安全审查"></a>安全审查</h4><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs sh">/security-review<br></code></pre></td></tr></table></figure>
+
+<p>自动分析当前分支相对主分支的改动，找 SQL 注入、XSS、不当鉴权、敏感数据泄露这类问题，结果直接输出</p>
+<p>做完一个功能上线之前跑一遍，比人工 review 快多了，也比 SonarQube 覆盖面更灵活</p>
+<h4 id="Review-PR"><a href="#Review-PR" class="headerlink" title="Review PR"></a>Review PR</h4><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs sh">/review<br>/review 123<br>/review https://github.com/org/repo/pull/456<br></code></pre></td></tr></table></figure>
+
+<p>默认检测当前分支对应的 PR，也可以直接传 PR 号或者 URL，本地做一次轻量级 review</p>
+<h3 id="6-8-大规模并行改动，一个人干一个团队的活"><a href="#6-8-大规模并行改动，一个人干一个团队的活" class="headerlink" title="6.8 大规模并行改动，一个人干一个团队的活"></a>6.8 大规模并行改动，一个人干一个团队的活</h3><p>这是 Claude Code 里最被低估的功能，很多人不知道有 <code>/batch</code></p>
+<h4 id="场景：你要把整个项目从-CommonJS-改成-ESM"><a href="#场景：你要把整个项目从-CommonJS-改成-ESM" class="headerlink" title="场景：你要把整个项目从 CommonJS 改成 ESM"></a>场景：你要把整个项目从 CommonJS 改成 ESM</h4><p>这种改动散落在几十个文件里，一个一个改没完没了</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs sh">/batch migrate src/ from CommonJS to ESM<br></code></pre></td></tr></table></figure>
+
+<p>Claude 会先分析整个代码库，把任务拆成 5 到 30 个独立的工作单元，给你看计划</p>
+<p>你确认之后，它会为每个单元各派一个后台 Agent，每个 Agent 在独立的 git worktree 里工作，并行执行，每个 Agent 做完还会自动跑测试、开 PR</p>
+<p>几十个文件的改动，可能就是你喝杯水的时间</p>
+<p>其他适合 <code>/batch</code> 的场景：</p>
+<p>全局替换某个 API 调用方式、给所有函数补单元测试、把所有日志调用从 <code>console.log</code> 改成统一的 logger、删除所有废弃的 TODO 注释……凡是”全局性、重复性、可以拆分并行”的改动，都可以用</p>
+<h4 id="查看和管理后台任务"><a href="#查看和管理后台任务" class="headerlink" title="查看和管理后台任务"></a>查看和管理后台任务</h4><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs sh">/tasks<br></code></pre></td></tr></table></figure>
+
+<p>列出所有正在跑的后台 Agent 任务，可以查进度、停掉某个任务</p>
+<h3 id="6-9-CI-自动修复-PR，躺着等绿灯"><a href="#6-9-CI-自动修复-PR，躺着等绿灯" class="headerlink" title="6.9 CI 自动修复 PR，躺着等绿灯"></a>6.9 CI 自动修复 PR，躺着等绿灯</h3><p>这是我目前觉得最爽的一个功能</p>
+<p>你提了一个 PR，CI 跑红了，或者 reviewer 留了评论，你不想自己手动改</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs sh">/autofix-pr<br></code></pre></td></tr></table></figure>
+
+<p>Claude 会在云端开一个 session，自动监听你这个 PR 的 CI 状态和 reviewer 评论，有失败就自动修，修完直接 push</p>
+<p>你就去喝咖啡，回来看绿灯就行</p>
+<p>可以加说明，只修特定类型的问题</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs sh">/autofix-pr only fix lint and <span class="hljs-built_in">type</span> errors, don<span class="hljs-string">&#x27;t touch the logic</span><br></code></pre></td></tr></table></figure>
+
+<p>需要你装了 <code>gh</code> CLI，而且账号有 Claude Code on the web 的权限</p>
+<h3 id="6-10-会话管理，同时跑多个任务"><a href="#6-10-会话管理，同时跑多个任务" class="headerlink" title="6.10 会话管理，同时跑多个任务"></a>6.10 会话管理，同时跑多个任务</h3><h4 id="启动时就给会话起名"><a href="#启动时就给会话起名" class="headerlink" title="启动时就给会话起名"></a>启动时就给会话起名</h4><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs sh">claude -n <span class="hljs-string">&quot;订单模块重构&quot;</span><br>claude --name <span class="hljs-string">&quot;修复登录 bug&quot;</span><br></code></pre></td></tr></table></figure>
+
+<p>起了名字，会话列表里一眼认出来，<code>/resume</code> 的时候不用猜是哪个</p>
+<h4 id="会话里随时改名"><a href="#会话里随时改名" class="headerlink" title="会话里随时改名"></a>会话里随时改名</h4><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs sh">/rename feature-auth-final<br></code></pre></td></tr></table></figure>
+
+<p>改了名字，终端标题栏也会跟着变</p>
+<h4 id="恢复某个具体的会话"><a href="#恢复某个具体的会话" class="headerlink" title="恢复某个具体的会话"></a>恢复某个具体的会话</h4><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs sh">/resume<br></code></pre></td></tr></table></figure>
+
+<p>弹出历史会话列表，有名字显示名字，没名字显示自动生成的摘要</p>
+<h4 id="导出会话记录"><a href="#导出会话记录" class="headerlink" title="导出会话记录"></a>导出会话记录</h4><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs sh">/export<br>/export ./auth-refactor-notes.txt<br></code></pre></td></tr></table></figure>
+
+<p>把当前对话导出成纯文本，做技术方案存档或者给别人看的时候很有用</p>
+<h3 id="6-11-脚本和-CI-里用-Claude-Code"><a href="#6-11-脚本和-CI-里用-Claude-Code" class="headerlink" title="6.11 脚本和 CI 里用 Claude Code"></a>6.11 脚本和 CI 里用 Claude Code</h3><h4 id="基础的非交互调用"><a href="#基础的非交互调用" class="headerlink" title="基础的非交互调用"></a>基础的非交互调用</h4><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs sh"><span class="hljs-comment"># 管道输入</span><br><span class="hljs-built_in">cat</span> error.log | claude -p <span class="hljs-string">&quot;分析这堆报错，给出优先级排序和排查思路&quot;</span><br><br><span class="hljs-comment"># 直接传文件内容</span><br>claude -p <span class="hljs-string">&quot;review 这段代码的安全性：<span class="hljs-subst">$(cat src/auth.ts)</span>&quot;</span><br></code></pre></td></tr></table></figure>
+
+<h4 id="控制花费和轮次，防止失控"><a href="#控制花费和轮次，防止失控" class="headerlink" title="控制花费和轮次，防止失控"></a>控制花费和轮次，防止失控</h4><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs sh"><span class="hljs-comment"># 超过 3 美元自动停</span><br>claude -p --max-budget-usd 3.00 <span class="hljs-string">&quot;帮我重构这个模块&quot;</span><br><br><span class="hljs-comment"># 最多跑 10 轮，跑完自动退出</span><br>claude -p --max-turns 10 <span class="hljs-string">&quot;自动修复所有 lint 错误&quot;</span><br><br><span class="hljs-comment"># 两个一起用，双重保险</span><br>claude -p --max-budget-usd 5.00 --max-turns 20 <span class="hljs-string">&quot;分析整个项目的代码质量&quot;</span><br></code></pre></td></tr></table></figure>
+
+<h4 id="裸模式，更快启动，适合简单脚本"><a href="#裸模式，更快启动，适合简单脚本" class="headerlink" title="裸模式，更快启动，适合简单脚本"></a>裸模式，更快启动，适合简单脚本</h4><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs sh">claude --bare -p <span class="hljs-string">&quot;检查这段代码有没有明显的 bug&quot;</span><br></code></pre></td></tr></table></figure>
+
+<p><code>--bare</code> 跳过插件、MCP、hooks 的自动发现，启动快很多，适合不需要那些能力的简单脚本调用</p>
+<h4 id="输出-JSON，给下游程序解析"><a href="#输出-JSON，给下游程序解析" class="headerlink" title="输出 JSON，给下游程序解析"></a>输出 JSON，给下游程序解析</h4><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs sh">claude -p <span class="hljs-string">&quot;列出这个项目里所有的对外 API 接口，包括路径和方法&quot;</span> --output-format json<br></code></pre></td></tr></table></figure>
+
+<p>返回的是结构化 JSON，直接喂给下游脚本处理，不用自己去解析纯文本</p>
+<h4 id="批量处理多个文件"><a href="#批量处理多个文件" class="headerlink" title="批量处理多个文件"></a>批量处理多个文件</h4><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs sh"><span class="hljs-keyword">for</span> f <span class="hljs-keyword">in</span> src/**/*.ts; <span class="hljs-keyword">do</span><br>  result=$(<span class="hljs-built_in">cat</span> <span class="hljs-string">&quot;<span class="hljs-variable">$f</span>&quot;</span> | claude -p <span class="hljs-string">&quot;检查这个文件有没有安全漏洞，只列关键问题&quot;</span>)<br>  <span class="hljs-keyword">if</span> [ -n <span class="hljs-string">&quot;<span class="hljs-variable">$result</span>&quot;</span> ]; <span class="hljs-keyword">then</span><br>    <span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;=== <span class="hljs-variable">$f</span> ===&quot;</span> &gt;&gt; security-report.txt<br>    <span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;<span class="hljs-variable">$result</span>&quot;</span> &gt;&gt; security-report.txt<br>  <span class="hljs-keyword">fi</span><br><span class="hljs-keyword">done</span><br></code></pre></td></tr></table></figure>
+
+<h4 id="在-CI-里加一步代码审查"><a href="#在-CI-里加一步代码审查" class="headerlink" title="在 CI 里加一步代码审查"></a>在 CI 里加一步代码审查</h4><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs sh"><span class="hljs-comment"># GitHub Actions 里</span><br>-name:ClaudeCodeReview<br>run:|<br>    gitdifforigin/main...HEAD|claude-p\<br>      --max-budget-usd1.00\<br>      <span class="hljs-string">&quot;review 这个 PR 的改动，找出潜在的 bug 和安全问题&quot;</span>\<br>      &gt;&gt;review-result.txt<br></code></pre></td></tr></table></figure>
+
+<h3 id="6-12-几个平时不太注意但挺有用的"><a href="#6-12-几个平时不太注意但挺有用的" class="headerlink" title="6.12 几个平时不太注意但挺有用的"></a>6.12 几个平时不太注意但挺有用的</h3><h4 id="问个旁路问题，不污染主对话上下文"><a href="#问个旁路问题，不污染主对话上下文" class="headerlink" title="问个旁路问题，不污染主对话上下文"></a>问个旁路问题，不污染主对话上下文</h4><p>你正在让 Claude 搞一件事，突然想顺嘴问个无关的小问题，但又不想把它加进上下文影响任务</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs sh">/btw 这里的 interface 和 <span class="hljs-built_in">type</span> 在 TypeScript 里有啥本质区别<br>/btw Postgres 的 JSONB 和 JSON 有啥性能差异<br></code></pre></td></tr></table></figure>
+
+<p>Claude 回答完，这条问答不会被计入主对话的上下文，不影响后续任务的理解，我用这个贼频繁</p>
+<h4 id="复制最后一条回复"><a href="#复制最后一条回复" class="headerlink" title="复制最后一条回复"></a>复制最后一条回复</h4><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs sh">/copy<br>/copy 2<br></code></pre></td></tr></table></figure>
+
+<p>有代码块的话弹出选择器，可以只复制某个代码块，不用全选，<code>/copy 2</code> 是复制倒数第二条</p>
+<p>SSH 远程连接的时候剪贴板不通，<code>/copy</code> 会问你要不要写成文件，也很方便</p>
+<h4 id="当前-Session-烧了多少钱"><a href="#当前-Session-烧了多少钱" class="headerlink" title="当前 Session 烧了多少钱"></a>当前 Session 烧了多少钱</h4><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs sh">/usage<br></code></pre></td></tr></table></figure>
+
+<p>看 Token 消耗和花费，我跑完大任务都会瞄一眼，养成这个习惯能避免月底账单惊喜</p>
+<h4 id="当前版本和更新"><a href="#当前版本和更新" class="headerlink" title="当前版本和更新"></a>当前版本和更新</h4><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs sh">claude -v           <span class="hljs-comment"># 查看版本号</span><br>claude update       <span class="hljs-comment"># 更新到最新版</span><br>claude install stable  <span class="hljs-comment"># 安装稳定版</span><br></code></pre></td></tr></table></figure>
+
+<h4 id="登录和认证状态"><a href="#登录和认证状态" class="headerlink" title="登录和认证状态"></a>登录和认证状态</h4><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs sh">claude auth login           <span class="hljs-comment"># 登录</span><br>claude auth login --console <span class="hljs-comment"># 通过 Anthropic Console 登录（API key 计费）</span><br>claude auth status --text   <span class="hljs-comment"># 看登录状态，--text 是人话版，不加是 JSON</span><br>claude auth <span class="hljs-built_in">logout</span>          <span class="hljs-comment"># 退出登录</span><br></code></pre></td></tr></table></figure>
+
+<h4 id="清理项目本地状态"><a href="#清理项目本地状态" class="headerlink" title="清理项目本地状态"></a>清理项目本地状态</h4><p>跑了太多任务，本地 Claude Code 状态积了一堆历史垃圾，想清干净重来</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs sh"><span class="hljs-comment"># 先预览，看会删哪些东西</span><br>claude project purge ~/work/repo --dry-run<br><br><span class="hljs-comment"># 确认没问题，直接清</span><br>claude project purge ~/work/repo -y<br><br><span class="hljs-comment"># 清所有项目</span><br>claude project purge --all -y<br></code></pre></td></tr></table></figure>
+
+<h2 id="6-13-调试和排查"><a href="#6-13-调试和排查" class="headerlink" title="6.13 调试和排查"></a>6.13 调试和排查</h2><p>Claude Code 本身出了问题，或者响应不对劲，怎么排查</p>
+<h4 id="开启详细日志"><a href="#开启详细日志" class="headerlink" title="开启详细日志"></a>开启详细日志</h4><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs sh">claude --verbose<br></code></pre></td></tr></table></figure>
+
+<p>会输出每一轮的详细过程，能看到 Claude 在做什么决定，工具调用是什么参数</p>
+<h4 id="调试模式，可以过滤分类"><a href="#调试模式，可以过滤分类" class="headerlink" title="调试模式，可以过滤分类"></a>调试模式，可以过滤分类</h4><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs sh">claude --debug              <span class="hljs-comment"># 全部调试日志</span><br>claude --debug <span class="hljs-string">&quot;api,mcp&quot;</span>    <span class="hljs-comment"># 只看 API 和 MCP 相关的</span><br>claude --debug <span class="hljs-string">&quot;!statsig&quot;</span>   <span class="hljs-comment"># 排除某个分类</span><br></code></pre></td></tr></table></figure>
+
+<h4 id="把调试日志写到文件"><a href="#把调试日志写到文件" class="headerlink" title="把调试日志写到文件"></a>把调试日志写到文件</h4><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs sh">claude --debug-file /tmp/claude-debug.log<br></code></pre></td></tr></table></figure>
+
+<p>日志会持续写入这个文件，方便事后分析，不用翻终端滚动</p>
+<h4 id="诊断安装和配置"><a href="#诊断安装和配置" class="headerlink" title="诊断安装和配置"></a>诊断安装和配置</h4><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs sh">/doctor<br></code></pre></td></tr></table></figure>
+
+<p>自动检测 Claude Code 的安装状态和配置，结果有状态图标，哪里有问题一眼看出来，按 <code>f</code> 可以让 Claude 自动修复。</p>
 
               
             </div>
@@ -550,9 +757,9 @@
                   <article class="post-prev col-6">
                     
                     
-                      <a href="/2026/02/10/22_AI/01_OpenAI/13-%E4%BC%A0%E7%BB%9F%E7%BC%96%E7%A8%8B%E5%88%B0%E5%A4%A7%E6%A8%A1%E5%9E%8B%E7%BC%96%E7%A8%8B%E6%98%AF%E3%80%90%E5%BF%85%E7%84%B6%E3%80%91%E8%B6%8B%E5%8A%BF/" title="13-传统编程到大模型编程是【必然】趋势">
+                      <a href="/2026/01/22/22_AI/03_%E6%8F%90%E7%A4%BA%E8%AF%8D/03-Java+Vue%E6%8A%80%E6%9C%AF%E6%A0%88%E5%89%8D%E7%AB%AF%E5%90%8E%E7%AB%AF%E9%A1%B9%E7%9B%AE%E6%8F%90%E7%A4%BA%E8%AF%8D%E5%B7%A5%E7%A8%8B%E8%8C%83%E4%BE%8B/" title="03-Java+Vue技术栈前端后端项目提示词工程范例">
                         <i class="iconfont icon-arrowleft"></i>
-                        <span class="hidden-mobile">13-传统编程到大模型编程是【必然】趋势</span>
+                        <span class="hidden-mobile">03-Java+Vue技术栈前端后端项目提示词工程范例</span>
                         <span class="visible-mobile">上一篇</span>
                       </a>
                     
@@ -560,8 +767,8 @@
                   <article class="post-next col-6">
                     
                     
-                      <a href="/2026/01/22/22_AI/03_%E6%8F%90%E7%A4%BA%E8%AF%8D/03-Java+Vue%E6%8A%80%E6%9C%AF%E6%A0%88%E5%89%8D%E7%AB%AF%E5%90%8E%E7%AB%AF%E9%A1%B9%E7%9B%AE%E6%8F%90%E7%A4%BA%E8%AF%8D%E5%B7%A5%E7%A8%8B%E8%8C%83%E4%BE%8B/" title="03-Java+Vue技术栈前端后端项目提示词工程范例">
-                        <span class="hidden-mobile">03-Java+Vue技术栈前端后端项目提示词工程范例</span>
+                      <a href="/2026/01/22/22_AI/03_%E6%8F%90%E7%A4%BA%E8%AF%8D/02-%E6%8F%90%E7%A4%BA%E8%AF%8D%E5%B7%A5%E7%A8%8B%E4%B9%8BChat%E6%8B%86%E8%A7%A3%E6%96%B9%E6%B3%95%E8%AE%BA/" title="02-提示词工程之Chat拆解方法论">
+                        <span class="hidden-mobile">02-提示词工程之Chat拆解方法论</span>
                         <span class="visible-mobile">下一篇</span>
                         <i class="iconfont icon-arrowright"></i>
                       </a>
