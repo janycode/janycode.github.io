@@ -291,7 +291,8 @@
       searchData = cachedData;
       isLoaded = true;
       isLoading = false;
-      // 直接使用缓存，无需进度显示，立即启用搜索按钮
+      // 从缓存加载完成，显示100%，立即启用搜索按钮
+      updateProgress(100);
       updateSearchButtonState(true);
       return;
     }
