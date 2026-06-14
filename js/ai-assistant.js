@@ -149,7 +149,25 @@
         tableHtml += '<tr>';
         var tag = (hasHeader && r === 0) ? 'th' : 'td';
         for (var c = 0; c < tableData[r].length; c++) {
-          tableHtml += '<' + tag + '>' + tableData[r][c] + '</' + tag + '>';
+          // 对单元格内容渲染行内 Markdown（粗体、斜体、行内代码、链接等）
+          var cellContent = tableData[r][c];
+          // 行内代码
+          cellContent = cellContent.replace(/`([^`\n]+)`/g, function(m, code) {
+            return '<code class="inline-code">' + escapeHtml(code) + '</code>';
+          });
+          // 粗体+斜体
+          cellContent = cellContent.replace(/\*\*\*(.*?)\*\*\*/g, '<strong><em>$1</em></strong>');
+          // 粗体
+          cellContent = cellContent.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+          // 斜体
+          cellContent = cellContent.replace(/\*(.*?)\*/g, '<em>$1</em>');
+          // 删除线
+          cellContent = cellContent.replace(/~~(.*?)~~/g, '<del>$1</del>');
+          // 链接
+          cellContent = cellContent.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>');
+          // 图片
+          cellContent = cellContent.replace(/!\[([^\]]*)\]\(([^)]+)\)/g, '<img src="$2" alt="$1" style="max-width:100%;border-radius:4px;">');
+          tableHtml += '<' + tag + '>' + cellContent + '</' + tag + '>';
         }
         tableHtml += '</tr>';
       }
@@ -240,6 +258,9 @@
     text = text.replace(/\x00IC(\d+)\x00/g, function(match, index) {
       return '<code class="inline-code">' + escapeHtml(inlineCodes[parseInt(index)]) + '</code>';
     });
+
+    // 清理所有残留的占位符（防止流式输出中途未闭合的占位符）
+    text = text.replace(/\x00(CB|IC|TB)\d+\x00/g, '');
 
     return '<div class="markdown-content">' + text + '</div>';
   }
@@ -423,6 +444,13 @@
             stopLoading();
             hideLoading();
             currentController = null;
+            // 渲染完毕后滚动到顶部，方便从头阅读
+            var aiContentEl = contentEl.closest('.ai-content')[0];
+            if (aiContentEl) {
+              setTimeout(function() {
+                aiContentEl.scrollTop = 0;
+              }, 100);
+            }
             return;
           }
 
@@ -446,6 +474,25 @@
                   if (aiContent) {
                     aiContent.scrollTop = aiContent.scrollHeight;
                   }
+                  // 检测 User Safety 内容
+                  if (fullContent.includes('User Safety: safe') || fullContent.includes('User Safety')) {
+                    contentEl.html('<div class="alert alert-warning" role="alert">接口请求繁忙，请再次点击发送重试！</div>');
+                    isLoading = false;
+                    stopLoading();
+                    hideLoading();
+                    currentController = null;
+                    currentController.abort();
+                    return;
+                  }
+                }
+                // 检测顶层 error 或 message 中包含安全拦截
+                if (data.error || (data.message && data.message.includes('User Safety'))) {
+                  contentEl.html('<div class="alert alert-warning" role="alert">接口请求繁忙，请再次点击发送重试！</div>');
+                  isLoading = false;
+                  stopLoading();
+                  hideLoading();
+                  currentController = null;
+                  return;
                 }
               } catch (e) {}
             }
