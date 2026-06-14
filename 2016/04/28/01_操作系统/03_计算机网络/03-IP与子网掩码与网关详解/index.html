@@ -1,0 +1,1225 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=light>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Jerry(姜源)">
+  <meta name="keywords" content="Java,Html,CSS,JavaScript,Vue,React,SpringBoot,Linux,shell编程经验分享、技术总结、心得体会">
+  
+    <meta name="description" content="涉及场景：  新机器交付后发现网络不通，不知道怎么查 搭建 Kubernetes 集群时 Pod 之间网络不通 配置负载均衡器或 VPN 时搞不清网段该怎么写 阿里云、AWS、腾讯云上配置 VPC 安全组和路由表 排查 Docker 容器网络、Calico&#x2F;Flannel&#x2F;Weave 网络问题 写 iptables&#x2F;nftables 防火墙规则 遇到 ARP、ICMP">
+<meta property="og:type" content="article">
+<meta property="og:title" content="03-IP与子网掩码与网关">
+<meta property="og:url" content="https://janycode.github.io/2016/04/28/01_%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/03_%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/03-IP%E4%B8%8E%E5%AD%90%E7%BD%91%E6%8E%A9%E7%A0%81%E4%B8%8E%E7%BD%91%E5%85%B3%E8%AF%A6%E8%A7%A3/index.html">
+<meta property="og:site_name" content="姜源の全栈云笔记">
+<meta property="og:description" content="涉及场景：  新机器交付后发现网络不通，不知道怎么查 搭建 Kubernetes 集群时 Pod 之间网络不通 配置负载均衡器或 VPN 时搞不清网段该怎么写 阿里云、AWS、腾讯云上配置 VPC 安全组和路由表 排查 Docker 容器网络、Calico&#x2F;Flannel&#x2F;Weave 网络问题 写 iptables&#x2F;nftables 防火墙规则 遇到 ARP、ICMP">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2016-04-28T13:41:52.000Z">
+<meta property="article:modified_time" content="2026-06-14T05:54:13.118Z">
+<meta property="article:author" content="Jerry(姜源)">
+<meta property="article:tag" content="计算机">
+<meta property="article:tag" content="网络">
+<meta property="article:tag" content="IP">
+<meta property="article:tag" content="子网掩码">
+<meta property="article:tag" content="网关">
+<meta name="twitter:card" content="summary_large_image">
+  
+  
+    <meta name="referrer" content="no-referrer-when-downgrade">
+  
+  
+  <title>03-IP与子网掩码与网关 - 姜源の全栈云笔记</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="/css/share.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <link rel="stylesheet" href="/css/ai-assistant.css">
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"janycode.github.io","root":"/","version":"1.9.0","typing":{"enable":true,"typeSpeed":50,"cursorChar":"|","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":false},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":"bfff735c897eb60ea49b735096b20e47","google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  <script>
+  // AI Assistant Configuration - 加密密钥配置
+  // 这些值通过主题配置注入，不会直接暴露真实API密钥
+  window.AI_ENCRYPT_SECRET = 'janycode-blog-2024-ai-secret';
+  window.AI_ENCRYPTED_KEY = 'GQpDFhFCElQAVlgOUkwAUQcNGVIIHBAHUERVFw4EXRpWXQADGgQOVgUaCwZTAh4FCx0VUlBFVEAJUFlKUl5TVh8DClhXTgsGAg==';
+  window.AI_MODEL = 'openrouter/free';
+</script>
+
+
+  
+<meta name="generator" content="Hexo 6.2.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 50vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>姜源の全栈云笔记</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tools/">
+                <i class="iconfont icon-slack-fill"></i>
+                工具
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" target="_blank" rel="noopener" href="https://yuancodes.github.io/">
+                <i class="iconfont icon-notebook"></i>
+                Docsify
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link disabled" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i><sup class="search-progress-text">0%</sup><sup class="search-shortcut">(F)</sup>&nbsp;
+            </a>
+          </li>
+          
+        
+        <li class="nav-item" id="ai-btn">
+          <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalAI" aria-label="AI Assistant">
+            &nbsp;<i class="iconfont icon-comment-alt"></i><span class="ai-btn-text">🔥问问AI</span><sup class="ai-shortcut">(Q)</sup>&nbsp;
+          </a>
+        </li>
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <!-- Banner 内容区域：标语 + 开源项目，整体垂直居中 -->
+      <div class="banner-content-wrapper text-center">
+        <div class="banner-text fade-in-up">
+          <div class="h2">
+            
+              <span id="subtitle" data-typed-text="03-IP与子网掩码与网关"></span>
+            
+          </div>
+
+          
+            
+  <div class="mt-3">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-author" aria-hidden="true"></i>
+        Jerry(姜源)
+      </span>
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2016-04-28 21:41" pubdate>
+          星期四, 2016/04/28 21:41:52
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          <!-- compatible with older versions-->
+          16k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          <!-- compatible with older versions-->
+          132 分钟
+        
+      </span>
+    
+
+    
+    
+      
+        <span id="busuanzi_container_page_pv" style="display: none">
+          <i class="iconfont icon-eye" aria-hidden="true"></i>
+          <span id="busuanzi_value_page_pv"></span> 次
+        </span>
+        
+      
+    
+  </div>
+
+
+          
+        </div>
+
+        <!-- Banner 底部开源项目展示（仅首页） -->
+        
+
+        
+      </div>
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">03-IP与子网掩码与网关</h1>
+            
+            <div class="markdown-body">
+              
+              <p>涉及场景：</p>
+<ul>
+<li>新机器交付后发现网络不通，不知道怎么查</li>
+<li>搭建 Kubernetes 集群时 Pod 之间网络不通</li>
+<li>配置负载均衡器或 VPN 时搞不清网段该怎么写</li>
+<li>阿里云、AWS、腾讯云上配置 VPC 安全组和路由表</li>
+<li>排查 Docker 容器网络、Calico&#x2F;Flannel&#x2F;Weave 网络问题</li>
+<li>写 iptables&#x2F;nftables 防火墙规则</li>
+<li>遇到 ARP、ICMP、TCP&#x2F;UDP 端口问题不知道从哪儿下手</li>
+</ul>
+<h2 id="IP-地址基础"><a href="#IP-地址基础" class="headerlink" title="IP 地址基础"></a><strong>IP 地址基础</strong></h2><h3 id="二进制和十进制的转换"><a href="#二进制和十进制的转换" class="headerlink" title="二进制和十进制的转换"></a><strong>二进制和十进制的转换</strong></h3><p>IP 地址是一个 32 位的二进制数，通常写成 4 个十进制字节，用点分隔。IPv4 地址范围从 <code>0.0.0.0</code> 到 <code>255.255.255.255</code>，共约 42 亿个地址。</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs sh">十进制转二进制（按字节）<br>192 = 11000000<br>168 = 10101000<br>1   = 00000001<br>1   = 00000001<br><br>192.168.1.1 的二进制：<br>11000000.10101000.00000001.00000001<br></code></pre></td></tr></table></figure>
+
+<p>快速转换技巧：记住 2 的幂次方。</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs sh">2^7 = 128  2^6 = 64  2^5 = 32  2^4 = 16<br>2^3 = 8   2^2 = 4   2^1 = 2   2^0 = 1<br><br>192 = 128 + 64 = 11000000<br>168 = 128 + 32 + 8 = 10101000<br>255 = 128+64+32+16+8+4+2+1 = 11111111<br></code></pre></td></tr></table></figure>
+
+<p>验证转换结果：把二进制各位对应的值加起来，看是否等于十进制。</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs sh"><span class="hljs-comment"># Linux 查看本机 IP 地址</span><br>ip addr show<br><span class="hljs-comment"># 或</span><br>ifconfig<br><br><span class="hljs-comment"># 查看指定接口的 IP</span><br>ip addr show eth0<br><br><span class="hljs-comment"># 查看所有网络接口（包括未激活的）</span><br>ip <span class="hljs-built_in">link</span> show<br></code></pre></td></tr></table></figure>
+
+<h3 id="IP-地址的分类（历史知识，现在已不强制）"><a href="#IP-地址的分类（历史知识，现在已不强制）" class="headerlink" title="IP 地址的分类（历史知识，现在已不强制）"></a><strong>IP 地址的分类（历史知识，现在已不强制）</strong></h3><p>早期 IPv4 将 IP 分为五类：</p>
+<table>
+<thead>
+<tr>
+<th align="left">类别</th>
+<th align="left">范围</th>
+<th align="left">用途</th>
+<th align="left">网络&#x2F;主机位数</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">A 类</td>
+<td align="left">0.0.0.0 - 127.255.255.255</td>
+<td align="left">大型网络</td>
+<td align="left">8&#x2F;24</td>
+</tr>
+<tr>
+<td align="left">B 类</td>
+<td align="left">128.0.0.0 - 191.255.255.255</td>
+<td align="left">中型网络</td>
+<td align="left">16&#x2F;16</td>
+</tr>
+<tr>
+<td align="left">C 类</td>
+<td align="left">192.0.0.0 - 223.255.255.255</td>
+<td align="left">小型网络</td>
+<td align="left">24&#x2F;8</td>
+</tr>
+<tr>
+<td align="left">D 类</td>
+<td align="left">224.0.0.0 - 239.255.255.255</td>
+<td align="left">多播&#x2F;组播</td>
+<td align="left">不适用</td>
+</tr>
+<tr>
+<td align="left">E 类</td>
+<td align="left">240.0.0.0 - 255.255.255.255</td>
+<td align="left">保留</td>
+<td align="left">不适用</td>
+</tr>
+</tbody></table>
+<p>运维中实际接触最多的是 C 类（<code>192.168.x.x</code>）和私有地址段：</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs sh">私有 IP 地址范围（RFC 1918，可在内网自由使用）：<br>10.0.0.0 - 10.255.255.255      （10/8 整段）<br>172.16.0.0 - 172.31.255.255    （172.16/12 段，16 个 B 类）<br>192.168.0.0 - 192.168.255.255  （192.168/16 段，256 个 C 类）<br></code></pre></td></tr></table></figure>
+
+<p>云服务器、容器网络、虚拟机默认都用私有地址。公有云的安全组就是控制这些私有 IP 的访问权限。</p>
+<h3 id="特殊-IP-地址"><a href="#特殊-IP-地址" class="headerlink" title="特殊 IP 地址"></a><strong>特殊 IP 地址</strong></h3><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><code class="hljs sh"><span class="hljs-comment"># 本机回环地址，进程间通信用，不走物理网卡</span><br>127.0.0.1           <span class="hljs-comment"># localhost</span><br>::1                  <span class="hljs-comment"># IPv6 回环</span><br><br><span class="hljs-comment"># 网段广播地址（已很少用，了解即可）</span><br><span class="hljs-comment"># 192.168.1.255 是 192.168.1.0/24 网段的广播地址</span><br><br><span class="hljs-comment"># 网络地址</span><br><span class="hljs-comment"># 192.168.1.0 是 192.168.1.0/24 网段的网络地址，代表整个网段</span><br><br><span class="hljs-comment"># 链路本地地址（Windows 自动配置/IPv6 SLAAC）</span><br>169.254.0.0/16       <span class="hljs-comment"># Windows 获取不到 DHCP 时自动分配的地址</span><br>fe80::/10            <span class="hljs-comment"># IPv6 链路本地地址</span><br><br><span class="hljs-comment"># 全零地址</span><br>0.0.0.0/0            <span class="hljs-comment"># 代表&quot;任意地址&quot;，路由表里常见</span><br></code></pre></td></tr></table></figure>
+
+<h3 id="查看本机-IP-和网络信息"><a href="#查看本机-IP-和网络信息" class="headerlink" title="查看本机 IP 和网络信息"></a><strong>查看本机 IP 和网络信息</strong></h3><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><code class="hljs sh"><span class="hljs-comment"># 查看所有 IP 配置（推荐）</span><br>ip addr show<br>ip addr show eth0<br><br><span class="hljs-comment"># 查看路由表</span><br>ip route show<br>ip route<br><br><span class="hljs-comment"># 查看 ARP 表（IP 和 MAC 地址映射）</span><br>ip neigh show<br>arp -a<br><br><span class="hljs-comment"># 查看端口监听情况</span><br>ss -tlnp<br>netstat -tlnp<br><br><span class="hljs-comment"># 查看当前网络连接</span><br>ss -tnp<br>netstat -tnp<br><br><span class="hljs-comment"># 查看网络接口统计</span><br>ip -s <span class="hljs-built_in">link</span> show eth0<br></code></pre></td></tr></table></figure>
+
+<h2 id="子网掩码与-CIDR"><a href="#子网掩码与-CIDR" class="headerlink" title="子网掩码与 CIDR"></a><strong>子网掩码与 CIDR</strong></h2><h3 id="什么是子网掩码"><a href="#什么是子网掩码" class="headerlink" title="什么是子网掩码"></a><strong>什么是子网掩码</strong></h3><p>子网掩码用来区分 IP 地址中哪些是网络部分，哪些是主机部分。32 位子网掩码中，1 对应网络位，0 对应主机位。</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs sh">子网掩码示例：255.255.255.0<br>二进制：11111111.11111111.11111111.00000000<br><br>IP 地址 192.168.1.100 和子网掩码 255.255.255.0：<br>192.168.1  = 网络部分（前三字节）<br>100        = 主机部分（最后一字节）<br><br>网络地址 = IP &amp; 子网掩码 = 192.168.1.100 &amp; 255.255.255.0 = 192.168.1.0<br>广播地址 = 网络地址 | (~子网掩码) = 192.168.1.0 | 0.0.0.255 = 192.168.1.255<br></code></pre></td></tr></table></figure>
+
+<p>子网掩码两种写法：</p>
+<ul>
+<li><strong>点分十进制</strong>：<code>255.255.255.0</code></li>
+<li><strong>CIDR 表示法</strong>：<code>/24</code>（表示前 24 位是网络位）</li>
+</ul>
+<p>常用 CIDR 掩码速算：</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><code class="hljs sh">/32  = 255.255.255.255  主机数：1<br>/31  = 255.255.255.254  主机数：2（点对点链路）<br>/30  = 255.255.255.252  主机数：4<br>/29  = 255.255.255.248  主机数：8<br>/28  = 255.255.255.240  主机数：16<br>/27  = 255.255.255.224  主机数：32<br>/26  = 255.255.255.192  主机数：64<br>/25  = 255.255.255.128  主机数：128<br>/24  = 255.255.255.0    主机数：256（常用，256 - 2 = 254 可用）<br>/23  = 255.255.254.0    主机数：512<br>/22  = 255.255.252.0    主机数：1024<br>/21  = 255.255.248.0    主机数：2048<br>/20  = 255.255.240.0    主机数：4096<br>/16  = 255.255.0.0      主机数：65536<br>/8   = 255.0.0.0        主机数：16777216<br></code></pre></td></tr></table></figure>
+
+<p>计算可用主机数：2^(32-CIDR) - 2（减去网络地址和广播地址）</p>
+<h3 id="CIDR-块的大小选择"><a href="#CIDR-块的大小选择" class="headerlink" title="CIDR 块的大小选择"></a><strong>CIDR 块的大小选择</strong></h3><p>选择太小的 CIDR 块会浪费 IP，选择太大的不方便管理。实际运维中的选择：</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs sh">/30 或 /31：点对点链路，如两台服务器直连、路由器互联接口<br>/29：小型业务，如少数几台机器的服务集群<br>/28：中型业务，如一个部门的小型服务器集群<br>/27：中等规模，如一个业务线的基础设施<br>/26：较大规模，如一个业务线的完整基础设施<br>/25 或 /24：大规模，如整个 Kubernetes 集群、整个 VPC 子网<br>/16 或 /8：超大规模，如整个数据中心的网段划分<br></code></pre></td></tr></table></figure>
+
+<h3 id="子网划分实战"><a href="#子网划分实战" class="headerlink" title="子网划分实战"></a><strong>子网划分实战</strong></h3><p>假设你有一个 <code>192.168.0.0/24</code> 网段，需要划分给 4 个部门，每个部门约 50 台机器。</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><code class="hljs sh">原始网段：192.168.0.0/24<br>二进制掩码：11111111.11111111.11111111.00000000<br>可用 IP：192.168.0.1 - 192.168.0.254（254 台）<br><br>划分方案（每个子网需要 /26，即 64 个地址）：<br><br>部门 A：192.168.0.0/26<br>  网络地址：192.168.0.0<br>  可用范围：192.168.0.1 - 192.168.0.62<br>  广播地址：192.168.0.63<br><br>部门 B：192.168.0.64/26<br>  网络地址：192.168.0.64<br>  可用范围：192.168.0.65 - 192.168.0.126<br>  广播地址：192.168.0.127<br><br>部门 C：192.168.0.128/26<br>  网络地址：192.168.0.128<br>  可用范围：192.168.0.129 - 192.168.0.190<br>  广播地址：192.168.0.191<br><br>部门 D：192.168.0.192/26<br>  网络地址：192.168.0.192<br>  可用范围：192.168.0.193 - 192.168.0.254<br>  广播地址：192.168.0.255<br></code></pre></td></tr></table></figure>
+
+<p>在 Linux 上验证子网划分：</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><code class="hljs sh"><span class="hljs-comment"># 安装 ipcalc 工具</span><br>apt install ipcalc   <span class="hljs-comment"># Debian/Ubuntu</span><br>yum install ipcalc   <span class="hljs-comment"># CentOS/RHEL</span><br><br><span class="hljs-comment"># 计算网段信息</span><br>ipcalc 192.168.0.0/26<br>ipcalc 192.168.0.64/26<br>ipcalc 192.168.0.128/26<br>ipcalc 192.168.0.192/26<br><br><span class="hljs-comment"># 输出示例</span><br>ipcalc 192.168.0.0/26<br>Address:   192.168.0.0<br>Netmask:   255.255.255.192<br>Wildcard:  0.0.0.63<br>Network:   192.168.0.0/26<br>HostMin:   192.168.0.1<br>HostMax:   192.168.0.62<br>Broadcast: 192.168.0.63<br>Hosts/Net: 62<br><br><span class="hljs-comment"># 批量计算</span><br>ipcalc 192.168.0.0/24 -s 64 64 64 64  <span class="hljs-comment"># 划分成 4 个 64 地址的子网</span><br></code></pre></td></tr></table></figure>
+
+<h3 id="判断两个-IP-是否在同一个网段"><a href="#判断两个-IP-是否在同一个网段" class="headerlink" title="判断两个 IP 是否在同一个网段"></a><strong>判断两个 IP 是否在同一个网段</strong></h3><p>运维中常需要判断两台机器是否可以直接通信（不需要网关）。</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><code class="hljs sh"><span class="hljs-comment"># 方法：两个 IP 分别和子网掩码做 AND 运算，结果相同则在同网段</span><br><br><span class="hljs-comment"># Python 脚本判断</span><br>python3 &lt;&lt; <span class="hljs-string">&#x27;EOF&#x27;</span><br>def ip_in_subnet(ip, subnet):<br>    ip_parts = [int(x) <span class="hljs-keyword">for</span> x <span class="hljs-keyword">in</span> ip.split(<span class="hljs-string">&#x27;.&#x27;</span>)]<br>    subnet_cidr = int(subnet.split(<span class="hljs-string">&#x27;/&#x27;</span>)[1])<br>    subnet_mask = (0xFFFFFFFF &gt;&gt; (32 - subnet_cidr)) &lt;&lt; (32 - subnet_cidr)<br>    <br>    net_parts = [0,0,0,0]<br>    <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> range(4):<br>        net_parts[i] = (subnet_mask &gt;&gt; (8 * (3-i))) &amp; 0xFF<br>    <br>    ip_int = (ip_parts[0]&lt;&lt;<span class="hljs-string">24) + (ip_parts[1]&lt;&lt;16) + (ip_parts[2]&lt;&lt;8) + ip_parts[3]</span><br><span class="hljs-string">    subnet_int = (net_parts[0]&lt;&lt;24</span>) + (net_parts[1]&lt;&lt;<span class="hljs-string">16) + (net_parts[2]&lt;&lt;8) + net_parts[3]</span><br><span class="hljs-string">    </span><br><span class="hljs-string">    return (ip_int &amp; subnet_mask) == (subnet_int &amp; subnet_mask)</span><br><span class="hljs-string"></span><br><span class="hljs-string">print(ip_in_subnet(&quot;192.168.1.100&quot;, &quot;192.168.1.0/24&quot;))  # True</span><br><span class="hljs-string">print(ip_in_subnet(&quot;192.168.2.100&quot;, &quot;192.168.1.0/24&quot;))  # False</span><br><span class="hljs-string">EOF</span><br></code></pre></td></tr></table></figure>
+
+<h2 id="默认网关"><a href="#默认网关" class="headerlink" title="默认网关"></a><strong>默认网关</strong></h2><h3 id="网关的作用"><a href="#网关的作用" class="headerlink" title="网关的作用"></a><strong>网关的作用</strong></h3><p>同一网段的设备可以直接通信，跨网段通信需要通过网关转发。网关是一个网段通往其他网段的”大门”，通常是路由器或三层交换机的接口 IP。</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs sh">场景：192.168.1.10 想访问 192.168.2.20<br><br>1. 192.168.1.10 发现 192.168.2.20 不在本地网段（192.168.1.0/24）<br>2. 192.168.1.10 把数据包发给默认网关（通常是 .1，如 192.168.1.1）<br>3. 网关路由器查看自己的路由表，决定把包转发到哪里<br>4. 最终数据包到达 192.168.2.20<br></code></pre></td></tr></table></figure>
+
+<h3 id="查看和配置网关"><a href="#查看和配置网关" class="headerlink" title="查看和配置网关"></a><strong>查看和配置网关</strong></h3><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><code class="hljs sh"><span class="hljs-comment"># 查看当前路由表（包含默认网关）</span><br>ip route show<br><span class="hljs-comment"># 输出示例：</span><br><span class="hljs-comment"># default via 192.168.1.1 dev eth0 proto dhcp src 192.168.1.100 metric 600</span><br><span class="hljs-comment"># 192.168.1.0/24 dev eth0 proto kernel scope link src 192.168.1.100</span><br><br><span class="hljs-comment"># 查看更详细的路由信息</span><br>route -n<br><span class="hljs-comment"># Kernel IP routing table</span><br><span class="hljs-comment"># Destination     Gateway         Genmask         Flags Metric Ref    Use Iface</span><br><span class="hljs-comment"># 0.0.0.0         192.168.1.1     0.0.0.0         UG    600    0        0 eth0</span><br><span class="hljs-comment"># 192.168.1.0     0.0.0.0         255.255.255.0   U     600    0        0 eth0</span><br><br><span class="hljs-comment"># 添加默认网关（临时，重启失效）</span><br>ip route add default via 192.168.1.1 dev eth0<br><br><span class="hljs-comment"># 删除默认网关</span><br>ip route del default via 192.168.1.1<br><br><span class="hljs-comment"># 查看网关对应的 MAC 地址（ARP 解析）</span><br>arp 192.168.1.1<br></code></pre></td></tr></table></figure>
+
+<h3 id="云服务器网关配置"><a href="#云服务器网关配置" class="headerlink" title="云服务器网关配置"></a><strong>云服务器网关配置</strong></h3><p>阿里云、AWS、腾讯云的 VPC 网络中，子网的网关由云平台统一管理，通常是网段的第一个 IP（如 <code>192.168.1.1</code>）。</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs sh">阿里云 VPC 网段常用：<br>VPC: 192.168.0.0/16<br>交换机（子网）：192.168.1.0/24<br>交换机网关：192.168.1.1（自动分配）<br><br>云服务器网卡配置的网关必须是 192.168.1.1<br>云服务器安全组控制的是入方向和出方向规则<br></code></pre></td></tr></table></figure>
+
+<h2 id="VLAN-虚拟局域网"><a href="#VLAN-虚拟局域网" class="headerlink" title="VLAN 虚拟局域网"></a><strong>VLAN 虚拟局域网</strong></h2><h3 id="VLAN-的作用"><a href="#VLAN-的作用" class="headerlink" title="VLAN 的作用"></a><strong>VLAN 的作用</strong></h3><p>一个物理交换机上可以划分多个 VLAN，实现广播域隔离。不同 VLAN 的设备即使连在同一台交换机上，也无法直接通信，需要通过三层路由转发。</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs sh">场景：服务器有三个网络用途<br>- 管理网络：192.168.1.0/24（VLAN 100）<br>- 业务网络：192.168.2.0/24（VLAN 200）<br>- 存储网络：192.168.3.0/24（VLAN 300）<br><br>配置后：<br>- 同一 VLAN 内的服务器可以互相通信<br>- 不同 VLAN 的服务器需要通过路由/网关才能通信<br>- 广播包不会穿越 VLAN 边界<br></code></pre></td></tr></table></figure>
+
+<h3 id="Linux-配置-VLAN"><a href="#Linux-配置-VLAN" class="headerlink" title="Linux 配置 VLAN"></a><strong>Linux 配置 VLAN</strong></h3><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><code class="hljs sh"><span class="hljs-comment"># 加载 8021q 内核模块</span><br>modprobe 8021q<br><br><span class="hljs-comment"># 创建 VLAN 接口</span><br>ip <span class="hljs-built_in">link</span> add <span class="hljs-built_in">link</span> eth0 name eth0.100 <span class="hljs-built_in">type</span> vlan <span class="hljs-built_in">id</span> 100<br><br><span class="hljs-comment"># 配置 IP</span><br>ip addr add 192.168.1.10/24 dev eth0.100<br><br><span class="hljs-comment"># 激活接口</span><br>ip <span class="hljs-built_in">link</span> <span class="hljs-built_in">set</span> eth0.100 up<br><br><span class="hljs-comment"># 查看 VLAN 配置</span><br>ip <span class="hljs-built_in">link</span> show <span class="hljs-built_in">type</span> vlan<br><span class="hljs-built_in">cat</span> /proc/net/vlan/config<br><br><span class="hljs-comment"># 删除 VLAN 接口</span><br>ip <span class="hljs-built_in">link</span> del eth0.100<br></code></pre></td></tr></table></figure>
+
+<h3 id="交换机的-VLAN-端口模式"><a href="#交换机的-VLAN-端口模式" class="headerlink" title="交换机的 VLAN 端口模式"></a><strong>交换机的 VLAN 端口模式</strong></h3><p>实际运维中，交换机配置比 Linux 命令更重要。常见端口模式：</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><code class="hljs sh">Access 口：连接终端设备（服务器、PC）<br>- 属于单个 VLAN<br>- 收到的帧不带 VLAN tag<br>- 发出的帧不带 VLAN tag<br>- 配置示例：switchport mode access; switchport access vlan 100<br><br>Trunk 口：连接其他交换机或路由器<br>- 允许通过多个 VLAN<br>- 收到的帧带 VLAN tag<br>- 发出的帧带 VLAN tag<br>- 配置示例：switchport mode trunk; switchport trunk allowed vlan 100,200,300<br><br>Hybrid 口：华为设备特有，兼具两者特点<br>- 可以灵活配置哪些 VLAN 打 tag，哪些不打<br></code></pre></td></tr></table></figure>
+
+<h2 id="路由基础"><a href="#路由基础" class="headerlink" title="路由基础"></a><strong>路由基础</strong></h2><h3 id="路由表的工作原理"><a href="#路由表的工作原理" class="headerlink" title="路由表的工作原理"></a><strong>路由表的工作原理</strong></h3><p>每台 IP 网络设备（主机、路由器、三层交换机）都有路由表。发包时，设备根据路由表决定把包发到哪里。</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><code class="hljs sh"><span class="hljs-comment"># 查看 Linux 路由表</span><br>ip route show<br>route -n<br><br><span class="hljs-comment"># 典型路由表解读</span><br><span class="hljs-comment"># 192.168.1.0/24 dev eth0 proto kernel scope link src 192.168.1.100</span><br><span class="hljs-comment">#    ^网段        ^接口  ^学习方式   ^链路本地   ^本机IP</span><br><span class="hljs-comment">#    目标网络，通过 eth0 直连，不需要网关</span><br><br><span class="hljs-comment"># 10.0.0.0/8 via 192.168.1.1 dev eth0</span><br><span class="hljs-comment">#    ^目标网络    ^下一跳网关   ^出接口</span><br><span class="hljs-comment">#    目标 10.x.x.x 的包发给 192.168.1.1 转发</span><br><br><span class="hljs-comment"># default via 192.168.1.1 dev eth0</span><br><span class="hljs-comment">#    ^默认路由，匹配所有其他目标</span><br></code></pre></td></tr></table></figure>
+
+<p>路由匹配规则（最长前缀匹配）：</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs sh">假设目标 IP 是 10.20.30.40，路由表有：<br>1. 0.0.0.0/0        （默认路由，匹配 0 位）<br>2. 10.0.0.0/8       （匹配 8 位）<br>3. 10.20.0.0/16     （匹配 16 位）<br>4. 10.20.30.0/24    （匹配 24 位）<br><br>最长匹配原则：选择第 4 条，匹配 24 位<br></code></pre></td></tr></table></figure>
+
+<h3 id="添加和删除路由"><a href="#添加和删除路由" class="headerlink" title="添加和删除路由"></a><strong>添加和删除路由</strong></h3><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><code class="hljs sh"><span class="hljs-comment"># 添加静态路由（临时，重启失效）</span><br><span class="hljs-comment"># 添加到 10.10.0.0/16 的路由，经过 192.168.1.1</span><br>ip route add 10.10.0.0/16 via 192.168.1.1 dev eth0<br><br><span class="hljs-comment"># 添加到特定主机的路由</span><br>ip route add 10.10.10.20/32 via 192.168.1.1 dev eth0<br><br><span class="hljs-comment"># 添加黑名单路由（流量丢弃）</span><br>ip route add blackhole 10.10.10.0/24<br><br><span class="hljs-comment"># 删除路由</span><br>ip route del 10.10.0.0/16 via 192.168.1.1 dev eth0<br><br><span class="hljs-comment"># 永久保存路由（CentOS 7/8）</span><br><span class="hljs-comment"># 在 /etc/sysconfig/network-scripts/route-eth0 中添加：</span><br>10.10.0.0/16 via 192.168.1.1 dev eth0<br><br><span class="hljs-comment"># 永久保存路由（Debian/Ubuntu）</span><br><span class="hljs-comment"># 在 /etc/network/interfaces 中添加：</span><br>up ip route add 10.10.0.0/16 via 192.168.1.1 dev eth0<br></code></pre></td></tr></table></figure>
+
+<h3 id="策略路由（高级）"><a href="#策略路由（高级）" class="headerlink" title="策略路由（高级）"></a><strong>策略路由（高级）</strong></h3><p>Linux 支持基于源地址、fwmark、UID 等条件的策略路由。</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><code class="hljs sh"><span class="hljs-comment"># 查看策略路由规则</span><br>ip rule show<br><br><span class="hljs-comment"># 默认规则优先级</span><br><span class="hljs-comment"># 0:      from all lookup local</span><br><span class="hljs-comment"># 32766:  from all lookup main</span><br><span class="hljs-comment"># 32767:  from all lookup default</span><br><br><span class="hljs-comment"># 添加基于源地址的策略路由</span><br><span class="hljs-comment"># 来自 192.168.1.0/24 的流量走 eth0</span><br>ip rule add from 192.168.1.0/24 table 100<br>ip route add default via 192.168.1.1 dev eth0 table 100<br><br><span class="hljs-comment"># 添加基于 fwmark 的策略路由（常用于流量整形）</span><br>iptables -A PREROUTING -s 10.0.0.0/8 -j MARK --set-mark 1<br>ip rule add fwmark 1 table 200<br>ip route add default via 10.0.0.1 dev eth1 table 200<br></code></pre></td></tr></table></figure>
+
+<h2 id="DNS-基础"><a href="#DNS-基础" class="headerlink" title="DNS 基础"></a><strong>DNS 基础</strong></h2><h3 id="DNS-的作用"><a href="#DNS-的作用" class="headerlink" title="DNS 的作用"></a><strong>DNS 的作用</strong></h3><p>域名系统负责把人类可读的域名转换成 IP 地址。运维中遇到”机器能 ping 通 IP，但 ping 不通域名”的问题，基本就是 DNS 故障。</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><code class="hljs sh"><span class="hljs-comment"># 查看当前 DNS 服务器配置</span><br><span class="hljs-built_in">cat</span> /etc/resolv.conf<br><br><span class="hljs-comment"># 测试 DNS 解析</span><br>nslookup www.baidu.com<br>dig www.baidu.com<br>host www.baidu.com<br><br><span class="hljs-comment"># 验证 DNS 缓存（systemd-resolved）</span><br>resolvectl status<br>resolvectl query www.baidu.com<br><br><span class="hljs-comment"># 清理 DNS 缓存</span><br><span class="hljs-comment"># systemd-resolved</span><br>systemctl restart systemd-resolved<br><br><span class="hljs-comment"># nscd</span><br>systemctl restart nscd<br><br><span class="hljs-comment"># 手动指定 DNS 查询</span><br>nslookup www.baidu.com 8.8.8.8   <span class="hljs-comment"># 用 Google DNS 查询</span><br>dig @8.8.8.8 www.baidu.com<br></code></pre></td></tr></table></figure>
+
+<h3 id="x2F-etc-x2F-hosts-本地解析"><a href="#x2F-etc-x2F-hosts-本地解析" class="headerlink" title="&#x2F;etc&#x2F;hosts 本地解析"></a><strong>&#x2F;etc&#x2F;hosts 本地解析</strong></h3><p>在 DNS 不可用或需要自定义解析时，使用 <code>/etc/hosts</code>。</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs sh"><span class="hljs-comment"># /etc/hosts 格式：IP 域名 别名</span><br>127.0.0.1   localhost localhost.localdomain<br>192.168.1.100   db-master.internal db-master<br>192.168.1.101   db-slave.internal db-slave<br>10.244.1.5       redis-01.default.svc.cluster.local redis-01<br><br><span class="hljs-comment"># 优先级：/etc/hosts &gt; DNS（可通过 /etc/nsswitch.conf 修改）</span><br></code></pre></td></tr></table></figure>
+
+<h2 id="网络故障排查流程"><a href="#网络故障排查流程" class="headerlink" title="网络故障排查流程"></a><strong>网络故障排查流程</strong></h2><h3 id="排查思路"><a href="#排查思路" class="headerlink" title="排查思路"></a><strong>排查思路</strong></h3><p>网络故障排查遵循分层排除法，从底层到高层：</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs sh">第1层：物理层 - 网线、光纤、网卡灯是否亮<br>第2层：数据链路层 - MAC 地址、ARP、交换机端口<br>第3层：网络层 - IP 地址、子网掩码、路由表、网关<br>第4层：传输层 - TCP/UDP 端口、防火墙状态<br>第5层：应用层 - HTTP 响应、DNS 解析、证书<br></code></pre></td></tr></table></figure>
+
+<h3 id="常用排查命令"><a href="#常用排查命令" class="headerlink" title="常用排查命令"></a><strong>常用排查命令</strong></h3><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br></pre></td><td class="code"><pre><code class="hljs sh"><span class="hljs-comment"># 1. 检查 IP 配置是否正确</span><br>ip addr show eth0<br><span class="hljs-comment"># 确认：IP 地址是否正确、子网掩码是否正确、网卡是否 UP</span><br><br><span class="hljs-comment"># 2. 检查网关是否可达</span><br>ping -c 3 192.168.1.1<br><span class="hljs-comment"># 确认：网关是否响应、是否有丢包</span><br><br><span class="hljs-comment"># 3. 检查目标是否可达（ICMP）</span><br>ping -c 3 8.8.8.8<br>ping -c 3 192.168.2.100<br><span class="hljs-comment"># 确认：能否 ping 通外网、能否 ping 通同网段其他机器</span><br><br><span class="hljs-comment"># 4. 检查端口是否开放（TCP）</span><br>nc -zv 192.168.1.100 22<br>nc -zv 10.0.0.50 3306<br>telnet 192.168.1.100 80<br><br><span class="hljs-comment"># 5. 检查路由是否正确</span><br>ip route show<br>traceroute -m 10 8.8.8.8    <span class="hljs-comment"># 跟踪路由（需要 traceroute 包）</span><br>tracepath 8.8.8.8            <span class="hljs-comment"># 轻量版 traceroute</span><br><br><span class="hljs-comment"># 6. 检查 DNS 解析</span><br>nslookup www.baidu.com<br>dig +short www.baidu.com<br><br><span class="hljs-comment"># 7. 检查防火墙规则</span><br>iptables -L -n -v<br>iptables -L INPUT -n -v<br>iptables -L OUTPUT -n -v<br><br><span class="hljs-comment"># 8. 检查监听端口</span><br>ss -tlnp<br>netstat -tlnp<br><span class="hljs-comment"># 确认服务是否在监听、绑定的 IP 是否正确</span><br><br><span class="hljs-comment"># 9. 检查连接状态</span><br>ss -tnp<br>netstat -tnp<br><span class="hljs-comment"># 查看当前 TCP 连接、连接状态分布</span><br><br><span class="hljs-comment"># 10. 检查 ARP 表</span><br>ip neigh show<br>arp -a<br><span class="hljs-comment"># 确认是否能解析到 MAC 地址</span><br></code></pre></td></tr></table></figure>
+
+<h3 id="常见故障案例"><a href="#常见故障案例" class="headerlink" title="常见故障案例"></a><strong>常见故障案例</strong></h3><h4 id="案例-1：服务器获取到-169-254-x-x-地址"><a href="#案例-1：服务器获取到-169-254-x-x-地址" class="headerlink" title="案例 1：服务器获取到 169.254.x.x 地址"></a><strong>案例 1：服务器获取到 169.254.x.x 地址</strong></h4><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><code class="hljs sh"><span class="hljs-comment"># 现象：机器 IP 是 169.254.x.x，无法上网</span><br><br><span class="hljs-comment"># 原因：DHCP 获取失败，Windows 自动分配了链路本地地址</span><br><br><span class="hljs-comment"># 排查步骤：</span><br><span class="hljs-comment"># 1. 检查网线是否插好</span><br>ip <span class="hljs-built_in">link</span> show eth0<br><br><span class="hljs-comment"># 2. 检查 DHCP 配置</span><br><span class="hljs-built_in">cat</span> /etc/network/interfaces<br><span class="hljs-comment"># 或</span><br><span class="hljs-built_in">cat</span> /etc/sysconfig/network-scripts/ifcfg-eth0<br><br><span class="hljs-comment"># 3. 手动触发 DHCP 请求</span><br>dhclient -r eth0   <span class="hljs-comment"># 释放</span><br>dhclient eth0      <span class="hljs-comment"># 重新获取</span><br><br><span class="hljs-comment"># 4. 如果网络是静态配置，手动设置正确 IP</span><br>ip addr add 192.168.1.100/24 dev eth0<br>ip route add default via 192.168.1.1<br></code></pre></td></tr></table></figure>
+
+<h4 id="案例-2：同网段机器-ping-不通"><a href="#案例-2：同网段机器-ping-不通" class="headerlink" title="案例 2：同网段机器 ping 不通"></a><strong>案例 2：同网段机器 ping 不通</strong></h4><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><code class="hljs sh"><span class="hljs-comment"># 现象：机器 A（192.168.1.10）和机器 B（192.168.1.20）ping 不通</span><br><br><span class="hljs-comment"># 排查步骤：</span><br><span class="hljs-comment"># 1. 确认 IP 配置</span><br><span class="hljs-comment"># 在 A 上：</span><br>ip addr show eth0<br><span class="hljs-comment"># 应该在 A 上看到 192.168.1.10</span><br><br><span class="hljs-comment"># 在 B 上：</span><br>ip addr show eth0<br><span class="hljs-comment"># 应该在 B 上看到 192.168.1.20</span><br><br><span class="hljs-comment"># 2. 检查是否在同一网段</span><br><span class="hljs-comment"># 192.168.1.10/24 和 192.168.1.20/24 同一网段，可以直接通信</span><br><span class="hljs-comment"># 如果 A 的掩码是 /16 而 B 是 /24，可能不在同一网段</span><br><br><span class="hljs-comment"># 3. 检查 ARP</span><br><span class="hljs-comment"># 在 A 上：</span><br>ping -c 1 192.168.1.20<br>arp -a | grep 192.168.1.20<br><br><span class="hljs-comment"># 4. 检查防火墙</span><br>iptables -L INPUT -n<br><span class="hljs-comment"># 可能有 DROP icmp 或 DROP all 规则</span><br><br><span class="hljs-comment"># 5. 检查 eth0 是否 UP</span><br>ip <span class="hljs-built_in">link</span> show eth0<br><br><span class="hljs-comment"># 解决方案：</span><br><span class="hljs-comment"># - 修正 IP/掩码配置</span><br><span class="hljs-comment"># - 清理防火墙规则或添加 ICMP 放行</span><br></code></pre></td></tr></table></figure>
+
+<h4 id="案例-3：跨网段机器-ping-不通"><a href="#案例-3：跨网段机器-ping-不通" class="headerlink" title="案例 3：跨网段机器 ping 不通"></a><strong>案例 3：跨网段机器 ping 不通</strong></h4><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><code class="hljs sh"><span class="hljs-comment"># 现象：192.168.1.10 ping 192.168.2.20 不通</span><br><br><span class="hljs-comment"># 排查步骤：</span><br><span class="hljs-comment"># 1. 确认网关配置</span><br><span class="hljs-comment"># 在 192.168.1.10 上：</span><br>ip route show<br><span class="hljs-comment"># 应该有：default via 192.168.1.1 dev eth0</span><br><br><span class="hljs-comment"># 2. 确认网关本身是否可达</span><br>ping -c 1 192.168.1.1<br><br><span class="hljs-comment"># 3. 检查网关路由</span><br><span class="hljs-comment"># 在网关路由器上检查是否有到 192.168.2.0/24 的路由</span><br><br><span class="hljs-comment"># 4. 双向检查</span><br><span class="hljs-comment"># 不仅要检查源到目标的路由，还要检查目标到源的回程路由</span><br><br><span class="hljs-comment"># 常见原因：</span><br><span class="hljs-comment"># - 默认网关配置错误或缺失</span><br><span class="hljs-comment"># - 目标网段路由表中没有回程路由</span><br><span class="hljs-comment"># - 中间路由器 ACL 拦截了 ICMP</span><br></code></pre></td></tr></table></figure>
+
+<h4 id="案例-4：DNS-解析正常但无法访问"><a href="#案例-4：DNS-解析正常但无法访问" class="headerlink" title="案例 4：DNS 解析正常但无法访问"></a><strong>案例 4：DNS 解析正常但无法访问</strong></h4><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><code class="hljs sh"><span class="hljs-comment"># 现象：nslookup 能解析出 IP，但 ping 不通域名</span><br><br><span class="hljs-comment"># 排查步骤：</span><br><span class="hljs-comment"># 1. 确认是 TCP 还是 UDP 问题</span><br>nc -zv www.baidu.com 443<br>nc -zuv 8.8.8.8 53<br><br><span class="hljs-comment"># 2. 检查路由</span><br>ip route show<br>traceroute -m 5 www.baidu.com<br><br><span class="hljs-comment"># 3. 检查防火墙出方向</span><br>iptables -L OUTPUT -n -v<br><br><span class="hljs-comment"># 4. 检查 MTU</span><br>ip <span class="hljs-built_in">link</span> show eth0<br>ping -c 3 -M <span class="hljs-keyword">do</span> -s 1400 8.8.8.8<br><span class="hljs-comment"># 如果大包丢包小包不丢，可能是 MTU 问题（常见于 VPN）</span><br><br><span class="hljs-comment"># 5. 检查代理</span><br><span class="hljs-built_in">echo</span><span class="hljs-variable">$http_proxy</span><br><span class="hljs-built_in">echo</span><span class="hljs-variable">$https_proxy</span><br><span class="hljs-built_in">env</span> | grep -i proxy<br></code></pre></td></tr></table></figure>
+
+<h3 id="网络排查流程图"><a href="#网络排查流程图" class="headerlink" title="网络排查流程图"></a><strong>网络排查流程图</strong></h3><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><code class="hljs sh">开始：网络不通<br>  |<br>  v<br>ping 127.0.0.1 成功？<br>  |-- 否 --&gt; 本机 TCP/IP 协议栈问题，检查内核参数<br>  |           ip <span class="hljs-built_in">link</span> <span class="hljs-built_in">set</span> eth0 up<br>  |<br>  v<br>ping 本机 IP 成功？<br>  |-- 否 --&gt; 网卡 down 或 IP 配置错误<br>  |           ip <span class="hljs-built_in">link</span> <span class="hljs-built_in">set</span> eth0 up<br>  |           ip addr add x.x.x.x/xx dev eth0<br>  |<br>  v<br>ping 网关 IP 成功？<br>  |-- 否 --&gt; 本网段 ARP 问题或网关本身问题<br>  |           检查网线、交换机端口<br>  |           检查网关是否通电<br>  |<br>  v<br>ping 目标 IP 成功？<br>  |-- 否 --&gt; 中间网络问题<br>  |           traceroute 追查在哪一跳丢包<br>  |           检查沿途路由器路由表<br>  |<br>  v<br>ping 域名 成功？<br>  |-- 否 --&gt; DNS 问题<br>  |           检查 /etc/resolv.conf<br>  |           检查 DNS 服务器<br>  |<br>  v<br>telnet/curl 目标端口 成功？<br>  |-- 否 --&gt; 防火墙或服务问题<br>  |           检查 iptables/nftables<br>  |           检查目标服务是否监听<br>  |<br>  v<br>解决<br></code></pre></td></tr></table></figure>
+
+<h2 id="Docker-x2F-Kubernetes-网络基础"><a href="#Docker-x2F-Kubernetes-网络基础" class="headerlink" title="Docker&#x2F;Kubernetes 网络基础"></a><strong>Docker&#x2F;Kubernetes 网络基础</strong></h2><h3 id="Docker-网络模式"><a href="#Docker-网络模式" class="headerlink" title="Docker 网络模式"></a><strong>Docker 网络模式</strong></h3><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><code class="hljs sh"><span class="hljs-comment"># 查看 Docker 网络</span><br>docker network <span class="hljs-built_in">ls</span><br><br><span class="hljs-comment"># 常见网络模式：</span><br><span class="hljs-comment"># bridge：默认模式，容器在桥接网络，IP 通常 172.17.0.0/16</span><br><span class="hljs-comment"># host：容器网络直接用宿主机网络栈</span><br><span class="hljs-comment"># overlay：跨 Docker 守护进程通信（Swarm 模式）</span><br><span class="hljs-comment"># macvlan：容器直接获得 MAC 地址，像物理机一样</span><br><br><span class="hljs-comment"># 查看容器网络信息</span><br>docker inspect -f <span class="hljs-string">&#x27;&#123;&#123;range .NetworkSettings.Networks&#125;&#125;&#123;&#123;.IPAddress&#125;&#125;&#123;&#123;end&#125;&#125;&#x27;</span> container_name<br><br><span class="hljs-comment"># 查看容器内网络命名空间</span><br>docker <span class="hljs-built_in">exec</span> -it container_name ip addr<br>docker <span class="hljs-built_in">exec</span> -it container_name <span class="hljs-built_in">cat</span> /etc/resolv.conf<br><br><span class="hljs-comment"># 测试容器间通信</span><br>docker <span class="hljs-built_in">exec</span> -it container_a ping -c 1 container_b<br><br><span class="hljs-comment"># 容器 DNS 配置</span><br><span class="hljs-comment"># Docker daemon 配置 /etc/docker/daemon.json</span><br>&#123;<br><span class="hljs-string">&quot;dns&quot;</span>: [<span class="hljs-string">&quot;8.8.8.8&quot;</span>, <span class="hljs-string">&quot;114.114.114.114&quot;</span>]<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<h3 id="Kubernetes-网络模型"><a href="#Kubernetes-网络模型" class="headerlink" title="Kubernetes 网络模型"></a><strong>Kubernetes 网络模型</strong></h3><p>Kubernetes 网络模型要求：</p>
+<ul>
+<li>所有 Pod 可以直接通过 IP 互访，无需 NAT</li>
+<li>节点可以与所有 Pod 互访，无需 NAT</li>
+<li>Pod 看到的 IP 和其他 Pod 看到的相同</li>
+</ul>
+<p>常见 CNI 插件对比：</p>
+<table>
+<thead>
+<tr>
+<th align="left">CNI</th>
+<th align="left">网段示例</th>
+<th align="left">特点</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">Flannel</td>
+<td align="left">10.244.0.0&#x2F;16</td>
+<td align="left">简单，VXLAN 封装</td>
+</tr>
+<tr>
+<td align="left">Calico</td>
+<td align="left">10.244.0.0&#x2F;16</td>
+<td align="left">支持 BGP，性能好</td>
+</tr>
+<tr>
+<td align="left">Cilium</td>
+<td align="left">10.244.0.0&#x2F;16</td>
+<td align="left">eBPF 加速，可观测性强</td>
+</tr>
+<tr>
+<td align="left">Weave</td>
+<td align="left">10.32.0.0&#x2F;16</td>
+<td align="left">简单，加密传输</td>
+</tr>
+</tbody></table>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><code class="hljs sh"><span class="hljs-comment"># 查看 Kubernetes 节点 IP 和 Pod CIDR</span><br>kubectl get nodes -o wide<br><br><span class="hljs-comment"># 查看 Pod IP（需要指定 -o wide）</span><br>kubectl get pods -o wide --all-namespaces<br><br><span class="hljs-comment"># 查看 Service ClusterIP</span><br>kubectl get svc -o wide<br><br><span class="hljs-comment"># 查看 CNI 配置（Calico 示例）</span><br>kubectl get nodes -o jsonpath=<span class="hljs-string">&#x27;&#123;.items[*].spec.podCIDR&#125;&#x27;</span><br>kubectl get nodes -o jsonpath=<span class="hljs-string">&#x27;&#123;.items[*].status.addresses[?(@.type==&quot;InternalIP&quot;)].address&#125;&#x27;</span><br><br><span class="hljs-comment"># 排查 Pod 网络问题</span><br>kubectl <span class="hljs-built_in">exec</span> -it pod_name -- ip addr<br>kubectl <span class="hljs-built_in">exec</span> -it pod_name -- <span class="hljs-built_in">cat</span> /etc/resolv.conf<br>kubectl <span class="hljs-built_in">exec</span> -it pod_name -- ping -c 1 8.8.8.8<br><br><span class="hljs-comment"># 查看 Pod 事件</span><br>kubectl describe pod pod_name<br><br><span class="hljs-comment"># 查看 CNI 日志</span><br>kubectl logs -n kube-system -l k8s-app=calico-node<br>journalctl -u kubelet | grep -i cni<br></code></pre></td></tr></table></figure>
+
+<h2 id="防火墙基础"><a href="#防火墙基础" class="headerlink" title="防火墙基础"></a><strong>防火墙基础</strong></h2><h3 id="iptables-基础"><a href="#iptables-基础" class="headerlink" title="iptables 基础"></a><strong>iptables 基础</strong></h3><p>Linux 防火墙按链（chain）和表（table）组织。</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><code class="hljs sh"><span class="hljs-comment"># 查看所有规则</span><br>iptables -L -n -v<br>iptables -L INPUT -n -v<br><br><span class="hljs-comment"># 四表（按优先级）：</span><br><span class="hljs-comment"># raw：连接跟踪的预处理</span><br><span class="hljs-comment"># mangle：修改数据包内容</span><br><span class="hljs-comment"># nat：地址转换</span><br><span class="hljs-comment"># filter：过滤（默认表）</span><br><br><span class="hljs-comment"># 五链：</span><br><span class="hljs-comment"># PREROUTING：路由前</span><br><span class="hljs-comment"># INPUT：进入本机</span><br><span class="hljs-comment"># FORWARD：转发</span><br><span class="hljs-comment"># OUTPUT：出本机</span><br><span class="hljs-comment"># POSTROUTING：路由后</span><br><br><span class="hljs-comment"># 常见场景：</span><br><span class="hljs-comment"># 允许 SSH 接入</span><br>iptables -A INPUT -p tcp --dport 22 -j ACCEPT<br><br><span class="hljs-comment"># 允许 HTTP/HTTPS</span><br>iptables -A INPUT -p tcp --dport 80 -j ACCEPT<br>iptables -A INPUT -p tcp --dport 443 -j ACCEPT<br><br><span class="hljs-comment"># 允许已建立的连接</span><br>iptables -A INPUT -m state --state ESTABLISHED,RELATED -j ACCEPT<br><br><span class="hljs-comment"># 丢弃所有其他入站</span><br>iptables -A INPUT -j DROP<br><br><span class="hljs-comment"># 保存规则（CentOS）</span><br>service iptables save<br><br><span class="hljs-comment"># 保存规则（Debian/Ubuntu）</span><br>iptables-save &gt; /etc/iptables/rules.v4<br><br><span class="hljs-comment"># 从文件恢复规则</span><br>iptables-restore &lt; /etc/iptables/rules.v4<br></code></pre></td></tr></table></figure>
+
+<h3 id="nftables-新一代防火墙"><a href="#nftables-新一代防火墙" class="headerlink" title="nftables 新一代防火墙"></a><strong>nftables 新一代防火墙</strong></h3><p>CentOS 8+ 推荐使用 nftables，语法更简洁。</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><code class="hljs sh"><span class="hljs-comment"># 查看规则</span><br>nft list ruleset<br><br><span class="hljs-comment"># 添加表</span><br>nft add table ip filter<br><br><span class="hljs-comment"># 添加链</span><br>nft add chain ip filter input &#123; <span class="hljs-built_in">type</span> filter hook input priority 0 \; &#125;<br><br><span class="hljs-comment"># 添加规则</span><br>nft add rule ip filter input tcp dport 22 accept<br><br><span class="hljs-comment"># 允许已建立的连接</span><br>nft add rule ip filter input ct state established,related accept<br><br><span class="hljs-comment"># 拒绝其他入站</span><br>nft add rule ip filter input counter drop<br><br><span class="hljs-comment"># 保存配置</span><br>nft list ruleset &gt; /etc/sysconfig/nftables.conf<br></code></pre></td></tr></table></figure>
+
+<h2 id="生产环境网络安全建议"><a href="#生产环境网络安全建议" class="headerlink" title="生产环境网络安全建议"></a><strong>生产环境网络安全建议</strong></h2><h3 id="最小权限原则"><a href="#最小权限原则" class="headerlink" title="最小权限原则"></a><strong>最小权限原则</strong></h3><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><code class="hljs sh"><span class="hljs-comment"># 1. 限制 SSH 访问来源</span><br>iptables -A INPUT -p tcp --dport 22 -s 10.0.0.0/8 -j ACCEPT<br>iptables -A INPUT -p tcp --dport 22 -j DROP<br><br><span class="hljs-comment"># 或者使用 tcpwrappers</span><br><span class="hljs-built_in">echo</span><span class="hljs-string">&quot;sshd: 10.0.0.0/8&quot;</span> &gt;&gt; /etc/hosts.allow<br><span class="hljs-built_in">echo</span><span class="hljs-string">&quot;sshd: ALL&quot;</span> &gt;&gt; /etc/hosts.deny<br><br><span class="hljs-comment"># 2. 禁止 ICMP 广播（防止放大攻击）</span><br><span class="hljs-built_in">echo</span> 1 &gt; /proc/sys/net/ipv4/icmp_echo_ignore_broadcasts<br><br><span class="hljs-comment"># 3. 禁用源路由</span><br><span class="hljs-built_in">echo</span> 0 &gt; /proc/sys/net/ipv4/conf/all/accept_source_route<br><span class="hljs-built_in">echo</span> 0 &gt; /proc/sys/net/ipv4/conf/default/accept_source_route<br><br><span class="hljs-comment"># 4. 开启反向路径过滤（防止 IP 欺骗）</span><br><span class="hljs-built_in">echo</span> 1 &gt; /proc/sys/net/ipv4/conf/all/rp_filter<br><span class="hljs-built_in">echo</span> 1 &gt; /proc/sys/net/ipv4/conf/default/rp_filter<br><br><span class="hljs-comment"># 5. 禁止 ICMP 重定向</span><br><span class="hljs-built_in">echo</span> 0 &gt; /proc/sys/net/ipv4/conf/all/accept_redirects<br><span class="hljs-built_in">echo</span> 0 &gt; /proc/sys/net/ipv4/conf/default/accept_redirects<br></code></pre></td></tr></table></figure>
+
+<h3 id="内网安全"><a href="#内网安全" class="headerlink" title="内网安全"></a><strong>内网安全</strong></h3><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><code class="hljs sh"><span class="hljs-comment"># 1. 不同业务网段隔离</span><br><span class="hljs-comment"># 使用 VLAN 或云平台安全组隔离</span><br><br><span class="hljs-comment"># 2. 数据库只允许应用服务器访问</span><br>iptables -A INPUT -p tcp --dport 3306 -s 10.0.1.0/24 -j ACCEPT<br>iptables -A INPUT -p tcp --dport 3306 -j DROP<br><br><span class="hljs-comment"># 3. Redis 只允许内网访问，禁用危险命令</span><br><span class="hljs-built_in">bind</span> 10.0.1.0/24<br>rename-command FLUSHALL <span class="hljs-string">&quot;&quot;</span><br>rename-command FLUSHDB <span class="hljs-string">&quot;&quot;</span><br>rename-command SHUTDOWN <span class="hljs-string">&quot;&quot;</span><br><br><span class="hljs-comment"># 4. 定期检查异常连接</span><br>ss -tnp | awk <span class="hljs-string">&#x27;&#123;print $5&#125;&#x27;</span> | <span class="hljs-built_in">cut</span> -d: -f1 | <span class="hljs-built_in">sort</span> | <span class="hljs-built_in">uniq</span> -c | <span class="hljs-built_in">sort</span> -rn | <span class="hljs-built_in">head</span> -20<br></code></pre></td></tr></table></figure>
+
+<h3 id="永久生效的网络优化参数"><a href="#永久生效的网络优化参数" class="headerlink" title="永久生效的网络优化参数"></a><strong>永久生效的网络优化参数</strong></h3><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><code class="hljs sh"><span class="hljs-comment"># /etc/sysctl.conf 或 /etc/sysctl.d/99-custom.conf</span><br><br><span class="hljs-comment"># 网络基础参数</span><br>net.core.somaxconn = 65535<br>net.core.netdev_max_backlog = 65535<br>net.ipv4.tcp_max_syn_backlog = 65535<br><br><span class="hljs-comment"># TCP 时间参数</span><br>net.ipv4.tcp_fin_timeout = 15<br>net.ipv4.tcp_keepalive_time = 300<br>net.ipv4.tcp_keepalive_probes = 3<br>net.ipv4.tcp_keepalive_intvl = 15<br><br><span class="hljs-comment"># TCP 缓冲</span><br>net.ipv4.tcp_rmem = 4096 87380 6291456<br>net.ipv4.tcp_wmem = 4096 65536 6291456<br><br><span class="hljs-comment"># 启用窗口缩放（高带宽高延迟网络）</span><br>net.ipv4.tcp_window_scaling = 1<br><br><span class="hljs-comment"># 连接追踪表大小（高并发服务器需要调大）</span><br>net.netfilter.nf_conntrack_max = 1048576<br>net.netfilter.nf_conntrack_tcp_timeout_established = 432000<br><br><span class="hljs-comment"># 应用配置</span><br>sysctl -p<br></code></pre></td></tr></table></figure>
+
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a><strong>总结</strong></h2><p>网络基础是运维的必修课，核心知识点：</p>
+<p><strong>IP 地址和子网：</strong></p>
+<ul>
+<li>IP 是 32 位二进制数，4 字节点分十进制表示</li>
+<li>子网掩码区分网络位和主机位，CIDR 是简化写法</li>
+<li>私有地址段：<code>10.0.0.0/8</code>、<code>172.16.0.0/12</code>、<code>192.168.0.0/16</code></li>
+<li>两个 IP 是否同网段：分别和掩码做 AND，结果相同则同网段</li>
+</ul>
+<p><strong>网关和路由：</strong></p>
+<ul>
+<li>同网段直接通信，跨网段走网关</li>
+<li>路由表按最长前缀匹配</li>
+<li>默认网关用 <code>0.0.0.0/0</code> 表示</li>
+</ul>
+<p><strong>故障排查顺序：</strong></p>
+<ul>
+<li>先 ping 127.0.0.1 确认本机协议栈正常</li>
+<li>再 ping 本机 IP 确认网卡正常</li>
+<li>然后 ping 网关确认链路正常</li>
+<li>最后 ping 目标逐段定位</li>
+</ul>
+<p><strong>常用命令：</strong></p>
+<ul>
+<li><code>ip addr</code>：查 IP 配置</li>
+<li><code>ip route</code>：查路由表</li>
+<li><code>ip neigh</code>：查 ARP 表</li>
+<li><code>ping</code>：测试连通性</li>
+<li><code>traceroute</code>：追踪路由</li>
+<li><code>nslookup/dig</code>：测 DNS</li>
+<li><code>ss/netstat</code>：查端口</li>
+<li><code>iptables</code>：配防火墙</li>
+</ul>
+
+              
+            </div>
+            <hr/>
+            <div>
+              <div>
+  <img src="https://jy-imgs.oss-cn-beijing.aliyuncs.com/img/20241112163319.png" srcset="/img/loading.gif" lazyload>
+</div>
+<div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/01-%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/" class="category-chain-item">01_操作系统</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/01-%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/03-%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/" class="category-chain-item">03_计算机网络</a>
+  
+  
+
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA/">#计算机</a>
+      
+        <a href="/tags/%E7%BD%91%E7%BB%9C/">#网络</a>
+      
+        <a href="/tags/IP/">#IP</a>
+      
+        <a href="/tags/%E5%AD%90%E7%BD%91%E6%8E%A9%E7%A0%81/">#子网掩码</a>
+      
+        <a href="/tags/%E7%BD%91%E5%85%B3/">#网关</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>03-IP与子网掩码与网关</div>
+      <div>https://janycode.github.io/2016/04/28/01_操作系统/03_计算机网络/03-IP与子网掩码与网关详解/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Jerry(姜源)</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2016年4月28日</div>
+        </div>
+      
+      
+      <div class="license-meta-item">
+        <div>许可协议</div>
+        <div>
+          
+            
+            
+              <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+              <span class="hint--top hint--rounded" aria-label="BY - 姜源">
+                <i class="iconfont icon-by"></i>
+              </span>
+              </a>
+            
+          
+        </div>
+      </div>
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              <!-- 分享按钮 -->
+              
+
+<div class="post-share my-4">
+  <div class="share-icons">
+    <!-- 复制链接 -->
+    <button class="share-icon share-copy" data-clipboard-text="https://janycode.github.io/2016/04/28/01_%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/03_%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/03-IP%E4%B8%8E%E5%AD%90%E7%BD%91%E6%8E%A9%E7%A0%81%E4%B8%8E%E7%BD%91%E5%85%B3%E8%AF%A6%E8%A7%A3/" aria-label="复制链接">
+      🔗
+      <span class="share-tooltip">复制链接</span>
+    </button>
+    <!-- 微博 -->
+    <a href="https://service.weibo.com/share/share.php?url=https%3A%2F%2Fjanycode.github.io%2F2016%2F04%2F28%2F01_%25E6%2593%258D%25E4%25BD%259C%25E7%25B3%25BB%25E7%25BB%259F%2F03_%25E8%25AE%25A1%25E7%25AE%2597%25E6%259C%25BA%25E7%25BD%2591%25E7%25BB%259C%2F03-IP%25E4%25B8%258E%25E5%25AD%2590%25E7%25BD%2591%25E6%258E%25A9%25E7%25A0%2581%25E4%25B8%258E%25E7%25BD%2591%25E5%2585%25B3%25E8%25AF%25A6%25E8%25A7%25A3%2F&title=03-IP%E4%B8%8E%E5%AD%90%E7%BD%91%E6%8E%A9%E7%A0%81%E4%B8%8E%E7%BD%91%E5%85%B3%20-%20%E5%A7%9C%E6%BA%90%E3%81%AE%E5%85%A8%E6%A0%88%E4%BA%91%E7%AC%94%E8%AE%B0"
+       class="share-icon share-weibo" target="_blank" rel="noopener noreferrer" aria-label="分享到微博">
+      📢
+      <span class="share-tooltip">分享到微博</span>
+    </a>
+    <!-- Twitter/X -->
+    <a href="https://twitter.com/intent/tweet?url=https%3A%2F%2Fjanycode.github.io%2F2016%2F04%2F28%2F01_%25E6%2593%258D%25E4%25BD%259C%25E7%25B3%25BB%25E7%25BB%259F%2F03_%25E8%25AE%25A1%25E7%25AE%2597%25E6%259C%25BA%25E7%25BD%2591%25E7%25BB%259C%2F03-IP%25E4%25B8%258E%25E5%25AD%2590%25E7%25BD%2591%25E6%258E%25A9%25E7%25A0%2581%25E4%25B8%258E%25E7%25BD%2591%25E5%2585%25B3%25E8%25AF%25A6%25E8%25A7%25A3%2F&text=03-IP%E4%B8%8E%E5%AD%90%E7%BD%91%E6%8E%A9%E7%A0%81%E4%B8%8E%E7%BD%91%E5%85%B3%20-%20%E5%A7%9C%E6%BA%90%E3%81%AE%E5%85%A8%E6%A0%88%E4%BA%91%E7%AC%94%E8%AE%B0"
+       class="share-icon share-twitter" target="_blank" rel="noopener noreferrer" aria-label="分享到Twitter">
+      🐦
+      <span class="share-tooltip">分享到 Twitter</span>
+    </a>
+    <!-- Facebook -->
+    <a href="https://www.facebook.com/sharer/sharer.php?u=https%3A%2F%2Fjanycode.github.io%2F2016%2F04%2F28%2F01_%25E6%2593%258D%25E4%25BD%259C%25E7%25B3%25BB%25E7%25BB%259F%2F03_%25E8%25AE%25A1%25E7%25AE%2597%25E6%259C%25BA%25E7%25BD%2591%25E7%25BB%259C%2F03-IP%25E4%25B8%258E%25E5%25AD%2590%25E7%25BD%2591%25E6%258E%25A9%25E7%25A0%2581%25E4%25B8%258E%25E7%25BD%2591%25E5%2585%25B3%25E8%25AF%25A6%25E8%25A7%25A3%2F"
+       class="share-icon share-facebook" target="_blank" rel="noopener noreferrer" aria-label="分享到Facebook">
+      📘
+      <span class="share-tooltip">分享到 Facebook</span>
+    </a>
+    <!-- 微信 -->
+    <button class="share-icon share-wechat" onclick="toggleWechatQR()" aria-label="分享到微信">
+      💬
+      <span class="share-tooltip">分享到微信</span>
+    </button>
+  </div>
+
+  <!-- 微信二维码弹窗 -->
+  <div id="wechat-qr-modal" class="wechat-qr-modal" style="display:none;" onclick="toggleWechatQR()">
+    <div class="wechat-qr-content" onclick="event.stopPropagation()">
+      <div class="wechat-qr-header">
+        <span>微信扫一扫分享</span>
+        <button class="wechat-qr-close" onclick="toggleWechatQR()" aria-label="关闭">&times;</button>
+      </div>
+      <div id="wechat-qrcode" class="wechat-qrcode"></div>
+      <p class="wechat-qr-tip">打开微信扫一扫，点击右上角分享</p>
+    </div>
+  </div>
+</div>
+
+<script src="https://lib.baomitu.com/clipboard.js/2.0.10/clipboard.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.css">
+
+<script>
+(function() {
+  var copyBtn = document.querySelector('.share-copy');
+  if (copyBtn && window.ClipboardJS) {
+    var clipboard = new ClipboardJS('.share-copy', {
+      text: function(trigger) {
+        return trigger.getAttribute('data-clipboard-text');
+      }
+    });
+    clipboard.on('success', function(e) {
+      e.trigger.classList.add('copied');
+      e.trigger.innerHTML = '✅<span class="share-tooltip">已复制</span>';
+      setTimeout(function() {
+        e.trigger.innerHTML = '🔗<span class="share-tooltip">复制链接</span>';
+        e.trigger.classList.remove('copied');
+      }, 2000);
+      e.clearSelection();
+    });
+    clipboard.on('error', function(e) {
+      var text = e.trigger.getAttribute('data-clipboard-text');
+      var textarea = document.createElement('textarea');
+      textarea.value = text;
+      textarea.style.position = 'fixed';
+      textarea.style.opacity = '0';
+      document.body.appendChild(textarea);
+      textarea.select();
+      try {
+        document.execCommand('copy');
+        e.trigger.innerHTML = '✅<span class="share-tooltip">已复制</span>';
+        setTimeout(function() {
+          e.trigger.innerHTML = '🔗<span class="share-tooltip">复制链接</span>';
+        }, 2000);
+      } catch (err) {}
+      document.body.removeChild(textarea);
+    });
+  }
+
+  window.toggleWechatQR = function() {
+    var modal = document.getElementById('wechat-qr-modal');
+    var qrcodeDiv = document.getElementById('wechat-qrcode');
+    if (modal.style.display === 'none' || !modal.style.display) {
+      modal.style.display = 'flex';
+      if (window.QRCode && qrcodeDiv && !qrcodeDiv.querySelector('img')) {
+        new QRCode(qrcodeDiv, {
+          text: 'https://janycode.github.io/2016/04/28/01_%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/03_%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/03-IP%E4%B8%8E%E5%AD%90%E7%BD%91%E6%8E%A9%E7%A0%81%E4%B8%8E%E7%BD%91%E5%85%B3%E8%AF%A6%E8%A7%A3/',
+          width: 180,
+          height: 180,
+          colorDark: '#000000',
+          colorLight: '#ffffff',
+          correctLevel: QRCode.CorrectLevel.H
+        });
+      }
+    } else {
+      modal.style.display = 'none';
+    }
+  };
+})();
+</script>
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2016/04/28/01_%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/03_%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/02-%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C%E5%AD%90%E7%BD%91%E5%88%92%E5%88%86/" title="01-计算机网络概述">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">01-计算机网络概述</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2016/04/28/01_%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/02_%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%8E%9F%E7%90%86/01-%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%B3%BB%E7%BB%9F/" title="01-计算机系统">
+                        <span class="hidden-mobile">01-计算机系统</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+  <article id="comments" lazyload>
+    
+  <div id="SOHUCS" sid='https://janycode.github.io/2016/04/28/01_%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/03_%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/03-IP%E4%B8%8E%E5%AD%90%E7%BD%91%E6%8E%A9%E7%A0%81%E4%B8%8E%E7%BD%91%E5%85%B3%E8%AF%A6%E8%A7%A3/'></div>
+  <script type="text/javascript">
+    Fluid.utils.loadComments('#SOHUCS', function() {
+      Fluid.utils.createScript("https://changyan.sohu.com/upload/changyan.js", function() {
+        window.changyan.api.config({"appid":"cyw5OHIcO","appkey":"fea3446b3df4b3f129f34da4cbc87e51"})
+      });
+    });
+  </script>
+  <noscript>Please enable JavaScript to view the comments</noscript>
+
+
+  </article>
+
+
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">全站搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    <div class="modal fade" id="modalAI" tabindex="-1" role="dialog" aria-labelledby="aiModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <span class="ai-blog-title">姜源の全栈云笔记</span>
+        <h4 class="modal-title font-weight-bold">🔥问问AI</h4>
+        <div class="ai-header-right">
+          <span class="ai-esc-hint">ESC 关闭</span>
+          <button type="button" id="ai-close" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <p class="ai-tip-text"><span class="tip-label">温馨提示：</span>本站使用国外免费的 <a href="https://openrouter.ai/models?q=free" target="_blank" rel="noopener noreferrer">OpenRouter</a> 聚合站提供的API接口，可自行注册创建认证token，无需截取本站去刷接口，影响AI健康生态，谢谢配合！</p>
+          <textarea id="ai-input" class="form-control validate" rows="3" placeholder="请输入您的问题..."></textarea>
+          <div class="d-flex justify-content-between align-items-center mt-2">
+            <button id="ai-reset" class="btn btn-outline-secondary btn-sm">
+              <i class="iconfont icon-refresh"></i> 重置
+            </button>
+            <button id="ai-submit" class="btn btn-primary btn-sm">
+              <i class="iconfont icon-send"></i> 发送 (Ctrl+Enter)
+            </button>
+          </div>
+        </div>
+        <div id="ai-result" class="ai-result-content"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://simple.blog.csdn.net" target="_blank" rel="nofollow noopener"><span>CSDN</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/janycode" target="_blank" rel="nofollow noopener"><span>GitHub</span></a> <i class="iconfont icon-love"></i> <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="busuanzi_container_site_pv" style="display: none">
+        总访问量(PV) 
+        <span id="busuanzi_value_site_pv"></span>
+         次，
+      </span>
+    
+    
+      <span id="busuanzi_container_site_uv" style="display: none">
+        总访客数(UV) 
+        <span id="busuanzi_value_site_uv"></span>
+         人
+      </span>
+    
+    
+  
+</div>
+
+  
+  
+  
+</div>
+
+<!-- live2d 动画-已过期废弃 -->
+<!-- <script src="https://eqcn.ajz.miesnfu.com/wp-content/plugins/wp-3d-pony/live2dw/lib/L2Dwidget.min.js"></script>
+<script>
+    L2Dwidget.init({
+        "model": {
+            jsonPath: "https://unpkg.com/live2d-widget-model-haruto@1.0.5/assets/haruto.model.json",
+            "scale": 1
+        },
+        "display": {
+            "position": "right",
+            "width": 100,
+            "height": 200,
+            "hOffset": 35,
+            "vOffset": -85
+        },
+        "mobile": {
+            "show": false,
+            "scale": 0.1
+        },
+        "react": {
+            "opacityDefault": 0.75,
+            "opacityOnHover": 0.2
+        }
+    });
+</script> -->
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <!-- Baidu Analytics -->
+    <script defer>
+      if (!Fluid.ctx.dnt) {
+        var _hmt = _hmt || [];
+        (function() {
+          var hm = document.createElement("script");
+          hm.src = "https://hm.baidu.com/hm.js?bfff735c897eb60ea49b735096b20e47";
+          var s = document.getElementsByTagName("script")[0];
+          s.parentNode.insertBefore(hm, s);
+        })();
+      }
+    </script>
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+
+<script  src="/js/ai-assistant.js" ></script>
+<script  src="/js/console-message.js" ></script>
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.0/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      headingSelector : CONFIG.toc.headingSelector || 'h1,h2,h3,h4,h5,h6',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      collapseDepth   : CONFIG.toc.collapseDepth || 0,
+      scrollSmooth    : true,
+      headingsOffset  : -boardTop
+    });
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+  });
+</script>
+
+
+  <script>
+  (function() {
+    var enableLang = CONFIG.code_language.enable && CONFIG.code_language.default;
+    var enableCopy = CONFIG.copy_btn;
+    if (!enableLang && !enableCopy) {
+      return;
+    }
+
+    function getBgClass(ele) {
+      return Fluid.utils.getBackgroundLightness(ele) >= 0 ? 'code-widget-light' : 'code-widget-dark';
+    }
+
+    var copyTmpl = '';
+    copyTmpl += '<div class="code-widget">';
+    copyTmpl += 'LANG';
+    copyTmpl += '</div>';
+    jQuery('.markdown-body pre').each(function() {
+      var $pre = jQuery(this);
+      if ($pre.find('code.mermaid').length > 0) {
+        return;
+      }
+      if ($pre.find('span.line').length > 0) {
+        return;
+      }
+
+      var lang = '';
+
+      if (enableLang) {
+        lang = CONFIG.code_language.default;
+        if ($pre[0].children.length > 0 && $pre[0].children[0].classList.length >= 2 && $pre.children().hasClass('hljs')) {
+          lang = $pre[0].children[0].classList[1];
+        } else if ($pre[0].getAttribute('data-language')) {
+          lang = $pre[0].getAttribute('data-language');
+        } else if ($pre.parent().hasClass('sourceCode') && $pre[0].children.length > 0 && $pre[0].children[0].classList.length >= 2) {
+          lang = $pre[0].children[0].classList[1];
+          $pre.parent().addClass('code-wrapper');
+        } else if ($pre.parent().hasClass('markdown-body') && $pre[0].classList.length === 0) {
+          $pre.wrap('<div class="code-wrapper"></div>');
+        }
+        lang = lang.toUpperCase().replace('NONE', CONFIG.code_language.default);
+      }
+      $pre.append(copyTmpl.replace('LANG', lang).replace('code-widget">',
+        getBgClass($pre[0]) + (enableCopy ? ' code-widget copy-btn" data-clipboard-snippet><i class="iconfont icon-copy"></i>' : ' code-widget">')));
+
+      if (enableCopy) {
+        Fluid.utils.createScript('https://lib.baomitu.com/clipboard.js/2.0.10/clipboard.min.js', function() {
+          var clipboard = new window.ClipboardJS('.copy-btn', {
+            target: function(trigger) {
+              var nodes = trigger.parentNode.childNodes;
+              for (var i = 0; i < nodes.length; i++) {
+                if (nodes[i].tagName === 'CODE') {
+                  return nodes[i];
+                }
+              }
+            }
+          });
+          clipboard.on('success', function(e) {
+            e.clearSelection();
+            e.trigger.innerHTML = e.trigger.innerHTML.replace('icon-copy', 'icon-success');
+            setTimeout(function() {
+              e.trigger.innerHTML = e.trigger.innerHTML.replace('icon-success', 'icon-copy');
+            }, 2000);
+          });
+        });
+      }
+    });
+  })();
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script  src="/js/local-search.js" ></script>
+
+  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>
