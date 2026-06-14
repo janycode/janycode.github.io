@@ -104,120 +104,144 @@
   function renderMarkdown(text) {
     if (!text) return '';
 
-    // 先转义HTML特殊字符，但保留代码块内容
     var codeBlocks = [];
     var inlineCodes = [];
-    
-    // 提取代码块
+    var tables = [];
+
+    // ========== 第一步：提取代码块、行内代码、表格（用特殊占位符） ==========
+
+    // 提取代码块 ```lang\ncode```
     text = text.replace(/```(\w*)\n([\s\S]*?)```/g, function(match, lang, code) {
       var index = codeBlocks.length;
       codeBlocks.push({ lang: lang || 'plaintext', code: code.trim() });
-      return '___CODE_BLOCK_' + index + '___';
-    });
-    
-    // 提取行内代码
-    text = text.replace(/`([^`]+)`/g, function(match, code) {
-      var index = inlineCodes.length;
-      inlineCodes.push(code);
-      return '___INLINE_CODE_' + index + '___';
+      return '\x00CB' + index + '\x00';
     });
 
-    // 转义HTML
-    var html = text
+    // 提取行内代码 `code`
+    text = text.replace(/`([^`\n]+)`/g, function(match, code) {
+      var index = inlineCodes.length;
+      inlineCodes.push(code);
+      return '\x00IC' + index + '\x00';
+    });
+
+    // 提取表格
+    text = text.replace(/((?:\|.+\|\n?)+)/g, function(match) {
+      var lines = match.trim().split('\n');
+      var tableData = [];
+      var hasSeparator = false;
+
+      for (var t = 0; t < lines.length; t++) {
+        var line = lines[t].trim();
+        if (!line) continue;
+        if (/^\|[\s\-:|]+\|$/.test(line)) { hasSeparator = true; continue; }
+        var cells = line.split('|');
+        if (cells[0].trim() === '') cells.shift();
+        if (cells[cells.length - 1].trim() === '') cells.pop();
+        if (cells.length > 0) {
+          tableData.push(cells.map(function(c) { return c.trim(); }));
+        }
+      }
+      if (tableData.length === 0) return match;
+
+      var hasHeader = hasSeparator && tableData.length > 1;
+      var tableHtml = '<table class="ai-table"><tbody>';
+      for (var r = 0; r < tableData.length; r++) {
+        tableHtml += '<tr>';
+        var tag = (hasHeader && r === 0) ? 'th' : 'td';
+        for (var c = 0; c < tableData[r].length; c++) {
+          tableHtml += '<' + tag + '>' + tableData[r][c] + '</' + tag + '>';
+        }
+        tableHtml += '</tr>';
+      }
+      tableHtml += '</tbody></table>';
+
+      var index = tables.length;
+      tables.push(tableHtml);
+      return '\x00TB' + index + '\x00';
+    });
+
+    // ========== 第二步：转义HTML特殊字符 ==========
+    text = text
       .replace(/&/g, '&amp;')
       .replace(/</g, '&lt;')
       .replace(/>/g, '&gt;');
 
-    // 标题
-    html = html.replace(/^###### (.*$)/gm, '<h6>$1</h6>');
-    html = html.replace(/^##### (.*$)/gm, '<h5>$1</h5>');
-    html = html.replace(/^#### (.*$)/gm, '<h4>$1</h4>');
-    html = html.replace(/^### (.*$)/gm, '<h3>$1</h3>');
-    html = html.replace(/^## (.*$)/gm, '<h2>$1</h2>');
-    html = html.replace(/^# (.*$)/gm, '<h1>$1</h1>');
+    // ========== 第三步：Markdown 语法转 HTML ==========
 
-    // 粗体和斜体
-    html = html.replace(/\*\*\*(.*?)\*\*\*/g, '<strong><em>$1</em></strong>');
-    html = html.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
-    html = html.replace(/\*(.*?)\*/g, '<em>$1</em>');
-    html = html.replace(/___(.*?)___/g, '<strong>$1</strong>');
-    html = html.replace(/__(.*?)__/g, '<em>$1</em>');
+    // 标题
+    text = text.replace(/^###### (.*$)/gm, '<h6>$1</h6>');
+    text = text.replace(/^##### (.*$)/gm, '<h5>$1</h5>');
+    text = text.replace(/^#### (.*$)/gm, '<h4>$1</h4>');
+    text = text.replace(/^### (.*$)/gm, '<h3>$1</h3>');
+    text = text.replace(/^## (.*$)/gm, '<h2>$1</h2>');
+    text = text.replace(/^# (.*$)/gm, '<h1>$1</h1>');
+
+    // 粗体和斜体（优先匹配长的）
+    text = text.replace(/\*\*\*(.*?)\*\*\*/g, '<strong><em>$1</em></strong>');
+    text = text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+    text = text.replace(/\*(.*?)\*/g, '<em>$1</em>');
+    text = text.replace(/___(.*?)___/g, '<strong>$1</strong>');
+    text = text.replace(/__(.*?)__/g, '<em>$1</em>');
 
     // 删除线
-    html = html.replace(/~~(.*?)~~/g, '<del>$1</del>');
-
-    // 链接
-    html = html.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>');
+    text = text.replace(/~~(.*?)~~/g, '<del>$1</del>');
 
     // 图片
-    html = html.replace(/!\[([^\]]*)\]\(([^)]+)\)/g, '<img src="$2" alt="$1" style="max-width:100%;border-radius:4px;margin:0.5rem 0;">');
+    text = text.replace(/!\[([^\]]*)\]\(([^)]+)\)/g, '<img src="$2" alt="$1" style="max-width:100%;border-radius:4px;margin:0.5rem 0;">');
+
+    // 链接
+    text = text.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>');
 
     // 引用
-    html = html.replace(/^&gt; (.*$)/gm, '<blockquote>$1</blockquote>');
-    html = html.replace(/^> (.*$)/gm, '<blockquote>$1</blockquote>');
+    text = text.replace(/^> (.*$)/gm, '<blockquote>$1</blockquote>');
 
     // 无序列表
-    html = html.replace(/^- (.*$)/gm, '<li>$1</li>');
-    html = html.replace(/^\* (.*$)/gm, '<li>$1</li>');
-    html = html.replace(/^\+ (.*$)/gm, '<li>$1</li>');
-
+    text = text.replace(/^- (.*$)/gm, '<li>$1</li>');
+    text = text.replace(/^\* (.*$)/gm, '<li>$1</li>');
+    text = text.replace(/^\+ (.*$)/gm, '<li>$1</li>');
     // 有序列表
-    html = html.replace(/^\d+\. (.*$)/gm, '<li>$1</li>');
+    text = text.replace(/^\d+\. (.*$)/gm, '<li>$1</li>');
 
     // 合并列表项
-    html = html.replace(/(<li>.*<\/li>)/gs, function(match) {
+    text = text.replace(/(<li>.*<\/li>)/gs, function(match) {
       return '<ul>' + match + '</ul>';
     });
-    html = html.replace(/<\/ul><ul>/g, '');
-
-    // 有序列表包装
-    html = html.replace(/((?:<li>.*<\/li>\s*)+)/g, function(match) {
-      if (match.match(/<li>\d+\./)) {
-        return '<ol>' + match + '</ol>';
-      }
-      return match;
-    });
-
-    // 表格
-    html = html.replace(/\|(.+)\|/g, function(match) {
-      var cells = match.split('|').filter(function(c) { return c.trim(); });
-      if (cells.every(function(c) { return /^[\s-:]+$/.test(c); })) {
-        return match; // 分隔行，跳过
-      }
-      var cellHtml = '';
-      var isHeader = false;
-      cells.forEach(function(cell, i) {
-        var tag = isHeader ? 'th' : 'td';
-        cellHtml += '<' + tag + '>' + cell.trim() + '</' + tag + '>';
-      });
-      return '<tr>' + cellHtml + '</tr>';
-    });
-    html = html.replace(/(<tr>.*<\/tr>)/gs, '<table>$1</table>');
+    text = text.replace(/<\/ul><ul>/g, '');
 
     // 水平分割线
-    html = html.replace(/^---$/gm, '<hr>');
-    html = html.replace(/^\*\*\*$/gm, '<hr>');
-    html = html.replace(/^___$/gm, '<hr>');
+    text = text.replace(/^---$/gm, '<hr>');
+    text = text.replace(/^\*\*\*$/gm, '<hr>');
 
-    // 段落
-    html = html.replace(/\n\n/g, '</p><p>');
-    html = html.replace(/\n/g, '<br>');
-
-    // 恢复行内代码
-    html = html.replace(/___INLINE_CODE_(\d+)___/g, function(match, index) {
-      return '<code class="inline-code">' + escapeHtml(inlineCodes[index]) + '</code>';
-    });
+    // ========== 第四步：恢复代码块、表格、行内代码 ==========
 
     // 恢复代码块
-    html = html.replace(/___CODE_BLOCK_(\d+)___/g, function(match, index) {
-      var block = codeBlocks[index];
+    text = text.replace(/\x00CB(\d+)\x00/g, function(match, index) {
+      var block = codeBlocks[parseInt(index)];
+      if (!block) return match;
       return '<pre class="code-block"><code class="language-' + block.lang + '">' + escapeHtml(block.code) + '</code></pre>';
     });
 
-    // 包装
-    html = '<div class="markdown-content">' + html + '</div>';
+    // 恢复表格
+    text = text.replace(/\x00TB(\d+)\x00/g, function(match, index) {
+      return tables[parseInt(index)] || match;
+    });
 
-    return html;
+    // ========== 第五步：段落处理 ==========
+    text = text.replace(/\n\n/g, '</p><p>');
+    text = text.replace(/\n/g, '<br>');
+
+    // 清理 <p> 包裹 <pre> 和 <table> 的情况
+    text = text.replace(/<p>(<pre class="code-block">)/g, '$1');
+    text = text.replace(/(<\/pre>)<\/p>/g, '$1');
+    text = text.replace(/<p>(<table)/g, '$1');
+    text = text.replace(/(<\/table>)<\/p>/g, '$1');
+
+    // 恢复行内代码
+    text = text.replace(/\x00IC(\d+)\x00/g, function(match, index) {
+      return '<code class="inline-code">' + escapeHtml(inlineCodes[parseInt(index)]) + '</code>';
+    });
+
+    return '<div class="markdown-content">' + text + '</div>';
   }
 
   function updateLoadingText() {
@@ -323,17 +347,19 @@
       var fullContent = '';
       var buffer = '';
 
-      // 构建回复内容HTML - 复制图标在问题行内最右侧
+      // 构建回复内容HTML - 标题和按钮在同一行
       var resultHtml = '<div class="ai-result-container">' +
         '<div class="ai-result-header">' +
-        '<div class="ai-question">' +
-        '<span class="ai-question-text"><strong>Q:</strong> ' + escapeHtml(currentQuestion) + '</span>' +
-        '<button class="ai-copy-icon" data-type="both"><i class="iconfont icon-copy"></i><span class="ai-tooltip">复制全文</span></button>' +
-        '</div>' +
-        '</div>' +
+        '<span class="ai-question-title"><strong>Q:</strong> ' + escapeHtml(currentQuestion) + '</span>' +
+        '<div class="ai-result-actions">' +
+        '<button class="ai-action-btn btn btn-outline-secondary btn-sm" id="ai-download-md" title="下载Markdown"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></button>' +
+        '<button class="ai-action-btn btn btn-outline-secondary btn-sm" id="ai-fullscreen" title="全屏预览"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/></svg></button>' +
+        '<button class="ai-action-btn btn btn-outline-secondary btn-sm" id="ai-copy-btn" data-type="both" title="复制全文"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg></button>' +
+        '</div></div>' +
+        '<hr class="ai-divider">' +
         '<div class="ai-response-card">' +
         '<div class="ai-response">' +
-        '<div class="ai-avatar"><i class="iconfont icon-comment-alt"></i></div>' +
+        '<div class="ai-avatar">A</div>' +
         '<div class="ai-content">' +
         '<div id="ai-streaming-content"></div>' +
         '</div></div></div></div>';
@@ -341,8 +367,8 @@
       resultEl.html(resultHtml);
       var contentEl = jQuery('#ai-streaming-content');
 
-      // 绑定复制图标事件
-      jQuery('button.ai-copy-icon', resultEl.parent()).on('click', function() {
+      // 绑定复制按钮事件
+      jQuery('#ai-copy-btn', resultEl.parent()).on('click', function() {
         var copyType = jQuery(this).data('type');
         var textToCopy = '';
         if (copyType === 'both') {
@@ -350,20 +376,43 @@
         }
         var copyBtn = jQuery(this);
         copyToClipboard(textToCopy, function(success) {
+          var copyIcon = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>';
           if (success) {
             copyBtn.addClass('copied');
-            copyBtn.html('<i class="iconfont icon-check"></i><span class="ai-tooltip">已复制</span>');
+            copyBtn.html('<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>');
             setTimeout(function() {
               copyBtn.removeClass('copied');
-              copyBtn.html('<i class="iconfont icon-copy"></i><span class="ai-tooltip">复制全文</span>');
+              copyBtn.html(copyIcon);
             }, 2000);
           } else {
-            copyBtn.html('<i class="iconfont icon-error"></i><span class="ai-tooltip">复制失败</span>');
+            copyBtn.html('<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>');
             setTimeout(function() {
-              copyBtn.html('<i class="iconfont icon-copy"></i><span class="ai-tooltip">复制全文</span>');
+              copyBtn.html(copyIcon);
             }, 2000);
           }
         });
+      });
+
+      // 绑定下载Markdown按钮事件
+      jQuery('#ai-download-md', resultEl.parent()).on('click', function() {
+        var mdContent = '# Q: ' + currentQuestion + '\n\n' + fullContent;
+        var blob = new Blob([mdContent], { type: 'text/markdown;charset=utf-8' });
+        var url = URL.createObjectURL(blob);
+        var a = document.createElement('a');
+        a.href = url;
+        a.download = 'AI回复_' + new Date().toISOString().slice(0, 10) + '.md';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+      });
+
+      // 绑定全屏预览按钮事件
+      jQuery('#ai-fullscreen', resultEl.parent()).on('click', function() {
+        var content = fullContent || contentEl.text();
+        var fullscreenWindow = window.open('', '_blank');
+        fullscreenWindow.document.write('<!DOCTYPE html><html><head><meta charset="UTF-8"><title>AI回复 - 全屏预览</title><style>body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;max-width:900px;margin:2rem auto;padding:0 1rem;font-size:0.9rem;line-height:1.7;color:#333;}h1,h2,h3,h4,h5,h6{margin-top:1.5rem;margin-bottom:0.5rem;}table{width:100%;border-collapse:collapse;margin:1rem 0;}th,td{border:1px solid #ddd;padding:0.4rem 0.6rem;text-align:left;}th{background:#f6f8fa;}code{background:#f0f0f0;padding:0.15rem 0.35rem;border-radius:3px;font-size:0.85em;}pre{background:#f6f8fa;padding:1rem;border-radius:6px;overflow-x:auto;}blockquote{border-left:3px solid #ddd;padding-left:1rem;color:#666;margin:0.5rem 0;}a{color:#0366d6;}</style></head><body><h2>Q: ' + escapeHtml(currentQuestion) + '</h2><hr>' + renderMarkdown(content) + '</body></html>');
+        fullscreenWindow.document.close();
       });
 
       function readStream() {
@@ -392,6 +441,11 @@
                 if (data.choices && data.choices[0] && data.choices[0].delta && data.choices[0].delta.content) {
                   fullContent += data.choices[0].delta.content;
                   contentEl.text(fullContent);
+                  // 自动滚动到底部
+                  var aiContent = contentEl.closest('.ai-content')[0];
+                  if (aiContent) {
+                    aiContent.scrollTop = aiContent.scrollHeight;
+                  }
                 }
               } catch (e) {}
             }

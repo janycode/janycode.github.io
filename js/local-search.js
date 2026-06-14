@@ -154,7 +154,7 @@
       }
 
       // eslint-disable-next-line no-console
-      console.log('Search data loaded from cache (complete), entries:', data.length);
+      // console.log('Search data loaded from cache (complete), entries:', data.length);
       return data;
     } catch (e) {
       // eslint-disable-next-line no-console
@@ -419,16 +419,16 @@
           resultHTML += '<a href=\'' + data_url + '\' class=\'list-group-item list-group-item-action font-weight-bolder search-list-title\'>' + orig_data_title + '</a>';
           var content = orig_data_content;
           if (first_occur >= 0) {
-            // cut out 100 characters
-            var start = first_occur - 20;
-            var end = first_occur + 80;
+            // cut out 200 characters for richer preview
+            var start = first_occur - 50;
+            var end = first_occur + 150;
 
             if (start < 0) {
               start = 0;
             }
 
             if (start === 0) {
-              end = 100;
+              end = 200;
             }
 
             if (end > content.length) {
@@ -494,5 +494,31 @@
   });
   modal.on('hidden.bs.modal', function() {
     localSearchReset(searchSelector, resultSelector);
+  });
+
+  // 快捷键 (F) 打开搜索弹窗，(Q) 打开AI弹窗
+  var aiModal = jQuery('#modalAI');
+  jQuery(document).on('keydown', function(e) {
+    // 忽略在输入框、文本域中的按键
+    var tagName = e.target.tagName.toLowerCase();
+    if (tagName === 'input' || tagName === 'textarea' || tagName === 'select') {
+      return;
+    }
+    if (e.key === 'f' || e.key === 'F') {
+      e.preventDefault();
+      var searchBtn = document.querySelector('#search-btn .nav-link');
+      if (searchBtn && !searchBtn.classList.contains('disabled')) {
+        modal.modal('show');
+      }
+    }
+    if (e.key === 'q' || e.key === 'Q') {
+      e.preventDefault();
+      aiModal.modal('show');
+    }
+    // ESC 关闭弹窗
+    if (e.key === 'Escape') {
+      modal.modal('hide');
+      aiModal.modal('hide');
+    }
   });
 })();
