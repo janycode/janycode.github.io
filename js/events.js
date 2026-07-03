@@ -76,6 +76,7 @@ Fluid.events = {
 
   registerScrollTopArrowEvent: function() {
     var topArrow = jQuery('#scroll-top-button');
+    var aiFloat = jQuery('#ai-float-button');
     if (topArrow.length === 0) {
       return;
     }
@@ -85,29 +86,39 @@ Fluid.events = {
     }
     var posDisplay = false;
     var scrollDisplay = false;
-    // Position
     var setTopArrowPos = function() {
       var boardRight = board[0].getClientRects()[0].right;
       var bodyWidth = document.body.offsetWidth;
       var right = bodyWidth - boardRight;
       posDisplay = right >= 50;
+      var isVisible = posDisplay && scrollDisplay;
       topArrow.css({
-        'bottom': posDisplay && scrollDisplay ? '20px' : '-60px',
+        'bottom': isVisible ? '20px' : '-60px',
         'right' : right - 64 + 'px'
       });
+      if (aiFloat.length > 0) {
+        aiFloat.css({
+          'bottom': isVisible ? '70px' : '-60px',
+          'right' : right - 64 + 'px'
+        });
+      }
     };
     setTopArrowPos();
     jQuery(window).resize(setTopArrowPos);
-    // Display
     var headerHeight = board.offset().top;
     Fluid.utils.listenScroll(function() {
       var scrollHeight = document.body.scrollTop + document.documentElement.scrollTop;
       scrollDisplay = scrollHeight >= headerHeight;
+      var isVisible = posDisplay && scrollDisplay;
       topArrow.css({
-        'bottom': posDisplay && scrollDisplay ? '20px' : '-60px'
+        'bottom': isVisible ? '20px' : '-60px'
       });
+      if (aiFloat.length > 0) {
+        aiFloat.css({
+          'bottom': isVisible ? '70px' : '-60px'
+        });
+      }
     });
-    // Click
     topArrow.on('click', function() {
       jQuery('body,html').animate({
         scrollTop: 0,

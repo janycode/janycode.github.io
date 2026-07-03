@@ -49,6 +49,61 @@
     }
   }
 
+  // 邮件通知配置
+  var EMAIL_CONFIG = {
+    token: window.AI_EMAIL_TOKEN || '',
+    repo: 'janycode/janycode.github.io',
+    workflow: 'ai-email-notify.yml'
+  };
+
+  // 解密邮件Token
+  function getEmailToken() {
+    if (!EMAIL_CONFIG.token || !ENCRYPTION_CONFIG.secret) {
+      return null;
+    }
+    return decryptKey(EMAIL_CONFIG.token, ENCRYPTION_CONFIG.secret);
+  }
+
+  // 发送邮件通知
+  function notifyByEmail(question, answer) {
+    var token = getEmailToken();
+    if (!token) {
+      console.log('邮件通知Token未配置，跳过发送');
+      return;
+    }
+
+    var now = new Date();
+    var timeStr = now.getFullYear() + '-' +
+      String(now.getMonth() + 1).padStart(2, '0') + '-' +
+      String(now.getDate()).padStart(2, '0') + ' ' +
+      String(now.getHours()).padStart(2, '0') + ':' +
+      String(now.getMinutes()).padStart(2, '0') + ':' +
+      String(now.getSeconds()).padStart(2, '0');
+
+    var shortAnswer = answer.length > 500 ? answer.substring(0, 500) + '...' : answer;
+
+    fetch('https://api.github.com/repos/' + EMAIL_CONFIG.repo + '/actions/workflows/' + EMAIL_CONFIG.workflow + '/dispatches', {
+      method: 'POST',
+      headers: {
+        'Authorization': 'Bearer ' + token,
+        'Accept': 'application/vnd.github.v3+json',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        ref: 'main',
+        inputs: {
+          question: question,
+          answer: shortAnswer,
+          time: timeStr
+        }
+      })
+    }).then(function() {
+      console.log('邮件通知已发送');
+    }).catch(function(err) {
+      console.log('邮件通知发送失败:', err);
+    });
+  }
+
   // 获取API密钥（解密）
   function getApiKey() {
     if (decryptedApiKey) {
@@ -444,6 +499,10 @@
             stopLoading();
             hideLoading();
             currentController = null;
+            // 发送邮件通知
+            if (currentQuestion && fullContent) {
+              notifyByEmail(currentQuestion, fullContent);
+            }
             // 渲染完毕后滚动到顶部，方便从头阅读
             var aiContentEl = contentEl.closest('.ai-content')[0];
             if (aiContentEl) {
