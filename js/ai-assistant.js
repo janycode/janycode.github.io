@@ -24,10 +24,12 @@
   var submitBtn = jQuery('#ai-submit');
   var resetBtn = jQuery('#ai-reset');
   var resultEl = jQuery('#ai-result');
+  var aiFloatBtn = jQuery('#ai-float-button');
 
   // 状态变量
   var isLoading = false;
   var currentController = null;
+  var aiSource = '';
   var decryptedApiKey = null;
   var currentQuestion = '';
   var loadingDots = '';
@@ -599,8 +601,15 @@
     }
   });
 
+  aiFloatBtn.on('click', function() {
+    aiSource = 'float';
+  });
+
   modal.on('shown.bs.modal', function() {
     inputEl.focus();
+    if (aiSource === 'float') {
+      adjustModalWidth();
+    }
   });
 
   modal.on('hidden.bs.modal', function() {
@@ -612,7 +621,40 @@
     stopLoading();
     hideLoading();
     currentQuestion = '';
+    aiSource = '';
+    modal.removeClass('float-mode');
+    jQuery('#modalAI .modal-dialog').css({
+      'max-width': '',
+      'width': '',
+      'position': '',
+      'right': '',
+      'top': '',
+      'bottom': ''
+    });
   });
+
+  function adjustModalWidth() {
+    var board = jQuery('#board');
+    if (board.length === 0) {
+      return;
+    }
+    var boardRight = board[0].getClientRects()[0].right;
+    var windowWidth = window.innerWidth;
+    var maxWidth = windowWidth - boardRight - 20;
+    if (maxWidth < 300) {
+      maxWidth = 300;
+    }
+    modal.addClass('float-mode');
+    jQuery('#modalAI .modal-dialog').css({
+      'max-width': maxWidth + 'px',
+      'width': 'calc(100% - ' + boardRight + 'px - 20px)',
+      'position': 'fixed',
+      'right': '0',
+      'top': '0',
+      'bottom': '0',
+      'margin': '0'
+    });
+  }
 
   // 初始化按钮文本
   hideLoading();

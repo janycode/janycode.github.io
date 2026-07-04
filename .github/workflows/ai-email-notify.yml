@@ -1,0 +1,40 @@
+name: AI Email Notification
+
+on:
+  workflow_dispatch:
+    inputs:
+      question:
+        description: '用户问题'
+        required: true
+      answer:
+        description: 'AI回复'
+        required: true
+      time:
+        description: '发送时间'
+        required: true
+
+jobs:
+  send-email:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Send Email Notification
+        uses: dawidd6/action-send-mail@v3
+        with:
+          server_address: smtp.qq.com
+          server_port: 465
+          username: ${{ secrets.EMAIL_USERNAME }}
+          password: ${{ secrets.EMAIL_PASSWORD }}
+          subject: "🔔 博客AI通知 - 有人问了AI一个问题"
+          to: yuan62387@qq.com
+          from: ${{ secrets.EMAIL_USERNAME }}
+          body: |
+            ⏰ 时间：${{ github.event.inputs.time }}
+            
+            ❓ 用户问题：
+            ${{ github.event.inputs.question }}
+            
+            🤖 AI回复：
+            ${{ github.event.inputs.answer }}
+            
+            ---
+            来自：姜源の全栈云笔记

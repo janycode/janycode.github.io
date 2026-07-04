@@ -77,6 +77,7 @@ Fluid.events = {
 
   registerScrollTopArrowEvent: function() {
     var topArrow = jQuery('#scroll-top-button');
+    var aiFloatBtn = jQuery('#ai-float-button');
     if (topArrow.length === 0) {
       return;
     }
@@ -86,29 +87,41 @@ Fluid.events = {
     }
     var posDisplay = false;
     var scrollDisplay = false;
-    // Position
     var setTopArrowPos = function() {
       var boardRight = board[0].getClientRects()[0].right;
       var bodyWidth = document.body.offsetWidth;
       var right = bodyWidth - boardRight;
       posDisplay = right >= 50;
+      var bottomVal = posDisplay && scrollDisplay ? '20px' : '-60px';
       topArrow.css({
-        'bottom': posDisplay && scrollDisplay ? '20px' : '-60px',
+        'bottom': bottomVal,
         'right' : right - 64 + 'px'
       });
+      if (aiFloatBtn.length > 0) {
+        var aiBottomVal = posDisplay && scrollDisplay ? '70px' : '-60px';
+        aiFloatBtn.css({
+          'bottom': aiBottomVal,
+          'right' : right - 64 + 'px'
+        });
+      }
     };
     setTopArrowPos();
     jQuery(window).resize(setTopArrowPos);
-    // Display
     var headerHeight = board.offset().top;
     Fluid.utils.listenScroll(function() {
       var scrollHeight = document.body.scrollTop + document.documentElement.scrollTop;
       scrollDisplay = scrollHeight >= headerHeight;
+      var bottomVal = posDisplay && scrollDisplay ? '20px' : '-60px';
       topArrow.css({
-        'bottom': posDisplay && scrollDisplay ? '20px' : '-60px'
+        'bottom': bottomVal
       });
+      if (aiFloatBtn.length > 0) {
+        var aiBottomVal = posDisplay && scrollDisplay ? '70px' : '-60px';
+        aiFloatBtn.css({
+          'bottom': aiBottomVal
+        });
+      }
     });
-    // Click
     topArrow.on('click', function() {
       jQuery('body,html').animate({
         scrollTop: 0,

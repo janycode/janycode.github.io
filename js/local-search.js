@@ -250,10 +250,20 @@
       var content = entry.getElementsByTagName('content')[0];
       var url = entry.getElementsByTagName('url')[0];
 
+      var entryUrl = url ? url.textContent : '';
+      var dateMatch = entryUrl.match(/\/(\d{4})\/(\d{2})\/(\d{2})\//);
+      var dateStr = '';
+      if (dateMatch) {
+        dateStr = dateMatch[1] + '-' + dateMatch[2] + '-' + dateMatch[3];
+      }
+      var contentText = content ? content.textContent : '';
+      var contentLength = contentText.replace(/<[^>]+>/g, '').length;
       result.push({
         title: title ? title.textContent : '',
-        content: content ? content.textContent : '',
-        url: url ? url.textContent : ''
+        content: contentText,
+        url: entryUrl,
+        date: dateStr,
+        contentLength: contentLength
       });
     }
 
@@ -367,10 +377,15 @@
 
       if (isMatch) {
         matchCount++;
-        var percent = calculateMatchPercentage(orig_data_title, orig_data_content, keywords);
+        var dateStr = data.date || '';
+        var lengthStr = data.contentLength ? data.contentLength + '字' : '';
+        var metaInfo = [];
+        if (dateStr) metaInfo.push(dateStr);
+        if (lengthStr) metaInfo.push(lengthStr);
+        var metaText = metaInfo.length > 0 ? metaInfo.join(' · ') : '';
         resultHTML += '<a href=\'' + data_url + '\' class=\'list-group-item list-group-item-action font-weight-bolder search-list-title\'>' +
           orig_data_title +
-          ' <span class="search-match-percent" style="font-size:0.75rem;color:#888;margin-left:8px;">' + percent + '%</span>' +
+          (metaText ? ' <span class="search-match-percent" style="font-size:0.75rem;color:#888;margin-left:8px;">' + metaText + '</span>' : '') +
           '</a>';
 
         if (first_occur < 0) {
